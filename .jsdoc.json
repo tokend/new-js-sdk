@@ -1,0 +1,16 @@
+{
+  "source": {
+    "include": ["src"],
+    "includePattern": ".+\\.js$",
+    "excludePattern": ".+\\.test\\.js$"
+  },
+  "opts": {
+    "destination": "./docs/pages",
+    "recurse": true,
+    "template": "node_modules/minami",
+    "readme": "./README.md"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ]
+}
