@@ -29,6 +29,8 @@ export default class Mocks {
     let wallet = Mocks.wallet()
     horizon.useWallet(wallet)
 
+    horizon.makeGenericResponse = () => ({ id: 1 })
+
     return horizon
   }
 
@@ -38,6 +40,14 @@ export default class Mocks {
 
     let wallet = Mocks.wallet()
     api.useWallet(wallet)
+
+    api.makeGenericResponse = () => ({
+      data: {
+        id: 1,
+        type: 'generic',
+        attributes: { foo: 'bar' }
+      }
+    })
 
     return api
   }

@@ -39,6 +39,15 @@ export class Horizon extends ServerBase {
     return new resources.Balances(this)
   }
 
+  /**
+   * Account details.
+   *
+   * @return {Account}
+   */
+  get account () {
+    return new resources.Account(this)
+  }
+
   _parseResponseError (error) {
     if (error.response && error.response.status) {
       switch (error.response.status) {
