@@ -1,8 +1,14 @@
-// stellar-sdk classes to expose
-export * from './errors'
-export { Config } from './config'
-export { Server } from './horizon/server'
+// TokenD classes to expose
+import * as commonErrors from './errors'
+import { errors as apiErrors } from './api'
+import { errors as horizonErrors } from './horizon'
 
-export * from './base'
+export * from './tokend_sdk'
+export { default as base } from './base'
 
-export default module.exports
+// Typed errors
+export const errors = {
+  common: commonErrors,
+  api: apiErrors,
+  horizon: horizonErrors
+}
