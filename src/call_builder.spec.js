@@ -96,6 +96,24 @@ describe('CallBuilder', () => {
     })
   })
 
+  describe('.withTimeout', () => {
+    const customTimeout = 1337
+
+    it('Should set a custom request timeout.', async () => {
+      axiosMock
+        .onGet(`/`, { timeout: customTimeout })
+        .reply(200, contact)
+
+      await callBuilder
+        .withTimeout(customTimeout)
+        .get()
+    })
+
+    it('Should throw if the timeout is invalid.', () => {
+      expectThrow(() => callBuilder.withTimeout('bitconneeeeect'))
+    })
+  })
+
   describe('.get', () => {
     const data = [contact]
     const queryParams = { name: 'Jo' }

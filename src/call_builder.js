@@ -21,6 +21,7 @@ export class CallBuilder {
     this._axios = axios
     this._wallet = wallet
     this._urlSegments = []
+    this._customTimeout = null
   }
 
   /**
@@ -73,6 +74,22 @@ export class CallBuilder {
     }
 
     this._authRequired = true
+
+    return this
+  }
+
+  /**
+   * Set a request timeout.
+   *
+   * @param {Number} timeout Request timeout.
+   * @return {CallBuilder} Self.
+   */
+  withTimeout (timeout) {
+    if (!isNumber(timeout)) {
+      throw new TypeError('A timeout in milliseconds expected.')
+    }
+
+    this._customTimeout = timeout
 
     return this
   }
@@ -155,6 +172,10 @@ export class CallBuilder {
       let url = this._getUrl()
       let signature = this._wallet.signRequest(url)
       config = Object.assign(config, signature)
+    }
+
+    if (this._customTimeout) {
+      config.timeout = this._customTimeout
     }
 
     return config
