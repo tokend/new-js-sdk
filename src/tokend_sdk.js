@@ -1,6 +1,7 @@
 import { Api } from './api'
 import { Horizon } from './horizon'
 import { Wallet } from './wallet'
+import { Network } from './base/network'
 
 /**
  * TokendD Software Development Toolkit.
@@ -13,17 +14,22 @@ export class TokenD {
    *
    * @constructor
    *
-   * @param {string} serverUrl TokenD backend url.
+   * @param {string} url TokenD backend url.
    * @param {object} [opts]
    * @param {boolean} [opts.allowHttp] Allow connecting to http servers, default: `false`. This must be set to false in production deployments!
-   * @param {Object} [opts.proxy] Proxy configuration. Look [axios docs](https://github.com/axios/axios#request-config) for more info
-   * @param {Object} [opts.httpBasicAuth] HTTP basic auth credentials. Look [axios docs](https://github.com/axios/axios#request-config) for more info.
-   * @param {Object} [opts.customHeaders] Custom headers for request.
+   * @param {object} [opts.proxy] Proxy configuration. Look [axios docs](https://github.com/axios/axios#request-config) for more info
+   * @param {object} [opts.httpBasicAuth] HTTP basic auth credentials. Look [axios docs](https://github.com/axios/axios#request-config) for more info.
+   * @param {object} [opts.customHeaders] Custom headers for request.
    * @param {boolean} [opts.withCredentials] Indicates whether or not cross-site Access-Control requests should be made using credentials.
+   * @param {string} [networkPassphrase] Network passphrase.
    */
-  constructor (serverUrl, opts) {
-    this._api = new Api(serverUrl, opts)
-    this._horizon = new Horizon(serverUrl, opts)
+  constructor ({ url, opts, networkPassphrase }) {
+    this._api = new Api(url, opts)
+    this._horizon = new Horizon(url, opts)
+
+    if (networkPassphrase) {
+      Network.use(networkPassphrase)
+    }
   }
 
   /**

@@ -1,25 +1,46 @@
 import { Horizon } from './horizon'
 import { Api } from './api'
 import { Wallet } from './wallet'
+import { Network } from './base/network'
 import mocks from './test_helpers/mock_factory'
+import sinon from 'sinon'
 
 import { TokenD } from './tokend_sdk'
 
 describe('TokenD', () => {
+  let sandbox
   let sdk
   const url = 'https://tokend.org/'
   const opts = { allowHttp: false }
 
   beforeEach(() => {
-    sdk = new TokenD(url, opts)
+    sandbox = sinon.createSandbox()
+    sdk = new TokenD({ url, opts })
+  })
+
+  afterEach(() => {
+    sandbox.restore()
   })
 
   describe('.constructor', () => {
     it('Should make an SDK instance.', () => {
-      let sdk = new TokenD(url, opts)
+      let sdk = new TokenD({ url, opts })
 
       expect(sdk).to.have.a.property('api').instanceOf(Api)
       expect(sdk).to.have.a.property('horizon').instanceOf(Horizon)
+    })
+
+    it('Should use custom network passphrase.', () => {
+      const customNetworkPassphrase = 'My network'
+      sandbox.stub(Network, 'use')
+
+      sdk = new TokenD({
+        url,
+        opts,
+        networkPassphrase: customNetworkPassphrase
+      })
+
+      expect(Network.use).calledWith(customNetworkPassphrase)
     })
   })
 
