@@ -1,4 +1,4 @@
-import mocks from '../../test_helpers/mock-factory'
+import mocks from '../../test_helpers/mock_factory'
 import { toCamelCaseDeep } from '../../utils/case_converter'
 
 describe('Balances', () => {
@@ -115,4 +115,41 @@ describe('Balances', () => {
       expect(response).to.have.a.property('status').equal(200)
     })
   })
+
+  function makeGetRequestTestCase ({
+    title,
+    method,
+    args,
+    path,
+    params
+  }) {
+    it(`Should ${title}.`, async () => {
+      horizon
+        .onGet(path, {
+          params
+        })
+        .reply(200, horizon.makeGenericResponse())
+      let response = await horizon.account[method](...args)
+      expect(response).to.be.an.instanceOf(HorizonResponse)
+    })
+  }
+
+  function makeRequestSignatureTestCase ({
+    method,
+    args,
+    path
+  }) {
+    it(`Should sign the request.`, async () => {
+      horizon
+        .onGet(path)
+        .reply((config) => {
+          if (!config.authorized) {
+            return [401]
+          }
+          return [200, horizon.makeGenericResponse()]
+        })
+      let response = await horizon.account[method](...args)
+      expect(response).to.be.an.instanceOf(HorizonResponse)
+    })
+  }
 })

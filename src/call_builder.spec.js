@@ -1,7 +1,7 @@
 import sinon from 'sinon'
 import axios from 'axios'
 import AxiosMock from 'axios-mock-adapter'
-import mocks from './test_helpers/mock-factory'
+import mocks from './test_helpers/mock_factory'
 
 import { CallBuilder } from './call_builder'
 

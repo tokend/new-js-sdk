@@ -1,4 +1,4 @@
-import mocks from '../../test_helpers/mock-factory'
+import mocks from '../../test_helpers/mock_factory'
 import { HorizonResponse } from '../response'
 
 describe('Account', () => {

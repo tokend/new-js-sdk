@@ -113,7 +113,7 @@ export class Wallets extends ResourceGroupBase {
               type: 'recovery',
               id: encryptedRecoveryWallet.id,
               attributes: {
-                accountId: encryptedRecoveryWallet.accountId,
+                accountId: mainWallet.accountId,
                 keychainData: encryptedRecoveryWallet.keychainData,
                 salt: encryptedRecoveryWallet.salt
               }
@@ -177,26 +177,26 @@ export class Wallets extends ResourceGroupBase {
    * @return {Wallet} New wallet.
    */
   async recovery (email, recoverySeed, newPassword) {
-    // let recoveryKdfResponse = await this.getKdfParams(email, true)
-    // let recoveryKdfParams = recoveryKdfResponse.data
-    // let recoveryWallet = Wallet.fromRecoverySeed(
-    //   recoveryKdfParams,
-    //   recoveryKdfParams.salt,
-    //   email,
-    //   recoverySeed
-    // )
+    let recoveryKdfResponse = await this.getKdfParams(email, true)
+    let recoveryKdfParams = recoveryKdfResponse.data
+    let recoveryWallet = Wallet.fromRecoverySeed(
+      recoveryKdfParams,
+      recoveryKdfParams.salt,
+      email,
+      recoverySeed
+    )
 
-    // let kdfResponse = await this.getKdfParams()
-    // let kdfParams = kdfResponse.data
+    let kdfResponse = await this.getKdfParams()
+    let kdfParams = kdfResponse.data
 
-    // let newMainWallet = Wallet.generate(email)
-    // let ecryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
+    let newMainWallet = Wallet.generate(email)
+    let ecryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
 
-    // let newSecondFactorWallet = Wallet.generate(email)
-    // let encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
-    //   kdfParams,
-    //   newPassword
-    // )
+    let newSecondFactorWallet = Wallet.generate(email)
+    let encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
+      kdfParams,
+      newPassword
+    )
 
     // let transaction = new
   }
