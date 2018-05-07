@@ -1,4 +1,4 @@
-import { Api } from './api'
+import { Api } from './server'
 import { ApiResponse } from './response'
 import AxiosMock from 'axios-mock-adapter'
 import { ApiErrors } from './errors'

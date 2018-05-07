@@ -1,5 +1,5 @@
-import { Horizon } from './horizon/horizon'
-import { Api } from './api/api'
+import { Horizon } from './horizon'
+import { Api } from './api'
 import { Wallet } from './wallet'
 import mocks from './test_helpers/mock_factory'
 
@@ -7,7 +7,7 @@ import { TokenD } from './tokend_sdk'
 
 describe('TokenD', () => {
   let sdk
-  const url = 'https://tokend.org/horizon'
+  const url = 'https://tokend.org/'
   const opts = { allowHttp: false }
 
   beforeEach(() => {

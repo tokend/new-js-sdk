@@ -2,7 +2,7 @@ import AxiosMock from 'axios-mock-adapter'
 import { HorizonResponse } from './response'
 import * as errors from './errors'
 
-import { Horizon } from './horizon'
+import { Horizon } from './server'
 
 describe('Horizon', () => {
   let horizon

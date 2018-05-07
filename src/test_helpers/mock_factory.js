@@ -2,8 +2,8 @@ import axios from 'axios'
 import AxiosMock from 'axios-mock-adapter'
 import { Keypair } from '../base'
 import { Wallet } from '../wallet'
-import { Horizon } from '../horizon/horizon'
-import { Api } from '../api/api'
+import { Horizon } from '../horizon'
+import { Api } from '../api'
 
 export default class Mocks {
   static axios () {

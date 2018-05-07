@@ -1,5 +1,5 @@
-import { Api } from './api/api'
-import { Horizon } from './horizon/horizon'
+import { Api } from './api'
+import { Horizon } from './horizon'
 import { Wallet } from './wallet'
 
 /**
