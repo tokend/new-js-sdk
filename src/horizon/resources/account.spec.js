@@ -1,10 +1,14 @@
 import mocks from '../../test_helpers/mock_factory'
-import { HorizonResponse } from '../response'
+import {
+  testRequestSignature,
+  testGetRequest
+} from './generic_test_cases.spec'
 
 describe('Account', () => {
-  let horizon = mocks.horizon()
-  let usersAccount = horizon.wallet.accountId
-  let anotherAccount = 'GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB'
+  const horizon = mocks.horizon()
+  const resourceGroup = horizon.account
+  const usersAccount = horizon.wallet.accountId
+  const anotherAccount = 'GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB'
 
   afterEach(() => {
     horizon.reset()
@@ -13,23 +17,27 @@ describe('Account', () => {
   describe('.get', () => {
     const method = 'get'
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get the user's account`,
+      horizon,
+      resourceGroup,
       method,
-      args: [],
       path: `/accounts/${usersAccount}`
     })
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get another account`,
+      horizon,
+      resourceGroup,
       method,
       args: [anotherAccount],
       path: `/accounts/${anotherAccount}`
     })
 
-    makeRequestSignatureTestCase({
+    testRequestSignature({
+      horizon,
+      resourceGroup,
       method,
-      args: [],
       path: `/accounts/${usersAccount}`
     })
   })
@@ -38,24 +46,30 @@ describe('Account', () => {
     const method = 'getBalances'
     const query = { limit: 10 }
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get the user's balances`,
+      horizon,
+      resourceGroup,
       method,
       params: query,
       args: [query],
       path: `/accounts/${usersAccount}/balances`
     })
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get another user's balances`,
+      horizon,
+      resourceGroup,
       method,
       params: query,
       args: [query, anotherAccount],
       path: `/accounts/${anotherAccount}/balances`
     })
 
-    makeRequestSignatureTestCase({
+    testRequestSignature({
       method,
+      horizon,
+      resourceGroup,
       params: query,
       args: [query],
       path: `/accounts/${anotherAccount}/balances`
@@ -65,23 +79,27 @@ describe('Account', () => {
   describe('.getDetails', () => {
     const method = 'getDetails'
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get the user's account details`,
+      horizon,
+      resourceGroup,
       method,
-      args: [],
       path: `/accounts/${usersAccount}/balances/details`
     })
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get another account details`,
+      horizon,
+      resourceGroup,
       method,
       args: [anotherAccount],
       path: `/accounts/${anotherAccount}/balances/details`
     })
 
-    makeRequestSignatureTestCase({
+    testRequestSignature({
       method,
-      args: [],
+      horizon,
+      resourceGroup,
       path: `/accounts/${usersAccount}/balances/details`
     })
   })
@@ -92,24 +110,30 @@ describe('Account', () => {
       limit: 10
     }
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get the user's referrals`,
+      horizon,
+      resourceGroup,
       method,
       params: query,
       args: [query],
       path: `/accounts/${usersAccount}/referrals`
     })
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get another user's referrals`,
+      horizon,
+      resourceGroup,
       method,
       params: query,
       args: [query, anotherAccount],
       path: `/accounts/${anotherAccount}/referrals`
     })
 
-    makeRequestSignatureTestCase({
+    testRequestSignature({
       method,
+      horizon,
+      resourceGroup,
       params: query,
       args: [query],
       path: `/accounts/${anotherAccount}/referrals`
@@ -119,15 +143,18 @@ describe('Account', () => {
   describe('.getSigners', () => {
     const method = 'getSigners'
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get the user's signers`,
+      horizon,
+      resourceGroup,
       method,
-      args: [],
       path: `/accounts/${usersAccount}/signers`
     })
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get another user's signers`,
+      horizon,
+      resourceGroup,
       method,
       args: [anotherAccount],
       path: `/accounts/${anotherAccount}/signers`
@@ -138,15 +165,19 @@ describe('Account', () => {
     const signerId = 'GCJXUHPVJHSHCOHRCS65MOZMT2AJRRHHVH2KJM2GXR6GTF4U5O4P7BJO'
     const method = 'getSigner'
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get the user's signer`,
+      horizon,
+      resourceGroup,
       method,
       args: [signerId],
       path: `/accounts/${usersAccount}/signers/${signerId}`
     })
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get another user's signer`,
+      horizon,
+      resourceGroup,
       method,
       args: [signerId, anotherAccount],
       path: `/accounts/${anotherAccount}/signers/${signerId}`
@@ -160,52 +191,33 @@ describe('Account', () => {
       to: '2018-05-01'
     }
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get the user's summary`,
+      horizon,
+      resourceGroup,
       method,
       params: query,
       args: [query],
       path: `/accounts/${usersAccount}/summary`
     })
 
-    makeGetRequestTestCase({
+    testGetRequest({
       title: `get another user's summary`,
+      horizon,
+      resourceGroup,
       method,
       params: query,
       args: [query, anotherAccount],
       path: `/accounts/${anotherAccount}/summary`
     })
 
-    makeRequestSignatureTestCase({
+    testRequestSignature({
+      horizon,
+      resourceGroup,
       method,
       params: query,
       args: [query],
       path: `/accounts/${anotherAccount}/summary`
     })
   })
-
-  function makeGetRequestTestCase ({ title, method, args, path, params }) {
-    it(`Should ${title}.`, async () => {
-      horizon
-        .onGet(path, { params })
-        .reply(200, horizon.makeGenericResponse())
-      let response = await horizon.account[method](...args)
-      expect(response).to.be.an.instanceOf(HorizonResponse)
-    })
-  }
-
-  function makeRequestSignatureTestCase ({ method, args, path }) {
-    it(`Should sign the request.`, async () => {
-      horizon
-        .onGet(path)
-        .reply((config) => {
-          if (!config.authorized) {
-            return [401]
-          }
-          return [200, horizon.makeGenericResponse()]
-        })
-      let response = await horizon.account[method](...args)
-      expect(response).to.be.an.instanceOf(HorizonResponse)
-    })
-  }
 })
