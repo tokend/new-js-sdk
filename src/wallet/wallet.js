@@ -1,8 +1,9 @@
-import constants from '../const'
 import { Keypair, hash } from '../base'
 import sjcl from 'sjcl'
 import * as crypto from './crypto'
 import { isNil, isNumber, isString } from 'lodash'
+
+const SIGNATURE_VALID_SEC = 60 * 60 * 24 * 3
 
 /**
  * Manages user's key pair.
@@ -177,7 +178,7 @@ export class Wallet {
     }
 
     let validUntil = Math
-      .floor(this._getTimestamp() + constants.SIGNATURE_VALID_SEC)
+      .floor(this._getTimestamp() + SIGNATURE_VALID_SEC)
       .toString()
     let signatureBase = `{ uri: '${uri}', valid_untill: '${validUntil.toString()}'}`
     let data = hash(signatureBase)
@@ -188,8 +189,7 @@ export class Wallet {
         'X-AuthValidUnTillTimestamp': validUntil.toString(),
         'X-AuthPublicKey': this._keypair.accountId(),
         'X-AuthSignature': signature.toXDR('base64')
-      },
-      timeout: constants.SUBMIT_TRANSACTION_TIMEOUT
+      }
     }
   }
 
