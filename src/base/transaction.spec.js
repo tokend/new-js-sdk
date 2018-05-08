@@ -1,4 +1,3 @@
-import { Account } from './account'
 import { Memo } from './memo'
 import { Keypair } from './keypair'
 import { TransactionBuilder } from './transaction_builder'
@@ -7,7 +6,7 @@ import { Transaction } from './transaction'
 
 describe('Transaction', () => {
   it('constructs Transaction object from a TransactionEnvelope', (done) => {
-    let source = new Account('GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB', '0')
+    let source = 'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
     let amount = '2000'
     let sourceBalanceId = Keypair.random().balanceId()
     let destinationBalanceId = Keypair.random().balanceId()
@@ -42,7 +41,7 @@ describe('Transaction', () => {
     let transaction = new Transaction(input)
     let operation = transaction.operations[0]
 
-    expect(transaction.source).to.be.equal(source.accountId())
+    expect(transaction.source).to.be.equal(source)
     expect(transaction.memo.text()).to.be.equal('Happy birthday!')
     expect(operation.type).to.be.equal('payment')
     expect(operation.amount).to.be.equal(amount)
@@ -51,7 +50,7 @@ describe('Transaction', () => {
   })
 
   it('signs correctly', () => {
-    let source = new Account('GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB', '0')
+    let source = 'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
     let sourceBalanceId = Keypair.random().balanceId()
     let destinationBalanceId = Keypair.random().balanceId()
     let amount = '2000'
@@ -89,7 +88,7 @@ describe('Transaction', () => {
   })
 
   it('accepts 0 as a valid fixed fee', function (done) {
-    let source = new Account('GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB', '0')
+    let source = 'GBBM6BKZPEHWYO3E3YKREDPQXMS4VK35YLNU7NFBRI26RAN7GI5POFBB'
     let amount = '2000'
     let sourceBalanceId = Keypair.random().balanceId()
     let destinationBalanceId = Keypair.random().balanceId()

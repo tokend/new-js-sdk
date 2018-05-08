@@ -1,4 +1,3 @@
-import { Account } from './account'
 import { Keypair } from './keypair'
 import { Operation } from './operation'
 import { Memo } from './memo'
@@ -13,7 +12,7 @@ describe('TransactionBuilder', () => {
     let sourceBalanceId
     let destinationBalanceId
     beforeEach(() => {
-      source = new Account('GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ', '0')
+      source = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       amount = '1000'
       memo = Memo.id('100')
       sourceBalanceId = Keypair.random().balanceId()
@@ -50,7 +49,7 @@ describe('TransactionBuilder', () => {
 
     it('should have the same source account', function (done) {
       expect(transaction.source)
-        .to.be.equal(source.accountId())
+        .to.be.equal(source)
       done()
     })
 
@@ -70,7 +69,7 @@ describe('TransactionBuilder', () => {
     let amount2
     let transaction
     beforeEach(() => {
-      source = new Account('GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ', '0')
+      source = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       amount1 = '1000'
       amount2 = '2000'
 
@@ -129,7 +128,7 @@ describe('TransactionBuilder', () => {
 
     it('should have the same source account', function (done) {
       expect(transaction.source)
-        .to.be.equal(source.accountId())
+        .to.be.equal(source)
       done()
     })
 
@@ -143,7 +142,7 @@ describe('TransactionBuilder', () => {
 
   describe('constructs a native payment transaction with timebounds', () => {
     it('should have have timebounds', function (done) {
-      let source = new Account('GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ', '0')
+      let source = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       let timebounds = {
         minTime: '1455287522',
         maxTime: '1455297545'

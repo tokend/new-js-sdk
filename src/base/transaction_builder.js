@@ -10,17 +10,13 @@ let TX_EXPIRATION_PERIOD = 60 * 60 * 24 * 7 - 60 * 60
 
 export class TransactionBuilder {
   /**
-     * <p>Transaction builder helps constructs a new `{@link Transaction}` using the given {@link Account}
-     * as the transaction's "source account". The transaction will use the current sequence
-     * number of the given account as its sequence number and increment the given account's
-     * sequence number by one. The given source account must include a private key for signing
-     * the transaction or an error will be thrown.</p>
+     * <p>Transaction builder helps constructs a new `{@link Transaction}` using the given account id</p>
      *
      * <p>Operations can be added to the transaction via their corresponding builder methods, and
      * each returns the TransactionBuilder object so they can be chained together. After adding
      * the desired operations, call the `build()` method on the `TransactionBuilder` to return a fully
-     * constructed `{@link Transaction}` that can be signed. The returned transaction will contain the
-     * sequence number of the source account and include the signature from the source account.</p>
+     * constructed `{@link Transaction}` that can be signed. The returned transaction will contain
+     * signature from the source account.</p>
      *
      * <p>The following code example creates a new transaction with {@link Operation.createAccount} and
      * {@link Operation.payment} operations.
@@ -43,7 +39,7 @@ export class TransactionBuilder {
      * transaction.sign(sourceKeypair);
      * ```
      * @constructor
-     * @param {Account} sourceAccount - The source account for this transaction.
+     * @param {string} sourceAccount - The source account for this transaction.
      * @param {object} [opts]
      * @param {object} [opts.timebounds] - The timebounds for the validity of this transaction.
      * @param {string} [opts.timebounds.minTime] - 64 bit unix timestamp
@@ -98,7 +94,7 @@ export class TransactionBuilder {
 
     let attrs = {
       sourceAccount: Keypair
-        .fromAccountId(this.source.accountId())
+        .fromAccountId(this.source)
         .xdrAccountId(),
       salt: xdr.Salt.fromString(this.salt.toString()),
       memo: this.memo,
