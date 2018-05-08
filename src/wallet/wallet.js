@@ -3,7 +3,7 @@ import sjcl from 'sjcl'
 import * as crypto from './crypto'
 import { isNil, isNumber, isString } from 'lodash'
 
-const SIGNATURE_VALID_SEC = 60 * 60 * 24 * 3
+const SIGNATURE_VALID_SEC = 60
 
 /**
  * Manages user's key pair.
@@ -49,6 +49,7 @@ export class Wallet {
     this._keypair = keypair
     this._accountId = accountId
     this._id = walletId
+    this._clockDiff = 0
   }
 
   /**
@@ -188,6 +189,7 @@ export class Wallet {
       .floor(this._getTimestamp() + SIGNATURE_VALID_SEC)
       .toString()
     let signatureBase = `{ uri: '${uri}', valid_untill: '${validUntil.toString()}'}`
+    console.log(signatureBase)
     let data = hash(signatureBase)
     let signature = this._keypair.signDecorated(data)
 
@@ -277,6 +279,6 @@ export class Wallet {
   }
 
   _getTimestamp () {
-    return new Date().getTime() - this._clockDiff
+    return Math.floor(new Date().getTime() / 1000) - this._clockDiff
   }
 }
