@@ -13,6 +13,8 @@ export class Horizon extends ServerBase {
    * Create a new Horizon instance.
    *
    * @constructor
+   *
+   * @param {TokenD} sdk Parent SDK instance.
    * @param {string} serverUrl Horizon server instance URL.
    * @param {boolean} [opts.allowHttp] Allow connecting to http servers, default: `false`. This must be set to false in production deployments!
    * @param {Object} [opts.proxy] Proxy configuration. Look [axios docs](https://github.com/axios/axios#request-config) for more info
@@ -20,9 +22,9 @@ export class Horizon extends ServerBase {
    * @param {Object} [opts.customHeaders] Custom headers for request.
    * @param {boolean} [opts.withCredentials] Indicates whether or not cross-site Access-Control requests should be made using credentials.
    */
-  constructor (serverUrl, opts = {}) {
+  constructor (sdk, serverUrl, opts = {}) {
     opts.responseType = 'json'
-    super(serverUrl, opts)
+    super(sdk, serverUrl, opts)
 
     this.useResponseInterceptor(
       (response) => new HorizonResponse(response, this),

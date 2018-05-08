@@ -1,19 +1,12 @@
-import { Api } from './server'
 import { ApiResponse } from './response'
-import AxiosMock from 'axios-mock-adapter'
 import { ApiErrors } from './errors'
+import mocks from '../test_helpers/mock_factory'
 
 describe('Api', () => {
-  let api
-  let axiosMock
-
-  beforeEach(() => {
-    api = new Api('https://api.distlab.com')
-    axiosMock = new AxiosMock(api._axios)
-  })
+  let api = mocks.tokenDSdk().api
 
   afterEach(() => {
-    axiosMock.restore()
+    api.reset()
   })
 
   const responseBody = Object.freeze({
@@ -24,28 +17,28 @@ describe('Api', () => {
   })
 
   it('Should parse responses.', async () => {
-    axiosMock.onGet().reply(200, responseBody)
+    api.onGet().reply(200, responseBody)
 
     let response = await api._makeCallBuilder().get()
     expect(response).to.be.an.instanceOf(ApiResponse)
   })
 
   it('Should parse an error responses.', async () => {
-    axiosMock.onAny().reply(400, { errors: [] })
+    api.onAny().reply(400, { errors: [] })
 
     let error = await catchPromise(api._makeCallBuilder().get())
     expect(error).to.be.an.instanceOf(ApiErrors)
   })
 
   it('Should bypass non-API errors.', async () => {
-    axiosMock.onAny().timeout()
+    api.onAny().timeout()
 
     let error = await catchPromise(api._makeCallBuilder().get())
     expect(error).not.to.be.an.instanceOf(ApiErrors)
   })
 
   it('Should convert request body to snake case.', async () => {
-    axiosMock.onAny().reply((config) => {
+    api.onAny().reply((config) => {
       expect(config.data).to.equal('{"data":{"foo_bar":"barFoo"}}')
       return [200, responseBody]
     })
@@ -54,7 +47,7 @@ describe('Api', () => {
   })
 
   it('Should convert query params to snake case.', async () => {
-    axiosMock.onAny('/', { params: { 'foo_bar': 'barFoo' } })
+    api.onAny('/', { params: { 'foo_bar': 'barFoo' } })
       .reply(200, responseBody)
 
     await api._makeCallBuilder().get({ fooBar: 'barFoo' })

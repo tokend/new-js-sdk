@@ -5,9 +5,10 @@ import {
 } from './generic_test_cases.spec'
 
 describe('Account', () => {
-  const horizon = mocks.horizon()
+  const sdk = mocks.tokenDSdk()
+  const horizon = sdk.horizon
   const resourceGroup = horizon.account
-  const usersAccount = horizon.wallet.accountId
+  const usersAccount = sdk.wallet.accountId
   const anotherAccount = 'GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB'
 
   afterEach(() => {
@@ -19,7 +20,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get the user's account`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       path: `/accounts/${usersAccount}`
@@ -27,7 +28,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get another account`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       args: [anotherAccount],
@@ -35,7 +36,7 @@ describe('Account', () => {
     })
 
     testRequestSignature({
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       path: `/accounts/${usersAccount}`
@@ -48,7 +49,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get the user's balances`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       params: query,
@@ -58,7 +59,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get another user's balances`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       params: query,
@@ -68,7 +69,7 @@ describe('Account', () => {
 
     testRequestSignature({
       method,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       params: query,
       args: [query],
@@ -81,7 +82,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get the user's account details`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       path: `/accounts/${usersAccount}/balances/details`
@@ -89,7 +90,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get another account details`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       args: [anotherAccount],
@@ -98,7 +99,7 @@ describe('Account', () => {
 
     testRequestSignature({
       method,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       path: `/accounts/${usersAccount}/balances/details`
     })
@@ -112,7 +113,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get the user's referrals`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       params: query,
@@ -122,7 +123,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get another user's referrals`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       params: query,
@@ -132,7 +133,7 @@ describe('Account', () => {
 
     testRequestSignature({
       method,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       params: query,
       args: [query],
@@ -145,7 +146,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get the user's signers`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       path: `/accounts/${usersAccount}/signers`
@@ -153,7 +154,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get another user's signers`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       args: [anotherAccount],
@@ -167,7 +168,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get the user's signer`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       args: [signerId],
@@ -176,7 +177,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get another user's signer`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       args: [signerId, anotherAccount],
@@ -193,7 +194,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get the user's summary`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       params: query,
@@ -203,7 +204,7 @@ describe('Account', () => {
 
     testGetRequest({
       title: `get another user's summary`,
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       params: query,
@@ -212,7 +213,7 @@ describe('Account', () => {
     })
 
     testRequestSignature({
-      horizon,
+      horizon: horizon,
       resourceGroup,
       method,
       params: query,

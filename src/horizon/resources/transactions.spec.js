@@ -4,10 +4,10 @@ import { SUBMIT_TRANSACTION_TIMEOUT } from './transactions'
 import { Transaction } from '../../base/transaction'
 
 describe('Transactions', () => {
-  const horizon = mocks.horizon()
+  const sdk = mocks.tokenDSdk()
 
   afterEach(() => {
-    horizon.reset()
+    sdk.horizon.reset()
   })
 
   describe('.submit', () => {
@@ -16,16 +16,16 @@ describe('Transactions', () => {
     it('Should submit transaction.', async () => {
       let tx = new Transaction(envelope)
 
-      horizon
+      sdk.horizon
         .onPost(
           '/transactions',
           {
             timeout: SUBMIT_TRANSACTION_TIMEOUT,
             data: { tx: envelope }
           })
-        .reply(200, horizon.makeGenericResponse())
+        .reply(200, sdk.horizon.makeGenericResponse())
 
-      let response = await horizon.transactions.submit(tx)
+      let response = await sdk.horizon.transactions.submit(tx)
 
       expect(response).to.be.an.instanceOf(HorizonResponse)
     })

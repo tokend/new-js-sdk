@@ -2,6 +2,7 @@ import axios from 'axios'
 import uri from 'urijs'
 import { NetworkError, TimeoutError } from './errors'
 import { CallBuilder } from './call_builder'
+import { TokenD } from './tokend_sdk'
 
 /**
  * Server handles the network connection to some remote server
@@ -14,7 +15,8 @@ export class ServerBase {
    * Creates a Server instance.
    *
    * @constructor
-   * @param {string} serverUrl
+   * @param {TokenD} sdk Parent TokenD SDK instance.
+   * @param {string} serverUrl Server url.
    * @param {object} [opts]
    * @param {boolean} [opts.allowHttp] Allow connecting to http servers, default: `false`. This must be set to false in production deployments!
    * @param {Object} [opts.proxy] Proxy configuration. Look [axios docs](https://github.com/axios/axios#request-config) for more info
@@ -23,7 +25,11 @@ export class ServerBase {
    * @param {boolean} [opts.withCredentials] Indicates whether or not cross-site Access-Control requests should be made using credentials.
    * @param {string} [opts.responseType='json'] Indicates the type of data that the server will respond with options are 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'.
    */
-  constructor (serverUrl, opts = {}) {
+  constructor (sdk, serverUrl, opts = {}) {
+    if (!(sdk instanceof TokenD)) {
+      throw new TypeError('An isntance of TokenD SDK expected.')
+    }
+
     let parsedUrl = uri.parse(serverUrl)
     if (!(parsedUrl.protocol && parsedUrl.hostname)) {
       throw new Error('Invalid URL')
@@ -35,6 +41,7 @@ export class ServerBase {
       `)
     }
 
+    this._sdk = sdk
     this._axios = axios.create({
       baseURL: serverUrl,
       proxy: opts.proxy,
@@ -48,22 +55,6 @@ export class ServerBase {
       (response) => response,
       (error) => this._parseResponseError(error)
     )
-  }
-
-  /**
-   * Use a wallet to identify user and sign requests.
-   *
-   * @param {Wallet} wallet
-   */
-  useWallet (wallet) {
-    this._wallet = wallet
-  }
-
-  /**
-   * Get the assigned wallet.
-   */
-  get wallet () {
-    return this._wallet
   }
 
   /**
@@ -119,7 +110,7 @@ export class ServerBase {
   }
 
   _makeCallBuilder () {
-    return new CallBuilder(this._axios, this._wallet)
+    return new CallBuilder(this._axios, this._sdk.wallet)
   }
 
   _parseResponseError (error) {

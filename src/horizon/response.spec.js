@@ -3,7 +3,7 @@ import mocks from '../test_helpers/mock_factory'
 import { HorizonResponse } from './response'
 
 describe('HorizonResponse', () => {
-  let horizon
+  let sdk
   let singleItemResponse
   let collectionResponse
 
@@ -114,19 +114,19 @@ describe('HorizonResponse', () => {
   })
 
   beforeEach(() => {
-    horizon = mocks.horizon()
+    sdk = mocks.tokenDSdk()
     singleItemResponse = new HorizonResponse(
       { data: cloneDeep(rawSingleItemResponse) },
-      horizon
+      sdk.horizon
     )
     collectionResponse = new HorizonResponse(
       { data: cloneDeep(rawCollectionResponse) },
-      horizon
+      sdk.horizon
     )
   })
 
   afterEach(() => {
-    horizon.reset()
+    sdk.horizon.reset()
   })
 
   describe('.constructor', () => {
@@ -189,7 +189,7 @@ describe('HorizonResponse', () => {
       })
 
       // Follow a link
-      horizon
+      sdk.horizon
         .onGet(
           `/transactions`,
           {
@@ -207,7 +207,7 @@ describe('HorizonResponse', () => {
     })
 
     it('Should resolve links inside the inner objects.', async () => {
-      horizon
+      sdk.horizon
         .onGet(`/ledgers/31357`)
         .reply(200, singleItemResponse)
 
@@ -219,7 +219,7 @@ describe('HorizonResponse', () => {
     it('Should resolve templated links.', async () => {
       let params = { order: 'asc' }
 
-      horizon
+      sdk.horizon
         .onGet(
           `/transactions/3953abd11fc113c5d08aabf8aa601dc04748f636e78db341894c9c74d6dae0f7/operations`,
           { params }

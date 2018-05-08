@@ -1,33 +1,42 @@
 import AxiosMock from 'axios-mock-adapter'
 import { NetworkError, TimeoutError } from './errors'
+import mocks from './test_helpers/mock_factory'
 
 import { ServerBase } from './server_base'
 
 describe('ServerBase', () => {
   let server
+  let sdk = mocks.tokenDSdk()
+
+  const url = 'https://fizz.buzz'
+
   beforeEach(() => {
-    server = new ServerBase('https://fizz.buzz')
+    server = new ServerBase(sdk, url)
   })
 
   describe('.constructor', () => {
     it('Should create a ServerBase instance.', () => {
-      expectNoThrow(() => new ServerBase('https://tokend.org/horizon'))
+      expectNoThrow(() => new ServerBase(sdk, url))
     })
 
     it(`Should create an instance w/o HTTPS when it's enabled in the options`, () => {
-      expectNoThrow(() => new ServerBase('http://fizz.buzz', { allowHttp: true }))
+      expectNoThrow(() => new ServerBase(sdk, url, { allowHttp: true }))
+    })
+
+    it(`Should throw when no SDK instance injected.`, () => {
+      expectThrow(() => new ServerBase(null, url))
     })
 
     it(`Should throw when a URL w/o HTTPS is provided and unsafe connections are not enabled.`, () => {
-      expectThrow(() => new ServerBase('http://fizz.buzz'))
+      expectThrow(() => new ServerBase(sdk, url))
     })
 
     it('Should throw when no URL provided.', () => {
-      expectThrow(() => new ServerBase())
+      expectThrow(() => new ServerBase(sdk))
     })
 
     it('Should throw when a corrupt URL is provided.', () => {
-      expectThrow(() => new ServerBase('fsdfsdfsd@4324242*(*(*(*('))
+      expectThrow(() => new ServerBase(sdk, url))
     })
   })
 

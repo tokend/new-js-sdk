@@ -24,8 +24,8 @@ export class TokenD {
    * @param {string} [networkPassphrase] Network passphrase.
    */
   constructor ({ url, opts, networkPassphrase }) {
-    this._api = new Api(url, opts)
-    this._horizon = new Horizon(url, opts)
+    this._api = new Api(this, url, opts)
+    this._horizon = new Horizon(this, url, opts)
 
     if (networkPassphrase) {
       Network.use(networkPassphrase)

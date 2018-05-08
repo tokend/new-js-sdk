@@ -1,20 +1,12 @@
-import AxiosMock from 'axios-mock-adapter'
 import { HorizonResponse } from './response'
 import * as errors from './errors'
-
-import { Horizon } from './server'
+import mocks from '../test_helpers/mock_factory'
 
 describe('Horizon', () => {
-  let horizon
-  let axiosMock
-
-  beforeEach(() => {
-    horizon = new Horizon('https://horizon.distlab.com')
-    axiosMock = new AxiosMock(horizon._axios)
-  })
+  let horizon = mocks.tokenDSdk().horizon
 
   afterEach(() => {
-    axiosMock.restore()
+    horizon.reset()
   })
 
   describe('Error parsers.', () => {
@@ -43,7 +35,7 @@ describe('Horizon', () => {
 
     testCases.forEach(testCase => {
       it(`Should parse and wrap "${testCase.name}" error.`, async () => {
-        axiosMock.onAny().reply(testCase.status)
+        horizon.onAny().reply(testCase.status)
 
         let error = await catchPromise(
           horizon._makeCallBuilder().get()
@@ -55,7 +47,7 @@ describe('Horizon', () => {
 
   it('Should parse responses.', async () => {
     const body = { foo: 'bar' }
-    axiosMock.onGet().reply(200, body)
+    horizon.onGet().reply(200, body)
 
     let response = await horizon._makeCallBuilder().get()
     expect(response).to.be.an.instanceOf(HorizonResponse)

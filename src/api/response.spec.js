@@ -75,12 +75,11 @@ describe('ApiResponse', () => {
     ]
   })
 
-  let api
+  let api = mocks.tokenDSdk().api
   let singleItemResponse
   let collectionResponse
 
   beforeEach(() => {
-    api = mocks.api()
     singleItemResponse = new ApiResponse(
       { data: cloneDeep(rawSingleItemResponse) },
       api
@@ -92,7 +91,7 @@ describe('ApiResponse', () => {
   })
 
   afterEach(() => {
-    api.restore()
+    api.reset()
   })
 
   describe('.constructor', () => {

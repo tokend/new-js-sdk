@@ -5,13 +5,13 @@ import {
 } from './generic_test_cases.spec'
 
 describe('Balances', () => {
-  const horizon = mocks.horizon()
+  const sdk = mocks.tokenDSdk()
   const asset = 'USD'
   const account = 'GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB'
-  const resourceGroup = horizon.balances
+  const resourceGroup = sdk.horizon.balances
 
   afterEach(() => {
-    horizon.reset()
+    sdk.horizon.reset()
   })
 
   describe('.getPage', () => {
@@ -26,7 +26,7 @@ describe('Balances', () => {
 
     testGetRequest({
       title: `Should get a page of balances.`,
-      horizon,
+      horizon: sdk.horizon,
       resourceGroup,
       method,
       args: [query],
@@ -35,7 +35,7 @@ describe('Balances', () => {
     })
 
     testRequestSignature({
-      horizon,
+      horizon: sdk.horizon,
       resourceGroup,
       method,
       args: [query],
@@ -49,7 +49,7 @@ describe('Balances', () => {
 
     testGetRequest({
       title: `Should get balance asset.`,
-      horizon,
+      horizon: sdk.horizon,
       resourceGroup,
       method,
       args: [balanceId],
@@ -57,7 +57,7 @@ describe('Balances', () => {
     })
 
     testRequestSignature({
-      horizon,
+      horizon: sdk.horizon,
       resourceGroup,
       method,
       args: [balanceId],
@@ -71,7 +71,7 @@ describe('Balances', () => {
 
     testGetRequest({
       title: `Should get balance asset.`,
-      horizon,
+      horizon: sdk.horizon,
       resourceGroup,
       method,
       args: [balanceId],
@@ -79,7 +79,7 @@ describe('Balances', () => {
     })
 
     testRequestSignature({
-      horizon,
+      horizon: sdk.horizon,
       resourceGroup,
       method,
       args: [balanceId],

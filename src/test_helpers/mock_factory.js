@@ -2,8 +2,7 @@ import axios from 'axios'
 import AxiosMock from 'axios-mock-adapter'
 import { Keypair } from '../base'
 import { Wallet } from '../wallet'
-import { Horizon } from '../horizon'
-import { Api } from '../api'
+import { TokenD } from '../tokend_sdk'
 
 export default class Mocks {
   static axios () {
@@ -22,34 +21,37 @@ export default class Mocks {
     return new Wallet(email, keypair, accountId, walletId)
   }
 
-  static horizon () {
-    let horizon = new Horizon('https://example.com')
-    horizon = Mocks._mockServerAxios(horizon)
+  static tokenDSdk () {
+    let sdk = new TokenD({ url: 'https://example.com' })
+    Mocks._mockApiServer(sdk.api)
+    Mocks._mockHorizonServer(sdk.horizon)
 
     let wallet = Mocks.wallet()
-    horizon.useWallet(wallet)
+    sdk.useWallet(wallet)
 
-    horizon.makeGenericResponse = () => ({ id: 1 })
-
-    return horizon
+    return sdk
   }
 
-  static api () {
-    let api = new Api('https://example.com')
-    api = Mocks._mockServerAxios(api)
-
-    let wallet = Mocks.wallet()
-    api.useWallet(wallet)
-
-    api.makeGenericResponse = () => ({
+  static _mockApiServer (server) {
+    server = Mocks._mockServerAxios(server)
+    server.makeGenericResponse = () => ({
       data: {
         id: 1,
         type: 'generic',
-        attributes: { foo: 'bar' }
+        attributes: {
+          foo: 'bar'
+        }
       }
     })
 
-    return api
+    return server
+  }
+
+  static _mockHorizonServer (server) {
+    server = Mocks._mockServerAxios(server)
+    server.makeGenericResponse = () => ({ id: 1 })
+
+    return server
   }
 
   static _mockServerAxios (server) {

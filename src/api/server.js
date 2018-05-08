@@ -14,6 +14,7 @@ export class Api extends ServerBase {
    * Create a new API server instance.
    *
    * @constructor
+   * @param {TokenD} sdk Parent SDK instance.
    * @param {string} serverUrl API server URL.
    * @param {Object} opts
    * @param {boolean} [opts.allowHttp] Allow connecting to http servers, default: `false`. This must be set to false in production deployments!
@@ -23,9 +24,9 @@ export class Api extends ServerBase {
    * @param {boolean} [opts.withCredentials] Indicates whether or not cross-site Access-Control requests should be made using credentials.
    * @param {string} [opts.responseType='json'] Indicates the type of data that the server will respond with options are 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'.
    */
-  constructor (serverUrl, opts = {}) {
+  constructor (sdk, serverUrl, opts = {}) {
     opts.responseType = 'json'
-    super(serverUrl, opts)
+    super(sdk, serverUrl, opts)
 
     this.useRequestInterceptor(
       (config) => {
