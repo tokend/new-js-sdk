@@ -167,6 +167,13 @@ export class Wallet {
   }
 
   /**
+   * Get signing keypair.
+   */
+  get keypair () {
+    return this._keypair
+  }
+
+  /**
    * Make an axios.js config that authorizes request to the given resource.
    *
    * @param {string} uri Relative request URI.

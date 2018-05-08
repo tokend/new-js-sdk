@@ -171,6 +171,12 @@ describe('Wallet', () => {
     })
   })
 
+  describe('.keypair', () => {
+    it('Should expose keypair.', () => {
+      expect(wallet).to.have.a.property('keypair').deep.equal(keypair)
+    })
+  })
+
   describe('.signRequest', () => {
     it('Should authorize a request.', () => {
       let url = '/api/v1/foo/bar'
