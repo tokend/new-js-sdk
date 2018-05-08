@@ -9,7 +9,7 @@ import * as resources from './resources'
  *
  * @class
  */
-export class Api extends ServerBase {
+export class ApiServer extends ServerBase {
   /**
    * Create a new API server instance.
    *

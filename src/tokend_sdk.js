@@ -1,5 +1,5 @@
-import { Api } from './api'
-import { Horizon } from './horizon'
+import { ApiServer } from './api'
+import { HorizonServer } from './horizon'
 import { Wallet } from './wallet'
 import { Network } from './base/network'
 
@@ -24,8 +24,8 @@ export class TokenD {
    * @param {string} [networkPassphrase] Network passphrase.
    */
   constructor ({ url, opts, networkPassphrase }) {
-    this._api = new Api(this, url, opts)
-    this._horizon = new Horizon(this, url, opts)
+    this._api = new ApiServer(this, url, opts)
+    this._horizon = new HorizonServer(this, url, opts)
 
     if (networkPassphrase) {
       Network.use(networkPassphrase)

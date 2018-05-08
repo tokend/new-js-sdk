@@ -2,7 +2,7 @@ import { ApiResponse } from './response'
 import { ApiErrors } from './errors'
 import mocks from '../test_helpers/mock_factory'
 
-describe('Api', () => {
+describe('ApiServer', () => {
   let api = mocks.tokenDSdk().api
 
   afterEach(() => {

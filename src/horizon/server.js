@@ -8,7 +8,7 @@ import * as resources from './resources'
  *
  * @class
  */
-export class Horizon extends ServerBase {
+export class HorizonServer extends ServerBase {
   /**
    * Create a new Horizon instance.
    *

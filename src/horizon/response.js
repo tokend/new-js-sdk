@@ -13,7 +13,7 @@ export class HorizonResponse extends ResponseBase {
    * Wrap a raw axios response.
    *
    * @param {object} rawResponse Raw axios.js response object.
-   * @param {Horizon} horizon Horizon server instance.
+   * @param {HorizonServer} horizon Horizon server instance.
    */
   constructor (rawResponse, horizon) {
     super(rawResponse)

@@ -1,5 +1,5 @@
-import { Horizon } from './horizon'
-import { Api } from './api'
+import { HorizonServer } from './horizon'
+import { ApiServer } from './api'
 import { Wallet } from './wallet'
 import { Network } from './base/network'
 import mocks from './test_helpers/mock_factory'
@@ -26,8 +26,8 @@ describe('TokenD', () => {
     it('Should make an SDK instance.', () => {
       let sdk = new TokenD({ url, opts })
 
-      expect(sdk).to.have.a.property('api').instanceOf(Api)
-      expect(sdk).to.have.a.property('horizon').instanceOf(Horizon)
+      expect(sdk).to.have.a.property('api').instanceOf(ApiServer)
+      expect(sdk).to.have.a.property('horizon').instanceOf(HorizonServer)
     })
 
     it('Should use custom network passphrase.', () => {

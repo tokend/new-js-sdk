@@ -14,7 +14,7 @@ export class ApiResponse extends ResponseBase {
    *
    * @constructor
    * @param {object} rawResponse Raw axios.js response object.
-   * @param {Api} api API server instance.
+   * @param {ApiServer} api API server instance.
    */
   constructor (rawResponse, api) {
     super(rawResponse)

@@ -2,7 +2,7 @@ import { HorizonResponse } from './response'
 import * as errors from './errors'
 import mocks from '../test_helpers/mock_factory'
 
-describe('Horizon', () => {
+describe('HorizonServer', () => {
   let horizon = mocks.tokenDSdk().horizon
 
   afterEach(() => {
