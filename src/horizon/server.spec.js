@@ -9,6 +9,14 @@ describe('HorizonServer', () => {
     horizon.reset()
   })
 
+  describe('.getNetworkDetails', () => {
+    it('Should get network details.', async () => {
+      horizon.onGet('/').reply(200, horizon.makeGenericResponse)
+      let response = await horizon.getNetworkDetails()
+      expect(response).to.be.an.instanceOf(HorizonResponse)
+    })
+  })
+
   describe('Error parsers.', () => {
     const testCases = [
       {

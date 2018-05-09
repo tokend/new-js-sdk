@@ -33,6 +33,15 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Get network details.
+   *
+   * @return {HorizonResponse} Network details.
+   */
+  getNetworkDetails () {
+    return this._makeCallBuilder().get()
+  }
+
+  /**
    * Balances.
    *
    * @return {Balances}
