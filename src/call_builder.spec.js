@@ -8,15 +8,14 @@ import { CallBuilder } from './call_builder'
 
 describe('CallBuilder', () => {
   let sandbox
-  let wallet
   let axiosInstance = axios.create()
   let axiosMock = new AxiosMock(axiosInstance)
+  let sdk = mocks.tokenDSdk()
   let callBuilder
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
-    wallet = mocks.wallet()
-    callBuilder = new CallBuilder(axiosInstance, wallet)
+    callBuilder = new CallBuilder(axiosInstance, sdk)
   })
 
   afterEach(() => {
@@ -86,6 +85,11 @@ describe('CallBuilder', () => {
       expectNoThrow(() => callBuilder.withSignature())
     })
 
+    it('Should use a wallet passed as an argument.', () => {
+      let noAuthCallBuilder = new CallBuilder(axiosInstance)
+      expectNoThrow(() => noAuthCallBuilder.withSignature(sdk.wallet))
+    })
+
     it('Should sign a request.', async () => {
       const timestamp = Date.UTC(2018, 3, 4) / 1000
       sandbox.useFakeTimers(timestamp * 1000)
@@ -94,7 +98,7 @@ describe('CallBuilder', () => {
         .reply(config => {
           expect(config.headers)
             .to.have.a.property('X-AuthPublicKey')
-            .equal(wallet.accountId)
+            .equal(sdk.wallet.accountId)
           expect(config.headers)
             .to.have.a.property('X-AuthSignature')
           expect(config.headers)
@@ -106,11 +110,6 @@ describe('CallBuilder', () => {
         })
 
       await callBuilder.withSignature().get()
-    })
-
-    it('Should use a wallet passed as an argument.', () => {
-      let noAuthCallBuilder = new CallBuilder(axiosInstance)
-      expectNoThrow(() => noAuthCallBuilder.withSignature(wallet))
     })
 
     it('Should throw if there is no wallet attached.', () => {

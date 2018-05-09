@@ -110,7 +110,7 @@ export class ServerBase {
   }
 
   _makeCallBuilder () {
-    return new CallBuilder(this._axios, this._sdk.wallet)
+    return new CallBuilder(this._axios, this._sdk)
   }
 
   _parseResponseError (error) {

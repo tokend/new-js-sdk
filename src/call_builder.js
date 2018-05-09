@@ -18,14 +18,13 @@ export class CallBuilder {
    *
    * @constructor
    * @param {Object} axios Axios.js instance.
-   * @param {Wallet} [wallet] User's wallet.
+   * @param {TokenD} [sdk] TokenD SDK instance.
    */
-  constructor (axios, wallet) {
+  constructor (axios, sdk) {
     this._axios = axios
-    this._wallet = wallet
+    this._sdk = sdk
     this._urlSegments = []
     this._customTimeout = null
-    this._clockDiff = 0
   }
 
   /**
@@ -70,9 +69,7 @@ export class CallBuilder {
    * @return {CallBuilder} Self.
    */
   withSignature (wallet) {
-    if (wallet) {
-      this._wallet = wallet
-    }
+    this._wallet = wallet || this._sdk.wallet
     if (!this._wallet) {
       throw new Error('Singing keys are required for this request.')
     }
@@ -202,6 +199,7 @@ export class CallBuilder {
   }
 
   _getTimestamp () {
-    return Math.floor(new Date().getTime() / 1000) - this._clockDiff
+    let now = Math.floor(new Date().getTime() / 1000)
+    return now - this._sdk.clockDiff
   }
 }
