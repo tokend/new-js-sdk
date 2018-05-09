@@ -1,4 +1,3 @@
-import sinon from 'sinon'
 import { Keypair } from '../base'
 
 import { Wallet } from './wallet'
@@ -12,13 +11,10 @@ describe('Wallet', () => {
   const password = 'password'
   const salt = 'pUQVfhuX9o3dBz14yIiEVg=='
   const kdfParams = { bits: 256, n: 8, p: 1, r: 8 }
-  const timestamp = Date.UTC(2018, 3, 4) / 1000
 
-  let sandbox
   let wallet
 
   beforeEach(() => {
-    sandbox = sinon.createSandbox()
     wallet = new Wallet(email, keypair, accountId, walletId)
   })
 
@@ -102,16 +98,6 @@ describe('Wallet', () => {
     })
   })
 
-  describe('.synchronizeTime', () => {
-    it('Should synchronize time.', () => {
-      expectNoThrow(() => wallet.synchronizeTime(timestamp))
-    })
-
-    it('Should throw if timestamp is invalid.', () => {
-      expectThrow(() => wallet.synchronizeTime('badtimestamp'))
-    })
-  })
-
   describe('.deriveId', () => {
     it('Should derive wallet ID.', () => {
       let derivedId = Wallet.deriveId(email, password, kdfParams, salt)
@@ -174,27 +160,6 @@ describe('Wallet', () => {
   describe('.keypair', () => {
     it('Should expose keypair.', () => {
       expect(wallet).to.have.a.property('keypair').deep.equal(keypair)
-    })
-  })
-
-  describe('.signRequest', () => {
-    it('Should authorize a request.', () => {
-      let url = '/api/v1/foo/bar'
-      sandbox.useFakeTimers(timestamp * 1000)
-
-      let requestConfig = wallet.signRequest(url)
-
-      expect(requestConfig.headers)
-        .to.have.a.property('X-AuthPublicKey')
-        .equal(keypair.accountId())
-      expect(requestConfig.headers)
-        .to.have.a.property('X-AuthSignature')
-      expect(requestConfig.headers)
-        .to.have.a.property('X-AuthValidUnTillTimestamp')
-    })
-
-    it('Should throw if not URI provided.', () => {
-      expectThrow(() => wallet.signRequest())
     })
   })
 })

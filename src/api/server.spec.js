@@ -39,7 +39,7 @@ describe('ApiServer', () => {
 
   it('Should convert request body to snake case.', async () => {
     api.onAny().reply((config) => {
-      expect(config.data).to.equal('{"data":{"foo_bar":"barFoo"}}')
+      expect(config.data).to.equal('{"foo_bar":"barFoo"}')
       return [200, responseBody]
     })
 

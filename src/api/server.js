@@ -53,6 +53,9 @@ export class ApiServer extends ServerBase {
     )
   }
 
+  /**
+   * Wallets.
+   */
   get wallets () {
     return new resources.Wallets(this)
   }

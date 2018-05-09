@@ -17,13 +17,13 @@ describe('Transactions', () => {
       let tx = new Transaction(envelope)
 
       sdk.horizon
-        .onPost(
-          '/transactions',
-          {
-            timeout: SUBMIT_TRANSACTION_TIMEOUT,
-            data: { tx: envelope }
-          })
-        .reply(200, sdk.horizon.makeGenericResponse())
+        .onPost('/transactions')
+        .reply(config => {
+          expect(config.timeout).to.equal(SUBMIT_TRANSACTION_TIMEOUT)
+          expect(config.data).equal(JSON.stringify({ tx: envelope }))
+
+          return [200, sdk.horizon.makeGenericResponse()]
+        })
 
       let response = await sdk.horizon.transactions.submit(tx)
 

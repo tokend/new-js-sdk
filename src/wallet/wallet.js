@@ -1,9 +1,7 @@
-import { Keypair, hash } from '../base'
+import { Keypair } from '../base'
 import sjcl from 'sjcl'
 import * as crypto from './crypto'
-import { isNil, isNumber, isString } from 'lodash'
-
-const SIGNATURE_VALID_SEC = 60
+import { isNil, isString } from 'lodash'
 
 /**
  * Manages user's key pair.
@@ -49,7 +47,6 @@ export class Wallet {
     this._keypair = keypair
     this._accountId = accountId
     this._id = walletId
-    this._clockDiff = 0
   }
 
   /**
@@ -175,34 +172,6 @@ export class Wallet {
   }
 
   /**
-   * Make an axios.js config that authorizes request to the given resource.
-   *
-   * @param {string} uri Relative request URI.
-   * @return {Object} Axios.js request config.
-   */
-  signRequest (uri) {
-    if (!uri) {
-      throw new Error('URI required.')
-    }
-
-    let validUntil = Math
-      .floor(this._getTimestamp() + SIGNATURE_VALID_SEC)
-      .toString()
-    let signatureBase = `{ uri: '${uri}', valid_untill: '${validUntil.toString()}'}`
-    console.log(signatureBase)
-    let data = hash(signatureBase)
-    let signature = this._keypair.signDecorated(data)
-
-    return {
-      headers: {
-        'X-AuthValidUnTillTimestamp': validUntil.toString(),
-        'X-AuthPublicKey': this._keypair.accountId(),
-        'X-AuthSignature': signature.toXDR('base64')
-      }
-    }
-  }
-
-  /**
    * Encrypt wallet to securely store it.
    *
    * @param {object} kdfParams Scrypt params.
@@ -263,22 +232,5 @@ export class Wallet {
     )
 
     return recoveryWallet.encrypt(kdfParams, recoveryKeypair.secret())
-  }
-
-  /**
-   * Synchronize time with backend.
-   *
-   * @param {Number} timestamp UNIX timestamp in seconds. Use it to sync time with the back-end.
-   */
-  synchronizeTime (timestamp) {
-    if (isNil(timestamp) || !isNumber(timestamp)) {
-      throw new TypeError('Invalid timestamp. A UNIX timestamp in seconds expected.')
-    }
-    let now = Date.now() / 1000
-    this._clockDiff = now - timestamp
-  }
-
-  _getTimestamp () {
-    return Math.floor(new Date().getTime() / 1000) - this._clockDiff
   }
 }

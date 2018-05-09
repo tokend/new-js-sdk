@@ -1,5 +1,8 @@
 import uri from 'urijs'
+import { hash } from './base'
+
 import { isString, isNumber, isArray } from 'lodash'
+const SIGNATURE_VALID_SEC = 60
 
 /**
  * Creates a new {@link CallBuilder}.
@@ -22,6 +25,7 @@ export class CallBuilder {
     this._wallet = wallet
     this._urlSegments = []
     this._customTimeout = null
+    this._clockDiff = 0
   }
 
   /**
@@ -101,10 +105,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   post (data) {
-    let config = this._getRequestConfig()
+    let config = this._getRequestConfig('post')
     config.data = data
 
-    return this._axios.post(this._getUrl(), config)
+    return this._axios(config)
   }
 
   /**
@@ -114,10 +118,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   get (query) {
-    let config = this._getRequestConfig()
+    let config = this._getRequestConfig('get')
     config.params = query
 
-    return this._axios.get(this._getUrl(), config)
+    return this._axios(config)
   }
 
   /**
@@ -127,10 +131,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   put (data) {
-    let config = this._getRequestConfig()
+    let config = this._getRequestConfig('put')
     config.data = data
 
-    return this._axios.put(this._getUrl(), config)
+    return this._axios(config)
   }
 
   /**
@@ -140,10 +144,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   patch (data) {
-    let config = this._getRequestConfig()
+    let config = this._getRequestConfig('patch')
     config.data = data
 
-    return this._axios.patch(this._getUrl(), config)
+    return this._axios(config)
   }
 
   /**
@@ -153,10 +157,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   delete (data) {
-    let config = this._getRequestConfig()
+    let config = this._getRequestConfig('delete')
     config.data = data
 
-    return this._axios.delete(this._getUrl(), config)
+    return this._axios(config)
   }
 
   _getUrl () {
@@ -165,13 +169,12 @@ export class CallBuilder {
     }, '')
   }
 
-  _getRequestConfig () {
-    let config = {}
+  _getRequestConfig (method) {
+    let url = this._getUrl()
+    let config = { method, url }
 
     if (this._authRequired) {
-      let url = this._getUrl()
-      let signature = this._wallet.signRequest(url)
-      config = Object.assign(config, signature)
+      this._signRequest(config)
     }
 
     if (this._customTimeout) {
@@ -179,5 +182,26 @@ export class CallBuilder {
     }
 
     return config
+  }
+
+  _signRequest (config) {
+    let validUntil = Math
+      .floor(this._getTimestamp() + SIGNATURE_VALID_SEC)
+      .toString()
+    let signatureBase = `{ uri: '${config.url}', valid_untill: '${validUntil.toString()}'}`
+    let data = hash(signatureBase)
+    let signature = this._wallet.keypair.signDecorated(data)
+
+    Object.assign(config, {
+      headers: {
+        'X-AuthValidUnTillTimestamp': validUntil.toString(),
+        'X-AuthPublicKey': this._wallet.keypair.accountId(),
+        'X-AuthSignature': signature.toXDR('base64')
+      }
+    })
+  }
+
+  _getTimestamp () {
+    return Math.floor(new Date().getTime() / 1000) - this._clockDiff
   }
 }

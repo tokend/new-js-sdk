@@ -1,6 +1,7 @@
 import sinon from 'sinon'
 import axios from 'axios'
 import AxiosMock from 'axios-mock-adapter'
+import { toNumber } from 'lodash'
 import mocks from './test_helpers/mock_factory'
 
 import { CallBuilder } from './call_builder'
@@ -85,6 +86,28 @@ describe('CallBuilder', () => {
       expectNoThrow(() => callBuilder.withSignature())
     })
 
+    it('Should sign a request.', async () => {
+      const timestamp = Date.UTC(2018, 3, 4) / 1000
+      sandbox.useFakeTimers(timestamp * 1000)
+
+      axiosMock.onAny()
+        .reply(config => {
+          expect(config.headers)
+            .to.have.a.property('X-AuthPublicKey')
+            .equal(wallet.accountId)
+          expect(config.headers)
+            .to.have.a.property('X-AuthSignature')
+          expect(config.headers)
+            .to.have.a.property('X-AuthValidUnTillTimestamp')
+          expect(toNumber(config.headers['X-AuthValidUnTillTimestamp']))
+            .to.be.above(timestamp)
+
+          return [200, {}]
+        })
+
+      await callBuilder.withSignature().get()
+    })
+
     it('Should use a wallet passed as an argument.', () => {
       let noAuthCallBuilder = new CallBuilder(axiosInstance)
       expectNoThrow(() => noAuthCallBuilder.withSignature(wallet))
@@ -129,29 +152,17 @@ describe('CallBuilder', () => {
 
       expect(response).to.have.a.property('data').deep.equal(data)
     })
-
-    makeAuthTestCase(
-      '/contacts',
-      (config) => {
-        config = Object.assign(config, { params: queryParams })
-        return axiosMock
-          .onGet(`/contacts`, config)
-          .reply(200, data)
-      },
-      () => {
-        return callBuilder
-          .appendUrlSegment('contacts')
-          .withSignature()
-          .get(queryParams)
-      }
-    )
   })
 
   describe('.post', () => {
     it('Should perform a POST request.', async () => {
       axiosMock
-        .onPost(`/contacts`, { data: contact })
-        .reply(200, contact)
+        .onPost(`/contacts`)
+        .reply(config => {
+          expect(config.data).equal(JSON.stringify(contact))
+
+          return [200, contact]
+        })
 
       let response = await callBuilder
         .appendUrlSegment('contacts')
@@ -161,29 +172,17 @@ describe('CallBuilder', () => {
         .to.have.a.property('data')
         .deep.equal(contact)
     })
-
-    makeAuthTestCase(
-      '/contacts',
-      (config) => {
-        config = Object.assign(config, { data: contact })
-        return axiosMock
-          .onPost(`/contacts`, config)
-          .reply(200, contact)
-      },
-      () => {
-        return callBuilder
-          .appendUrlSegment('contacts')
-          .withSignature()
-          .post(contact)
-      }
-    )
   })
 
   describe('.put', () => {
     it('Should perform a PUT request.', async () => {
       axiosMock
-        .onPut(`/contacts/${contact.id}`, { data: contact })
-        .reply(200, contact)
+        .onPut(`/contacts/${contact.id}`)
+        .reply(config => {
+          expect(config.data).equal(JSON.stringify(contact))
+
+          return [200, contact]
+        })
 
       let response = await callBuilder
         .appendUrlSegment('contacts')
@@ -194,30 +193,17 @@ describe('CallBuilder', () => {
         .to.have.a.property('data')
         .deep.equal(contact)
     })
-
-    makeAuthTestCase(
-      `/contacts/${contact.id}`,
-      (config) => {
-        config = Object.assign(config, { data: contact })
-        return axiosMock
-          .onPut(`/contacts/${contact.id}`, config)
-          .reply(200, contact)
-      },
-      () => {
-        return callBuilder
-          .appendUrlSegment('contacts')
-          .appendUrlSegment(contact.id)
-          .withSignature()
-          .put(contact)
-      }
-    )
   })
 
   describe('.patch', () => {
     it('Should perform a PUT request.', async () => {
       axiosMock
-        .onPatch(`/contacts/${contact.id}`, { data: contact })
-        .reply(200, contact)
+        .onPatch(`/contacts/${contact.id}`)
+        .reply(config => {
+          expect(config.data).equal(JSON.stringify(contact))
+
+          return [200, contact]
+        })
 
       let response = await callBuilder
         .appendUrlSegment('contacts')
@@ -228,23 +214,6 @@ describe('CallBuilder', () => {
         .to.have.a.property('data')
         .deep.equal(contact)
     })
-
-    makeAuthTestCase(
-      `/contacts/${contact.id}`,
-      (config) => {
-        config = Object.assign(config, { data: contact })
-        return axiosMock
-          .onPatch(`/contacts/${contact.id}`, config)
-          .reply(200, contact)
-      },
-      () => {
-        return callBuilder
-          .appendUrlSegment('contacts')
-          .appendUrlSegment(contact.id)
-          .withSignature()
-          .patch(contact)
-      }
-    )
   })
 
   describe('.delete', () => {
@@ -260,35 +229,5 @@ describe('CallBuilder', () => {
 
       expect(response).to.have.a.property('status').equal(204)
     })
-
-    makeAuthTestCase(
-      `/contacts/${contact.id}`,
-      (config) => {
-        config = Object.assign(config, { data: contact })
-        return axiosMock
-          .onDelete(`/contacts/${contact.id}`, config)
-          .reply(204)
-      },
-      () => {
-        return callBuilder
-          .appendUrlSegment('contacts')
-          .appendUrlSegment(contact.id)
-          .withSignature()
-          .delete()
-      }
-    )
   })
-
-  function makeAuthTestCase (url, makeBackendMock, makeCall) {
-    it('Should authorize request if required.', async () => {
-      let authHeaders = { 'X-AuthSignature': 'SIGNATURE' }
-      sandbox.stub(wallet, 'signRequest')
-        .withArgs(url)
-        .returns({ headers: authHeaders })
-      makeBackendMock({ headers: authHeaders })
-
-      await makeCall()
-      expect(wallet.signRequest).to.be.calledOnce
-    })
-  }
 })
