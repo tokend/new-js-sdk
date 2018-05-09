@@ -40,7 +40,7 @@ describe('TokenD', () => {
         networkPassphrase: customNetworkPassphrase
       })
 
-      expect(Network.use).calledWith(customNetworkPassphrase)
+      expect(Network.use).calledWith(new Network(customNetworkPassphrase))
     })
   })
 

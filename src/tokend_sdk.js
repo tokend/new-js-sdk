@@ -28,7 +28,7 @@ export class TokenD {
     this._horizon = new HorizonServer(this, url, opts)
 
     if (networkPassphrase) {
-      Network.use(networkPassphrase)
+      Network.use(new Network(networkPassphrase))
     }
   }
 
