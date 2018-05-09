@@ -10,6 +10,18 @@ import { Network } from './base/network'
  */
 export class TokenD {
   /**
+   * Internal constructor. Use TokenD.create() isntead.
+   *
+   * @private
+   * @constructor
+   */
+  constructor (url, opts) {
+    this._api = new ApiServer(this, url, opts)
+    this._horizon = new HorizonServer(this, url, opts)
+    this._clockDiff = 0
+  }
+
+  /**
    * Make a new TokenD SDK instance.
    *
    * @constructor
@@ -21,15 +33,17 @@ export class TokenD {
    * @param {object} [opts.httpBasicAuth] HTTP basic auth credentials. Look [axios docs](https://github.com/axios/axios#request-config) for more info.
    * @param {object} [opts.customHeaders] Custom headers for request.
    * @param {boolean} [opts.withCredentials] Indicates whether or not cross-site Access-Control requests should be made using credentials.
-   * @param {string} [networkPassphrase] Network passphrase.
+   *
+   * @return {Promise.<TokenD>}
    */
-  constructor ({ url, opts, networkPassphrase }) {
-    this._api = new ApiServer(this, url, opts)
-    this._horizon = new HorizonServer(this, url, opts)
+  static async create (url, opts) {
+    let sdk = new TokenD(url, opts)
+    let networkDetails = await sdk.horizon.getNetworkDetails()
 
-    if (networkPassphrase) {
-      Network.use(new Network(networkPassphrase))
-    }
+    sdk._useNetworkPassphrase(networkDetails.data.networkPassphrase)
+    sdk._calculateClockDiff(networkDetails.data.currentTime)
+
+    return sdk
   }
 
   /**
@@ -54,6 +68,13 @@ export class TokenD {
   }
 
   /**
+   * Clock difference with the backend.
+   */
+  get clockDiff () {
+    return this._clockDiff
+  }
+
+  /**
    * Use a wallet to sign transactions.
    *
    * @param {Wallet} wallet User's wallet.
@@ -64,5 +85,13 @@ export class TokenD {
     }
 
     this._wallet = wallet
+  }
+
+  _useNetworkPassphrase (networkPassphrase) {
+    Network.use(new Network(networkPassphrase))
+  }
+
+  _calculateClockDiff (timestamp) {
+    this._clockDiff = (Date.now() / 1000) - timestamp
   }
 }

@@ -15,7 +15,7 @@ describe('TokenD', () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
-    sdk = new TokenD({ url, opts })
+    sdk = new TokenD(url, opts)
   })
 
   afterEach(() => {
@@ -24,23 +24,43 @@ describe('TokenD', () => {
 
   describe('.constructor', () => {
     it('Should make an SDK instance.', () => {
-      let sdk = new TokenD({ url, opts })
+      let sdk = new TokenD(url, opts)
 
       expect(sdk).to.have.a.property('api').instanceOf(ApiServer)
       expect(sdk).to.have.a.property('horizon').instanceOf(HorizonServer)
     })
+  })
 
-    it('Should use custom network passphrase.', () => {
-      const customNetworkPassphrase = 'My network'
+  describe('.create', () => {
+    const networkPassphrase = 'Main Net'
+    const serverTimestamp = 1525881668
+    const clockDiff = 133700
+
+    beforeEach(async () => {
+      sandbox.useFakeTimers((serverTimestamp - clockDiff) * 1000)
+      sandbox
+        .stub(HorizonServer.prototype, 'getNetworkDetails')
+        .returns(Promise.resolve({
+          data: {
+            networkPassphrase,
+            currentTime: serverTimestamp
+          }
+        }))
       sandbox.stub(Network, 'use')
 
-      sdk = new TokenD({
-        url,
-        opts,
-        networkPassphrase: customNetworkPassphrase
-      })
+      sdk = await TokenD.create(url, opts)
+    })
 
-      expect(Network.use).calledWith(new Network(customNetworkPassphrase))
+    it('Should create an SDK instance.', async () => {
+      expect(sdk).to.be.an.instanceOf(TokenD)
+    })
+
+    it('Should sync network passphrase.', async () => {
+      expect(Network.use).to.be.calledWith(new Network(networkPassphrase))
+    })
+
+    it('Should sync clock.', async () => {
+      expect(sdk).to.have.a.property('clockDiff').equal(-clockDiff)
     })
   })
 

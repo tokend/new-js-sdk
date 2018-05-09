@@ -22,7 +22,7 @@ export default class Mocks {
   }
 
   static tokenDSdk () {
-    let sdk = new TokenD({ url: 'https://example.com' })
+    let sdk = new TokenD('https://example.com')
     Mocks._mockApiServer(sdk.api)
     Mocks._mockHorizonServer(sdk.horizon)
 
