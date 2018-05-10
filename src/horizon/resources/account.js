@@ -103,11 +103,9 @@ export class Account extends ResourceGroupBase {
   }
 
   _makeCallBuilder (accountId) {
-    accountId = accountId || this._server._sdk.wallet.accountId
-
     return this._server._makeCallBuilder()
       .appendUrlSegment('accounts')
-      .appendUrlSegment(accountId)
+      .appendAccountId(accountId)
   }
 
   _makeCallBuilderWithSignature (accountId) {

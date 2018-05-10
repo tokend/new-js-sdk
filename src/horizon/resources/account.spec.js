@@ -26,15 +26,6 @@ describe('Account', () => {
       path: `/accounts/${usersAccount}`
     })
 
-    testGetRequest({
-      title: `get another account`,
-      horizon: horizon,
-      resourceGroup,
-      method,
-      args: [anotherAccount],
-      path: `/accounts/${anotherAccount}`
-    })
-
     testRequestSignature({
       horizon: horizon,
       resourceGroup,
@@ -57,16 +48,6 @@ describe('Account', () => {
       path: `/accounts/${usersAccount}/balances`
     })
 
-    testGetRequest({
-      title: `get another user's balances`,
-      horizon: horizon,
-      resourceGroup,
-      method,
-      params: query,
-      args: [query, anotherAccount],
-      path: `/accounts/${anotherAccount}/balances`
-    })
-
     testRequestSignature({
       method,
       horizon: horizon,
@@ -86,15 +67,6 @@ describe('Account', () => {
       resourceGroup,
       method,
       path: `/accounts/${usersAccount}/balances/details`
-    })
-
-    testGetRequest({
-      title: `get another account details`,
-      horizon: horizon,
-      resourceGroup,
-      method,
-      args: [anotherAccount],
-      path: `/accounts/${anotherAccount}/balances/details`
     })
 
     testRequestSignature({
@@ -121,16 +93,6 @@ describe('Account', () => {
       path: `/accounts/${usersAccount}/referrals`
     })
 
-    testGetRequest({
-      title: `get another user's referrals`,
-      horizon: horizon,
-      resourceGroup,
-      method,
-      params: query,
-      args: [query, anotherAccount],
-      path: `/accounts/${anotherAccount}/referrals`
-    })
-
     testRequestSignature({
       method,
       horizon: horizon,
@@ -151,15 +113,6 @@ describe('Account', () => {
       method,
       path: `/accounts/${usersAccount}/signers`
     })
-
-    testGetRequest({
-      title: `get another user's signers`,
-      horizon: horizon,
-      resourceGroup,
-      method,
-      args: [anotherAccount],
-      path: `/accounts/${anotherAccount}/signers`
-    })
   })
 
   describe('.getSigner', () => {
@@ -173,15 +126,6 @@ describe('Account', () => {
       method,
       args: [signerId],
       path: `/accounts/${usersAccount}/signers/${signerId}`
-    })
-
-    testGetRequest({
-      title: `get another user's signer`,
-      horizon: horizon,
-      resourceGroup,
-      method,
-      args: [signerId, anotherAccount],
-      path: `/accounts/${anotherAccount}/signers/${signerId}`
     })
   })
 
@@ -200,16 +144,6 @@ describe('Account', () => {
       params: query,
       args: [query],
       path: `/accounts/${usersAccount}/summary`
-    })
-
-    testGetRequest({
-      title: `get another user's summary`,
-      horizon: horizon,
-      resourceGroup,
-      method,
-      params: query,
-      args: [query, anotherAccount],
-      path: `/accounts/${anotherAccount}/summary`
     })
 
     testRequestSignature({

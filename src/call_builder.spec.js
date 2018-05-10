@@ -11,11 +11,14 @@ describe('CallBuilder', () => {
   let axiosInstance = axios.create()
   let axiosMock = new AxiosMock(axiosInstance)
   let sdk = mocks.tokenDSdk()
+  let noWalletSdk = mocks.tokenDSdk({ noWallet: true })
   let callBuilder
+  let noWalletCallBuilder
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
     callBuilder = new CallBuilder(axiosInstance, sdk)
+    noWalletCallBuilder = new CallBuilder(axiosInstance, noWalletSdk)
   })
 
   afterEach(() => {
@@ -80,6 +83,39 @@ describe('CallBuilder', () => {
     })
   })
 
+  describe('.appendAccountId', () => {
+    it(`Should use wallet's account ID.`, async () => {
+      axiosMock
+        .onGet(`/accounts/${sdk.wallet.accountId}`)
+        .reply(200, contact)
+
+      await callBuilder
+        .appendUrlSegment('accounts')
+        .appendAccountId()
+        .get()
+    })
+
+    it(`Should use custom account ID.`, async () => {
+      const accountId = 'GDCB5EOW2EIDENABVPRLRSBPL746DWGBMOZDWMVCRXBQQFOLLARTVNQ3'
+      axiosMock
+        .onGet(`/accounts/${accountId}`)
+        .reply(200, contact)
+
+      await callBuilder
+        .appendUrlSegment('accounts')
+        .appendAccountId(accountId)
+        .get()
+    })
+
+    it(`Should throw if an invalid account ID provided.`, () => {
+      expectThrow(() => noWalletCallBuilder.appendAccountId('bad id'))
+    })
+
+    it(`Should throw if now account ID present.`, () => {
+      expectThrow(() => noWalletCallBuilder.appendAccountId())
+    })
+  })
+
   describe('.withSignature', () => {
     it('Should require request signature if a default wallet is present.', () => {
       expectNoThrow(() => callBuilder.withSignature())
@@ -113,8 +149,7 @@ describe('CallBuilder', () => {
     })
 
     it('Should throw if there is no wallet attached.', () => {
-      let noAuthCallBuilder = new CallBuilder(axiosInstance)
-      expectThrow(() => noAuthCallBuilder.withSignature())
+      expectThrow(() => noWalletCallBuilder.withSignature())
     })
   })
 

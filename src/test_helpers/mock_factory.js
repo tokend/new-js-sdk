@@ -21,13 +21,15 @@ export default class Mocks {
     return new Wallet(email, keypair, accountId, walletId)
   }
 
-  static tokenDSdk () {
+  static tokenDSdk ({ noWallet = false } = {}) {
     let sdk = new TokenD('https://example.com')
     Mocks._mockApiServer(sdk.api)
     Mocks._mockHorizonServer(sdk.horizon)
 
-    let wallet = Mocks.wallet()
-    sdk.useWallet(wallet)
+    if (!noWallet) {
+      let wallet = Mocks.wallet()
+      sdk.useWallet(wallet)
+    }
 
     return sdk
   }

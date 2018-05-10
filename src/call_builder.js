@@ -1,7 +1,7 @@
 import uri from 'urijs'
-import { hash } from './base'
-
+import { Keypair, hash } from './base'
 import { isString, isNumber, isArray } from 'lodash'
+
 const SIGNATURE_VALID_SEC = 60
 
 /**
@@ -28,7 +28,7 @@ export class CallBuilder {
   }
 
   /**
-   * Append path segment.
+   * Append URL segment.
    *
    * @param {string|number|(string|number)[]} segment URL path segment(s).
    * @return {CallBuilder} Self.
@@ -41,6 +41,26 @@ export class CallBuilder {
     }
 
     return this
+  }
+
+  /**
+   * Append an account ID to the URL.
+   * Uses wallet's account ID by default.
+   *
+   * @param {string} [accountId] Custom account ID.
+   * @return {CallBuilder} Self.
+   */
+  appendAccountId (accountId = null) {
+    if (!(accountId || this._sdk.wallet)) {
+      throw new Error('No account ID provided.')
+    }
+    accountId = accountId || this._sdk.wallet.accountId
+
+    if (!Keypair.isValidPublicKey(accountId)) {
+      throw new Error('Invalid account ID.')
+    }
+
+    return this.appendUrlSegment(accountId)
   }
 
   _appendUrlSegment (segment) {
@@ -71,7 +91,7 @@ export class CallBuilder {
   withSignature (wallet) {
     this._wallet = wallet || this._sdk.wallet
     if (!this._wallet) {
-      throw new Error('Singing keys are required for this request.')
+      throw new Error('A wallet is required for this request.')
     }
 
     this._authRequired = true
