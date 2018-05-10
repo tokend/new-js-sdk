@@ -47,7 +47,7 @@ export class HorizonServer extends ServerBase {
    * @return {Balances}
    */
   get balances () {
-    return new resources.Balances(this)
+    return new resources.Balances(this, this._sdk)
   }
 
   /**
@@ -56,7 +56,7 @@ export class HorizonServer extends ServerBase {
    * @return {Account}
    */
   get account () {
-    return new resources.Account(this)
+    return new resources.Account(this, this._sdk)
   }
 
   /**
@@ -65,7 +65,7 @@ export class HorizonServer extends ServerBase {
    * @return {Account}
    */
   get transactions () {
-    return new resources.Transactions(this)
+    return new resources.Transactions(this, this._sdk)
   }
 
   _parseResponseError (error) {

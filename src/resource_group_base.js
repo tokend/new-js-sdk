@@ -8,8 +8,10 @@ export class ResourceGroupBase {
      * Resource group constructor.
      *
      * @param {ServerBase} server A server instance to which this resource group belongs.
+     * @param {TokenD} sdk SDK instance.
      */
-  constructor (server) {
+  constructor (server, sdk) {
     this._server = server
+    this._sdk = sdk
   }
 }
