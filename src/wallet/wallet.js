@@ -53,15 +53,18 @@ export class Wallet {
    * Generate a new wallet.
    *
    * @param {string} email User's email.
+   * @param {string} [accountId] User's account ID.
+   *
    * @return {Wallet} The new wallet.
    */
-  static generate (email) {
+  static generate (email, accountId = null) {
     let keypair = Keypair.random()
+    accountId = accountId || keypair.accountId()
 
     return new Wallet(
       email,
       keypair,
-      keypair.accountId()
+      accountId
     )
   }
 

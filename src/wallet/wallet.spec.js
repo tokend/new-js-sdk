@@ -65,6 +65,11 @@ describe('Wallet', () => {
       let generatedWallet = Wallet.generate(email)
       expect(generatedWallet).to.be.an.instanceOf(Wallet)
     })
+
+    it('Should generate a wallet with custom account ID.', () => {
+      let generatedWallet = Wallet.generate(email, accountId)
+      expect(generatedWallet).to.have.a.property('accountId').equal(accountId)
+    })
   })
 
   describe('.fromEncrypted', () => {
