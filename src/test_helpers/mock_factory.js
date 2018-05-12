@@ -8,7 +8,6 @@ export default class Mocks {
   static axios () {
     let instance = axios.create()
     let axiosMock = new AxiosMock(instance)
-    Mocks._axiosAuthHelper(instance)
 
     return { axios: instance, axiosMock }
   }
