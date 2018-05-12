@@ -117,11 +117,11 @@ describe('HorizonResponse', () => {
     sdk = mocks.tokenDSdk()
     singleItemResponse = new HorizonResponse(
       { data: cloneDeep(rawSingleItemResponse) },
-      sdk.horizon
+      sdk
     )
     collectionResponse = new HorizonResponse(
       { data: cloneDeep(rawCollectionResponse) },
-      sdk.horizon
+      sdk
     )
   })
 
@@ -229,6 +229,35 @@ describe('HorizonResponse', () => {
       let response = await singleItemResponse.fetchOperations(params)
 
       expect(response).to.be.an.instanceOf(HorizonResponse)
+    })
+
+    it('Should sign link requests if a wallet is present.', async () => {
+      // Follow a link
+      sdk.horizon
+        .onAny()
+        .reply((config) => {
+          if (!config.authorized) {
+            return [401]
+          }
+          return [200, sdk.horizon.makeGenericResponse()]
+        })
+
+      let linkedResponse = await collectionResponse.fetchNext()
+
+      expect(linkedResponse).to.be.an.instanceOf(HorizonResponse)
+    })
+
+    it('Should perform link requests w/o signature if no wallet provided.', async () => {
+      sdk.ejectWallet()
+
+      // Follow a link
+      sdk.horizon
+        .onAny()
+        .reply(200, sdk.horizon.makeGenericResponse())
+
+      let linkedResponse = await collectionResponse.fetchNext()
+
+      expect(linkedResponse).to.be.an.instanceOf(HorizonResponse)
     })
   })
 })

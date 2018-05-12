@@ -28,7 +28,7 @@ export class HorizonServer extends ServerBase {
     super(sdk, serverUrl, opts)
 
     this.useResponseInterceptor(
-      (response) => new HorizonResponse(response, this),
+      (response) => new HorizonResponse(response, this._sdk),
       (error) => this._parseResponseError(error)
     )
   }

@@ -13,12 +13,12 @@ export class HorizonResponse extends ResponseBase {
    * Wrap a raw axios response.
    *
    * @param {object} rawResponse Raw axios.js response object.
-   * @param {HorizonServer} horizon Horizon server instance.
+   * @param {TokenD} sdk TokenD SDK instance.
    */
-  constructor (rawResponse, horizon) {
+  constructor (rawResponse, sdk) {
     super(rawResponse)
 
-    this._horizon = horizon
+    this._sdk = sdk
 
     this._data = rawResponse.data
     this._data = this._resolveLinks(this._data)
@@ -92,10 +92,14 @@ export class HorizonResponse extends ResponseBase {
 
       let query = urlHelper.parseQueryParams(link)
 
-      return this._horizon._makeCallBuilder()
-        .withSignature()
+      let callBuilder = this._sdk.horizon._makeCallBuilder()
         .appendUrlSegment(link)
-        .get(query)
+
+      if (this._sdk.wallet) {
+        callBuilder = callBuilder.withSignature()
+      }
+
+      return callBuilder.get(query)
     }
   }
 }
