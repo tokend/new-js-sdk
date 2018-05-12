@@ -1,63 +1,104 @@
+import mocks from '../test_helpers/mock_factory'
 import * as errors from './errors'
 
-describe('ApiErrors', () => {
-  describe('.constructor', () => {
-    let testCases = [
-      {
-        name: 'Bad Request',
-        originalError: { status: '400' },
-        expectedError: errors.BadRequestError
-      },
-      {
-        name: 'Not Allowed',
-        originalError: { status: '401' },
-        expectedError: errors.NotAllowedError
-      },
-      {
-        name: 'Forbidden',
-        originalError: { status: '403' },
-        expectedError: errors.ForbiddenRequestError
-      },
-      {
-        name: 'TFA Required',
-        originalError: { status: '403', code: 'tfa_required' },
-        expectedError: errors.TFARequiredError
-      },
-      {
-        name: 'Verification Required',
-        originalError: { status: '403', code: 'verification_required' },
-        expectedError: errors.VerificationRequiredError
-      },
-      {
-        name: 'Not Found',
-        originalError: { status: '404' },
-        expectedError: errors.NotFoundError
-      },
-      {
-        name: 'Conflict',
-        originalError: { status: '409' },
-        expectedError: errors.ConflictError
-      },
-      {
-        name: 'Internal Server Error',
-        originalError: { status: '500' },
-        expectedError: errors.InternalServerError
-      },
-      {
-        name: 'Unexpected error',
-        originalError: { status: '488' },
-        expectedError: errors.ApiError
-      }
-    ]
+describe('errors', () => {
+  let { axios, axiosMock } = mocks.axios()
 
-    testCases.forEach((testCase) => {
-      it(`Should parse "${testCase.name}" error.`, () => {
-        let error = new errors.ApiErrors({
-          errors: [testCase.originalError]
+  afterEach(() => axiosMock.reset())
+
+  describe('ApiError', () => {
+    const rawError = {
+      errors: [{
+        title: 'Title',
+        detail: 'Detail',
+        meta: { foo_bar: 'fooBar' }
+      }]
+    }
+    let error
+
+    beforeEach(async () => {
+      let response = await makeRawError(rawError)
+      error = new errors.ApiError(response, axios)
+    })
+
+    it('Should parse error extras.', () => {
+      expect(error)
+        .to.have.a.property('title')
+        .equal(rawError.errors[0].title)
+      expect(error)
+        .to.have.a.property('detail')
+        .equal(rawError.errors[0].detail)
+      expect(error)
+        .to.have.a.property('meta')
+        .deep.equal({
+          fooBar: rawError.errors[0].meta.foo_bar
         })
-        expect(error.errors[0])
-          .to.be.an.instanceOf(testCase.expectedError)
-      })
     })
   })
+
+  describe('BadRequestError', () => {
+    it('Should parse a single error.', async () => {
+      const rawError = {
+        errors: [{
+          title: 'Title1',
+          detail: 'Detail',
+          meta: {
+            foo_bar: 'fooBar'
+          }
+        }]
+      }
+      let response = await makeRawError(rawError)
+      let error = new errors.BadRequestError(response, axios)
+
+      expect(error)
+        .to.have.a.property('title')
+        .equal(rawError.errors[0].title)
+      expect(error)
+        .to.have.a.property('detail')
+        .equal(rawError.errors[0].detail)
+      expect(error)
+        .to.have.a.property('meta')
+        .deep.equal({ fooBar: rawError.errors[0].meta.foo_bar })
+    })
+
+    it('Should parse errors array.', async () => {
+      const rawError = {
+        errors: [
+          {
+            title: 'Title1',
+            detail: 'Detail',
+            meta: { foo_bar: 'fooBar' }
+          },
+          {
+            title: 'Title2',
+            detail: 'Detail',
+            meta: { foo_bar: 'fooBar' }
+          }
+        ]
+      }
+      let response = await makeRawError(rawError)
+      let error = new errors.BadRequestError(response, axios)
+
+      expect(error).to.have.a.property('nestedErrors').deep.equal([
+        {
+          title: 'Title1',
+          detail: 'Detail',
+          meta: { fooBar: 'fooBar' }
+        },
+        {
+          title: 'Title2',
+          detail: 'Detail',
+          meta: { fooBar: 'fooBar' }
+        }
+      ])
+    })
+  })
+
+  function makeRawError (body) {
+    axiosMock
+      .onAny()
+      .reply(403, body)
+
+    return axios.get().catch(err => err)
+  }
 })

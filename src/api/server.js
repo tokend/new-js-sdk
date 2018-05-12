@@ -1,7 +1,8 @@
+import { get } from 'lodash'
 import { ServerBase } from '../server_base'
 import { toSnakeCaseDeep } from '../utils/case_converter'
 import { ApiResponse } from './response'
-import { ApiErrors } from './errors'
+import * as errors from './errors'
 import * as resources from './resources'
 
 /**
@@ -45,7 +46,36 @@ export class ApiServer extends ServerBase {
       (response) => new ApiResponse(response),
       (error) => {
         if (error.response && error.response.status) {
-          error = new ApiErrors(error.response.data)
+          switch (error.response.status) {
+            case 400:
+              error = new errors.BadRequestError(error, this._axios)
+              break
+            case 401:
+              error = new errors.NotAllowedError(error, this._axios)
+              break
+            case 403:
+              let errCode = get(error, 'response.data.errors[0].code')
+
+              if (errCode === 'tfa_required') {
+                error = new errors.TFARequiredError(error, this._axios)
+              } else if (errCode === 'verification_required') {
+                error = new errors.VerificationRequiredError(error, this._axios)
+              } else {
+                error = new errors.ForbiddenRequestError(error, this._axios)
+              }
+              break
+            case 404:
+              error = new errors.NotFoundError(error, this._axios)
+              break
+            case 409:
+              error = new errors.ConflictError(error, this._axios)
+              break
+            case 500:
+              error = new errors.InternalServerError(error, this._axios)
+              break
+            default:
+              error = new errors.ApiError(error, this._axios)
+          }
         }
 
         return Promise.reject(error)
@@ -58,5 +88,19 @@ export class ApiServer extends ServerBase {
    */
   get wallets () {
     return new resources.Wallets(this, this._sdk)
+  }
+
+  /**
+   * TFA factors.
+   */
+  get factors () {
+    return new resources.Factors(this, this._sdk)
+  }
+
+  /**
+   * Users.
+   */
+  get users () {
+    return new resources.Users(this, this._sdk)
   }
 }

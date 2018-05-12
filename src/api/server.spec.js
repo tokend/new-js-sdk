@@ -1,5 +1,5 @@
 import { ApiResponse } from './response'
-import { ApiErrors } from './errors'
+import * as errors from './errors'
 import mocks from '../test_helpers/mock_factory'
 
 describe('ApiServer', () => {
@@ -23,20 +23,6 @@ describe('ApiServer', () => {
     expect(response).to.be.an.instanceOf(ApiResponse)
   })
 
-  it('Should parse an error responses.', async () => {
-    api.onAny().reply(400, { errors: [] })
-
-    let error = await catchPromise(api._makeCallBuilder().get())
-    expect(error).to.be.an.instanceOf(ApiErrors)
-  })
-
-  it('Should bypass non-API errors.', async () => {
-    api.onAny().timeout()
-
-    let error = await catchPromise(api._makeCallBuilder().get())
-    expect(error).not.to.be.an.instanceOf(ApiErrors)
-  })
-
   it('Should convert request body to snake case.', async () => {
     api.onAny().reply((config) => {
       expect(config.data).to.equal('{"foo_bar":"barFoo"}')
@@ -51,5 +37,79 @@ describe('ApiServer', () => {
       .reply(200, responseBody)
 
     await api._makeCallBuilder().get({ fooBar: 'barFoo' })
+  })
+
+  describe('errors', () => {
+    let testCases = [
+      {
+        name: 'Bad Request',
+        status: 400,
+        body: { errors: [{}] },
+        expectedError: errors.BadRequestError
+      },
+      {
+        name: 'Not Allowed',
+        status: 401,
+        body: { errors: [{}] },
+        expectedError: errors.NotAllowedError
+      },
+      {
+        name: 'Forbidden',
+        status: 403,
+        body: { errors: [{}] },
+        expectedError: errors.ForbiddenRequestError
+      },
+      {
+        name: 'TFA Required',
+        status: 403,
+        body: { errors: [{ code: 'tfa_required' }] },
+        expectedError: errors.TFARequiredError
+      },
+      {
+        name: 'Verification Required',
+        status: 403,
+        body: { errors: [{ code: 'verification_required' }] },
+        expectedError: errors.VerificationRequiredError
+      },
+      {
+        name: 'Not Found',
+        status: 404,
+        body: { errors: [{}] },
+        expectedError: errors.NotFoundError
+      },
+      {
+        name: 'Conflict',
+        status: 409,
+        body: { errors: [{}] },
+        expectedError: errors.ConflictError
+      },
+      {
+        name: 'Internal Server Error',
+        status: 500,
+        body: { errors: [{}] },
+        expectedError: errors.InternalServerError
+      },
+      {
+        name: 'Unexpected error',
+        status: 488,
+        body: { errors: [{}] },
+        expectedError: errors.ApiError
+      }
+    ]
+
+    testCases.forEach((testCase) => {
+      it(`Should parse "${testCase.name}" error.`, async () => {
+        api.onAny().reply(testCase.status, testCase.body)
+        let error = await catchPromise(api._makeCallBuilder().get())
+        expect(error).to.be.an.instanceOf(testCase.expectedError)
+      })
+    })
+
+    it('Should bypass non-API errors.', async () => {
+      api.onAny().timeout()
+
+      let error = await catchPromise(api._makeCallBuilder().get())
+      expect(error).not.to.be.an.instanceOf(errors.ApiError)
+    })
   })
 })

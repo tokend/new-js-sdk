@@ -1,84 +1,64 @@
+import { ServerErrorBase } from '../errors'
 import { toCamelCaseDeep } from '../utils/case_converter'
 
 /**
- * Contains array of the API errors.
+ * Generic API error response.
  */
-export class ApiErrors extends Error {
+export class ApiError extends ServerErrorBase {
   /**
    * Wrap a raw API error response.
    *
-   * @param {Error} originalError Original error response.
-   */
-  constructor (originalError) {
-    super('The API responded with an error.')
-    this.originalError = originalError
-    this.errors = originalError.errors.map((err) => this._parseError(err))
-  }
-
-  _parseError (error) {
-    let parsedError
-    switch (error.status) {
-      case '400':
-        parsedError = new BadRequestError(error)
-        break
-      case '401':
-        parsedError = new NotAllowedError(error)
-        break
-      case '403':
-        if (error.code === 'tfa_required') {
-          parsedError = new TFARequiredError(error)
-        } else if (error.code === 'verification_required') {
-          parsedError = new VerificationRequiredError(error)
-        } else {
-          parsedError = new ForbiddenRequestError(error)
-        }
-        break
-      case '404':
-        parsedError = new NotFoundError(error)
-        break
-      case '409':
-        parsedError = new ConflictError(error)
-        break
-      case '500':
-        parsedError = new InternalServerError(error)
-        break
-      default:
-        parsedError = new ApiError(error)
-    }
-
-    return parsedError
-  }
-}
-
-/**
- * Generic API error response.
- *
- * @export
- * @class
- */
-export class ApiError extends Error {
-  /**
-   * Wrap axios error.
-   *
    * @constructor
-   * @param {Error} originalError Axios.js response error.
+   *
+   * @param {Error} originalError Original error response.
+   * @param {axios} axios Axios instance used for the request.
    */
-  constructor (originalError) {
-    super(originalError.detail)
-    this.title = originalError.title
-    this.meta = toCamelCaseDeep(originalError.meta || {})
-    this.originalError = originalError
+  constructor (originalError, axios) {
+    super(originalError, axios)
+    let unwrappedError = originalError.response.data.errors[0]
+    this._title = unwrappedError.title
+    this._detail = unwrappedError.detail
+    this._meta = toCamelCaseDeep(unwrappedError.meta || {})
   }
 }
 
 /**
  * "Bad Request" error.
- * error.meta contains description of the invalid field name.
+ * `error.nestedErrors` may contain per-field errors.
  *
  * @export
  * @class
  */
-export class BadRequestError extends ApiError {}
+export class BadRequestError extends ApiError {
+  /**
+   * Wrap a raw API error response.
+   *
+   * @constructor
+   *
+   * @param {Error} originalError Original error response.
+   * @param {axios} axios Axios instance used for the request.
+   */
+  constructor (originalError, axios) {
+    super(originalError, axios)
+    let errors = originalError.response.data.errors
+    if (errors.length > 1) {
+      this._title = 'Request contains some errors.'
+      this._detail = 'Request contains some errors. Check "nestedErrors"'
+      this._nestedErrors = errors.map(err => ({
+        title: err.title,
+        detail: err.detail,
+        meta: toCamelCaseDeep(err.meta)
+      }))
+    }
+  }
+
+  /**
+   * Errors for every invalid field.
+   */
+  get nestedErrors () {
+    return this._nestedErrors
+  }
+}
 
 /**
  * User is not allowed to perform this action.
