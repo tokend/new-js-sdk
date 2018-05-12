@@ -12,7 +12,7 @@ export class Account extends ResourceGroupBase {
    * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
-  get (accountId = null) {
+  get (accountId) {
     return this._makeCallBuilderWithSignature(accountId).get()
   }
 
@@ -27,7 +27,7 @@ export class Account extends ResourceGroupBase {
    *
    * @return {HorizonResponse} Collection of balances.
    */
-  getBalances (query = {}, accountId = null) {
+  getBalances (query, accountId) {
     return this._makeCallBuilderWithSignature(accountId)
       .appendUrlSegment('balances')
       .get(query)
@@ -39,7 +39,7 @@ export class Account extends ResourceGroupBase {
    * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
-  getDetails (accountId = null) {
+  getDetails (accountId) {
     return this._makeCallBuilderWithSignature(accountId)
       .appendUrlSegment(['balances', 'details'])
       .get()
@@ -55,7 +55,7 @@ export class Account extends ResourceGroupBase {
    * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
-  getReferrals (query = {}, accountId = null) {
+  getReferrals (query, accountId) {
     return this._makeCallBuilderWithSignature(accountId)
       .appendUrlSegment('referrals')
       .get(query)
@@ -80,7 +80,7 @@ export class Account extends ResourceGroupBase {
    * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
-  getSigner (signerId, accountId = null) {
+  getSigner (signerId, accountId) {
     return this._makeCallBuilder(accountId)
       .appendUrlSegment(['signers', signerId])
       .get()
@@ -96,7 +96,7 @@ export class Account extends ResourceGroupBase {
    *
    * @return {HorizonResponse} Collection of balances.
    */
-  getSummary (query, accountId = null) {
+  getSummary (query, accountId) {
     return this._makeCallBuilderWithSignature(accountId)
       .appendUrlSegment('summary')
       .get(query)

@@ -18,7 +18,7 @@ export class Balances extends ResourceGroupBase {
    *
    * @return {Promise} Collection of balances.
    */
-  getPage (query = {}) {
+  getPage (query) {
     return this._makeCallBuilder().get(query)
   }
 
