@@ -2,7 +2,9 @@ import { set } from 'lodash'
 import { ResourceGroupBase } from '../../resource_group_base'
 import { Wallet } from '../../wallet'
 import { Keypair } from '../../base/keypair'
+import { makeChangeSignerTransaction } from './change_signers'
 import * as errors from '../errors'
+import { errors as horizonErrors } from '../../horizon'
 
 /**
  * Wallets.
@@ -39,14 +41,13 @@ export class Wallets extends ResourceGroupBase {
     let walletId = Wallet.deriveId(email, password, kdfParams, kdfParams.salt)
 
     let walletResponse
-
     try {
       walletResponse = await this._makeWalletsCallBuilder()
         .appendUrlSegment(walletId)
         .get()
     } catch (err) {
-      let verificationRequired = err instanceof errors.ApiErrors &&
-        err.errors[0] instanceof errors.VerificationRequiredError
+      // HACK: expose wallet Id to allow resend email
+      let verificationRequired = err instanceof errors.VerificationRequiredError
 
       if (verificationRequired) {
         set(err.errors[0], 'meta.walletId', walletId)
@@ -86,46 +87,48 @@ export class Wallets extends ResourceGroupBase {
     )
 
     let recoveryKeypair = Keypair.random()
-    let encryptedRecoveryWallet = mainWallet.encrypt(
+    let encryptedRecoveryWallet = mainWallet.encryptRecoveryData(
       kdfParams,
-      recoveryKeypair.secret()
+      recoveryKeypair
     )
 
     await this._makeWalletsCallBuilder()
       .post({
-        type: 'wallet',
-        id: mainWallet.id,
-        attributes: {
-          accountId: encryptedMainWallet.accountId,
-          keychainData: encryptedMainWallet.keychainData,
-          email,
-          salt: encryptedMainWallet.salt
-        },
-        relationships: {
-          kdf: {
-            data: {
-              type: kdfParams.resourceType,
-              id: kdfParams.id
-            }
+        data: {
+          type: 'wallet',
+          id: encryptedMainWallet.id,
+          attributes: {
+            accountId: encryptedMainWallet.accountId,
+            keychainData: encryptedMainWallet.keychainData,
+            email,
+            salt: encryptedMainWallet.salt
           },
-          recovery: {
-            data: {
-              type: 'recovery',
-              id: encryptedRecoveryWallet.id,
-              attributes: {
-                accountId: mainWallet.accountId,
-                keychainData: encryptedRecoveryWallet.keychainData,
-                salt: encryptedRecoveryWallet.salt
+          relationships: {
+            kdf: {
+              data: {
+                type: kdfParams.resourceType,
+                id: kdfParams.id
               }
-            }
-          },
-          factor: {
-            data: {
-              type: 'password',
-              attributes: {
-                accountId: secondFactorWallet.accountId,
-                keychainData: encryptedSecondFactorWallet.keychainData,
-                salt: encryptedSecondFactorWallet.salt
+            },
+            recovery: {
+              data: {
+                type: 'recovery',
+                id: encryptedRecoveryWallet.id,
+                attributes: {
+                  accountId: encryptedRecoveryWallet.accountId,
+                  keychainData: encryptedRecoveryWallet.keychainData,
+                  salt: encryptedRecoveryWallet.salt
+                }
+              }
+            },
+            factor: {
+              data: {
+                type: 'password',
+                attributes: {
+                  accountId: secondFactorWallet.accountId,
+                  keychainData: encryptedSecondFactorWallet.keychainData,
+                  salt: encryptedSecondFactorWallet.salt
+                }
               }
             }
           }
@@ -150,7 +153,7 @@ export class Wallets extends ResourceGroupBase {
     return this._makeWalletsCallBuilder()
       .appendUrlSegment(jsonPayload.meta.wallet_id)
       .appendUrlSegment('verification')
-      .put({ attributes: { token: jsonPayload.meta.token } })
+      .put({ data: { attributes: { token: jsonPayload.meta.token } } })
   }
 
   /**
@@ -159,7 +162,7 @@ export class Wallets extends ResourceGroupBase {
    * @param {string} [walletId] ID of the wallet to resend email for.
    */
   async resendEmail (walletId) {
-    walletId = walletId || this._server.wallet.id
+    walletId = walletId || this._sdk.wallet.id
 
     return this._makeWalletsCallBuilder()
       .appendUrlSegment(walletId)
@@ -177,32 +180,148 @@ export class Wallets extends ResourceGroupBase {
    * @return {Wallet} New wallet.
    */
   async recovery (email, recoverySeed, newPassword) {
-    let recoveryKdfResponse = await this.getKdfParams(email, true)
-    let recoveryKdfParams = recoveryKdfResponse.data
+    let kdfResponse = await this.getKdfParams(email, true)
+    let kdfParams = kdfResponse.data
+
     let recoveryWallet = Wallet.fromRecoverySeed(
-      recoveryKdfParams,
-      recoveryKdfParams.salt,
+      kdfParams,
+      kdfParams.salt,
       email,
       recoverySeed
     )
 
-    let kdfResponse = await this.getKdfParams()
-    let kdfParams = kdfResponse.data
-
     let newMainWallet = Wallet.generate(email)
-    let ecryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
+    let encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
 
     let newSecondFactorWallet = Wallet.generate(email)
     let encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
       kdfParams,
       newPassword
     )
+    let accountId = await this._getAccountIdByRecoveryId(recoveryWallet.id)
+    let signers = await this._getSigners(accountId)
+    let tx = makeChangeSignerTransaction({
+      newPublicKey: newMainWallet.accountId,
+      signers,
+      signingKeypair: recoveryWallet.keypair,
+      soucreAccount: accountId
+    })
 
-    // let transaction = new
+    await this._makeWalletsCallBuilder()
+      .appendUrlSegment(recoveryWallet.id)
+      .withSignature(recoveryWallet)
+      .put({
+        data: {
+          type: 'wallet',
+          id: encryptedNewMainWallet.id,
+          attributes: {
+            email,
+            accountId: encryptedNewMainWallet.accountId,
+            salt: encryptedNewMainWallet.salt,
+            keychainData: encryptedNewMainWallet.keychainData
+          },
+          relationships: {
+            transaction: {
+              data: {
+                attributes: {
+                  envelope: tx
+                }
+              }
+            },
+            kdf: {
+              data: {
+                type: kdfParams.resourceType,
+                id: kdfParams.id
+              }
+            },
+            factor: {
+              data: {
+                type: 'password',
+                attributes: {
+                  accountId: encryptedSecondFactorWallet.accountId,
+                  keychainData: encryptedSecondFactorWallet.keychainData,
+                  salt: encryptedSecondFactorWallet.salt
+                }
+              }
+            }
+          }
+        }
+      })
+
+    return newMainWallet
   }
 
-  changePassword () {
+  /**
+   * Change password.
+   *
+   * @param {string} newPassword Desired password.
+   * @return {Wallet} New wallet.
+   */
+  async changePassword (newPassword) {
+    const oldWallet = this._sdk.wallet
 
+    let kdfResponse = await this.getKdfParams(oldWallet.email, true)
+    let kdfParams = kdfResponse.data
+
+    let newMainWallet = Wallet.generate(oldWallet.email, oldWallet.accountId)
+    let encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
+
+    let newSecondFactorWallet = Wallet.generate(oldWallet.email)
+    let encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
+      kdfParams,
+      newPassword
+    )
+    let signers = await this._getSigners(this._sdk.wallet.accountId)
+    let tx = makeChangeSignerTransaction({
+      newPublicKey: oldWallet.accountId,
+      signers,
+      signingKeypair: oldWallet.keypair,
+      soucreAccount: oldWallet.accountId,
+      signerToReplace: oldWallet.keypair.accountId()
+    })
+
+    await this._makeWalletsCallBuilder()
+      .appendUrlSegment(oldWallet.id)
+      .withSignature(oldWallet)
+      .put({
+        data: {
+          type: 'wallet',
+          id: encryptedNewMainWallet.id,
+          attributes: {
+            email: oldWallet.email,
+            accountId: encryptedNewMainWallet.accountId,
+            salt: encryptedNewMainWallet.salt,
+            keychainData: encryptedNewMainWallet.keychainData
+          },
+          relationships: {
+            transaction: {
+              data: {
+                attributes: {
+                  envelope: tx
+                }
+              }
+            },
+            kdf: {
+              data: {
+                type: kdfParams.resourceType,
+                id: kdfParams.id
+              }
+            },
+            factor: {
+              data: {
+                type: 'password',
+                attributes: {
+                  accountId: encryptedSecondFactorWallet.accountId,
+                  keychainData: encryptedSecondFactorWallet.keychainData,
+                  salt: encryptedSecondFactorWallet.salt
+                }
+              }
+            }
+          }
+        }
+      })
+
+    return newMainWallet
   }
 
   _makeCallBuilder () {
@@ -214,7 +333,23 @@ export class Wallets extends ResourceGroupBase {
       .appendUrlSegment('wallets')
   }
 
-  _makeChangeSignerTransaction () {
+  _getSigners (accountId) {
+    return this._sdk.horizon.account.getSigners(accountId)
+      .then(response => response.data.signers)
+      .catch(err => {
+        if (err instanceof horizonErrors.NotFoundError) {
+          return []
+        }
 
+        return Promise.reject(err)
+      })
+  }
+
+  async _getAccountIdByRecoveryId (recoveryWalletId) {
+    let wallet = await this._makeWalletsCallBuilder()
+      .appendUrlSegment(recoveryWalletId)
+      .get({})
+
+    return wallet.data.accountId
   }
 }
