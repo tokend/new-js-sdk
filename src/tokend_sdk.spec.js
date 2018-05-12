@@ -12,6 +12,7 @@ describe('TokenD', () => {
   let sdk
   const url = 'https://tokend.org/'
   const opts = { allowHttp: false }
+  const wallet = mocks.wallet()
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
@@ -66,14 +67,20 @@ describe('TokenD', () => {
 
   describe('.useWallet', () => {
     it('Should use a wallet.', () => {
-      let wallet = mocks.wallet()
-
       expectNoThrow(() => sdk.useWallet(wallet))
       expect(sdk).to.have.a.property('wallet').instanceOf(Wallet)
     })
 
     it('Should throw if an invalid wallet passed.', () => {
       expectThrow(() => sdk.useWallet(null))
+    })
+  })
+
+  describe('.ejectWallet', () => {
+    it('Should eject wallet.', () => {
+      sdk.useWallet(wallet)
+      expectNoThrow(() => sdk.ejectWallet())
+      expect(sdk.wallet).to.be.null
     })
   })
 })

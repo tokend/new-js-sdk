@@ -87,6 +87,13 @@ export class TokenD {
     this._wallet = wallet
   }
 
+  /**
+   * Eject current wallet.
+   */
+  ejectWallet () {
+    this._wallet = null
+  }
+
   _useNetworkPassphrase (networkPassphrase) {
     Network.use(new Network(networkPassphrase))
   }
