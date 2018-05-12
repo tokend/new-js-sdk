@@ -1,5 +1,6 @@
 import { HorizonResponse } from './response'
 import * as errors from './errors'
+import { TFARequiredError } from '../api/errors'
 import mocks from '../test_helpers/mock_factory'
 
 describe('HorizonServer', () => {
@@ -87,6 +88,19 @@ describe('HorizonServer', () => {
         tx: rawError.extras.tx,
         txHash: rawError.extras.tx_hash
       })
+    })
+
+    it('Should parse 2FA errors from the API.', async () => {
+      horizon.onAny().reply(403, {
+        errors: [{
+          title: '2FA required.',
+          details: '2FA required.'
+        }]
+      })
+
+      let error = await catchPromise(horizon._makeCallBuilder().get())
+
+      expect(error).to.be.an.instanceOf(TFARequiredError)
     })
   })
 
