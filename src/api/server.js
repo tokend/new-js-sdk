@@ -43,7 +43,7 @@ export class ApiServer extends ServerBase {
       (err) => Promise.reject(err)
     )
     this.useResponseInterceptor(
-      (response) => new ApiResponse(response),
+      (response) => new ApiResponse(response, this._sdk),
       (error) => {
         if (error.response && error.response.status) {
           switch (error.response.status) {

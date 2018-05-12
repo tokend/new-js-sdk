@@ -14,11 +14,11 @@ export class ApiResponse extends ResponseBase {
    *
    * @constructor
    * @param {object} rawResponse Raw axios.js response object.
-   * @param {ApiServer} api API server instance.
+   * @param {TokenD} sdk TokenD instance.
    */
-  constructor (rawResponse, api) {
+  constructor (rawResponse, sdk) {
     super(rawResponse)
-    this._api = api
+    this._sdk = sdk
     this._parseResponse(rawResponse)
   }
 
@@ -88,10 +88,14 @@ export class ApiResponse extends ResponseBase {
     return () => {
       let query = parseQueryParams(link)
 
-      return this._api._makeCallBuilder()
-        .withSignature()
+      let callBuilder = this._sdk.api._makeCallBuilder()
         .appendUrlSegment(link)
-        .get(query)
+
+      if (this._sdk.wallet) {
+        callBuilder = callBuilder.withSignature()
+      }
+
+      return callBuilder.get(query)
     }
   }
 

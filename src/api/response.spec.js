@@ -75,23 +75,23 @@ describe('ApiResponse', () => {
     ]
   })
 
-  let api = mocks.tokenDSdk().api
+  let sdk = mocks.tokenDSdk()
   let singleItemResponse
   let collectionResponse
 
   beforeEach(() => {
     singleItemResponse = new ApiResponse(
       { data: cloneDeep(rawSingleItemResponse) },
-      api
+      sdk
     )
     collectionResponse = new ApiResponse(
       { data: cloneDeep(rawCollectionResponse) },
-      api
+      sdk
     )
   })
 
   afterEach(() => {
-    api.reset()
+    sdk.api.reset()
   })
 
   describe('.constructor', () => {
@@ -153,7 +153,7 @@ describe('ApiResponse', () => {
         .to.have.a.property('fetchNext').a('function')
 
       const params = { page: '2' }
-      api
+      sdk.api
         .onGet(`/articles`, { params })
         .reply(200, cloneDeep(rawCollectionResponse))
 
@@ -165,7 +165,7 @@ describe('ApiResponse', () => {
       expect(collectionResponse.data[0])
         .to.have.a.property('fetchSelf').a('function')
 
-      api
+      sdk.api
         .onGet(`/articles/1`)
         .reply(200, cloneDeep(rawSingleItemResponse))
 
@@ -195,7 +195,7 @@ describe('ApiResponse', () => {
       expect(singleItemResponse.relationships.author)
         .to.have.a.property('fetchSelf').a('function')
 
-      api
+      sdk.api
         .onGet(`/authors/1`)
         .reply(200, cloneDeep(rawSingleItemResponse))
 
@@ -206,10 +206,35 @@ describe('ApiResponse', () => {
 
       expect(selfResponse).to.be.an.instanceOf(ApiResponse)
     })
+
+    it('Should sign link requests if a wallet is present.', async () => {
+      sdk.api
+        .onAny()
+        .reply((config) => {
+          if (!config.authorized) {
+            return [401]
+          }
+          return [200, sdk.api.makeGenericResponse()]
+        })
+
+      let nextResponse = await collectionResponse.fetchNext()
+      expect(nextResponse).to.be.an.instanceOf(ApiResponse)
+    })
+
+    it('Should perform link requests w/o signature if no wallet provided.', async () => {
+      sdk.ejectWallet()
+
+      sdk.api
+        .onAny()
+        .reply(200, sdk.api.makeGenericResponse())
+
+      let nextResponse = await collectionResponse.fetchNext()
+      expect(nextResponse).to.be.an.instanceOf(ApiResponse)
+    })
   })
 
   it('Should parse 204(No Content)', () => {
     const noContentResponse = { status: 204, data: '' }
-    expectNoThrow(() => new ApiResponse(noContentResponse, api))
+    expectNoThrow(() => new ApiResponse(noContentResponse, sdk.api))
   })
 })
