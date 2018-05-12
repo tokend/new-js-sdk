@@ -72,16 +72,16 @@ export class HorizonServer extends ServerBase {
     if (error.response && error.response.status) {
       switch (error.response.status) {
         case 400:
-          error = new errors.BadRequestError(error)
+          error = new errors.BadRequestError(error, this._axios)
           break
         case 401:
-          error = new errors.UnauthorizedError(error)
+          error = new errors.UnauthorizedError(error, this._axios)
           break
         case 404:
-          error = new errors.NotFoundError(error)
+          error = new errors.NotFoundError(error, this._axios)
           break
         case 500:
-          error = new errors.InternalServerError(error)
+          error = new errors.InternalServerError(error, this._axios)
       }
     }
 

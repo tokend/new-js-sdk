@@ -22,33 +22,70 @@ describe('HorizonServer', () => {
       {
         name: 'Bad Request',
         status: 400,
+        body: {
+          title: 'Bad Request',
+          details: 'Bad Request'
+        },
         expectedError: errors.BadRequestError
       },
       {
         name: 'Unauthorized',
         status: 401,
+        body: {
+          title: 'Unauthorized',
+          details: 'Unauthorized'
+        },
         expectedError: errors.UnauthorizedError
       },
       {
         name: 'Not Found',
         status: 404,
+        body: {
+          title: 'Not Found',
+          details: 'Not Found'
+        },
         expectedError: errors.NotFoundError
       },
       {
         name: 'Internal Server Error',
         status: 500,
+        body: {
+          title: 'Internal Server Error',
+          details: 'Internal Server Error'
+        },
         expectedError: errors.InternalServerError
       }
     ]
 
     testCases.forEach(testCase => {
       it(`Should parse and wrap "${testCase.name}" error.`, async () => {
-        horizon.onAny().reply(testCase.status)
+        horizon.onAny().reply(testCase.status, testCase.body)
 
         let error = await catchPromise(
           horizon._makeCallBuilder().get()
         )
         expect(error).to.be.an.instanceOf(testCase.expectedError)
+      })
+    })
+
+    it('Should parse error details.', async () => {
+      let rawError = {
+        title: 'Bad request',
+        details: 'Details',
+        extras: {
+          tx: 'tsfsdfsd',
+          tx_hash: 'le hash'
+        }
+      }
+
+      horizon.onAny().reply(400, rawError)
+
+      let error = await catchPromise(horizon._makeCallBuilder().get())
+
+      expect(error).to.have.a.property('detail').equal(rawError.details)
+      expect(error).to.have.a.property('meta').deep.equal({
+        tx: rawError.extras.tx,
+        txHash: rawError.extras.tx_hash
       })
     })
   })

@@ -1,4 +1,5 @@
 import { ServerErrorBase } from '../errors'
+import { toCamelCaseDeep } from '../utils/case_converter'
 
 /**
  * Generic Horizon error response.
@@ -6,7 +7,23 @@ import { ServerErrorBase } from '../errors'
  * @export
  * @class
  */
-export class HorizonError extends ServerErrorBase {}
+export class HorizonError extends ServerErrorBase {
+  /**
+   * Wrap a raw axios error.
+   *
+   * @param {object} originalError Raw axios response.
+   * @param {axios} axios Axios instance used for request.
+   */
+  constructor (originalError, axios) {
+    super(originalError, axios)
+    let response = originalError.response.data
+    this._detail = response.details
+    this._title = response.title
+    if (response.extras) {
+      this._meta = toCamelCaseDeep(response.extras)
+    }
+  }
+}
 
 /**
  * Horizon 400(BadRequest) error.
