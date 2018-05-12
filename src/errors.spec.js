@@ -10,11 +10,14 @@ describe('errors', () => {
   beforeEach(async () => {
     axiosMock.onAny().reply(403, { title: 'Forbidden' })
     requestConfig = {
+      method: 'get',
+      url: '/',
       headers: {
         Date: Date.now()
       }
     }
-    rawErrorResponse = await (axios.get(requestConfig).catch(err => err))
+    rawErrorResponse = await (axios(requestConfig).catch(err => err))
+    axiosMock.reset()
   })
 
   afterEach(() => axiosMock.reset())
@@ -24,16 +27,24 @@ describe('errors', () => {
       error = new errors.ServerErrorBase(rawErrorResponse, axios)
     })
 
-    it('.retryRequest', () => {
+    describe('.retryRequest', () => {
       it('Should retry exactly the same request.', async () => {
-        axiosMock.onGet(requestConfig).reply(200, { success: true })
+        axiosMock.onAny('/', requestConfig).reply(200, { success: true })
         let response = await error.retryRequest()
-        expect(response.data).to.jsonEqual({ success: true })
+        expect(response.data)
       })
     })
 
-    it('.httpStatus', () => {
-      expect(error).to.have.a.property('httpStatus').equal(403)
+    describe('.httpStatus', () => {
+      it('Should expose http status.', () => {
+        expect(error).to.have.a.property('httpStatus').equal(403)
+      })
+    })
+
+    describe('.meta', () => {
+      it('Should expose error meta.', () => {
+        expect(error).to.have.a.property('meta')
+      })
     })
   })
 })

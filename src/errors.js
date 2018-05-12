@@ -73,7 +73,7 @@ export class ServerErrorBase extends Error {
    * Use it to retry requests after 2FA.
    */
   retryRequest () {
-    let config = this.originalError.request.config
+    let config = this.originalError.config
     return this._axios(config)
   }
 }
