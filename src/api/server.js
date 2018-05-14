@@ -123,4 +123,11 @@ export class ApiServer extends ServerBase {
   get kycEntities () {
     return new resources.KycEntities(this, this._sdk)
   }
+
+  /**
+   * Blobs.
+   */
+  get blobs () {
+    return new resources.Blobs(this, this._sdk)
+  }
 }
