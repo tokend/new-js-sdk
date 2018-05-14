@@ -8,7 +8,7 @@
     "destination": "./docs/pages",
     "recurse": true,
     "template": "node_modules/minami",
-    "readme": "./README.md"
+    "readme": "./docs/README.md"
   },
   "plugins": [
     "plugins/markdown"

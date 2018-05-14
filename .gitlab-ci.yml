@@ -1,0 +1,13 @@
+# Using the ubuntu image here rather than alpine as the native 'ed25519' package does not seem to
+# like alpine.
+image: node:9
+
+pages:
+    script:
+    - npm run docs
+    - mv docs/pages public
+    artifacts:
+      paths:
+      - public
+    only:
+    - master
