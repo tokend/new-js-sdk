@@ -3,6 +3,7 @@ import { ServerBase } from '../server_base'
 import { toSnakeCaseDeep } from '../utils/case_converter'
 import { ApiResponse } from './response'
 import * as errors from './errors'
+import * as horizonErrors from '../horizon/errors'
 import * as resources from './resources'
 
 /**
@@ -52,35 +53,57 @@ export class ApiServer extends ServerBase {
       },
       (error) => {
         if (error.response && error.response.status) {
-          switch (error.response.status) {
-            case 400:
-              error = new errors.BadRequestError(error, this._axios)
-              break
-            case 401:
-              error = new errors.NotAllowedError(error, this._axios)
-              break
-            case 403:
-              let errCode = get(error, 'response.data.errors[0].code')
+          let horizonError = Boolean(get(error, 'response.data.status'))
+          if (horizonError) {
+            // NOTE: all API routes go through Horizon, so some horizon errors
+            // are expected
+            switch (error.response.status) {
+              case 404:
+                error = new horizonErrors.NotFoundError(error, this._axios)
+                break
+              case 500:
+                error = new horizonErrors.InternalServerError(
+                  error,
+                  this._axios
+                )
+                break
+              default:
+                error = new horizonErrors.HorizonError(error, this._axios)
+            }
+          } else {
+            switch (error.response.status) {
+              case 400:
+                error = new errors.BadRequestError(error, this._axios)
+                break
+              case 401:
+                error = new errors.NotAllowedError(error, this._axios)
+                break
+              case 403:
+                let errCode = get(error, 'response.data.errors[0].code')
 
-              if (errCode === 'tfa_required') {
-                error = new errors.TFARequiredError(error, this._axios)
-              } else if (errCode === 'verification_required') {
-                error = new errors.VerificationRequiredError(error, this._axios)
-              } else {
-                error = new errors.ForbiddenRequestError(error, this._axios)
-              }
-              break
-            case 404:
-              error = new errors.NotFoundError(error, this._axios)
-              break
-            case 409:
-              error = new errors.ConflictError(error, this._axios)
-              break
-            case 500:
-              error = new errors.InternalServerError(error, this._axios)
-              break
-            default:
-              error = new errors.ApiError(error, this._axios)
+                if (errCode === 'tfa_required') {
+                  error = new errors.TFARequiredError(error, this._axios)
+                } else if (errCode === 'verification_required') {
+                  error = new errors.VerificationRequiredError(
+                    error,
+                    this._axios
+                  )
+                } else {
+                  error = new errors.ForbiddenRequestError(error, this._axios)
+                }
+                break
+              case 404:
+                error = new errors.NotFoundError(error, this._axios)
+                break
+              case 409:
+                error = new errors.ConflictError(error, this._axios)
+                break
+              case 500:
+                error = new errors.InternalServerError(error, this._axios)
+                break
+              default:
+                error = new errors.ApiError(error, this._axios)
+            }
           }
         }
 

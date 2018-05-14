@@ -1,5 +1,6 @@
 import { ApiResponse } from './response'
 import * as errors from './errors'
+import * as horizonErrors from '../horizon/errors'
 import mocks from '../test_helpers/mock_factory'
 
 describe('ApiServer', () => {
@@ -94,6 +95,24 @@ describe('ApiServer', () => {
         status: 488,
         body: { errors: [{}] },
         expectedError: errors.ApiError
+      },
+      {
+        name: 'Not Found(Horizon)',
+        status: 404,
+        body: { status: '404', title: 'Not Found' },
+        expectedError: horizonErrors.NotFoundError
+      },
+      {
+        name: 'Internal Server Error (Horizon)',
+        status: 500,
+        body: { status: '500', title: 'Internal Server Error' },
+        expectedError: horizonErrors.InternalServerError
+      },
+      {
+        name: 'Unexpected error (Horizon)',
+        status: 488,
+        body: { status: '488', title: 'Expect the unexpected' },
+        expectedError: horizonErrors.HorizonError
       }
     ]
 
