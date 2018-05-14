@@ -43,7 +43,13 @@ export class ApiServer extends ServerBase {
       (err) => Promise.reject(err)
     )
     this.useResponseInterceptor(
-      (response) => new ApiResponse(response, this._sdk),
+      (response) => {
+        if (response.data.url) {
+          return response.data
+        }
+
+        return new ApiResponse(response, this._sdk)
+      },
       (error) => {
         if (error.response && error.response.status) {
           switch (error.response.status) {
@@ -102,5 +108,12 @@ export class ApiServer extends ServerBase {
    */
   get users () {
     return new resources.Users(this, this._sdk)
+  }
+
+  /**
+   * Documents.
+   */
+  get documents () {
+    return new resources.Documents(this, this._sdk)
   }
 }
