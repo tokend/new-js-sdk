@@ -122,8 +122,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   post (data) {
-    let config = this._getRequestConfig('post')
-    config.data = data
+    let config = this._getRequestConfig({
+      method: 'post',
+      data
+    })
 
     return this._axios(config)
   }
@@ -135,8 +137,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   get (query) {
-    let config = this._getRequestConfig('get')
-    config.params = query
+    let config = this._getRequestConfig({
+      method: 'get',
+      params: query
+    })
 
     return this._axios(config)
   }
@@ -148,8 +152,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   put (data) {
-    let config = this._getRequestConfig('put')
-    config.data = data
+    let config = this._getRequestConfig({
+      method: 'put',
+      data
+    })
 
     return this._axios(config)
   }
@@ -161,8 +167,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   patch (data) {
-    let config = this._getRequestConfig('patch')
-    config.data = data
+    let config = this._getRequestConfig({
+      method: 'patch',
+      data
+    })
 
     return this._axios(config)
   }
@@ -174,8 +182,10 @@ export class CallBuilder {
    * @return {Promise} Request result.
    */
   delete (data) {
-    let config = this._getRequestConfig('delete')
-    config.data = data
+    let config = this._getRequestConfig({
+      method: 'delete',
+      data
+    })
 
     return this._axios(config)
   }
@@ -186,9 +196,8 @@ export class CallBuilder {
     }, '')
   }
 
-  _getRequestConfig (method) {
-    let url = this._getUrl()
-    let config = { method, url }
+  _getRequestConfig (config) {
+    config.url = this._getUrl()
 
     if (this._authRequired) {
       this._signRequest(config)
@@ -205,7 +214,13 @@ export class CallBuilder {
     let validUntil = Math
       .floor(this._getTimestamp() + SIGNATURE_VALID_SEC)
       .toString()
-    let signatureBase = `{ uri: '${config.url}', valid_untill: '${validUntil.toString()}'}`
+
+    let fullUrl = uri(config.url)
+    if (config.params) {
+      fullUrl = fullUrl.addQuery(config.params)
+    }
+
+    let signatureBase = `{ uri: '${fullUrl.toString()}', valid_untill: '${validUntil.toString()}'}`
     let data = hash(signatureBase)
     let signature = this._wallet.keypair.signDecorated(data)
 
