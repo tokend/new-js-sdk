@@ -8,26 +8,26 @@
 
 1. Add TokenD SDK to your project:
 
-```sh
-npm install -S tokend-sdk
-```
+    ```sh
+    npm install -S tokend-sdk
+    ```
 
-2. Create an SDK instance:
+1. Create an SDK instance:
 
-```js
-import { TokenD } from 'tokend-sdk'
+    ```js
+    import { TokenD } from 'tokend-sdk'
 
-let sdk = await TokenD.create('https://backend.tokend.com')
-```
+    let sdk = await TokenD.create('https://backend.tokend.com')
+    ```
 
-3. Grab your TokenD wallet:
+1. Grab your TokenD wallet:
 
-```js
-let wallet = await sdk.api.wallets.get('my@email.com', '<my password>')
-sdk.useWallet(wallet)
-```
+    ```js
+    let wallet = await sdk.api.wallets.get('my@email.com', '<my password>')
+    sdk.useWallet(wallet)
+    ```
 
-4. Read the [docs](./docs.readme.md) and tokenize your assets!
+1. Read the [docs](./docs.readme.md) and tokenize your assets!
 
 ## Development
 
