@@ -15,10 +15,11 @@ export class TokenD {
    * @private
    * @constructor
    */
-  constructor (url, opts) {
+  constructor (url, opts = {}) {
     this._api = new ApiServer(this, url, opts)
     this._horizon = new HorizonServer(this, url, opts)
     this._clockDiff = 0
+    this._legacySignatures = opts.legacySignatures || false
   }
 
   /**
@@ -33,6 +34,7 @@ export class TokenD {
    * @param {object} [opts.httpBasicAuth] HTTP basic auth credentials. Look [axios docs](https://github.com/axios/axios#request-config) for more info.
    * @param {object} [opts.customHeaders] Custom headers for request.
    * @param {boolean} [opts.withCredentials] Indicates whether or not cross-site Access-Control requests should be made using credentials.
+   * @param {boolean} [opts.legacySignatures] Use legacy signature scheme instead of IETF HTTP Signatures
    *
    * @return {Promise.<TokenD>}
    */
@@ -72,6 +74,13 @@ export class TokenD {
    */
   get clockDiff () {
     return this._clockDiff
+  }
+
+  /**
+   * Use legacy signature scheme instead of IETF HTTP Signatures.
+   */
+  get legacySignatures () {
+    return this._legacySignatures
   }
 
   /**

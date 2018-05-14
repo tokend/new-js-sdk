@@ -83,4 +83,10 @@ describe('TokenD', () => {
       expect(sdk.wallet).to.be.null
     })
   })
+
+  describe('.legacySignatures', () => {
+    it('Should not use legacy signatures by default', () => {
+      expect(sdk).to.have.a.property('legacySignatures').equal(false)
+    })
+  })
 })

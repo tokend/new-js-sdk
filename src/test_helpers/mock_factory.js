@@ -20,8 +20,8 @@ export default class Mocks {
     return new Wallet(email, keypair, accountId, walletId)
   }
 
-  static tokenDSdk ({ noWallet = false } = {}) {
-    let sdk = new TokenD('https://example.com')
+  static tokenDSdk ({ noWallet = false, legacySignatures = false } = {}) {
+    let sdk = new TokenD('https://example.com', { legacySignatures })
     Mocks._mockApiServer(sdk.api)
     Mocks._mockHorizonServer(sdk.horizon)
 
@@ -61,7 +61,11 @@ export default class Mocks {
     // Add helper interceptors
     server._axios.interceptors.request.use(
       (config) => {
-        config.authorized = !!config.headers['X-AuthSignature']
+        if (server._sdk.legacySignatures) {
+          config.authorized = !!config.headers['X-AuthSignature']
+        } else {
+          config.authorized = !!config.headers['signature']
+        }
         return config
       },
       (err) => Promise.reject(err)

@@ -3,6 +3,8 @@ import { Keypair, hash } from './base'
 import { isString, isNumber, isArray } from 'lodash'
 
 const SIGNATURE_VALID_SEC = 60
+const REQUEST_TARGET_HEADER = '(request-target)'
+const SIGNED_HEADERS = [REQUEST_TARGET_HEADER, 'date']
 
 /**
  * Creates a new {@link CallBuilder}.
@@ -211,16 +213,46 @@ export class CallBuilder {
   }
 
   _signRequest (config) {
+    if (this._sdk.legacySignatures) {
+      this._signRequestLegacy(config)
+    } else {
+      let date = new Date(this._getTimestamp() * 1000).toUTCString()
+      config.headers = config.headers
+        ? Object.assign(config.headers, { date })
+        : { date }
+
+      let digest = hash(this._requestDigest(config))
+      let signature = this._wallet.keypair.sign(digest).toString('base64')
+      let keyId = this._wallet.keypair.accountId()
+      let algorithm = 'ed25519-sha256'
+      config.headers.signature = `keyId="${keyId}",algorithm="${algorithm}",headers="${SIGNED_HEADERS.join(' ')}",signature="${signature}"`
+    }
+  }
+
+  _requestDigest (config) {
+    let toSign = SIGNED_HEADERS.map(header => {
+      header = header.toLowerCase()
+      if (header === REQUEST_TARGET_HEADER) {
+        let method = config.method.toLowerCase()
+        let endpoint = this._getFullUrl(config)
+
+        return `${REQUEST_TARGET_HEADER}: ${method.toLowerCase()} ${endpoint}`
+      };
+      let value = config.headers[header]
+
+      return `${header}: ${value}`
+    })
+
+    return toSign.join('\n')
+  };
+
+  _signRequestLegacy (config) {
     let validUntil = Math
       .floor(this._getTimestamp() + SIGNATURE_VALID_SEC)
       .toString()
 
-    let fullUrl = uri(config.url)
-    if (config.params) {
-      fullUrl = fullUrl.addQuery(config.params)
-    }
-
-    let signatureBase = `{ uri: '${fullUrl.toString()}', valid_untill: '${validUntil.toString()}'}`
+    let fullUrl = this._getFullUrl(config)
+    let signatureBase = `{ uri: '${fullUrl}', valid_untill: '${validUntil.toString()}'}`
     let data = hash(signatureBase)
     let signature = this._wallet.keypair.signDecorated(data)
 
@@ -231,6 +263,15 @@ export class CallBuilder {
         'X-AuthSignature': signature.toXDR('base64')
       }
     })
+  }
+
+  _getFullUrl (config) {
+    let fullUrl = uri(config.url)
+    if (config.params) {
+      fullUrl = fullUrl.addQuery(config.params)
+    }
+
+    return fullUrl.toString()
   }
 
   _getTimestamp () {

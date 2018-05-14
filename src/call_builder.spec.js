@@ -1,7 +1,6 @@
 import sinon from 'sinon'
 import axios from 'axios'
 import AxiosMock from 'axios-mock-adapter'
-import { toNumber } from 'lodash'
 import mocks from './test_helpers/mock_factory'
 
 import { CallBuilder } from './call_builder'
@@ -10,15 +9,21 @@ describe('CallBuilder', () => {
   let sandbox
   let axiosInstance = axios.create()
   let axiosMock = new AxiosMock(axiosInstance)
-  let sdk = mocks.tokenDSdk()
+  let sdk = mocks.tokenDSdk({ legacySignatures: false })
+  let sdkLegacySignatures = mocks.tokenDSdk({ legacySignatures: true })
   let noWalletSdk = mocks.tokenDSdk({ noWallet: true })
   let callBuilder
   let noWalletCallBuilder
+  let legacySignaturesCallBuilder
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
     callBuilder = new CallBuilder(axiosInstance, sdk)
     noWalletCallBuilder = new CallBuilder(axiosInstance, noWalletSdk)
+    legacySignaturesCallBuilder = new CallBuilder(
+      axiosInstance,
+      sdkLegacySignatures
+    )
   })
 
   afterEach(() => {
@@ -133,19 +138,38 @@ describe('CallBuilder', () => {
       axiosMock.onAny()
         .reply(config => {
           expect(config.headers)
-            .to.have.a.property('X-AuthPublicKey')
-            .equal(sdk.wallet.accountId)
+            .to.have.a.property('date')
+            .equal('Wed, 04 Apr 2018 00:00:00 GMT')
           expect(config.headers)
-            .to.have.a.property('X-AuthSignature')
-          expect(config.headers)
-            .to.have.a.property('X-AuthValidUnTillTimestamp')
-          expect(toNumber(config.headers['X-AuthValidUnTillTimestamp']))
-            .to.be.above(timestamp)
+            .to.have.a.property('signature')
+            .equal(`keyId="GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB",algorithm="ed25519-sha256",headers="(request-target) date",signature="iAteM8F+Y6Tl88RFN460FPXwEcQ3FN9apW4feZTQJRA7ZiMP0m3oH8k8JimsQT9lH3jtrdzuXGQAAPPE5VH+CQ=="`)
 
           return [200, {}]
         })
 
       await callBuilder.withSignature().get()
+    })
+
+    it('Should sign a request(legacy).', async () => {
+      const timestamp = Date.UTC(2018, 3, 4) / 1000
+      sandbox.useFakeTimers(timestamp * 1000)
+
+      axiosMock.onAny()
+        .reply(config => {
+          expect(config.headers)
+            .to.have.a.property('X-AuthPublicKey')
+            .equal(sdk.wallet.accountId)
+          expect(config.headers)
+            .to.have.a.property('X-AuthSignature')
+            .equal('bQHOGAAAAEDuZW71sEhG6IgVBZ/avvM5ZNOF3BCyYGJ7einbPb4Cyhr/s3Hdl14zf2/Q3zAbFJb6KaqFTmidyuGOYykIV3UC')
+          expect(config.headers)
+            .to.have.a.property('X-AuthValidUnTillTimestamp')
+            .equal('1522800060')
+
+          return [200, {}]
+        })
+
+      await legacySignaturesCallBuilder.withSignature().get()
     })
 
     it('Should throw if there is no wallet attached.', () => {
