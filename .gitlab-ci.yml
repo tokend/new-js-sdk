@@ -1,6 +1,5 @@
-# Using the ubuntu image here rather than alpine as the native 'ed25519' package does not seem to
-# like alpine.
-image: node:9
+# phantomjs-prebuild doesn't work properly with Alpine-based images
+image: globegitter/ubuntu-nodejs-yarn:16.04-7.10-0.24.5-v1.0.2
 
 pages:
     script:
