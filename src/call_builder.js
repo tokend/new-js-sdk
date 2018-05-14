@@ -32,7 +32,7 @@ export class CallBuilder {
   /**
    * Append URL segment.
    *
-   * @param {string|number|(string|number)[]} segment URL path segment(s).
+   * @param {(string|number|string[])} segment URL path segment(s).
    * @return {CallBuilder} Self.
    */
   appendUrlSegment (segment) {
