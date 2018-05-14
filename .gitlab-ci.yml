@@ -4,6 +4,7 @@ image: node:9
 
 pages:
     script:
+    - npm install --only=dev
     - npm run docs
     - mv docs/pages public
     artifacts:
