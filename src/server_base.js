@@ -2,7 +2,6 @@ import axios from 'axios'
 import uri from 'urijs'
 import { NetworkError, TimeoutError } from './errors'
 import { CallBuilder } from './call_builder'
-import { TokenD } from './tokend_sdk'
 
 /**
  * Server handles the network connection to some remote server
@@ -26,7 +25,7 @@ export class ServerBase {
    * @param {string} [opts.responseType='json'] Indicates the type of data that the server will respond with options are 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'.
    */
   constructor (sdk, serverUrl, opts = {}) {
-    if (!(sdk instanceof TokenD)) {
+    if (!sdk) {
       throw new TypeError('An isntance of TokenD SDK expected.')
     }
 
