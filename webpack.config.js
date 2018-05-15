@@ -15,7 +15,7 @@ module.exports = {
     ]
   },
   output: {
-    library: 'TokenDSdk',
+    library: 'Sdk',
     filename: 'tokend-sdk[hash].js',
     path: path.resolve(__dirname, 'dist')
   },
