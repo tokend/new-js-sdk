@@ -1,7 +1,7 @@
 {
   "source": {
     "include": ["src"],
-    "includePattern": ".+\\.js$",
+    "includePattern": ".+(\\.js)$",
     "excludePattern": ".+\\.test\\.js$"
   },
   "opts": {
@@ -12,5 +12,8 @@
   },
   "plugins": [
     "plugins/markdown"
-  ]
+  ],
+  "markdown": {
+    "idInHeadings": true
+  }
 }

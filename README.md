@@ -2,7 +2,7 @@
 
 ## Overview
 
-**TokenD JS SDK** is a client-side Javascript library for TokenD.
+**TokenD JS SDK** is a client-side Javascript library for TokenD tokenization platform.
 
 ## Getting Started
 
@@ -27,11 +27,11 @@
     sdk.useWallet(wallet)
     ```
 
-1. Read the [docs](./docs.readme.md) and tokenize your assets!
+1. Read the [docs](https://tokend.gitlab.io/new-js-sdk/index.html) and tokenize your assets!
 
 ## Development
 
-Check out our [Development Guide](./docs/development.md).
+Check out our [Development Guide](https://tokend.gitlab.io/new-js-sdk/index.html#development-guide).
 
 ## License
 

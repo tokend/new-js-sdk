@@ -13,6 +13,7 @@
 /dist/
 /.git_copy/
 /examples_old/
+/docs/pages/
 
 #ignore master seeds
 /scripts/master_seeds.js

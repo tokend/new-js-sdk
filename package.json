@@ -10,8 +10,7 @@
         "test:browser": "karma start",
         "lint": "eslint ./src --cache --fix",
         "coverage": "nyc mocha --opts ./mocha.opts 'src/**/*.spec.js'",
-        "docs": "rimraf docs/pages && jsdoc -c ./.jsdoc.json",
-        "system-init": "node ./scripts/system-init/main.js"
+        "docs": "rimraf docs/pages && jsdoc -c ./.jsdoc.json"
     },
     "husky": {
         "hooks": {
