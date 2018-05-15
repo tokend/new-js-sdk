@@ -24,7 +24,7 @@ export class ResponseBase {
   /**
    * Get response HTTP status.
    */
-  get status () {
+  get httpStatus () {
     return this._rawResponse.status
   }
 

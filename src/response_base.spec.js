@@ -28,10 +28,10 @@ describe('ResponseBase', () => {
     })
   })
 
-  describe('.status', () => {
+  describe('.httpStatus', () => {
     it('Should expose response status.', () => {
       expect(response)
-        .to.have.a.property('status')
+        .to.have.a.property('httpStatus')
         .deep.equal(rawResponse.status)
     })
   })
