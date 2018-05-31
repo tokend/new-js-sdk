@@ -16,7 +16,7 @@ export class ApiServer extends ServerBase {
    * Create a new API server instance.
    *
    * @constructor
-   * @param {TokenD} sdk Parent SDK instance.
+   * @param {Swarm} sdk Parent SDK instance.
    * @param {string} serverUrl API server URL.
    * @param {Object} opts
    * @param {boolean} [opts.allowHttp] Allow connecting to http servers, default: `false`. This must be set to false in production deployments!

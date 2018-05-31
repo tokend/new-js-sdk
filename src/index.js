@@ -1,9 +1,9 @@
-// TokenD classes to expose
+// Swarm classes to expose
 import * as commonErrors from './errors'
 import { errors as apiErrors } from './api'
 import { errors as horizonErrors } from './horizon'
 
-export * from './tokend_sdk'
+export * from './sdk'
 export { default as base } from './base'
 
 // Typed errors

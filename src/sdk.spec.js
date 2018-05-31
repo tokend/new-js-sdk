@@ -5,18 +5,18 @@ import { Network } from './base/network'
 import mocks from './test_helpers/mock_factory'
 import sinon from 'sinon'
 
-import { TokenD } from './tokend_sdk'
+import { Swarm } from './sdk'
 
-describe('TokenD', () => {
+describe('Swarm', () => {
   let sandbox
   let sdk
-  const url = 'https://tokend.org/'
+  const url = 'https://swarm.org/'
   const opts = { allowHttp: false }
   const wallet = mocks.wallet()
 
   beforeEach(() => {
     sandbox = sinon.createSandbox()
-    sdk = new TokenD(url, opts)
+    sdk = new Swarm(url, opts)
   })
 
   afterEach(() => {
@@ -25,7 +25,7 @@ describe('TokenD', () => {
 
   describe('.constructor', () => {
     it('Should make an SDK instance.', () => {
-      let sdk = new TokenD(url, opts)
+      let sdk = new Swarm(url, opts)
 
       expect(sdk).to.have.a.property('api').instanceOf(ApiServer)
       expect(sdk).to.have.a.property('horizon').instanceOf(HorizonServer)
@@ -49,11 +49,11 @@ describe('TokenD', () => {
         }))
       sandbox.stub(Network, 'use')
 
-      sdk = await TokenD.create(url, opts)
+      sdk = await Swarm.create(url, opts)
     })
 
     it('Should create an SDK instance.', async () => {
-      expect(sdk).to.be.an.instanceOf(TokenD)
+      expect(sdk).to.be.an.instanceOf(Swarm)
     })
 
     it('Should sync network passphrase.', async () => {

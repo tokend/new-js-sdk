@@ -20,7 +20,7 @@ export class CallBuilder {
    *
    * @constructor
    * @param {Object} axios Axios.js instance.
-   * @param {TokenD} [sdk] TokenD SDK instance.
+   * @param {Swarm} [sdk] Swarm SDK instance.
    */
   constructor (axios, sdk) {
     this._axios = axios

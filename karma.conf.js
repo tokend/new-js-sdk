@@ -33,8 +33,8 @@ module.exports = function (config) {
         ]
       },
       output: {
-        library: 'TokenDSdk',
-        filename: 'tokend-sdk[hash].js',
+        library: 'SwarmSdk',
+        filename: 'swarm-sdk[hash].js',
         path: path.resolve(__dirname, 'dist')
       },
       plugins: [

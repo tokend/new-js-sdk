@@ -4,13 +4,13 @@ import { Wallet } from './wallet'
 import { Network } from './base/network'
 
 /**
- * TokendD Software Development Toolkit.
+ * Swarm Software Development Toolkit.
  *
  * @class
  */
-export class TokenD {
+export class Swarm {
   /**
-   * Internal constructor. Use TokenD.create() isntead.
+   * Internal constructor. Use Swarm.create() isntead.
    *
    * @private
    * @constructor
@@ -23,11 +23,11 @@ export class TokenD {
   }
 
   /**
-   * Make a new TokenD SDK instance.
+   * Make a new Swarm SDK instance.
    *
    * @constructor
    *
-   * @param {string} url TokenD backend url.
+   * @param {string} url Swarm backend url.
    * @param {object} [opts]
    * @param {boolean} [opts.allowHttp] Allow connecting to http servers, default: `false`. This must be set to false in production deployments!
    * @param {object} [opts.proxy] Proxy configuration. Look [axios docs](https://github.com/axios/axios#request-config) for more info
@@ -36,10 +36,10 @@ export class TokenD {
    * @param {boolean} [opts.withCredentials] Indicates whether or not cross-site Access-Control requests should be made using credentials.
    * @param {boolean} [opts.legacySignatures] Use legacy signature scheme instead of IETF HTTP Signatures
    *
-   * @return {Promise.<TokenD>}
+   * @return {Promise.<Swarm>}
    */
   static async create (url, opts) {
-    let sdk = new TokenD(url, opts)
+    let sdk = new Swarm(url, opts)
     let networkDetails = await sdk.horizon.getNetworkDetails()
 
     sdk._useNetworkPassphrase(networkDetails.data.networkPassphrase)

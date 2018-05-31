@@ -14,7 +14,7 @@ export class ApiResponse extends ResponseBase {
    *
    * @constructor
    * @param {object} rawResponse Raw axios.js response object.
-   * @param {TokenD} sdk TokenD instance.
+   * @param {Swarm} sdk Swarm instance.
    */
   constructor (rawResponse, sdk) {
     super(rawResponse)

@@ -1,5 +1,5 @@
 import { Keypair } from '../base'
-import sjcl from 'sjcl-tokend'
+import sjcl from 'sjcl-swarm'
 import * as crypto from './crypto'
 import { isNil, isString } from 'lodash'
 

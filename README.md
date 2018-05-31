@@ -1,38 +1,38 @@
-# TokenD JS SDK
+# Swarm JS SDK
 
 ## Overview
 
-**TokenD JS SDK** is a client-side Javascript library for TokenD tokenization platform.
+**Swarm JS SDK** is a client-side Javascript library for Swarm tokenization platform.
 
 ## Getting Started
 
-1. Add TokenD SDK to your project:
+1. Add Swarm SDK to your project:
 
     ```sh
-    npm install -S tokend-sdk
+    npm install -S swarm-sdk
     ```
 
 1. Create an SDK instance:
 
     ```js
-    import { TokenD } from 'tokend-sdk'
+    import { Swarm } from 'swarm-sdk'
 
-    let sdk = await TokenD.create('https://backend.tokend.com')
+    let sdk = await Swarm.create('https://backend.swarm.com')
     ```
 
-1. Grab your TokenD wallet:
+1. Grab your Swarm wallet:
 
     ```js
     let wallet = await sdk.api.wallets.get('my@email.com', '<my password>')
     sdk.useWallet(wallet)
     ```
 
-1. Read the [docs](https://tokend.gitlab.io/new-js-sdk/index.html) and tokenize your assets!
+1. Read the [docs](https://swarm.gitlab.io/new-js-sdk/index.html) and tokenize your assets!
 
 ## Development
 
-Check out our [Development Guide](https://tokend.gitlab.io/new-js-sdk/index.html#development-guide).
+Check out our [Development Guide](https://swarm.gitlab.io/new-js-sdk/index.html#development-guide).
 
 ## License
 
-tokend-js-sdk is licensed under an [Apache-2.0 license](./LICENSE).
+swarm-js-sdk is licensed under an [Apache-2.0 license](./LICENSE).

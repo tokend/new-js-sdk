@@ -14,7 +14,7 @@ export class ServerBase {
    * Creates a Server instance.
    *
    * @constructor
-   * @param {TokenD} sdk Parent TokenD SDK instance.
+   * @param {Swarm} sdk Parent Swarm SDK instance.
    * @param {string} serverUrl Server url.
    * @param {object} [opts]
    * @param {boolean} [opts.allowHttp] Allow connecting to http servers, default: `false`. This must be set to false in production deployments!
@@ -26,7 +26,7 @@ export class ServerBase {
    */
   constructor (sdk, serverUrl, opts = {}) {
     if (!sdk) {
-      throw new TypeError('An isntance of TokenD SDK expected.')
+      throw new TypeError('An isntance of Swarm SDK expected.')
     }
 
     let parsedUrl = uri.parse(serverUrl)
