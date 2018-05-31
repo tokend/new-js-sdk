@@ -1,4 +1,4 @@
-import sjcl from 'sjcl-swarm'
+import sjcl from 'sjcl-tokend'
 import { cloneDeep } from 'lodash'
 import * as crypto from './crypto'
 

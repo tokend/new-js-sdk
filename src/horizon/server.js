@@ -15,7 +15,7 @@ export class HorizonServer extends ServerBase {
    *
    * @constructor
    *
-   * @param {Swarm} sdk Parent SDK instance.
+   * @param {TokenD} sdk Parent SDK instance.
    * @param {string} serverUrl Horizon server instance URL.
    * @param {boolean} [opts.allowHttp] Allow connecting to http servers, default: `false`. This must be set to false in production deployments!
    * @param {Object} [opts.proxy] Proxy configuration. Look [axios docs](https://github.com/axios/axios#request-config) for more info

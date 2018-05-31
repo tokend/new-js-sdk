@@ -13,7 +13,7 @@ export class HorizonResponse extends ResponseBase {
    * Wrap a raw axios response.
    *
    * @param {object} rawResponse Raw axios.js response object.
-   * @param {Swarm} sdk Swarm SDK instance.
+   * @param {TokenD} sdk TokenD SDK instance.
    */
   constructor (rawResponse, sdk) {
     super(rawResponse)

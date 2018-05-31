@@ -1,6 +1,6 @@
-# Swarm JavaScript SDK
+# TokenD JavaScript SDK
 
-The Swarm JavaScript SDK facilitates client integration with the Swarm asset tokenizaton platform.
+The TokenD JavaScript SDK facilitates client integration with the TokenD asset tokenizaton platform.
 
 ## Table of content
 
@@ -8,7 +8,7 @@ The Swarm JavaScript SDK facilitates client integration with the Swarm asset tok
 
 1. [Javascript SDK](#javascript-sdk)
     - [Installation](#installation)
-    - [Swarm SDK](#swarm-sdk)
+    - [TokenD SDK](#tokend-sdk)
     - [Wallets](#wallets)
     - [API Server](#api-server)
     - [Horizon Server](#horizon-server)
@@ -21,7 +21,7 @@ The Swarm JavaScript SDK facilitates client integration with the Swarm asset tok
 
 ## Platform Overview
 
-There two ways to interact with Swarm platform:
+There two ways to interact with TokenD platform:
 
 - By calling REST services(API)
 - By building, signing and submitting blockchain transactions
@@ -33,7 +33,7 @@ Every user has a [keypair](./Keypair.html) that is used to authorize requests an
 ### Installation
 
 ```bash
-npm install -S swarm-sdk
+npm install -S tokend-sdk
 ```
 
 #### Webpack
@@ -46,7 +46,7 @@ If you use webpack as your build system you'll need to exclude the optional nati
   ]
 ```
 
-You can also checkout package's [webpack config](https://gitlab.com/swarm/new-js-sdk/blob/master/webpack.config.js).
+You can also checkout package's [webpack config](https://gitlab.com/tokend/new-js-sdk/blob/master/webpack.config.js).
 
 #### Prebuilt Minified Scripts
 
@@ -56,23 +56,23 @@ The package also ships prebuilt minified scripts for browsers in the `/dist` fol
 <script type="text/javascript" src="https://<sdk-dist-url>"></script>
 <script type="text/javascript">
   (async () => {
-    let sdk = await Sdk.Swarm.create('https://<swarm-backend-url>')
+    let sdk = await Sdk.TokenD.create('https://<tokend-backend-url>')
     // ...
   })()
 </script>
 ```
 
-## Swarm SDK
+## TokenD SDK
 
-To get started create a Swarm SDK instance:
+To get started create a TokenD SDK instance:
 
 ```js
-import { Swarm } from 'swarm-sdk'
+import { TokenD } from 'tokend-sdk'
 
-let sdk = await Swarm.create('https://<swarm-backend-url>')
+let sdk = await TokenD.create('https://<tokend-backend-url>')
 ```
 
-You can configure different environment setting such as proxy configuration via [options](./Swarm.create.html).
+You can configure different environment setting such as proxy configuration via [options](./TokenD.create.html).
 
 ## Response Format
 
@@ -243,7 +243,7 @@ let recoveredWallet = await sdk.api.wallets.recovery(
 
 ## Horizon Server
 
-[Horizon server](#horizon) is the interface for interaction with the Swarm blockchain. It allows to submit transactions and query on-chain data.
+[Horizon server](#horizon) is the interface for interaction with the TokenD blockchain. It allows to submit transactions and query on-chain data.
 
 ### Resources
 
@@ -266,7 +266,7 @@ let recoveredWallet = await sdk.api.wallets.recovery(
 Some actions may require 2FA. Following snipet allows utilizes [interceptors](#interceptors) to handle and retry failed requests:
 
 ```js
-import { errors } from 'swarm-sdk'
+import { errors } from 'tokend-sdk'
 
 sdk.api.useResponseInterceptor(
   config => config,
@@ -298,7 +298,7 @@ Blockhain transactions must have:
 ### Building and signing
 
 ```js
-import { base } from 'swarm-sdk'
+import { base } from 'tokend-sdk'
 
 let tx = new base.TransactionBuilder(sdk.wallet.accountId)
   .addOperation(base.Operation.payment(paymentParamsObject))
@@ -321,7 +321,7 @@ form. You can convert this XDR to JSON using the `.fromXDR()` method.
 An example of re-writing the txHandler from above to print the XDR fields as JSON:
 
 ```js
-import { base } from 'swarm-sdk'
+import { base } from 'tokend-sdk'
 
 let envelope = response.data.envelopeXdr
 console.log(base.xdr.TransactionEnvelope.fromXDR(envelope, 'base64'))

@@ -1,6 +1,6 @@
 import { reduce, isString } from 'lodash'
 import crypto from 'crypto'
-import sjcl from 'sjcl-swarm'
+import sjcl from 'sjcl-tokend'
 
 const ivLength = 96 / 8 // bytes
 

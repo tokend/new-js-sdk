@@ -1,7 +1,7 @@
 {
-    "name": "swarm-sdk",
-    "version": "0.0.1",
-    "description": "swarm-sdk is a client-side SDK for Swarm asset tokenization platform.",
+    "name": "tokend-sdk",
+    "version": "0.0.0",
+    "description": "tokend-sdk is a client-side SDK for TokenD asset tokenization platform.",
     "main": "lib/index.js",
     "scripts": {
         "build": "rimraf lib && babel src -d lib --ignore spec.js,test_helpers",
@@ -28,18 +28,18 @@
         "> 1%"
     ],
     "keywords": [
-        "swarm"
+        "tokend"
     ],
     "repository": {
         "type": "git",
-        "url": "https://gitlab.com/swarmfund/new-js-sdk.git"
+        "url": "https://gitlab.com/tokend/new-js-sdk.git"
     },
     "author": "Distributed Lab <contact@distributedlab.com>",
     "license": "Apache-2.0",
     "bugs": {
-        "url": "https://gitlab.com/swarmfund/new-js-sdk.git/issues"
+        "url": "https://gitlab.com/tokend/new-js-sdk.git/issues"
     },
-    "homepage": "https://gitlab.com/swarmfund/new-js-sdk",
+    "homepage": "https://gitlab.com/tokend/new-js-sdk",
     "devDependencies": {
         "axios-mock-adapter": "^1.15.0",
         "babel-cli": "^6.26.0",

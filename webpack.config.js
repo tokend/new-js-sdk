@@ -16,7 +16,7 @@ module.exports = {
   },
   output: {
     library: 'Sdk',
-    filename: 'swarm-sdk[hash].js',
+    filename: 'tokend-sdk[hash].js',
     path: path.resolve(__dirname, 'dist')
   },
   plugins: [
