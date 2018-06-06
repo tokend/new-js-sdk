@@ -1,4 +1,4 @@
-// Automatically generated on 2018-06-05T20:00:27+03:00
+// Automatically generated on 2018-06-06T13:11:29+03:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -206,6 +206,8 @@ xdr.enum("ManageSaleResultCode", {
 //   union switch (ManageSaleAction action) {
 //       case CREATE_UPDATE_DETAILS_REQUEST:
 //           uint64 requestID;
+//       case CANCEL:
+//           void;
 //       }
 //
 // ===========================================================================
@@ -214,6 +216,7 @@ xdr.union("ManageSaleResultSuccessResponse", {
   switchName: "action",
   switches: [
     ["createUpdateDetailsRequest", "requestId"],
+    ["cancel", xdr.void()],
   ],
   arms: {
     requestId: xdr.lookup("Uint64"),
@@ -246,6 +249,8 @@ xdr.union("ManageSaleResultSuccessExt", {
 //       union switch (ManageSaleAction action) {
 //       case CREATE_UPDATE_DETAILS_REQUEST:
 //           uint64 requestID;
+//       case CANCEL:
+//           void;
 //       } response;
 //   
 //       //reserved for future use
