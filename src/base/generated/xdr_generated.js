@@ -1,4 +1,4 @@
-// Automatically generated on 2018-06-06T13:11:29+03:00
+// Automatically generated on 2018-06-08T13:06:01+03:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -7420,7 +7420,9 @@ xdr.enum("AccountPolicies", {
 //   	MASTER = 4,            // master account
 //       NOT_VERIFIED = 5,
 //   	SYNDICATE = 6, // can create asset
-//   	EXCHANGE = 7
+//   	EXCHANGE = 7,
+//   	ACCREDITED_INVESTOR = 8,
+//   	INSTITUTIONAL_INVESTOR = 9
 //   };
 //
 // ===========================================================================
@@ -7432,6 +7434,8 @@ xdr.enum("AccountType", {
   notVerified: 5,
   syndicate: 6,
   exchange: 7,
+  accreditedInvestor: 8,
+  institutionalInvestor: 9,
 });
 
 // === xdr source ============================================================
