@@ -1,4 +1,4 @@
-// Automatically generated on 2018-06-06T13:11:29+03:00
+// Automatically generated on 2018-06-14T21:10:19+03:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -2255,8 +2255,9 @@ xdr.struct("ManageOfferOp", [
 //   	UPDATE_IS_NOT_ALLOWED = -21, // update of the offer is not allowed
 //   	INVALID_AMOUNT = -22, // amount must be positive 
 //   	SALE_IS_NOT_ACTIVE = -23,
-//   	REQUIRES_KYC = -24 // source must have KYC in order to participate
-//   
+//   	REQUIRES_KYC = -24, // source must have KYC in order to participate
+//   	SOURCE_UNDERFUNDED = -25,
+//   	SOURCE_BALANCE_LOCK_OVERFLOW = -26
 //   };
 //
 // ===========================================================================
@@ -2286,6 +2287,8 @@ xdr.enum("ManageOfferResultCode", {
   invalidAmount: -22,
   saleIsNotActive: -23,
   requiresKyc: -24,
+  sourceUnderfunded: -25,
+  sourceBalanceLockOverflow: -26,
 });
 
 // === xdr source ============================================================
@@ -3112,7 +3115,8 @@ xdr.union("PublicKey", {
 //   	KEY_VALUE_UPDATE = 23,
 //   	ALLOW_TO_CANCEL_SALE_PARTICIP_WITHOUT_SPECIFING_BALANCE = 24,
 //   	DETAILS_MAX_LENGTH_EXTENDED = 25,
-//   	ALLOW_MASTER_TO_MANAGE_SALE = 26
+//   	ALLOW_MASTER_TO_MANAGE_SALE = 26,
+//   	USE_SALE_ANTE = 27
 //   };
 //
 // ===========================================================================
@@ -3144,6 +3148,7 @@ xdr.enum("LedgerVersion", {
   allowToCancelSaleParticipWithoutSpecifingBalance: 24,
   detailsMaxLengthExtended: 25,
   allowMasterToManageSale: 26,
+  useSaleAnte: 27,
 });
 
 // === xdr source ============================================================
@@ -6622,6 +6627,49 @@ xdr.struct("PaymentRequestEntry", [
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("SaleAnteEntryExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct SaleAnteEntry
+//   {
+//       uint64 saleID;
+//       BalanceID participantBalanceID;
+//       uint64 amount; // amount to be locked from participant balance
+//   
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("SaleAnteEntry", [
+  ["saleId", xdr.lookup("Uint64")],
+  ["participantBalanceId", xdr.lookup("BalanceId")],
+  ["amount", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("SaleAnteEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   enum ErrorCode
 //   {
 //       MISC = 0, // Unspecific error
@@ -7420,7 +7468,9 @@ xdr.enum("AccountPolicies", {
 //   	MASTER = 4,            // master account
 //       NOT_VERIFIED = 5,
 //   	SYNDICATE = 6, // can create asset
-//   	EXCHANGE = 7
+//   	EXCHANGE = 7,
+//   	ACCREDITED_INVESTOR = 8,
+//   	INSTITUTIONAL_INVESTOR = 9
 //   };
 //
 // ===========================================================================
@@ -7432,6 +7482,8 @@ xdr.enum("AccountType", {
   notVerified: 5,
   syndicate: 6,
   exchange: 7,
+  accreditedInvestor: 8,
+  institutionalInvestor: 9,
 });
 
 // === xdr source ============================================================
@@ -7621,7 +7673,8 @@ xdr.struct("IssuanceRequest", [
 //       PAYMENT_FEE = 0,
 //   	OFFER_FEE = 1,
 //       WITHDRAWAL_FEE = 2,
-//       ISSUANCE_FEE = 3
+//       ISSUANCE_FEE = 3,
+//       INVEST_FEE = 4 // fee to be taken while creating sale participation
 //   };
 //
 // ===========================================================================
@@ -7630,6 +7683,7 @@ xdr.enum("FeeType", {
   offerFee: 1,
   withdrawalFee: 2,
   issuanceFee: 3,
+  investFee: 4,
 });
 
 // === xdr source ============================================================
@@ -8892,6 +8946,44 @@ xdr.struct("LedgerKeyExternalSystemAccountIdPoolEntry", [
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeySaleAnteExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 saleID;
+//           BalanceID participantBalanceID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           } ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySaleAnte", [
+  ["saleId", xdr.lookup("Uint64")],
+  ["participantBalanceId", xdr.lookup("BalanceId")],
+  ["ext", xdr.lookup("LedgerKeySaleAnteExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union LedgerKey switch (LedgerEntryType type)
 //   {
 //   case ACCOUNT:
@@ -9090,6 +9182,16 @@ xdr.struct("LedgerKeyExternalSystemAccountIdPoolEntry", [
 //   		}
 //   		ext;
 //   	} externalSystemAccountIDPoolEntry;
+//   case SALE_ANTE:
+//       struct {
+//           uint64 saleID;
+//           BalanceID participantBalanceID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           } ext;
+//       } saleAnte;
 //   };
 //
 // ===========================================================================
@@ -9116,6 +9218,7 @@ xdr.union("LedgerKey", {
     ["keyValue", "keyValue"],
     ["accountKyc", "accountKyc"],
     ["externalSystemAccountIdPoolEntry", "externalSystemAccountIdPoolEntry"],
+    ["saleAnte", "saleAnte"],
   ],
   arms: {
     account: xdr.lookup("LedgerKeyAccount"),
@@ -9137,6 +9240,7 @@ xdr.union("LedgerKey", {
     keyValue: xdr.lookup("LedgerKeyKeyValue"),
     accountKyc: xdr.lookup("LedgerKeyAccountKyc"),
     externalSystemAccountIdPoolEntry: xdr.lookup("LedgerKeyExternalSystemAccountIdPoolEntry"),
+    saleAnte: xdr.lookup("LedgerKeySaleAnte"),
   },
 });
 
@@ -10264,7 +10368,8 @@ xdr.enum("ThresholdIndices", {
 //   	SALE = 17,
 //   	ACCOUNT_KYC = 18,
 //   	EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY = 19,
-//       KEY_VALUE = 20
+//       KEY_VALUE = 20,
+//       SALE_ANTE = 21
 //   };
 //
 // ===========================================================================
@@ -10288,6 +10393,7 @@ xdr.enum("LedgerEntryType", {
   accountKyc: 18,
   externalSystemAccountIdPoolEntry: 19,
   keyValue: 20,
+  saleAnte: 21,
 });
 
 // === xdr source ============================================================
@@ -10332,6 +10438,8 @@ xdr.enum("LedgerEntryType", {
 //           AccountKYCEntry accountKYC;
 //       case EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY:
 //           ExternalSystemAccountIDPoolEntry externalSystemAccountIDPoolEntry;
+//       case SALE_ANTE:
+//           SaleAnteEntry saleAnte;
 //       }
 //
 // ===========================================================================
@@ -10358,6 +10466,7 @@ xdr.union("LedgerEntryData", {
     ["keyValue", "keyValue"],
     ["accountKyc", "accountKyc"],
     ["externalSystemAccountIdPoolEntry", "externalSystemAccountIdPoolEntry"],
+    ["saleAnte", "saleAnte"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
@@ -10379,6 +10488,7 @@ xdr.union("LedgerEntryData", {
     keyValue: xdr.lookup("KeyValueEntry"),
     accountKyc: xdr.lookup("AccountKycEntry"),
     externalSystemAccountIdPoolEntry: xdr.lookup("ExternalSystemAccountIdPoolEntry"),
+    saleAnte: xdr.lookup("SaleAnteEntry"),
   },
 });
 
@@ -10447,6 +10557,8 @@ xdr.union("LedgerEntryExt", {
 //           AccountKYCEntry accountKYC;
 //       case EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY:
 //           ExternalSystemAccountIDPoolEntry externalSystemAccountIDPoolEntry;
+//       case SALE_ANTE:
+//           SaleAnteEntry saleAnte;
 //       }
 //       data;
 //   
