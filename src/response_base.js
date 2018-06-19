@@ -2,7 +2,6 @@
  * Base class for request responses.
  *
  * @class
- * @export
  */
 export class ResponseBase {
   /**

@@ -11,6 +11,7 @@
         "lint": "eslint ./src --cache --fix",
         "coverage": "nyc mocha --opts ./mocha.opts 'src/**/*.spec.js'",
         "docs": "rimraf docs/pages && jsdoc -c ./.jsdoc.json",
+        "docs:md": "rimraf docs/markdown && node scripts/jsdoc_to_markdown.js",
         "prepare": "npm run build & npm run build:browser"
     },
     "husky": {
@@ -61,6 +62,7 @@
         "eslint-plugin-standard": "^3.1.0",
         "husky": "^0.15.0-rc.13",
         "jsdoc": "^3.5.5",
+        "jsdoc-to-markdown": "^4.0.1",
         "karma": "^2.0.0",
         "karma-chai": "^0.1.0",
         "karma-chrome-launcher": "^2.2.0",

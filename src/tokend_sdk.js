@@ -10,7 +10,7 @@ import { Network } from './base/network'
  */
 export class TokenD {
   /**
-   * Internal constructor. Use TokenD.create() isntead.
+   * Internal constructor. Use TokenD.create() instead.
    *
    * @private
    * @constructor
@@ -24,8 +24,6 @@ export class TokenD {
 
   /**
    * Make a new TokenD SDK instance.
-   *
-   * @constructor
    *
    * @param {string} url TokenD backend url.
    * @param {object} [opts]
