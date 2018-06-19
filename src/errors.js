@@ -1,7 +1,6 @@
 /**
  * Network error.
  *
- * @export
  * @class
  */
 export class NetworkError extends Error {
@@ -14,7 +13,6 @@ export class NetworkError extends Error {
 /**
  * Request timeout error.
  *
- * @export
  * @class
  */
 export class TimeoutError extends Error {

@@ -14,6 +14,7 @@
 /.git_copy/
 /examples_old/
 /docs/pages/
+/docs/markdown/
 
 #ignore master seeds
 /scripts/master_seeds.js

@@ -406,8 +406,16 @@ To update the JS wrappers:
 
 ### Generating Docs
 
-```
+HTML docs
+
+```bash
 npm run docs
+```
+
+Markdown docs
+
+```bash
+npm run docs:md
 ```
 
 ## Troubleshooting
