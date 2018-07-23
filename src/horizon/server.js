@@ -61,6 +61,16 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Reviewable requests.
+   *
+   * @return {Request}
+   */
+
+  get request () {
+    return new resources.Request(this, this._sdk)
+  }
+
+  /**
    * Transactions.
    *
    * @return {Account}

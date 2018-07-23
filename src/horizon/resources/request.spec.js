@@ -31,7 +31,7 @@ describe('Requests', () => {
       args: [id],
       method,
       path: `/requests/${id}`
-    })n
+    })
   })
 
   describe('.getAllForAssets', () => {
