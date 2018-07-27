@@ -9,7 +9,7 @@ export class Account extends ResourceGroupBase {
   /**
    * Get user's account.
    *
-   * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
+   * @param {string} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
   get (accountId) {
@@ -22,8 +22,8 @@ export class Account extends ResourceGroupBase {
    * @param {object} [query] Request options.
    * @param {Number} [query.limit] Page limit.
    * @param {string} [query.cursor] Page cursor.
-   * @param {sting} [query.order] Sorting order.
-   * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
+   * @param {string} [query.order] Sorting order.
+   * @param {string} [accountId] User's account ID. Use account ID of the attached wallet by default.
    *
    * @return {HorizonResponse} Collection of balances.
    */
@@ -36,7 +36,7 @@ export class Account extends ResourceGroupBase {
   /**
    * Get balances details.
    *
-   * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
+   * @param {string} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
   getDetails (accountId) {
@@ -46,13 +46,35 @@ export class Account extends ResourceGroupBase {
   }
 
   /**
+   * Get account's payment history
+   * @param {string} [accountId] User's account ID. Use account ID of the attached wallet by default.
+   * @param {object} [query] request query.
+   * @param {Number} [query.limit] Page limit.
+   * @param {string} [query.cursor] Page cursor.
+   * @param {string} [query.order] Sorting order.
+   * @param {string} [query.balance_id] Balance ID of payment subject.
+   * @param {string} [query.asset] Asset of payment.
+   * @param {string} [query.reference] Payment reference.
+   * @param {string} [query.since] Date interval value.
+   * @param {string} [query.to] Date interval value.
+   * @param {string} [query.completed_only] Only completed payments will be returned.
+   * @param {string} [query.pending_only] Only pending payments will be returned (processing deposits/withdrawals etc.).
+   * @return {HorizonResponse}
+   */
+  getPayments (accountId, query = {}) {
+    return this._makeCallBuilderWithSignature(accountId)
+      .appendUrlSegment('payments')
+      .get(query)
+  }
+
+  /**
    * Get referrals.
    *
    * @param {object} [query] Request options.
    * @param {Number} [query.limit] Page limit.
    * @param {string} [query.cursor] Page cursor.
-   * @param {sting} [query.order] Sorting order.
-   * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
+   * @param {string} [query.order] Sorting order.
+   * @param {string} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
   getReferrals (query, accountId) {
@@ -64,7 +86,7 @@ export class Account extends ResourceGroupBase {
   /**
    * Get account signers.
    *
-   * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
+   * @param {string} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
   getSigners (accountId = null) {
@@ -76,8 +98,8 @@ export class Account extends ResourceGroupBase {
   /**
    * Get account signers.
    *
-   * @param {sting} signerId Signer ID.
-   * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
+   * @param {string} signerId Signer ID.
+   * @param {string} [accountId] User's account ID. Use account ID of the attached wallet by default.
    * @return {HorizonResponse}
    */
   getSigner (signerId, accountId) {
@@ -92,7 +114,7 @@ export class Account extends ResourceGroupBase {
    * @param {object} [query] Request options.
    * @param {Number} [query.since] Start of the timespan.
    * @param {Number} [query.to] End of the timespan.
-   * @param {sting} [accountId] User's account ID. Use account ID of the attached wallet by default.
+   * @param {string} [accountId] User's account ID. Use account ID of the attached wallet by default.
    *
    * @return {HorizonResponse} Collection of balances.
    */

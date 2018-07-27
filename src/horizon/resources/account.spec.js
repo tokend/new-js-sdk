@@ -103,6 +103,32 @@ describe('Account', () => {
     })
   })
 
+  describe('.getPayments', () => {
+    const method = 'getPayments'
+    const query = {
+      limit: 10
+    }
+
+    testGetRequest({
+      title: `get the user's payments`,
+      horizon: horizon,
+      resourceGroup,
+      method,
+      params: query,
+      args: [usersAccount, query],
+      path: `/accounts/${usersAccount}/payments`
+    })
+
+    testRequestSignature({
+      method,
+      horizon: horizon,
+      resourceGroup,
+      params: query,
+      args: [anotherAccount, query],
+      path: `/accounts/${anotherAccount}/payments`
+    })
+  })
+
   describe('.getSigners', () => {
     const method = 'getSigners'
 
