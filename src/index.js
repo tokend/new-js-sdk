@@ -5,6 +5,7 @@ import { errors as horizonErrors } from './horizon'
 
 export * from './tokend_sdk'
 export { default as base } from './base'
+export { Wallet } from './wallet'
 
 // Typed errors
 export const errors = {
