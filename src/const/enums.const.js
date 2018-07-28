@@ -38,10 +38,6 @@ export const ACCOUNT_TYPES = Object.freeze(
   xdrEnumToConstant('AccountType')
 )
 
-export const SALE_STATE = Object.freeze(
-  xdrEnumToConstant('SaleState')
-)
-
 export const OP_TYPES = Object.freeze(
   xdrEnumToConstant('OperationType')
 )
