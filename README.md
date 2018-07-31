@@ -9,13 +9,13 @@
 1. Add TokenD SDK to your project:
 
     ```sh
-    npm install -S tokend-sdk
+    npm install -S @tokend/js-sdk
     ```
 
 1. Create an SDK instance:
 
     ```js
-    import { TokenD } from 'tokend-sdk'
+    import { TokenD } from '@tokend/js-sdk'
 
     let sdk = await TokenD.create('https://backend.tokend.com')
     ```
