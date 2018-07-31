@@ -1,6 +1,23 @@
 {
-    "presets": [["env",{"targets": {"node": "current"}}]],
-    "plugins": [
-        ["babel-plugin-transform-builtin-extend", {"globals": ["Error"]}]
+  "presets": [
+    [
+      "env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ],
+    "es2015"
+  ],
+  "plugins": [
+    [
+      "babel-plugin-transform-builtin-extend",
+      {
+        "globals": [
+          "Error"
+        ]
+      }
     ]
+  ]
 }
