@@ -1,24 +1,16 @@
 {
   "presets": [
-    [
-      "env",
-      {
-        "targets": {
-          "node": "current"
-        }
+    ["@babel/preset-env", {
+      "targets": {
+        "node": "current",
+        "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
       }
-    ],
-    "es2015"
+    }]
   ],
   "plugins": [
-    [
-      "babel-plugin-transform-builtin-extend",
-      {
-        "globals": [
-          "Error"
-        ]
-      }
-    ],
-    "babel-plugin-transform-async-to-generator"
+    "@babel/plugin-transform-runtime",
+    ["babel-plugin-transform-builtin-extend", {
+        "globals": [ "Error", "Array"]
+    }]
   ]
 }
