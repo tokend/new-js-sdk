@@ -58,6 +58,19 @@ describe('Account', () => {
     })
   })
 
+  describe('.getAccountKyc', () => {
+    const method = 'getAccountKyc'
+
+    testGetRequest({
+      title: `get the user's kyc`,
+      horizon: horizon,
+      resourceGroup,
+      method,
+      args: [usersAccount],
+      path: `/accounts/${usersAccount}/account_kyc`
+    })
+  })
+
   describe('.getDetails', () => {
     const method = 'getDetails'
 

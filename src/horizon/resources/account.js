@@ -33,6 +33,12 @@ export class Account extends ResourceGroupBase {
       .get(query)
   }
 
+  getAccountKyc (accountId, query) {
+    return this._makeCallBuilder(accountId)
+      .appendUrlSegment('account_kyc')
+      .get(query)
+  }
+
   /**
    * Get balances details.
    *
