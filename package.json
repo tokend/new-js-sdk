@@ -1,6 +1,6 @@
 {
   "name": "@tokend/js-sdk",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "js-sdk is a client-side SDK for TokenD asset tokenization platform.",
   "main": "lib/index.js",
   "scripts": {
