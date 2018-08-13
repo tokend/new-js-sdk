@@ -71,6 +71,16 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Sales.
+   *
+   * @return {Sales}
+   */
+
+  get sales () {
+    return new resources.Sales(this, this._sdk)
+  }
+
+  /**
    * Transactions.
    *
    * @return {Account}
