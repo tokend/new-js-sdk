@@ -19,6 +19,8 @@ The TokenD JavaScript SDK facilitates client integration with the TokenD asset t
 
 1. [Troubleshooting](#troubleshooting)
 
+1. [Use cases](#use-cases)
+
 ## Platform Overview
 
 There two ways to interact with TokenD platform:
@@ -429,3 +431,113 @@ error MSB8020: The build tools for v120 (Platform Toolset = 'v120 ') cannot be f
 ```
 
 To resolve this issue, you should upgrade your version of nodejs, node-gyp and then re-attempt to install the offending package using `npm install -g --msvs_version=2015 ed25519`.  Afterwards, retry installing stellar-sdk as normal.
+
+
+## Use Cases
+
+### Creating your own token
+
+TokenD JS SDK makes creation of tokens as simple as it's possible for your users.
+To start doing it on your own, follow next steps:
+
+1. First of all, import the SDK in your project and initiate it. You will need several modules described here:
+
+```js
+    import { TokenD } from 'tokend-sdk'
+
+    const sdk = await TokenD.create('https://<tokend-backend-url>')
+    const base = sdk.base // the module for crafting transactions
+    const horizon = sdk.horizon // the middleware for sending requests to horizon server
+    const api = sdk.api // the middleware for sending requests to api server
+```
+
+2. Your token may need the logotype. Let's suppose that your app have the file field, where user can upload the image:
+
+```html
+    <input type="file" id="#token-logo">
+```
+
+Simply attach the listener to the field to handle image upload
+
+```js
+    const field = document.getElementById('token-logo')
+    field.addEventListener('change', handleImageUpload)
+```
+
+3. Now to save the image in TokenD storage you need some magic:
+
+After simply deriving raw file from field event
+
+```js
+    async function handleImageUpload (event) {
+        const file = event.target.files[0]
+    }
+```
+
+tell the API you need the space for new image and get needed params for the file upload:
+
+```js
+    async function handleImageUpload (event) {
+        const file = event.target.files[0]
+        const { url, formData } = await api.documents.create('general_public', file.type)
+    }
+```
+
+`formData` object will look like described in API docs [API documentation][1]. You will need it
+for two things: uploading the file itself and saving it's storage key in the blockchain.
+
+Now you've got all the necessary data for uploading your token logotype. You can use any http-client
+(we'll use `axios` here) to upload it to the storage using `POST` request
+
+```js
+    import { axios } from 'axios'
+
+    async function handleImageUpload (event) {
+         const file = event.target.files[0]
+         const { url, formData } = await api.documents.create('general_public', file.type)
+         await axios.post(url, Object.assign(formData, {
+            file: new Blob([file], { type: file.type })
+         }))
+         return formData.key
+    }
+```
+
+3. Now you can create the token itself. For doing this, create the operation:
+
+```js
+    const operation = base.ManageAssetBuilder.assetCreationRequest({
+      requestID: '0', // Request ID, if 0 - creates new, updates otherwise
+      code: 'TKN', // Asset code
+      preissuedAssetSigner: 'GBT3XFWQUHUTKZMI22TVTWRA7UHV2LIO2BIFNRCH3CXWPYVYPTMXMDGC', //  AccountID of keypair which will sign request for asset to be authrorized to be issued
+      maxIssuanceAmount: '100000', //  Max amount can be issued of that asset
+      policies: 0, // Asset policies
+      initialPreissuedAmount: '100000', // Amount of pre issued tokens available after creation of the asset
+      details: {
+           name: 'My first token'
+           logo: {
+               key: key // the key you've derived before
+           }
+       }
+    })
+  }
+```
+
+Craft the transaction and sign it:
+
+
+```js
+    const seed = 'SA4CAMSMX6CRAC4XPUPUDAC5VYSFQRWEEFDBVBEDIIRWNEHDYAX5OHMC' // is just an example, replace it with the actual one
+
+    const keypair = base.Keypair.fromSecret()
+    const accountId = base.accountId()
+
+    let tx = new base.TransactionBuilder(accountId)
+      .addOperation(operation) // the previously created operation
+      .build()
+
+    tx.sign(keypair)
+
+    const txResponse = await horizon.transactions.submit(tx) // returns promise, so you can handle response:
+```
+
+[1]: http://tokend.gitlab.io/docs/#upload
