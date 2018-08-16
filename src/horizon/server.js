@@ -43,6 +43,15 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Assets.
+   *
+   * @return {Assets}
+   */
+  get assets () {
+    return new resources.Assets(this, this._sdk)
+  }
+
+  /**
    * Balances.
    *
    * @return {Balances}
@@ -83,7 +92,7 @@ export class HorizonServer extends ServerBase {
   /**
    * Transactions.
    *
-   * @return {Account}
+   * @return {Transactions}
    */
   get transactions () {
     return new resources.Transactions(this, this._sdk)
