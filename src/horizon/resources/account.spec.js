@@ -34,30 +34,6 @@ describe('Account', () => {
     })
   })
 
-  describe('.getBalances', () => {
-    const method = 'getBalances'
-    const query = { limit: 10 }
-
-    testGetRequest({
-      title: `get the user's balances`,
-      horizon: horizon,
-      resourceGroup,
-      method,
-      params: query,
-      args: [query],
-      path: `/accounts/${usersAccount}/balances`
-    })
-
-    testRequestSignature({
-      method,
-      horizon: horizon,
-      resourceGroup,
-      params: query,
-      args: [query],
-      path: `/accounts/${anotherAccount}/balances`
-    })
-  })
-
   describe('.getAccountKyc', () => {
     const method = 'getAccountKyc'
 
@@ -68,6 +44,25 @@ describe('Account', () => {
       method,
       args: [usersAccount],
       path: `/accounts/${usersAccount}/account_kyc`
+    })
+  })
+
+  describe('.getBalances', () => {
+    const method = 'getBalances'
+
+    testGetRequest({
+      title: `get the user's balances`,
+      horizon: horizon,
+      resourceGroup,
+      method,
+      path: `/accounts/${usersAccount}/balances`
+    })
+
+    testRequestSignature({
+      method,
+      horizon: horizon,
+      resourceGroup,
+      path: `/accounts/${anotherAccount}/balances`
     })
   })
 
@@ -90,29 +85,53 @@ describe('Account', () => {
     })
   })
 
-  describe('.getReferrals', () => {
-    const method = 'getReferrals'
-    const query = {
-      limit: 10
-    }
+  describe('.getLimits', () => {
+    const method = 'getLimits'
 
     testGetRequest({
-      title: `get the user's referrals`,
+      title: `get the user's account limits`,
       horizon: horizon,
       resourceGroup,
       method,
-      params: query,
-      args: [query],
-      path: `/accounts/${usersAccount}/referrals`
+      path: `/accounts/${usersAccount}/limits`
+    })
+  })
+
+  describe('.getOffers', () => {
+    const method = 'getOffers'
+
+    testGetRequest({
+      title: `get the user's offers`,
+      horizon: horizon,
+      resourceGroup,
+      method,
+      path: `/accounts/${usersAccount}/offers`
     })
 
     testRequestSignature({
       method,
       horizon: horizon,
       resourceGroup,
-      params: query,
-      args: [query],
-      path: `/accounts/${anotherAccount}/referrals`
+      path: `/accounts/${usersAccount}/offers`
+    })
+  })
+
+  describe('.getOperations', () => {
+    const method = 'getOperations'
+
+    testGetRequest({
+      title: `get the user's operations`,
+      horizon: horizon,
+      resourceGroup,
+      method,
+      path: `/accounts/${usersAccount}/operations`
+    })
+
+    testRequestSignature({
+      method,
+      horizon: horizon,
+      resourceGroup,
+      path: `/accounts/${usersAccount}/operations`
     })
   })
 
@@ -139,6 +158,25 @@ describe('Account', () => {
       params: query,
       args: [anotherAccount, query],
       path: `/accounts/${anotherAccount}/payments`
+    })
+  })
+
+  describe('.getReferences', () => {
+    const method = 'getReferences'
+
+    testGetRequest({
+      title: `get the user's references`,
+      horizon: horizon,
+      resourceGroup,
+      method,
+      path: `/accounts/${usersAccount}/references`
+    })
+
+    testRequestSignature({
+      method,
+      horizon: horizon,
+      resourceGroup,
+      path: `/accounts/${usersAccount}/references`
     })
   })
 
