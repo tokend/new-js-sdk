@@ -12,11 +12,11 @@ export class Balances extends ResourceGroupBase {
    * @param {object} [query] Request options.
    * @param {Number} [query.limit] Page limit.
    * @param {string} [query.cursor] Page cursor.
-   * @param {sting} [query.order] Sorting order.
+   * @param {string} [query.order] Sorting order.
    * @param {string} [query.asset] Filter by asset code.
    * @param {string} [query.account] Filter by balance owner.
    *
-   * @return {Promise} Collection of balances.
+   * @return {HorizonResponse} Collection of balances.
    */
   getPage (query) {
     return this._makeCallBuilder().get(query)
@@ -26,6 +26,7 @@ export class Balances extends ResourceGroupBase {
    * Get balance asset.
    *
    * @param {string} balanceId Balance ID.
+   * @return {HorizonResponse}
    */
   getAsset (balanceId) {
     return this._makeCallBuilder()
@@ -34,9 +35,10 @@ export class Balances extends ResourceGroupBase {
   }
 
   /**
-   * Get balance owner.
+   * Get balance owner account.
    *
-   * @param {sting} balanceId Balance ID.
+   * @param {string} balanceId Balance ID.
+   * @return {HorizonResponse}
    */
   getAccount (balanceId) {
     return this._makeCallBuilder()
