@@ -52,6 +52,15 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Asset pairs.
+   *
+   * @return {AssetPairs}
+   */
+  get assetPairs () {
+    return new resources.AssetPairs(this, this._sdk)
+  }
+
+  /**
    * Balances.
    *
    * @return {Balances}
