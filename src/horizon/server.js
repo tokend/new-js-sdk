@@ -79,6 +79,15 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Charts.
+   *
+   * @return {Charts}
+   */
+  get charts () {
+    return new resources.Charts(this, this._sdk)
+  }
+
+  /**
    * Reviewable requests.
    *
    * @return {Request}

@@ -1,7 +1,7 @@
 import { ResourceGroupBase } from '../../resource_group_base'
 
 /**
- * Assets.
+ * Asset pairs.
  *
  * @class
  */
