@@ -43,6 +43,15 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Account details.
+   *
+   * @return {Account}
+   */
+  get account () {
+    return new resources.Account(this, this._sdk)
+  }
+
+  /**
    * Assets.
    *
    * @return {Assets}
@@ -70,15 +79,6 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
-   * Account details.
-   *
-   * @return {Account}
-   */
-  get account () {
-    return new resources.Account(this, this._sdk)
-  }
-
-  /**
    * Charts.
    *
    * @return {Charts}
@@ -88,11 +88,90 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Core sales
+   * @return {CoreSales}
+   */
+  get coreSales () {
+    return new resources.CoreSales(this, this._sdk)
+  }
+
+  /**
+   * Fees
+   *
+   * @return {Fees}
+   */
+  get fees () {
+    return new resources.Fees(this, this._sdk)
+  }
+
+  /**
+   * Key/value
+   *
+   * @return {KeyValue}
+   */
+  get keyValue () {
+    return new resources.KeyValue(this, this._sdk)
+  }
+
+  /**
+   * Limits
+   *
+   * @return {Limits}
+   */
+  get limits () {
+    return new resources.Limits(this, this._sdk)
+  }
+
+  /**
+   * Operations
+   *
+   * @return {Operations}
+   */
+  get operations () {
+    return new resources.Operations(this, this._sdk)
+  }
+
+  /**
+   * Order Book
+   *
+   * @return {OrderBook}
+   */
+  get orderBook () {
+    return new resources.OrderBook(this, this._sdk)
+  }
+
+  /**
+   * Payments
+   *
+   * @return {Payments}
+   */
+  get payments () {
+    return new resources.Payments(this, this._sdk)
+  }
+
+  /**
+   * Prices
+   *
+   * @return {Prices}
+   */
+  get prices () {
+    return new resources.Prices(this, this._sdk)
+  }
+
+  /**
+   * Public
+   *
+   * @return {Public}
+   */
+  get public () {
+    return new resources.Public(this, this.sdk)
+  }
+
+  /**
    * Reviewable requests.
    *
    * @return {Request}
    */
-
   get request () {
     return new resources.Request(this, this._sdk)
   }
@@ -108,12 +187,48 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Sale Antes
+   *
+   * @return {SaleAntes}
+   */
+  get saleAntes () {
+    return new resources.SaleAntes(this, this._sdk)
+  }
+
+  /**
    * Transactions.
    *
    * @return {Transactions}
    */
   get transactions () {
     return new resources.Transactions(this, this._sdk)
+  }
+
+  /**
+   * Trades
+   *
+   * @return {Trades}
+   */
+  get trades () {
+    return new resources.Trades(this, this._sdk)
+  }
+
+  /**
+   * Trusts
+   *
+   * @return {Trusts}
+   */
+  get trusts () {
+    return new resources.Trusts(this, this._sdk)
+  }
+
+  /**
+   * V2
+   *
+   * @return {V2}
+   */
+  get v2 () {
+    return new resources.V2(this, this._sdk)
   }
 
   _parseResponseError (error) {

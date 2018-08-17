@@ -22,8 +22,23 @@ export class Transactions extends ResourceGroupBase {
       .post({ tx })
   }
 
+  get (id) {
+    return this._makeCallBuilderWithSignature()
+      .appendUrlSegment(id)
+      .get()
+  }
+
+  getAll (query) {
+    return this._makeCallBuilderWithSignature()
+      .get(query)
+  }
+
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
       .appendUrlSegment('transactions')
+  }
+
+  _makeCallBuilderWithSignature () {
+    return this._makeCallBuilder().withSignature()
   }
 }

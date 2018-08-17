@@ -2,9 +2,17 @@ import mocks from '../../test_helpers/mock_factory'
 import { HorizonResponse } from '../response'
 import { SUBMIT_TRANSACTION_TIMEOUT } from './transactions'
 import { Transaction } from '../../base/transaction'
+import {
+  testRequestSignature,
+  testGetRequest
+} from './generic_test_cases.spec'
 
 describe('Transactions', () => {
   const sdk = mocks.tokenDSdk()
+  const horizon = sdk.horizon
+  const resourceGroup = horizon.transactions
+
+  const transactionId = '68719480833'
 
   afterEach(() => {
     sdk.horizon.reset()
@@ -28,6 +36,55 @@ describe('Transactions', () => {
       let response = await sdk.horizon.transactions.submit(tx)
 
       expect(response).to.be.an.instanceOf(HorizonResponse)
+    })
+  })
+
+  describe('.get', () => {
+    const method = 'get'
+
+    testGetRequest({
+      title: `get the transaction by ID`,
+      horizon: horizon,
+      resourceGroup,
+      method,
+      args: [transactionId],
+      path: `/transactions/${transactionId}`
+    })
+
+    testRequestSignature({
+      horizon: horizon,
+      resourceGroup,
+      method,
+      args: [transactionId],
+      path: `/transactions/${transactionId}`
+    })
+  })
+
+  describe('.getAll', () => {
+    const method = 'getAll'
+
+    const query = Object.freeze({
+      order: 'asc',
+      cursor: '242343242342',
+      limit: 20
+    })
+
+    testGetRequest({
+      title: `get all the transactions`,
+      horizon: horizon,
+      resourceGroup,
+      method,
+      args: [query],
+      path: `/transactions`
+    })
+
+    testRequestSignature({
+      horizon: horizon,
+      resourceGroup,
+      method,
+      args: [query],
+      params: query,
+      path: `/transactions`
     })
   })
 })
