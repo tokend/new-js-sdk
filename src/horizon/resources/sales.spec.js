@@ -25,8 +25,8 @@ describe('Sales', () => {
     })
   })
 
-  describe('.getAll', () => {
-    const method = 'getAll'
+  describe('.getPage', () => {
+    const method = 'getPage'
 
     testGetRequest({
       title: `Should get assets requests with query params.`,

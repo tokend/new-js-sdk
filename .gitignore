@@ -15,6 +15,6 @@
 /examples_old/
 /docs/pages/
 /docs/markdown/
-
+/src/tmp.js
 #ignore master seeds
 /scripts/master_seeds.js

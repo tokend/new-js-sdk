@@ -22,8 +22,41 @@ export class Transactions extends ResourceGroupBase {
       .post({ tx })
   }
 
+  /**
+   * Get transaction by ID.
+   *
+   * @param {number} id - Transaction ID.
+   * @return {HorizonResponse}
+   */
+  get (id) {
+    return this._makeCallBuilderWithSignature()
+      .appendUrlSegment(id)
+      .get()
+  }
+
+  /**
+   * Get the page of transactions.
+   *
+   * @param {object} [query] request query.
+   * @param {string} [query.account_id] - If present, the result will contain only transactions that modified specific account
+   * @param {number} [query.ledger_id] - If present, the result will contain only transaction from specific ledger
+   * @param {number} [query.limit] If present, the result page will contain only this number of records.
+   * @param {string} [query.cursor] If present, the result records will start from specific point.
+   * @param {string} [query.order] If present, the result records will be sorted as specified ('asc'/'desc'), ascending order by default
+   *
+   * @return {HorizonResponse}
+   */
+  getPage (query) {
+    return this._makeCallBuilderWithSignature()
+      .get(query)
+  }
+
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
       .appendUrlSegment('transactions')
+  }
+
+  _makeCallBuilderWithSignature () {
+    return this._makeCallBuilder().withSignature()
   }
 }
