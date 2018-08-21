@@ -92,8 +92,10 @@ export class CallBuilder {
    */
   withSignature (wallet) {
     this._wallet = wallet || this._sdk.wallet
+
     if (!this._wallet) {
-      throw new Error('A wallet is required for this request.')
+      console.warn('Skipping signing the request cause no _wallet instance was found. Please re-check if it is an expected behaviour')
+      return this
     }
 
     this._authRequired = true
