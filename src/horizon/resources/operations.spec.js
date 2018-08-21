@@ -36,8 +36,8 @@ describe('operations', () => {
     })
   })
 
-  describe('.getAll', () => {
-    const method = 'getAll'
+  describe('.getPage', () => {
+    const method = 'getPage'
 
     const query = Object.freeze({
       order: 'asc',

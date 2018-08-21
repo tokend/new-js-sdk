@@ -7,28 +7,26 @@ import { ResourceGroupBase } from '../../resource_group_base'
  */
 export class Payments extends ResourceGroupBase {
   /**
-   * Get payments history.
+   * Get payments history. Payments are operations {@link getOperations} that modify account's balance
    *
    * @param {object} [query] request query.
-   * @param {string} [query.account_id] Account ID. Uses account ID of the attached {@link Wallet} by default.
-   * @param {number} [query.limit] Page limit.
-   * @param {string} [query.cursor] Page cursor.
-   * @param {string} [query.order] Sorting order (asc/desc)
-   * @param {string} [query.balance_id] - For fetching operations only for specified balance ID
-   * @param {string} [query.asset] - For fetching operations only for specified asset
-   * @param {string} [query.tx_id] - For specific transaction ID
-   * @param {string} [query.reference] - For specific reference
-   * @param {string} [query.reference] Payment reference.
-   * @param {string} [query.since] Date interval value.
-   * @param {boolean} [query.completed_only] Only completed payments will be returned. (true by default)
-   * @param {boolean} [query.pending_only] Only pending payments will be returned (processing deposits/withdrawals etc.).
-   * @param {boolean} [query.skip_canceled], Skips canceled operations (true by default)
-   *
+   * @param {string} [query.account_id] - If present, the result will return only payments for specific account
+   * @param {string} [query.balance_id] - If present, the result will return only payments for specific balance
+   * @param {string} [query.asset] - If present, the result will return only payments for specific asset
+   * @param {string} [query.tx_id] - If present, the result will return only payments from specific transaction
+   * @param {string} [query.reference] - If present, the result will return only payments with specific reference
+   * @param {string} [query.since] - Should be valid `RFC 3339` string. If present, the result will return only payments submitted after specific date.
+   * @param {boolean} [query.completed_only] - If present, the result will return only completed payments. (true by default)
+   * @param {boolean} [query.pending_only] - If present, the result will return only pending payments. (processing deposits/withdrawals etc.).
+   * @param {boolean} [query.skip_canceled], -  If present, the result will not return canceled payments (true by default)
+   * @param {number} [query.limit] - If present, the result page will contain only this number of records.
+   * @param {string} [query.cursor] - If present, the result records will start from specific point.
+   * @param {string} [query.order] - If present, the result records will be sorted as specified ('asc'/'desc'), ascending order by default
    * @return {HorizonResponse}
    * Note: query_params `pending_only` and `completed_only` can't both be set
    *
    */
-  getAll (query) {
+  getPage (query) {
     return this._makeCallBuilderWithSignature().get(query)
   }
 

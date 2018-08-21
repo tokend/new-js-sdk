@@ -60,8 +60,8 @@ describe('Transactions', () => {
     })
   })
 
-  describe('.getAll', () => {
-    const method = 'getAll'
+  describe('.getPage', () => {
+    const method = 'getPage'
 
     const query = Object.freeze({
       order: 'asc',
@@ -70,7 +70,7 @@ describe('Transactions', () => {
     })
 
     testGetRequest({
-      title: `get all the transactions`,
+      title: `get the page of transactions`,
       horizon: horizon,
       resourceGroup,
       method,

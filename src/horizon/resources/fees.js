@@ -26,6 +26,7 @@ export class Fees extends ResourceGroupBase {
 
   /**
    * Get all fees existing in the system
+   *
    * @param {object} [query] Request query
    * @param [query.account_id]
    * @param [query.account_type]
@@ -38,6 +39,7 @@ export class Fees extends ResourceGroupBase {
 
   /**
    * Get all fees existing in the system excluding specific account/account_type fees and default generated entries
+   *
    * @param {object} [query] Request query
    * @param [query.account_id]
    * @param [query.account_type]

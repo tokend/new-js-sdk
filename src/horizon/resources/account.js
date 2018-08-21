@@ -3,6 +3,9 @@ import { ResourceGroupBase } from '../../resource_group_base'
 /**
  * Account.
  *
+ * In short, Accounts are the central data structure in TokenD.
+ *
+ * For detailed information, see {@link https://tokend.gitbook.io/knowledge-base/technical-details/accounts}
  * @class
  */
 export class Account extends ResourceGroupBase {

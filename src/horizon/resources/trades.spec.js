@@ -10,17 +10,19 @@ describe('Trades', () => {
 
   const baseAsset = 'ETH'
   const quoteAsset = 'BTC'
+  const orderBookId = '12'
 
   afterEach(() => {
     horizon.reset()
   })
 
-  describe('.getAll', () => {
-    const method = 'getAll'
+  describe('.getPage', () => {
+    const method = 'getPage'
 
     const query = Object.freeze({
       base_asset: baseAsset,
       quote_asset: quoteAsset,
+      order_book_id: orderBookId,
       order: 'desc',
       limit: 20
     })

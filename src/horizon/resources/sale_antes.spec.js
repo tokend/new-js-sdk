@@ -13,8 +13,8 @@ describe('sale_antes', () => {
     horizon.reset()
   })
 
-  describe('.getAll', () => {
-    const method = 'getAll'
+  describe('.getPage', () => {
+    const method = 'getPage'
 
     testGetRequest({
       title: `get the sale antes`,

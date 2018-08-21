@@ -27,8 +27,8 @@ describe('Public', () => {
     })
   })
 
-  describe('.getAllOperations', () => {
-    const method = 'getAllOperations'
+  describe('.getOperationsPage', () => {
+    const method = 'getOperationsPage'
 
     const query = Object.freeze({
       order: 'asc',
