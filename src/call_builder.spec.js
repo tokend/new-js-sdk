@@ -137,12 +137,15 @@ describe('CallBuilder', () => {
 
       axiosMock.onAny()
         .reply(config => {
-          expect(config.headers)
-            .to.have.a.property('date')
-            .equal('Wed, 04 Apr 2018 00:00:00 GMT')
+          // 'Date' http header is not allowed to be set in most browsers, so we don't set it for now
+          // expect(config.headers)
+          //   .to.have.a.property('date')
+          //   .equal('Wed, 04 Apr 2018 00:00:00 GMT')
           expect(config.headers)
             .to.have.a.property('signature')
-            .equal(`keyId="GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB",algorithm="ed25519-sha256",headers="(request-target) date",signature="iAteM8F+Y6Tl88RFN460FPXwEcQ3FN9apW4feZTQJRA7ZiMP0m3oH8k8JimsQT9lH3jtrdzuXGQAAPPE5VH+CQ=="`)
+            // same here
+            // .equal(`keyId="GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB",algorithm="ed25519-sha256",headers="(request-target) date",signature="iAteM8F+Y6Tl88RFN460FPXwEcQ3FN9apW4feZTQJRA7ZiMP0m3oH8k8JimsQT9lH3jtrdzuXGQAAPPE5VH+CQ=="`)
+            .equal(`keyId="GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB",algorithm="ed25519-sha256",headers="(request-target)",signature="OhOfLyXQzt5ejT4sdGTQxsXSQ0X4YJwD4UaHlQPqTarZYqB79srecuOCm15bv6jXbWbI7jJYWhdgLzw4qprMCQ=="`)
 
           return [200, {}]
         })
