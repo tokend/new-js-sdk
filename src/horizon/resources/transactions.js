@@ -1,4 +1,5 @@
 import { ResourceGroupBase } from '../../resource_group_base'
+import { TransactionBuilder } from '../../base'
 
 export const SUBMIT_TRANSACTION_TIMEOUT = 60 * 10000
 
@@ -8,6 +9,23 @@ export const SUBMIT_TRANSACTION_TIMEOUT = 60 * 10000
  * @class
  */
 export class Transactions extends ResourceGroupBase {
+  /**
+   * Submits a transaction from a group of operations
+   *
+   * @param {xdr.Operation} operations - list of operations to submit
+   * @returns {HorizonResponse}
+   */
+  submitOperations (...operations) {
+    const wallet = this._sdk.wallet
+
+    return this.submit(
+      new TransactionBuilder(wallet.accountId)
+        .addOperations(operations)
+        .addSigner(wallet.keypair)
+        .build()
+    )
+  }
+
   /**
    * Submit a transaction.
    *

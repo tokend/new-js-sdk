@@ -73,12 +73,33 @@ export class TransactionBuilder {
   }
 
   /**
+   * Adds multiple operations to the transaction
+   *
+   * @param {xdr.Operation} operations The xdr operation objects, use {@link Operation} static methods.
+   * @returns {TransactionBuilder}
+   */
+  addOperations (...operations) {
+    this.operations = this.operations.concat(operations)
+    return this
+  }
+
+  /**
      * Adds a memo to the transaction.
      * @param {xdr.Memo} memo The xdr memo object, use {@link Memo} static methods.
      * @returns {TransactionBuilder}
      */
   addMemo (memo) {
     this.memo = memo
+    return this
+  }
+
+  /** Adds a signer keypair to the transaction.
+   *
+   * @param signer - valid {Keypair} instance for signing the transactions
+   * @returns {TransactionBuilder}
+   */
+  addSigner (signer) {
+    this.signers.push(signer)
     return this
   }
 
