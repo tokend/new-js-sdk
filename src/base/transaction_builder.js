@@ -75,10 +75,10 @@ export class TransactionBuilder {
   /**
    * Adds multiple operations to the transaction
    *
-   * @param {xdr.Operation} operations The xdr operation objects, use {@link Operation} static methods.
+   * @param {xdr.Operation[]} operations The xdr operation objects, use {@link Operation} static methods.
    * @returns {TransactionBuilder}
    */
-  addOperations (...operations) {
+  addOperations (operations) {
     this.operations = this.operations.concat(operations)
     return this
   }
