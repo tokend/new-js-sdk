@@ -9,7 +9,7 @@ export function toSnakeCaseDeep (object) {
 }
 
 function convertCaseDeep (object, transformPropertyName) {
-  if (_.isString(object)) {
+  if (_.isString(object) || _.isNumber(object)) {
     return object
   }
   if (_.isArray(object)) {

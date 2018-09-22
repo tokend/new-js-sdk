@@ -51,6 +51,17 @@ describe('utils/case_converter', function () {
       })
     })
 
+    it('Should convert array of numbers', function () {
+      let object = {
+        some_array: [1, 2, 4]
+      }
+
+      let converted = toCamelCaseDeep(object)
+      expect(converted).to.eql({
+        someArray: [1, 2, 4]
+      })
+    })
+
     it('Should convert an array.', function () {
       let object = [
         { element_1: 1 },
