@@ -52,8 +52,8 @@ export class PreIssuanceRequest {
   static dataFromXdr (xdr) {
     let attributes = {}
     attributes.amount = BaseOperation._fromXDRAmount(xdr.amount())
-    attributes.reference = xdr.reference()
-    attributes.asset = xdr.asset()
+    attributes.reference = xdr.reference().toString()
+    attributes.asset = xdr.asset().toString()
     attributes.signature = xdr.signature()
     return attributes
   }

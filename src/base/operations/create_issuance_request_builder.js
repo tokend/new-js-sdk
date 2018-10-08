@@ -67,9 +67,9 @@ export class CreateIssuanceRequestBuilder {
   }
 
   static createIssuanceRequestOpToObject (result, attrs) {
-    result.reference = attrs.reference()
+    result.reference = attrs.reference().toString()
     let request = attrs.request()
-    result.asset = request.asset()
+    result.asset = request.asset().toString()
     result.amount = BaseOperation._fromXDRAmount(request.amount())
     result.receiver = BaseOperation.balanceIdtoString(request.receiver())
     result.externalDetails = JSON.parse(request.externalDetails())

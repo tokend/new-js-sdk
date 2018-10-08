@@ -160,8 +160,8 @@ export class SaleRequestBuilder {
   static crateSaleCreationRequestToObject (result, attrs) {
     result.requestID = attrs.requestId().toString()
     let request = attrs.request()
-    result.baseAsset = request.baseAsset()
-    result.defaultQuoteAsset = request.defaultQuoteAsset()
+    result.baseAsset = request.baseAsset().toString()
+    result.defaultQuoteAsset = request.defaultQuoteAsset().toString()
     result.startTime = request.startTime().toString()
     result.endTime = request.endTime().toString()
     result.softCap = BaseOperation._fromXDRAmount(request.softCap())
@@ -171,7 +171,7 @@ export class SaleRequestBuilder {
     for (let i = 0; i < request.quoteAssets().length; i++) {
       result.quoteAssets.push({
         price: BaseOperation._fromXDRAmount(request.quoteAssets()[i].price()),
-        asset: request.quoteAssets()[i].quoteAsset()
+        asset: request.quoteAssets()[i].quoteAsset().toString()
       })
     }
   }

@@ -172,7 +172,7 @@ export class SetOptionsBuilder {
       signer.weight = attrs.signer().weight()
       signer.signerType = attrs.signer().signerType()
       signer.identity = attrs.signer().identity()
-      signer.name = attrs.signer().name()
+      signer.name = attrs.signer().name().toString()
 
       result.signer = signer
     }
