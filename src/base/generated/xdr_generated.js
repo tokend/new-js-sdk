@@ -1,4 +1,4 @@
-// Automatically generated on 2018-10-08T14:56:34+03:00
+// Automatically generated on 2018-10-09T12:44:50+03:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -7273,7 +7273,7 @@ xdr.union("CreateReferenceOpExt", {
 //
 //   struct CreateReferenceOp
 //   {
-//       string64 reference;
+//       longstring meta;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
@@ -7286,7 +7286,7 @@ xdr.union("CreateReferenceOpExt", {
 //
 // ===========================================================================
 xdr.struct("CreateReferenceOp", [
-  ["reference", xdr.lookup("String64")],
+  ["meta", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("CreateReferenceOpExt")],
 ]);
 
@@ -7297,14 +7297,14 @@ xdr.struct("CreateReferenceOp", [
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
-//       INVALID_REFERENCE = -1,
+//       INVALID_META = -1,
 //       ALREADY_EXISTS = -2
 //   };
 //
 // ===========================================================================
 xdr.enum("CreateReferenceResultCode", {
   success: 0,
-  invalidReference: -1,
+  invalidMetum: -1,
   alreadyExist: -2,
 });
 
@@ -7331,6 +7331,8 @@ xdr.union("CreateReferenceSuccessResultExt", {
 //
 //   struct CreateReferenceSuccessResult
 //   {
+//       string64 reference;
+//   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
@@ -7342,6 +7344,7 @@ xdr.union("CreateReferenceSuccessResultExt", {
 //
 // ===========================================================================
 xdr.struct("CreateReferenceSuccessResult", [
+  ["reference", xdr.lookup("String64")],
   ["ext", xdr.lookup("CreateReferenceSuccessResultExt")],
 ]);
 
