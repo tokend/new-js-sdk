@@ -42,7 +42,7 @@ function reviewRequest(testHelper, requestID, reviewerKP, action, rejectReason, 
             externalDetails: externalDetails
         };
         let operation = base.ReviewRequestBuilder.reviewRequest(opts);
-        return testHelper.sdk.submitOperations(operation);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).catch(err => {
         if (!isUndefined(err.response) && err.response.status === 404) {
             console.log("received 404 - retrying");
@@ -63,7 +63,7 @@ function reviewWithdrawRequest(testHelper, requestID, reviewerKP, action, reject
             externalDetails: externalDetails,
         };
         let operation = base.ReviewRequestBuilder.reviewWithdrawRequest(opts);
-        return testHelper.sdk.submitOperations(operation);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).catch(err => {
         if (!isUndefined(err.response) && err.response.status === 404) {
             console.log("received 404 - retrying");
@@ -84,7 +84,7 @@ function reviewTwoStepWithdrawRequest(testHelper, requestID, reviewerKP, action,
             externalDetails: externalDetails,
         };
         let operation = base.ReviewRequestBuilder.reviewTwoStepWithdrawRequest(opts);
-        return testHelper.sdk.submitOperations(operation);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).catch(err => {
         if (!isUndefined(err.response) && err.response.status === 404) {
             console.log("received 404 - retrying");
@@ -105,7 +105,7 @@ function reviewLimitsUpdateRequest(testHelper, requestID, reviewerKP, action, re
             newLimits: newLimits,
         };
         let operation = base.ReviewRequestBuilder.reviewLimitsUpdateRequest(opts);
-        return testHelper.sdk.submitOperations(operation);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).catch(err => {
         if (!isUndefined(err.response) && err.response.status === 404) {
             console.log("received 404 - retrying");
@@ -190,7 +190,7 @@ function reviewInvoiceRequest(testHelper, requestID, reviewerKP, action, rejectR
             billPayDetails: billPayDetails,
         };
         let operation = base.ReviewRequestBuilder.reviewInvoiceRequest(opts);
-        return testHelper.sdk.submitOperations(operation);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).catch(err => {
         if (!isUndefined(err.response) && err.response.status === 404) {
             console.log("received 404 - retrying");
@@ -211,7 +211,7 @@ function reviewContractRequest(testHelper, requestID, reviewerKP, action, reject
             details: details,
         };
         let operation = base.ReviewRequestBuilder.reviewContractRequest(opts);
-        return testHelper.sdk.submitOperations(operation);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).catch(err => {
         if (!isUndefined(err.response) && err.response.status === 404) {
             console.log("received 404 - retrying");

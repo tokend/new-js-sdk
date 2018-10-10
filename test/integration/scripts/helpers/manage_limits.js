@@ -13,7 +13,7 @@ function createLimits(testHelper, source, assetCode, accountID, accountType) {
         annualOut: '50',
     };
     const operation = base.ManageLimitsBuilder.createLimits(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
     .then(response => {
         let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
         let success = result.result().results()[0].tr().manageLimitsResult().success();
@@ -28,7 +28,7 @@ function removeLimits(testHelper, source, limitsV2ID) {
         id: limitsV2ID,
     };
     const operation = base.ManageLimitsBuilder.removeLimits(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
 }
 
 module.exports = {

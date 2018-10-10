@@ -31,7 +31,7 @@ function createSaleCreationRequest(testHelper, owner, baseAsset, defaultQuoteAss
         },
     };
     let operation = base.SaleRequestBuilder.createSaleCreationRequest(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function createAndReviewSale(testHelper, owner, baseAsset, defaultQuoteAsset, startTime, endTime, softCap, hardCap,
@@ -71,7 +71,7 @@ function cancelSaleCreationRequest(testHelper, owner, requestID) {
         requestID: requestID,
     };
     let operation = base.SaleRequestBuilder.cancelSaleCreationRequest(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function createPromotionUpdateRequest(testHelper, owner, saleID, baseAsset, defaultQuoteAsset,
@@ -103,7 +103,7 @@ function createPromotionUpdateRequest(testHelper, owner, saleID, baseAsset, defa
     };
 
     let operation = base.ManageSaleBuilder.createPromotionUpdateRequest(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let id = result.result().results()[0].tr().manageSaleResult().success().response().promotionUpdateRequestId().toString();
@@ -117,7 +117,7 @@ function checkSaleState(testHelper, baseAsset) {
         return sales.records[0];
     }).then(sale => {
         let operation = base.SaleRequestBuilder.checkSaleState({saleID: sale.id});
-        return testHelper.sdk.submitOperations(operation);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).then(response => {
         return response;
     });
@@ -130,7 +130,7 @@ function setSaleState(testHelper, saleID, state) {
     };
 
     let operation = base.ManageSaleBuilder.setSaleState(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function createUpdateSaleDetailsRequest(testHelper, owner, saleID) {
@@ -166,7 +166,7 @@ function createUpdateSaleEndTimeRequest(testHelper, owner, saleID, newEndTime) {
     };
 
     let operation = base.ManageSaleBuilder.createUpdateSaleEndTimeRequest(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let id = result.result().results()[0].tr().manageSaleResult().success().response().updateEndTimeRequestId().toString();

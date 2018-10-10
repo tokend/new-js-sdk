@@ -22,7 +22,7 @@ function createAssetCreationRequest(testHelper, owner, issuer, assetCode, policy
 
     };
     let operation = base.ManageAssetBuilder.assetCreationRequest(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function createAssetUpdateRequest(testHelper, owner, issuer, assetCode, policy = 0) {
@@ -41,7 +41,7 @@ function createAssetUpdateRequest(testHelper, owner, issuer, assetCode, policy =
 
     };
     let operation = base.ManageAssetBuilder.assetUpdateRequest(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function createAsset(testHelper, owner, issuer, assetCode, policy, maxIssuanceAmount, initialPreissuedAmount = "0") {
@@ -86,7 +86,7 @@ function createAssetPair(testHelper, baseAsset, quoteAsset, physicalPrice = "1",
         maxPriceStep: "0",
         physicalPrice: physicalPrice,
     });
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 

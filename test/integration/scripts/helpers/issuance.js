@@ -11,7 +11,7 @@ function createPreIssuanceRequest(testHelper, assetOwnerKP, preIssuanceKP, asset
         keyPair: preIssuanceKP,
     });
     let op = base.PreIssuanceRequestOpBuilder.createPreIssuanceRequestOp({ request: preIssuanceRequest });
-    return testHelper.sdk.submitOperations(op);
+    return testHelper.sdk.horizon.transactions.submitOperations(op);
 }
 
 function performPreIssuance(testHelper, assetOwnerKP, preIssuanceKP, assetCode, amount) {
@@ -64,7 +64,7 @@ function issue(testHelper, requestor, receiverBalanceID, asset, amount, allTasks
     };
 
     const op = base.CreateIssuanceRequestBuilder.createIssuanceRequest(opts);
-    return testHelper.sdk.submitOperations(op)
+    return testHelper.sdk.horizon.transactions.submitOperations(op)
         .then(res => {
             console.log('Issued: ', amount, asset, 'to', receiverBalanceID)
             return res

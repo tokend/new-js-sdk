@@ -13,7 +13,7 @@ function createNewAccount(testHelper, accountId, accountType, accountPolicies = 
     };
     const operation = base.Operation.createAccount(opts);
 
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(res => {
             console.log('Account created: ', accountId)
             return res
@@ -27,7 +27,7 @@ function createBalanceForAsset(testHelper, sourceKP, assetCode) {
         asset: assetCode,
     };
     const operation = base.Operation.manageBalance(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(res => {
             console.log('Balance created for ', sourceKP.accountId())
             return res

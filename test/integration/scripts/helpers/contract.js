@@ -9,7 +9,7 @@ function createContractRequest(testHelper, source, customer, escrow, details, st
         details: details
     };
     const operation = base.ManageContractRequestBuilder.createContractRequest(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let success = result.result().results()[0].tr().manageContractRequestResult().success();
@@ -24,7 +24,7 @@ function removeContractRequest(testHelper, source, requestId) {
         requestId: requestId,
     };
     const operation = base.ManageContractRequestBuilder.removeContractRequest(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function addDetails(testHelper, source, contractID, details){
@@ -33,7 +33,7 @@ function addDetails(testHelper, source, contractID, details){
         details: details
     };
     const operation = base.ManageContractBuilder.addDetails(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function confirmCompleted(testHelper, source, contractID){
@@ -41,7 +41,7 @@ function confirmCompleted(testHelper, source, contractID){
         contractID: contractID,
     };
     const operation = base.ManageContractBuilder.confirmCompleted(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function startDispute(testHelper, source, contractID, disputeReason){
@@ -50,7 +50,7 @@ function startDispute(testHelper, source, contractID, disputeReason){
         disputeReason: disputeReason
     };
     const operation = base.ManageContractBuilder.startDispute(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function resolveDispute(testHelper, source, contractID, isRevert){
@@ -59,7 +59,7 @@ function resolveDispute(testHelper, source, contractID, isRevert){
         isRevert: isRevert
     };
     const operation = base.ManageContractBuilder.resolveDispute(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 module.exports = {

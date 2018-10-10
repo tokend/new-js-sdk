@@ -22,7 +22,7 @@ function createOffer(testHelper, source, baseAsset, quoteAsset, price, baseAmoun
         };
 
         let operation = base.ManageOfferBuilder.manageOffer(opts);
-        return testHelper.sdk.submitOperations(operation);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let offer = result.result().results()[0].tr().manageOfferResult().success().offer().offer();
@@ -52,7 +52,7 @@ function cancelOffer(testHelper, source, baseAsset, quoteAsset, offerID, orderBo
             };
 
             let operation = base.ManageOfferBuilder.cancelOffer(opts);
-            return testHelper.sdk.submitOperations(operation);
+            return testHelper.sdk.horizon.transactions.submitOperations(operation);
         })
 }
 

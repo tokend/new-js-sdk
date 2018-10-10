@@ -25,7 +25,7 @@ function billPay(testHelper, sourceKP, sourceBalanceID, destination, amount, sou
     };
 
     let op = base.BillPayBuilder.billPay(opts);
-    return testHelper.sdk.submitOperations(op);
+    return testHelper.sdk.horizon.transactions.submitOperations(op);
 }
 
 module.exports = {

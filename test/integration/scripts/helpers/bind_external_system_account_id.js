@@ -4,7 +4,7 @@ function bindExternalSystemAccountId(testHelper, source, externalSystemType) {
     let operation = base.BindExternalSystemAccountIdBuilder.createBindExternalSystemAccountIdOp({
         externalSystemType: externalSystemType,
     });
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 module.exports = {

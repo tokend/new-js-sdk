@@ -6,7 +6,7 @@ function createExternalSystemAccountIdPoolEntry(testHelper, externalSystemType, 
         data: data,
         parent: parent
     });
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let id = result.result().results()[0].tr().manageExternalSystemAccountIdPoolEntryResult().success().poolEntryId().toString();
@@ -19,7 +19,7 @@ function deleteExternalSystemAccountIdPoolEntry(testHelper, poolEntryId) {
     let operation = base.ManageExternalSystemAccountIdPoolEntryBuilder.deleteExternalSystemAccountIdPoolEntry({
        poolEntryId: poolEntryId
     });
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 module.exports = {

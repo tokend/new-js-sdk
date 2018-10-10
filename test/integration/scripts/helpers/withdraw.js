@@ -14,7 +14,7 @@ function withdraw(testHelper, source, balance, amount, destAsset) {
         expectedDestAssetAmount: amount
     };
     const operation = base.CreateWithdrawRequestBuilder.createWithdrawWithAutoConversion(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             var result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             var id = result.result().results()[0].tr().createWithdrawalRequestResult().success().requestId().toString();

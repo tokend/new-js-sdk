@@ -9,7 +9,7 @@ function createInvoiceRequest(testHelper, source, sender, asset, amount, details
         contractID: contractID
     };
     const operation = base.ManageInvoiceRequestBuilder.createInvoiceRequest(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let success = result.result().results()[0].tr().manageInvoiceRequestResult().success();
@@ -28,7 +28,7 @@ function removeInvoiceRequest(testHelper, source, requestId) {
         requestId: requestId,
     };
     const operation = base.ManageInvoiceRequestBuilder.removeInvoiceRequest(opts);
-    return testHelper.sdk.submitOperations(operation);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 module.exports = {

@@ -15,7 +15,7 @@ function performPayout(testHelper, source, asset, sourceBalanceId,
         },
     };
     const operation = base.PayoutOpBuilder.payoutOp(opts);
-    return testHelper.sdk.submitOperations(operation)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let success = result.result().results()[0].tr().payoutResult().success();
