@@ -55,19 +55,20 @@ describe("Integration test", function () {
             });
     }
 
-    it ('Create Reference', function(done) {
-        let meta = {
-          fileName: 'Large Tokenization FAQ',
-          documentType: 'pdf',
-          creator: 'Researcher',
-          counterparty: 'Team' + Math.floor(Math.random()*1000)
-        }
-        referenceHelper.createReference(testHelper, meta)
-          .then(() => done())
-          .catch(err => {
-            console.error(util.inspect(err, {showHidden: false, depth: null}))
-            done(err)
-          });
+    it('Create Reference', function (done) {
+      let meta = {
+        file_name: 'Large Tokenization FAQ',
+        document_type: 'pdf',
+        creator: 'Researcher',
+        counterparty: 'Team' + Math.floor(Math.random() * 1000),
+        extra: "Because we can"
+      }
+      referenceHelper.createReference(testHelper, meta)
+        .then(() => done())
+        .catch(err => {
+          console.error(util.inspect(err, {showHidden: false, depth: null}))
+          done(err)
+        });
     })
 
     /*it("Charge transaction fee", function (done) {

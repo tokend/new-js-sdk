@@ -7,8 +7,8 @@ export class CreateReferenceBuilder {
    * Creates new reference entry
    * @param {object} opts
    * @param {object} opts.meta - details about document or something else
-   * @param {string} opts.meta.fileName - name of file
-   * @param {string} opts.meta.documentType - type of document
+   * @param {string} opts.meta.file_name - name of file
+   * @param {string} opts.meta.document_type - type of document
    * @param {string} opts.meta.creator - information about document creator
    * @param {string} opts.meta.counterparty - participant
    * @param {string} [opts.source] - The source account for the operation.
@@ -16,10 +16,10 @@ export class CreateReferenceBuilder {
    * @returns {xdr.Operation} (CreateReferenceOp)
    */
   static createReference (opts) {
-    if (isUndefined(opts.meta.fileName)) {
+    if (isUndefined(opts.meta.file_name)) {
       throw new Error('opts.meta.fileName is undefined')
     }
-    if (isUndefined(opts.meta.documentType)) {
+    if (isUndefined(opts.meta.document_type)) {
       throw new Error('opts.meta.documentType is undefined')
     }
     if (isUndefined(opts.meta.creator)) {
