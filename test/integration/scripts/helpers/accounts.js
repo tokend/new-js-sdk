@@ -92,7 +92,7 @@ function addSuperAdmin(testHelper, sourceAccId, keypair, address, details) {
         .build();
 
     tx.sign(keypair);
-    return testHelper.server.submitTransaction(tx)
+    return testHelper.sdk.horizon.transactions.submit(tx)
 }
 
 function setThresholds(helper, source, kp, thresholds) {
@@ -106,7 +106,7 @@ function setThresholds(helper, source, kp, thresholds) {
         .build();
 
     tx.sign(kp);
-    return helper.server.submitTransaction(tx)
+    return helper.sdk.horizon.transactions.submit(tx)
 }
 
 module.exports = {
