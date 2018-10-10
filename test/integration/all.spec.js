@@ -40,7 +40,7 @@ describe("Integration test", function () {
     });
 
     function checkConnection(done) {
-        testHelper.sdk.horizon.accounts.get(master.accountId(), master)
+        testHelper.sdk.horizon.account.get(master.accountId(), master)
             .then(source => {
                 console.log('Horizon up and running!');
                 done();
