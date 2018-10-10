@@ -113,8 +113,10 @@ function createPromotionUpdateRequest(testHelper, owner, saleID, baseAsset, defa
 }
 
 function checkSaleState(testHelper, baseAsset) {
-    return testHelper.server.sales().forBaseAsset(baseAsset).callWithSignature(testHelper.master).then(sales => {
-        return sales.records[0];
+    return testHelper.sdk.horizon.sales.getAll({
+      base_asset: baseAsset
+    }).then(sales => {
+        return sales.data[0];
     }).then(sale => {
         let operation = base.SaleRequestBuilder.checkSaleState({saleID: sale.id});
         return testHelper.sdk.horizon.transactions.submitOperations(operation);
