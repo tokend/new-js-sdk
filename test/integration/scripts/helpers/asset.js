@@ -95,7 +95,7 @@ function changePreIssuerSigner(testHelper, code, newPreIssuer, owner, preIssuerK
         code: code,
         accountID: newPreIssuer,
     });
-    return testHelper.server.submitOperation(operation, owner.accountId(), preIssuerKP);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 function updateAssetPrice(testHelper, baseAsset, quoteAsset, physicalPrice = "1") {
@@ -108,7 +108,7 @@ function updateAssetPrice(testHelper, baseAsset, quoteAsset, physicalPrice = "1"
         maxPriceStep: "0",
         physicalPrice: physicalPrice,
     });
-    return testHelper.server.submitOperation(operation, testHelper.master.accountId(), testHelper.master);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 module.exports = {

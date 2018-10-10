@@ -13,7 +13,7 @@ function createKYCRequest(testHelper, source, requestID, accountToUpdateKYC, acc
         allTasks: allTasks,
     };
     const operation = base.CreateUpdateKYCRequestBuilder.createUpdateKYCRequest(opts);
-    return testHelper.server.submitOperation(operation, source.accountId(), source)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let id = result.result().results()[0].tr().createUpdateKycRequestResult().success().requestId().toString();

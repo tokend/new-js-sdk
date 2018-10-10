@@ -21,7 +21,7 @@ function setFees(testHelper, feeType, fixedFee, percentFee, asset = baseAsset, s
 
             tx.sign(testHelper.master);
 
-            return testHelper.server.submitTransaction(tx);
+            return testHelper.sdk.horizon.transactions.submit(tx);
         });
 }
 

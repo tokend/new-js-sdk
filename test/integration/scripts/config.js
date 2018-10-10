@@ -107,7 +107,9 @@ module.exports = {
     getConfig: function (env) {
         const url = urls[env]
         const master = base.Keypair.fromSecret(masterSeeds[env])
-        const sdk = new TokenD(url, {allowHttp: true})
+        const sdk = new TokenD(urls[env], {
+            allowHttp: true
+        })
         sdk.useWallet(new Wallet(
           'any@mail.com',
           master,

@@ -7,8 +7,8 @@ describe('CreateReferenceBuilder', () => {
   it('Success', () => {
     let opts = {
       meta: {
-        filename: 'Large Tokenization FAQ',
-        docType: 'pdf',
+        fileName: 'Large Tokenization FAQ',
+        documentType: 'pdf',
         creator: 'Researcher',
         counterparty: 'Team'
       }
