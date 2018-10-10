@@ -13,7 +13,7 @@ export class CreateReferenceBuilder {
    * @param {string} opts.meta.counterparty - participant
    * @param {string} [opts.source] - The source account for the operation.
    * Defaults to the transaction's source account.
-   * @returns {xdr.CreateReferenceOp}
+   * @returns {xdr.Operation} (CreateReferenceOp)
    */
   static createReference (opts) {
     if (isUndefined(opts.meta.fileName)) {

@@ -19,10 +19,12 @@ import * as manageLimitsHelper from './scripts/helpers/manage_limits'
 import * as manageInvoiceRequestHelper from './scripts/helpers/invoice'
 import * as contractHelper from './scripts/helpers/contract'
 import * as helpers from './scripts/helpers'
+import * as referenceHelper from './scripts/helpers/reference'
 import { base } from '../../src'
 
 let config = require('./scripts/config');
 
+const util = require('util')
 const MAX_INT64_AMOUNT = '9223372036854.775807';
 
 describe("Integration test", function () {
@@ -53,7 +55,22 @@ describe("Integration test", function () {
             });
     }
 
-    it("Charge transaction fee", function (done) {
+    it ('Create Reference', function(done) {
+        let meta = {
+          fileName: 'Large Tokenization FAQ',
+          documentType: 'pdf',
+          creator: 'Researcher',
+          counterparty: 'Team' + Math.floor(Math.random()*1000)
+        }
+        referenceHelper.createReference(testHelper, meta)
+          .then(() => done())
+          .catch(err => {
+            console.error(util.inspect(err, {showHidden: false, depth: null}))
+            done(err)
+          });
+    })
+
+    /*it("Charge transaction fee", function (done) {
         let txFeeAssetCode = "BTC" + Math.floor(Math.random() * 1000);
         let preIssuedAmount = "10000.000000";
         let txSourceKP = base.Keypair.random();
@@ -1087,5 +1104,5 @@ describe("Integration test", function () {
             .then(balanceID => payoutHelper.performPayout(testHelper, syndicateKP, assetCode, balanceID, "500", "1", "1", "10", "50"))
             .then(() => done())
             .catch(helpers.errorHandler);
-    });
+    });*/
 });
