@@ -19,6 +19,7 @@ import * as manageLimitsHelper from './scripts/helpers/manage_limits'
 import * as manageInvoiceRequestHelper from './scripts/helpers/invoice'
 import * as contractHelper from './scripts/helpers/contract'
 import * as helpers from './scripts/helpers'
+import { base } from '../../src'
 
 let config = require('./scripts/config');
 
@@ -40,7 +41,7 @@ describe("Integration test", function () {
     });
 
     function checkConnection(done) {
-        testHelper.sdk.horizon.accounts.get(master.accountId(), master)
+        testHelper.sdk.horizon.account.get(master.accountId(), master)
             .then(source => {
                 console.log('Horizon up and running!');
                 done();
