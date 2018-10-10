@@ -149,7 +149,7 @@ function createUpdateSaleDetailsRequest(testHelper, owner, saleID) {
     };
 
     let operation = base.ManageSaleBuilder.createUpdateSaleDetailsRequest(opts);
-    return testHelper.server.submitOperation(operation, owner.accountId(), owner)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let id = result.result().results()[0].tr().manageSaleResult().success().response().requestId().toString();
@@ -180,7 +180,7 @@ function cancelSale(testHelper, owner, saleID) {
         saleID: saleID,
     };
     let operation = base.ManageSaleBuilder.cancelSale(opts);
-    return testHelper.server.submitOperation(operation, owner.accountId(), owner);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 module.exports = {

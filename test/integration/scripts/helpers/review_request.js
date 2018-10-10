@@ -126,7 +126,7 @@ function reviewAmlAlertRequest(testHelper, requestID, reviewerKP, action, reject
             comment: comment,
         };
         let operation = base.ReviewRequestBuilder.reviewAmlAlertRequest(opts);
-        return testHelper.server.submitOperation(operation, reviewerKP.accountId(), reviewerKP);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).catch(err => {
         if (!isUndefined(err.response) && err.response.status === 404) {
             console.log("received 404 - retrying");
@@ -149,7 +149,7 @@ function reviewUpdateKYCRequest(testHelper, requestID, reviewerKP, action, rejec
             externalDetails: externalDetails,
         };
         let operation = base.ReviewRequestBuilder.reviewUpdateKYCRequest(opts);
-        return testHelper.server.submitOperation(operation, reviewerKP.accountId(), reviewerKP);
+        return testHelper.sdk.horizon.transactions.submitOperations(operation);
     }).catch(err => {
         if (!isUndefined(err.response) && err.response.status === 404) {
             console.log("received 404 - retrying");

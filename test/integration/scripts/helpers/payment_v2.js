@@ -23,7 +23,7 @@ function paymentV2(testHelper, sourceKP, sourceBalanceID, destination, amount, s
     };
 
     let op = base.PaymentV2Builder.paymentV2(opts);
-    return testHelper.server.submitOperation(op, sourceKP.accountId(), sourceKP);
+    return testHelper.sdk.horizon.transactions.submitOperations(operation);
 }
 
 module.exports = {

@@ -44,7 +44,7 @@ function createIssuanceRequest(testHelper, requestor, receiverBalanceID, asset, 
     };
 
     const op = base.CreateIssuanceRequestBuilder.createIssuanceRequest(opts);
-    return testHelper.server.submitOperation(op, requestor.accountId(), requestor)
+    return testHelper.sdk.horizon.transactions.submitOperations(operation)
         .then(response => {
             let result = base.xdr.TransactionResult.fromXDR(new Buffer(response.result_xdr, "base64"));
             let requestID = result.result().results()[0].tr().createIssuanceRequestResult().success().requestId();
