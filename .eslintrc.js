@@ -19,7 +19,7 @@ module.exports = {
     'object-curly-spacing': [2, 'always'],
     'no-var': 2,
     'max-len': [2, {
-      'code': 80,
+      'code': 95,
       'ignoreUrls': true,
       'ignoreStrings': true,
       'ignoreTemplateLiterals': true,

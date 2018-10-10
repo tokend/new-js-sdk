@@ -1,6 +1,6 @@
 {
   "source": {
-    "include": ["src"],
+    "include": ["src", "docs/enums.js"],
     "includePattern": ".+(\\.js)$",
     "excludePattern": ".+\\.test\\.js$"
   },
