@@ -6,6 +6,7 @@ export class CreateReferenceBuilder {
   /**
    * Creates new reference entry
    * @param {object} opts
+   * @param {string} opts.reference - unique reference calculated on client 64 symbols length
    * @param {object} opts.meta - details about document or something else
    * @param {string} opts.meta.file_name - name of file
    * @param {string} opts.meta.document_type - type of document
@@ -16,11 +17,14 @@ export class CreateReferenceBuilder {
    * @returns {xdr.Operation} (CreateReferenceOp)
    */
   static createReference (opts) {
+    if (!BaseOperation.isValidString(opts.reference, 64, 64)) {
+      throw new Error('opts.reference is invalid, length:' + opts.reference.length)
+    }
     if (isUndefined(opts.meta.file_name)) {
-      throw new Error('opts.meta.fileName is undefined')
+      throw new Error('opts.meta.file_name is undefined')
     }
     if (isUndefined(opts.meta.document_type)) {
-      throw new Error('opts.meta.documentType is undefined')
+      throw new Error('opts.meta.document_type is undefined')
     }
     if (isUndefined(opts.meta.creator)) {
       throw new Error('opts.meta.creator is undefined')
@@ -30,6 +34,7 @@ export class CreateReferenceBuilder {
     }
 
     let attrs = {
+      reference: opts.reference,
       meta: JSON.stringify(opts.meta),
       ext: new xdr.CreateReferenceOpExt(xdr.LedgerVersion.emptyVersion())
     }
@@ -43,6 +48,7 @@ export class CreateReferenceBuilder {
   }
 
   static createReferenceToObject (result, attrs) {
+    result.reference = attrs.reference().toString()
     result.meta = JSON.parse(attrs.meta())
   }
 }
