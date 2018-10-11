@@ -17,8 +17,8 @@ export class CreateReferenceBuilder {
    * @returns {xdr.Operation} (CreateReferenceOp)
    */
   static createReference (opts) {
-    if (!BaseOperation.isValidString(opts.reference, 64, 64)) {
-      throw new Error('opts.reference is invalid, length:' + opts.reference.length)
+    if (!BaseOperation.isValidString(opts.reference, 1, 64)) {
+      throw new Error('opts.reference is invalid')
     }
     if (isUndefined(opts.meta.file_name)) {
       throw new Error('opts.meta.file_name is undefined')

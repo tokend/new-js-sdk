@@ -56,6 +56,7 @@ describe("Integration test", function () {
     }
 
     it('Create Reference', function (done) {
+      let reference = 'SomeRandomReferenceWith64SymbolsLength' + Math.floor(Math.random() * 1000)
       let meta = {
         file_name: 'Large Tokenization FAQ',
         document_type: 'pdf',
@@ -63,7 +64,7 @@ describe("Integration test", function () {
         counterparty: 'Team' + Math.floor(Math.random() * 1000),
         extra: "Because we can"
       }
-      referenceHelper.createReference(testHelper, meta)
+      referenceHelper.createReference(testHelper, reference, meta)
         .then(() => done())
         .catch(err => {
           console.error(util.inspect(err, {showHidden: false, depth: null}))
