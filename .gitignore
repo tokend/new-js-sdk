@@ -17,4 +17,4 @@
 /docs/markdown/
 /src/tmp.js
 #ignore master seeds
-/scripts/master_seeds.js
+/test/integration/scripts/master_seeds.js

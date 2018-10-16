@@ -151,29 +151,6 @@ export class ReviewRequestBuilder {
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
 
-  static reviewLimitsUpdateRequest (opts) {
-    if (isUndefined(opts.newLimits)) {
-      throw new Error('opts.newLimits is invalid')
-    }
-
-    let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.limitsUpdate(
-      new xdr.LimitsUpdateDetails({
-        newLimits: new xdr.Limits({
-          dailyOut: BaseOperation._toXDRAmount(opts.newLimits.dailyOut),
-          weeklyOut: BaseOperation._toXDRAmount(opts.newLimits.weeklyOut),
-          monthlyOut: BaseOperation._toXDRAmount(opts.newLimits.monthlyOut),
-          annualOut: BaseOperation._toXDRAmount(opts.newLimits.annualOut),
-          ext: new xdr.LimitsExt(xdr.LedgerVersion.emptyVersion())
-        }),
-        ext: new xdr.LimitsUpdateDetailsExt(xdr.LedgerVersion.emptyVersion())
-      })
-    )
-
-    return ReviewRequestBuilder._createOp(opts, attrs)
-  }
-
   static reviewUpdateKYCRequest (opts) {
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
 
@@ -196,7 +173,8 @@ export class ReviewRequestBuilder {
     switch (attrs.requestDetails().switch()) {
       case xdr.ReviewableRequestType.withdraw(): {
         result.withdrawal = {
-          externalDetails: attrs.requestDetails().withdrawal().externalDetails()
+          externalDetails:
+              attrs.requestDetails().withdrawal().externalDetails().toString()
         }
         break
       }
@@ -221,10 +199,8 @@ export class ReviewRequestBuilder {
       }
       case xdr.ReviewableRequestType.twoStepWithdrawal(): {
         result.twoStepWithdrawal = {
-          externalDetails: attrs
-            .requestDetails()
-            .twoStepWithdrawal()
-            .externalDetails()
+          externalDetails: attrs.requestDetails().twoStepWithdrawal()
+            .externalDetails().toString()
         }
         break
       }
@@ -232,18 +208,19 @@ export class ReviewRequestBuilder {
         result.updateKyc = {
           tasksToAdd: attrs.requestDetails().updateKyc().tasksToAdd(),
           tasksToRemove: attrs.requestDetails().updateKyc().tasksToRemove(),
-          externalDetails: attrs.requestDetails().updateKyc().externalDetails()
+          externalDetails:
+              attrs.requestDetails().updateKyc().externalDetails().toString()
         }
         break
       }
       case xdr.ReviewableRequestType.amlAlert(): {
         result.amlAlert = {
-          comment: attrs.requestDetails().amlAlertDetails().comment()
+          comment: attrs.requestDetails().amlAlertDetails().comment().toString()
         }
         break
       }
     }
     result.action = attrs.action().value
-    result.reason = attrs.reason()
+    result.reason = attrs.reason().toString()
   }
 }

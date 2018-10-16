@@ -489,74 +489,6 @@ describe('Operation', () => {
     })
   })
 
-  describe('.reviewPaymentRequest', () => {
-    it('valid reviewPaymentRequest', () => {
-      let opts = {
-        accept: true,
-        paymentId: '1',
-        rejectReason: 'some reason'
-      }
-      let op = Operation.reviewPaymentRequest(opts)
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('reviewPaymentRequest')
-      expect(obj.accept).to.be.equal(true)
-      expect(obj.rejectReason).to.be.equal('some reason')
-      expect(obj.paymentId).to.be.equal('1')
-    })
-
-    it('fails to create reviewPaymentRequest operation with an undefined accept', () => {
-      let opts = {
-        paymentId: '1'
-      }
-      expectThrow(() => Operation.reviewPaymentRequest(opts))
-    })
-
-    it('fails to create reviewPaymentRequest operation with an undefined paymentId', () => {
-      let opts = {
-        accept: true
-      }
-      expectThrow(() => Operation.reviewPaymentRequest(opts))
-    })
-  })
-
-  describe('.setLimits', () => {
-    let account = Keypair.random()
-    it('valid setLimitsOp', () => {
-      let opts = {
-        account: account.accountId(),
-        limits: {
-          dailyOut: '1',
-          weeklyOut: '2',
-          monthlyOut: '3',
-          annualOut: '5'
-        }
-      }
-      let op = Operation.setLimits(opts)
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('setLimit')
-      expect(obj.account).to.be.equal(account.accountId())
-      expect(obj.limits.dailyOut).to.be.equal('1')
-      expect(obj.limits.annualOut).to.be.equal('5')
-    })
-
-    it('fails to create setLimits operation with invalid account', () => {
-      let opts = {
-        account: 123,
-        limits: {
-          dailyOut: '1',
-          weeklyOut: '2',
-          monthlyOut: '3',
-          annualOut: '5'
-        }
-      }
-      expectThrow(() => Operation.setLimits(opts))
-    })
-  })
-
   describe('.manageAssetPair', () => {
     let base = 'ETH'
     let quote = 'USD'
@@ -587,30 +519,6 @@ describe('Operation', () => {
       expect(operation.body().value().physicalPrice().toString()).to.be.equal('12120000')
       expect(obj.physicalPriceCorrection).to.be.equal(physicalPriceCorrection)
       expect(obj.maxPriceStep).to.be.equal(maxPriceStep)
-    })
-  })
-
-  describe('.manageInvoice()', () => {
-    it('creates a manageInvoice', () => {
-      let sender = Keypair.random().accountId()
-      let receiverBalance = Keypair.random().balanceId()
-      let amount = '1000'
-      let invoiceId = '0'
-      let op = Operation.manageInvoice({
-        sender,
-        receiverBalance,
-        amount,
-        invoiceId
-      })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('manageInvoice')
-      expect(obj.sender).to.be.equal(sender)
-      expect(obj.receiverBalance).to.be.equal(receiverBalance)
-      expect(operation.body().value().amount().toString()).to.be.equal('1000000000')
-      expect(obj.amount).to.be.equal(amount)
-      expect(obj.invoiceId).to.be.equal(invoiceId)
     })
   })
 

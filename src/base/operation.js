@@ -17,6 +17,7 @@ import { CreateAMLRequestBuilder } from './operations/create_aml_request_builder
 import { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
 import { ManageSaleBuilder } from './operations/manage_sale'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
+import { CreateReferenceBuilder } from './operations/create_reference_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -376,34 +377,6 @@ export class Operation extends BaseOperation {
     return new xdr.Operation(opAttributes)
   }
 
-  static reviewPaymentRequest (opts) {
-    let attributes = {
-      ext: new xdr.ReviewPaymentRequestOpExt(xdr.LedgerVersion.emptyVersion())
-    }
-
-    if (isUndefined(opts.paymentId)) {
-      throw new Error('paymentId should be defined')
-    }
-    if (isUndefined(opts.accept)) {
-      throw new TypeError('accept should be defined')
-    }
-
-    if (!isUndefined(opts.rejectReason)) {
-      attributes.rejectReason = opts.rejectReason
-    }
-
-    attributes.paymentId = UnsignedHyper.fromString(opts.paymentId)
-    attributes.accept = opts.accept
-
-    let reviewPaymentRequestOp = new xdr.ReviewPaymentRequestOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody
-      .reviewPaymentRequest(reviewPaymentRequestOp)
-    Operation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
-  }
-
   /**
      * Returns an XDR ManageAssetPairOp. A "manage asset pair" operations creates|updates asset pair.
      * @param {object} opts
@@ -474,69 +447,6 @@ export class Operation extends BaseOperation {
     return new xdr.Operation(opAttributes)
   }
 
-  static manageInvoice (opts) {
-    let attributes = {
-      ext: new xdr.ManageInvoiceOpExt(xdr.LedgerVersion.emptyVersion())
-    }
-    if (!Keypair.isValidPublicKey(opts.sender)) {
-      throw new Error('sender is invalid')
-    }
-    if (!Keypair.isValidBalanceKey(opts.receiverBalance)) {
-      throw new Error('receiverBalance is invalid')
-    }
-    if (!Operation.isValidAmount(opts.amount, true)) {
-      throw new TypeError(
-        'amount argument must be of type String and represent a positive number or zero'
-      )
-    }
-    attributes.amount = Operation._toXDRAmount(opts.amount)
-
-    if (isUndefined(opts.invoiceId)) {
-      throw new TypeError('invoiceId must be specified')
-    }
-
-    attributes.invoiceId = UnsignedHyper.fromString(opts.invoiceId)
-    attributes.sender = Keypair.fromAccountId(opts.sender).xdrAccountId()
-    attributes.receiverBalance = Keypair
-      .fromBalanceId(opts.receiverBalance)
-      .xdrBalanceId()
-
-    let manageInvoiceOp = new xdr.ManageInvoiceOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.manageInvoice(manageInvoiceOp)
-    Operation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
-  }
-
-  static setLimits (opts = {}) {
-    let attributes = {
-      ext: new xdr.SetLimitsOpExt(xdr.LedgerVersion.emptyVersion()),
-      limits: new xdr.Limits({
-        dailyOut: Operation._toXDRAmount(opts.limits.dailyOut),
-        weeklyOut: Operation._toXDRAmount(opts.limits.weeklyOut),
-        monthlyOut: Operation._toXDRAmount(opts.limits.monthlyOut),
-        annualOut: Operation._toXDRAmount(opts.limits.annualOut),
-        ext: new xdr.LimitsExt(xdr.LedgerVersion.emptyVersion())
-      })
-    }
-    if (opts.account) {
-      if (!Keypair.isValidPublicKey(opts.account)) {
-        throw new Error('account is invalid')
-      }
-      attributes.account = Keypair.fromAccountId(opts.account).xdrAccountId()
-    } else if (opts.accountType) {
-      attributes.accountType = Operation
-        ._accountTypeFromNumber(opts.accountType)
-    }
-    let setLimitsOp = new xdr.SetLimitsOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.setLimit(setLimitsOp)
-    Operation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
-  }
-
   /**
      * Converts the XDR Operation object to the opts object used to create the XDR
      * operation.
@@ -577,8 +487,8 @@ export class Operation extends BaseOperation {
         result.destinationBalanceId = balanceIdtoString(
           attrs.destinationBalanceId()
         )
-        result.subject = attrs.subject()
-        result.reference = attrs.reference()
+        result.subject = attrs.subject().toString()
+        result.reference = attrs.reference().toString()
         result.feeData = {
           sourceFee: {
             paymentFee: Operation
@@ -609,8 +519,8 @@ export class Operation extends BaseOperation {
         result.destinationBalanceId = balanceIdtoString(
           paymentOp.destinationBalanceId()
         )
-        result.subject = paymentOp.subject()
-        result.reference = paymentOp.reference()
+        result.subject = paymentOp.subject().toString()
+        result.reference = paymentOp.reference().toString()
         result.from = accountIdtoAddress(attrs.from())
         result.feeData = {
           sourceFee: {
@@ -640,7 +550,7 @@ export class Operation extends BaseOperation {
           result.fee.percentFee = Operation
             ._fromXDRAmount(attrs.fee().percentFee())
           result.fee.feeType = attrs.fee().feeType()
-          result.fee.asset = attrs.fee().asset()
+          result.fee.asset = attrs.fee().asset().toString()
           result.fee.subtype = attrs.fee().subtype().toString()
           result.fee.lowerBound = Operation
             ._fromXDRAmount(attrs.fee().lowerBound())
@@ -666,49 +576,19 @@ export class Operation extends BaseOperation {
         result.destination = accountIdtoAddress(attrs.destination())
         result.asset = attrs.asset()
         break
-      case xdr.OperationType.reviewPaymentRequest():
-        result.accept = attrs.accept()
-        result.paymentId = attrs.paymentId().toString()
-        if (attrs.rejectReason()) {
-          result.rejectReason = attrs.rejectReason()
-        }
-        break
       case xdr.OperationType.manageAsset():
         ManageAssetBuilder.manageAssetToObject(result, attrs)
         break
       case xdr.OperationType.createPreissuanceRequest():
         PreIssuanceRequestOpBuilder.preIssuanceRequestOpToObject(result, attrs)
         break
-      case xdr.OperationType.setLimit():
-        if (attrs.account()) {
-          result.account = accountIdtoAddress(attrs.account())
-        }
-        if (attrs.accountType()) {
-          result.accountType = attrs.accountType().value
-        }
-        result.limits = {}
-        result.limits.dailyOut = Operation
-          ._fromXDRAmount(attrs.limits().dailyOut())
-        result.limits.weeklyOut = Operation
-          ._fromXDRAmount(attrs.limits().weeklyOut())
-        result.limits.monthlyOut = Operation
-          ._fromXDRAmount(attrs.limits().monthlyOut())
-        result.limits.annualOut = Operation
-          ._fromXDRAmount(attrs.limits().annualOut())
-        break
       case xdr.OperationType.manageOffer():
         ManageOfferBuilder.manageOfferOpToObject(result, attrs)
         break
-      case xdr.OperationType.manageInvoice():
-        result.amount = Operation._fromXDRAmount(attrs.amount())
-        result.sender = accountIdtoAddress(attrs.sender())
-        result.receiverBalance = balanceIdtoString(attrs.receiverBalance())
-        result.invoiceId = attrs.invoiceId().toString()
-        break
       case xdr.OperationType.manageAssetPair():
         result.action = attrs.action()
-        result.base = attrs.base()
-        result.quote = attrs.quote()
+        result.base = attrs.base().toString()
+        result.quote = attrs.quote().toString()
         result.policies = attrs.policies()
         result.physicalPriceCorrection = Operation
           ._fromXDRAmount(attrs.physicalPriceCorrection())
@@ -749,6 +629,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.paymentV2():
         PaymentV2Builder.paymentV2ToObject(result, attrs)
+        break
+      case xdr.OperationType.createReference():
+        CreateReferenceBuilder.createReferenceToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

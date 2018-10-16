@@ -96,7 +96,7 @@ export class CreateWithdrawRequestBuilder {
     result.details = {
       type: request.details().switch(),
       autoConversion: {
-        destAsset: request.details().autoConversion().destAsset(),
+        destAsset: request.details().autoConversion().destAsset().toString(),
         expectedAmount: BaseOperation
           ._fromXDRAmount(request.details().autoConversion().expectedAmount())
       }

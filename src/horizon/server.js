@@ -177,6 +177,15 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * References.
+   *
+   * @return {References}
+   */
+  get references () {
+    return new resources.References(this, this._sdk)
+  }
+
+  /**
    * Sales.
    *
    * @return {Sales}

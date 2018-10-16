@@ -249,7 +249,7 @@ export class ManageAssetBuilder {
       case xdr.ManageAssetAction.createAssetCreationRequest():
       {
         let request = attrs.request().createAsset()
-        result.code = request.code()
+        result.code = request.code().toString()
         result.preissuedAssetSigner = BaseOperation
           .accountIdtoAddress(request.preissuedAssetSigner())
         result.policies = request.policies()
@@ -263,7 +263,7 @@ export class ManageAssetBuilder {
       case xdr.ManageAssetAction.createAssetUpdateRequest():
       {
         let request = attrs.request().updateAsset()
-        result.code = request.code()
+        result.code = request.code().toString()
         result.policies = request.policies()
         result.details = JSON.parse(request.details())
         break
@@ -276,7 +276,7 @@ export class ManageAssetBuilder {
       case xdr.ManageAssetAction.changePreissuedAssetSigner():
       {
         let request = attrs.request().changePreissuedSigner()
-        result.code = request.code()
+        result.code = request.code().toString()
         result.accountID = BaseOperation.accountIdtoAddress(request.accountId())
         break
       }
