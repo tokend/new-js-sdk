@@ -17,6 +17,9 @@ export class CreateReferenceBuilder {
    * @returns {xdr.Operation} (CreateReferenceOp)
    */
   static createReference (opts) {
+    console.warn('Create referece feature is temporarily disabled')
+    // FIXME: the operation won't work, sorry
+
     if (!BaseOperation.isValidString(opts.reference, 1, 64)) {
       throw new Error('opts.reference is invalid')
     }
