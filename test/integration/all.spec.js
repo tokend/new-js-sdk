@@ -55,7 +55,7 @@ describe("Integration test", function () {
             });
     }
 
-    it('Create Reference', function (done) {
+    /*it('Create Reference', function (done) {
       let reference = 'SomeRandomReferenceWith64SymbolsLength' + Math.floor(Math.random() * 1000)
       let meta = {
         file_name: 'Large Tokenization FAQ',
@@ -70,7 +70,7 @@ describe("Integration test", function () {
           console.error(util.inspect(err, {showHidden: false, depth: null}))
           done(err)
         });
-    })
+    })*/
 
     /*it("Charge transaction fee", function (done) {
         let txFeeAssetCode = "BTC" + Math.floor(Math.random() * 1000);

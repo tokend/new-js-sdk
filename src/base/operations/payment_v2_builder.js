@@ -129,7 +129,7 @@ export class PaymentV2Builder {
         fixedFee: BaseOperation._fromXDRAmount(
           attrs.feeData().sourceFee().fixedFee()
         ),
-        feeAsset: attrs.feeData().sourceFee().feeAsset()
+        feeAsset: attrs.feeData().sourceFee().feeAsset().toString()
       },
       destinationFee: {
         maxPaymentFee: BaseOperation._fromXDRAmount(
@@ -138,11 +138,11 @@ export class PaymentV2Builder {
         fixedFee: BaseOperation._fromXDRAmount(
           attrs.feeData().destinationFee().fixedFee()
         ),
-        feeAsset: attrs.feeData().destinationFee().feeAsset()
+        feeAsset: attrs.feeData().destinationFee().feeAsset().toString()
       },
       sourcePaysForDest: attrs.feeData().sourcePaysForDest()
     }
-    result.subject = attrs.subject()
-    result.reference = attrs.reference()
+    result.subject = attrs.subject().toString()
+    result.reference = attrs.reference().toString()
   }
 }
