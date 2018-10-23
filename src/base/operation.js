@@ -17,6 +17,9 @@ import { CreateAMLRequestBuilder } from './operations/create_aml_request_builder
 import { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
 import { ManageSaleBuilder } from './operations/manage_sale_builder'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
+import { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
+import { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
+import { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
 import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 
@@ -637,6 +640,19 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.paymentV2():
         PaymentV2Builder.paymentV2ToObject(result, attrs)
         break
+      case xdr.OperationType.createAswapBidRequest():
+        CreateAtomicSwapBidCreationRequestBuilder
+          .createASwapBidCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelAswapBid():
+        CancelAtomicSwapBidBuilder.cancelASwapBidToObject(result, attrs)
+        break
+      case xdr.OperationType.createAswapRequest():
+        CreateAtomicSwapRequestBuilder.createASwapRequestToObject(result, attrs)
+        break
+      /* case xdr.OperationType.createReference():
+        CreateReferenceBuilder.createReferenceToObject(result, attrs)
+        break */
       case xdr.OperationType.cancelSaleRequest():
         SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
         break
