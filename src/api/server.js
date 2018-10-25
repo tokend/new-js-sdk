@@ -2,8 +2,7 @@ import { get } from 'lodash'
 import { ServerBase } from '../server_base'
 import { toSnakeCaseDeep } from '../utils/case_converter'
 import { ApiResponse } from './response'
-import * as errors from './errors'
-import * as horizonErrors from '../horizon/errors'
+import * as errors from '../errors'
 import * as resources from './resources'
 
 /**
@@ -59,16 +58,16 @@ export class ApiServer extends ServerBase {
             // are expected
             switch (error.response.status) {
               case 404:
-                error = new horizonErrors.NotFoundError(error, this._axios)
+                error = new errors.NotFoundError(error, this._axios)
                 break
               case 500:
-                error = new horizonErrors.InternalServerError(
+                error = new errors.InternalServerError(
                   error,
                   this._axios
                 )
                 break
               default:
-                error = new horizonErrors.HorizonError(error, this._axios)
+                error = new errors.ServerError(error, this._axios)
             }
           } else {
             switch (error.response.status) {
@@ -102,7 +101,7 @@ export class ApiServer extends ServerBase {
                 error = new errors.InternalServerError(error, this._axios)
                 break
               default:
-                error = new errors.ApiError(error, this._axios)
+                error = new errors.ServerError(error, this._axios)
             }
           }
         }

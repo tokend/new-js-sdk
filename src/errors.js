@@ -1,3 +1,5 @@
+import { toCamelCaseDeep } from './utils/case_converter'
+
 /**
  * Network error.
  *
@@ -75,3 +77,118 @@ export class ServerErrorBase extends Error {
     return this._axios(config)
   }
 }
+
+/**
+ * Generic server error response.
+ */
+export class ServerError extends ServerErrorBase {
+  constructor (originalError, axios) {
+    super(originalError, axios)
+
+    const unwrappedError = originalError.response.data.errors[0]
+    this._title = unwrappedError.title
+    this._detail = unwrappedError.detail
+    this._meta = toCamelCaseDeep(unwrappedError.meta || {})
+  }
+}
+
+/**
+ * "Bad Request" error.
+ * `error.nestedErrors` may contain per-field errors.
+ *
+ * @export
+ * @class
+ */
+export class BadRequestError extends ServerError {
+  /**
+   * Wrap a raw API error response.
+   *
+   * @constructor
+   *
+   * @param {Error} originalError Original error response.
+   * @param {axios} axios Axios instance used for the request.
+   */
+  constructor (originalError, axios) {
+    super(originalError, axios)
+    let errors = originalError.response.data.errors
+    if (errors.length > 1) {
+      this._title = 'Request contains some errors.'
+      this._detail = 'Request contains some errors. Check "nestedErrors"'
+      this._nestedErrors = errors.map(err => ({
+        title: err.title,
+        detail: err.detail,
+        meta: toCamelCaseDeep(err.meta)
+      }))
+    }
+  }
+
+  /**
+   * Errors for every invalid field.
+   */
+  get nestedErrors () {
+    return this._nestedErrors
+  }
+}
+
+/**
+ * User is not allowed to perform this action.
+ *
+ * @export
+ * @class
+ */
+export class NotAllowedError extends ServerError {}
+
+/**
+ * Forbidden.
+ *
+ * @export
+ * @class
+ */
+export class ForbiddenRequestError extends ServerError {}
+
+/**
+ * Two Factor auth required.
+ *
+ * @export
+ * @class
+ */
+export class TFARequiredError extends ServerError {}
+
+/**
+ * Account verification required.
+ *
+ * @export
+ * @class
+ */
+export class VerificationRequiredError extends ServerError {}
+
+/**
+ * The requested resource was not found.
+ *
+ * @export
+ * @class
+ */
+export class NotFoundError extends ServerError {}
+
+/**
+ * The request could not be completed due to a conflict with the current state of the target resource.
+ *
+ * @export
+ * @class
+ */
+export class ConflictError extends ServerError {}
+
+/**
+ * Internal server error (500)
+ *
+ * @export
+ * @class
+ */
+export class InternalServerError extends ServerError {}
+
+/**
+ * Horizon 401(Unauthorized) error.
+ *
+ * @class
+ */
+export class UnauthorizedError extends ServerError {}

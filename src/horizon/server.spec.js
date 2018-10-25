@@ -1,6 +1,5 @@
 import { HorizonResponse } from './response'
-import * as errors from './errors'
-import { TFARequiredError } from '../api/errors'
+import * as errors from '../errors'
 import mocks from '../test_helpers/mock_factory'
 
 describe('HorizonServer', () => {
@@ -24,8 +23,10 @@ describe('HorizonServer', () => {
         name: 'Bad Request',
         status: 400,
         body: {
-          title: 'Bad Request',
-          details: 'Bad Request'
+          errors: [{
+            title: 'Bad Request',
+            detail: 'Bad Request'
+          }]
         },
         expectedError: errors.BadRequestError
       },
@@ -33,8 +34,10 @@ describe('HorizonServer', () => {
         name: 'Unauthorized',
         status: 401,
         body: {
-          title: 'Unauthorized',
-          details: 'Unauthorized'
+          errors: [{
+            title: 'Unauthorized',
+            detail: 'Unauthorized'
+          }]
         },
         expectedError: errors.UnauthorizedError
       },
@@ -42,8 +45,10 @@ describe('HorizonServer', () => {
         name: 'Not Found',
         status: 404,
         body: {
-          title: 'Not Found',
-          details: 'Not Found'
+          errors: [{
+            title: 'Not Found',
+            detail: 'Not Found'
+          }]
         },
         expectedError: errors.NotFoundError
       },
@@ -51,8 +56,10 @@ describe('HorizonServer', () => {
         name: 'Internal Server Error',
         status: 500,
         body: {
-          title: 'Internal Server Error',
-          details: 'Internal Server Error'
+          errors: [{
+            title: 'Internal Server Error',
+            detail: 'Internal Server Error'
+          }]
         },
         expectedError: errors.InternalServerError
       }
@@ -72,21 +79,28 @@ describe('HorizonServer', () => {
     it('Should parse error details.', async () => {
       let rawError = {
         title: 'Bad request',
-        details: 'Details',
-        extras: {
-          tx: 'tsfsdfsd',
-          tx_hash: 'le hash'
+        detail: 'Detail',
+        meta: {
+          extras: {
+            tx: 'tsfsdfsd', tx_hash: 'le hash'
+          }
         }
       }
 
-      horizon.onAny().reply(400, rawError)
+      horizon.onAny().reply(400, {
+        errors: [
+          rawError
+        ]
+      })
 
       let error = await catchPromise(horizon._makeCallBuilder().get())
 
-      expect(error).to.have.a.property('detail').equal(rawError.details)
+      expect(error).to.have.a.property('detail').equal(rawError.detail)
       expect(error).to.have.a.property('meta').deep.equal({
-        tx: rawError.extras.tx,
-        txHash: rawError.extras.tx_hash
+        extras: {
+          tx: rawError.meta.extras.tx,
+          txHash: rawError.meta.extras.tx_hash
+        }
       })
     })
 
@@ -100,7 +114,7 @@ describe('HorizonServer', () => {
 
       let error = await catchPromise(horizon._makeCallBuilder().get())
 
-      expect(error).to.be.an.instanceOf(TFARequiredError)
+      expect(error).to.be.an.instanceOf(errors.TFARequiredError)
     })
   })
 
