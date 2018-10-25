@@ -1,6 +1,5 @@
 import { ApiResponse } from './response'
-import * as errors from './errors'
-import * as horizonErrors from '../horizon/errors'
+import * as errors from '../errors'
 import mocks from '../test_helpers/mock_factory'
 
 describe('ApiServer', () => {
@@ -94,25 +93,7 @@ describe('ApiServer', () => {
         name: 'Unexpected error',
         status: 488,
         body: { errors: [{}] },
-        expectedError: errors.ApiError
-      },
-      {
-        name: 'Not Found(Horizon)',
-        status: 404,
-        body: { status: '404', title: 'Not Found' },
-        expectedError: horizonErrors.NotFoundError
-      },
-      {
-        name: 'Internal Server Error (Horizon)',
-        status: 500,
-        body: { status: '500', title: 'Internal Server Error' },
-        expectedError: horizonErrors.InternalServerError
-      },
-      {
-        name: 'Unexpected error (Horizon)',
-        status: 488,
-        body: { status: '488', title: 'Expect the unexpected' },
-        expectedError: horizonErrors.HorizonError
+        expectedError: errors.ServerError
       }
     ]
 
@@ -124,11 +105,11 @@ describe('ApiServer', () => {
       })
     })
 
-    it('Should bypass non-API errors.', async () => {
+    it('Should bypass non-server errors.', async () => {
       api.onAny().timeout()
 
       let error = await catchPromise(api._makeCallBuilder().get())
-      expect(error).not.to.be.an.instanceOf(errors.ApiError)
+      expect(error).not.to.be.an.instanceOf(errors.ServerError)
     })
   })
 })
