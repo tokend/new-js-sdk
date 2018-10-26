@@ -17,6 +17,7 @@ export class Request extends ResourceGroupBase {
     return this._server._makeCallBuilder()
       .appendUrlSegment('requests')
       .appendUrlSegment(id)
+      .withSignature()
       .get()
   }
 
