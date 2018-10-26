@@ -6,12 +6,20 @@ const { NotFoundError } = require('../src/errors')
 const config = Object.freeze({
   MASTER_SEED: 'SAMJKTZVW5UOHCDK5INYJNORF2HRKYI72M5XSZCBYAHQHR34FFR4Z6G4',
   MASTER_PK: 'GBA4EX43M25UPV4WIE6RRMQOFTWXZZRIPFAI5VPY6Z2ZVVXVWZ6NEOOB',
+  SALES_NEEDED: 45,
   SERVER_URL: 'http://localhost:8001',
   ISSUANCE_AMOUNT: '1250.000000',
   POLICY: 0
 })
 
-initSales()
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+
+const requests = []
+for (let i = 0; i < config.SALES_NEEDED; i++) {
+  requests.push(initSales())
+}
+
+Promise.all(requests)
 
 async function initSales () {
   let sdk
@@ -35,23 +43,18 @@ async function initSales () {
     const code = ('' + Math.floor(Math.random() * 1000000000)).replace('.', '')
     console.log(code.length)
     console.log('creating token')
-    const txResponse = await createToken(sdk, code)
+    await createToken(sdk, code)
     console.log('token created')
-    const id = deriveRequestId(txResponse, 'manageAssetResult')
-    console.log('request ID: ' + id)
-    const request = await loadRequest(sdk, id)
-    console.log('request loaded')
-    await approveRequest(sdk, request)
-    console.log('request approved')
     const txResponseV2 = await createSale(sdk, code)
     console.log('sale created')
-    const idV2 = deriveRequestId(txResponse, 'createSaleCreationRequestResult')
+    const idV2 = deriveRequestId(txResponseV2, 'createSaleCreationRequestResult')
     console.log('got request ID: ' + idV2)
-    const requestV2 = await loadRequest(sdk, id)
+    const requestV2 = await loadRequest(sdk, idV2)
     await approveRequest(sdk, requestV2)
     console.log('sale request approved')
   } catch (e) {
-    console.error(e.meta)
+    console.error(e)
+    console.error(e.meta.extras.resultCodes)
     console.error('Failed to run init script')
     return
   }
@@ -106,6 +109,7 @@ async function loadRequest (sdk, id) {
 }
 
 async function approveRequest (sdk, request) {
+  await delay(5000)
   const operation = base.ReviewRequestBuilder.reviewRequest({
     requestID: request.id,
     requestHash: request.hash,
@@ -133,8 +137,8 @@ async function createSale (sdk, code) {
       baseAsset: code,
       defaultQuoteAsset: 'USD',
       name: code + '-USD',
-      startTime: Date.now() / 1000,
-      endTime: Date.now() / 1000 + 259200,
+      startTime: Math.floor(Date.now() / 1000) + '',
+      endTime: Math.floor(Date.now() / 1000 + 259200) + '',
       softCap: '10000',
       hardCap: '20000',
       quoteAssets: [
@@ -147,9 +151,15 @@ async function createSale (sdk, code) {
           asset: 'ETH'
         }
       ],
-      isCrowdfunding: false,
+      isCrowdfunding: true,
       baseAssetForHardCap: '10000',
-      saleState: base.xdr.SaleState.none()
+      saleState: base.xdr.SaleState.none(),
+      details: {
+        name: code + ' sale',
+        short_description: code + 'reqweqweq',
+        description: code + 'eqwewerwqr',
+        logo: {}
+      }
     })
 
   const response = await sdk
