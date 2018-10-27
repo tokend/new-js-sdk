@@ -70,6 +70,15 @@ export class HorizonServer extends ServerBase {
   }
 
   /**
+   * Asset pairs.
+   *
+   * @return {AssetPairs}
+   */
+  get atomicSwapBid () {
+    return new resources.AtomicSwapBid(this, this._sdk)
+  }
+
+  /**
    * Balances.
    *
    * @return {Balances}
