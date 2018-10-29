@@ -1,6 +1,5 @@
 import mocks from '../../test_helpers/mock_factory'
 import {
-  testRequestSignature,
   testGetRequest
 } from './generic_test_cases.spec'
 
@@ -8,30 +7,31 @@ describe('AtomicSwapBid', () => {
   const sdk = mocks.tokenDSdk()
   const horizon = sdk.horizon
   const resourceGroup = horizon.atomicSwapBid
-  const accountId = sdk.wallet.accountId
-  const owner = 'GCTCU6ZGTOFWPBKPSC56B6HHNFCRERPDOIBDQSAEX4JRPPZQOY33VUAV'
-  const baseAsset = 'CCF'
   const bidId = '19'
 
   afterEach(() => {
     horizon.reset()
   })
 
-  describe('.getBids', () => {
-    const method = 'getBids'
+  describe('.getPage', () => {
+    const method = 'getPage'
+    const query = {
+      owner: 'GCTCU6ZGTOFWPBKPSC56B6HHNFCRERPDOIBDQSAEX4JRPPZQOY33VUAV',
+      baseAsset: 'CCF'
+    }
 
     testGetRequest({
       title: `get the bids`,
       horizon: horizon,
       resourceGroup,
       method,
-      args: [owner, baseAsset],
-      path: `atomic_swap_bids?owner_id=${owner}&base_asset=${baseAsset}`
+      args: [query],
+      path: `/atomic_swap_bids`
     })
   })
 
-  describe('.getBid', () => {
-    const method = 'getBid'
+  describe('.get', () => {
+    const method = 'get'
 
     testGetRequest({
       title: `get the bid`,
@@ -39,20 +39,7 @@ describe('AtomicSwapBid', () => {
       resourceGroup,
       method,
       args: [bidId],
-      path: `atomic_swap_bids/${bidId}`
-    })
-  })
-
-  describe('.getSwapRequests', () => {
-    const method = 'getSwapRequests'
-
-    testRequestSignature({
-      horizon: horizon,
-      resourceGroup,
-      method,
-      params: accountId,
-      args: [accountId],
-      path: `atomic_swap_bids?requestor=${accountId}`
+      path: `/atomic_swap_bids/${bidId}`
     })
   })
 })
