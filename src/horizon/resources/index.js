@@ -1,5 +1,6 @@
 export * from './account'
 export * from './assets'
+export * from './atomic_swap_bid'
 export * from './asset_pairs'
 export * from './balances'
 export * from './charts'
