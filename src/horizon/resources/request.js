@@ -195,25 +195,39 @@ export class Request extends ResourceGroupBase {
   }
 
   /**
-     * Gets all atomic swap bids requests
+   * Gets all atomic swap bids requests
    *
+   * @param {object} [query] Request options.
+   * @param {number} [query.limit] If present, the result page will contain only this number of records.
+   * @param {string} [query.cursor] If present, the result records will start from specific point.
+   * @param {string} [query.order] If present, the result records will be sorted as specified ('asc'/'desc'), ascending order by default
+   * @param {string} [query.requestor] Account who requested. Must be a valid public key
+   * @param {string} [query.reviewer] Account who should review Must be a valid public key.
+   * @param {string} [query.state] State of reviewable request. Pending: 1, Canceled: 2, Approved: 3, Rejected: 4, PermanentlyRejected: 5
    * @return {HorizonResponse}
    */
-  getAllAtomicSwapBids () {
+  getAllForAtomicSwapBids (query) {
     return this._makeCallBuilderWithSignature()
       .appendUrlSegment('atomic_swap_bids')
-      .get()
+      .get(query)
   }
 
   /**
-     * Gets all atomic swap
+   * Gets all atomic swap
    *
+   * @param {object} [query] Request options.
+   * @param {number} [query.limit] If present, the result page will contain only this number of records.
+   * @param {string} [query.cursor] If present, the result records will start from specific point.
+   * @param {string} [query.order] If present, the result records will be sorted as specified ('asc'/'desc'), ascending order by default
+   * @param {string} [query.requestor] Account who requested. Must be a valid public key
+   * @param {string} [query.reviewer] Account who should review Must be a valid public key.
+   * @param {string} [query.state] State of reviewable request. Pending: 1, Canceled: 2, Approved: 3, Rejected: 4, PermanentlyRejected: 5
    * @return {HorizonResponse}
    */
-  getAllAtomicSwap () {
+  getAllForAtomicSwap (query) {
     return this._makeCallBuilderWithSignature()
       .appendUrlSegment('atomic_swaps')
-      .get()
+      .get(query)
   }
 
   _makeCallBuilder () {

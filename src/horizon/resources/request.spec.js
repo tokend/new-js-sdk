@@ -292,8 +292,8 @@ describe('Requests', () => {
     })
   })
 
-  describe('.getAllAtomicSwapBids', () => {
-    const method = 'getAllAtomicSwapBids'
+  describe('.getAllForAtomicSwapBids', () => {
+    const method = 'getAllForAtomicSwapBids'
     const segment = 'atomic_swap_bids'
 
     testGetRequest({
@@ -301,6 +301,7 @@ describe('Requests', () => {
       horizon: sdk.horizon,
       resourceGroup,
       method,
+      args: [query],
       path: getPath(segment)
     })
 
@@ -308,12 +309,14 @@ describe('Requests', () => {
       horizon: sdk.horizon,
       resourceGroup,
       method,
+      args: [query],
+      params: query,
       path: getPath(segment)
     })
   })
 
-  describe('.getAllAtomicSwap', () => {
-    const method = 'getAllAtomicSwap'
+  describe('.getAllForAtomicSwap', () => {
+    const method = 'getAllForAtomicSwap'
     const segment = 'atomic_swaps'
 
     testGetRequest({
@@ -321,6 +324,7 @@ describe('Requests', () => {
       horizon: sdk.horizon,
       resourceGroup,
       method,
+      args: [query],
       path: getPath(segment)
     })
 
@@ -328,6 +332,8 @@ describe('Requests', () => {
       horizon: sdk.horizon,
       resourceGroup,
       method,
+      args: [query],
+      params: query,
       path: getPath(segment)
     })
   })
