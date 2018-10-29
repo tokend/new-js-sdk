@@ -291,4 +291,24 @@ describe('Requests', () => {
       path: getPath(segment)
     })
   })
+
+  describe('.getAllAtomicSwapBids', () => {
+    const method = 'getAllAtomicSwapBids'
+    const segment = 'atomic_swap_bids'
+
+    testGetRequest({
+      title: `get atomic_swap_bids requests`,
+      horizon: sdk.horizon,
+      resourceGroup,
+      method,
+      path: getPath(segment)
+    })
+
+    testRequestSignature({
+      horizon: sdk.horizon,
+      resourceGroup,
+      method,
+      path: getPath(segment)
+    })
+  })
 })
