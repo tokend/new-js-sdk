@@ -55,6 +55,5 @@ export class AtomicSwapBid extends ResourceGroupBase {
 
   _makeCallBuilderWithSignature () {
     return this._makeCallBuilder().withSignature()
-      .appendUrlSegment(['atomic_swap_bids'])
   }
 }
