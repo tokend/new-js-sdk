@@ -7,7 +7,7 @@ import {
 describe('History offers', () => {
   const sdk = mocks.tokenDSdk()
   const horizon = sdk.horizon
-  const resourceGroup = horizon.orderBook
+  const resourceGroup = horizon.historyOffers
 
   const baseAsset = 'ETH'
   const quoteAsset = 'BTC'
