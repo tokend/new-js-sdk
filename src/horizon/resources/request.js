@@ -204,6 +204,17 @@ export class Request extends ResourceGroupBase {
       .get()
   }
 
+  /**
+     * Gets all atomic swap
+   *
+   * @return {HorizonResponse}
+   */
+  getAllAtomicSwap () {
+    return this._makeCallBuilderWithSignature()
+      .appendUrlSegment('atomic_swaps')
+      .get()
+  }
+
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
       .appendUrlSegment('request')
