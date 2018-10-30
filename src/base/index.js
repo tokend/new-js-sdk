@@ -23,6 +23,9 @@ export { SetOptionsBuilder } from './operations/set_options_builder'
 export { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
 export { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
 export { CreateReferenceBuilder } from './operations/create_reference_builder'
+export { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
+export { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
+export { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
 
 export * from './strkey'
 
