@@ -14,7 +14,8 @@ export class Request extends ResourceGroupBase {
    * @return {HorizonResponse}
    */
   get (id) {
-    return this._makeCallBuilderWithSignature()
+    return this._server._makeCallBuilder().withSignature()
+      .appendUrlSegment('requests')
       .appendUrlSegment(id)
       .get()
   }
