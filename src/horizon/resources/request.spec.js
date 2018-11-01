@@ -29,7 +29,7 @@ describe('Requests', () => {
       resourceGroup,
       method,
       args: [id],
-      path: getPath(id)
+      path: `/requests/${id}`
     })
   })
 
