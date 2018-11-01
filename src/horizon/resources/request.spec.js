@@ -24,13 +24,12 @@ describe('Requests', () => {
     const method = 'get'
     const id = '10'
 
-    testGetRequest({
-      title: `Should get request by id.`,
+    testRequestSignature({
       horizon: sdk.horizon,
       resourceGroup,
-      args: [id],
       method,
-      path: `/requests/${id}`
+      args: [id],
+      path: getPath(id)
     })
   })
 
