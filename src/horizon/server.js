@@ -239,6 +239,15 @@ export class HorizonServer extends ServerBase {
     return new resources.V2(this, this._sdk)
   }
 
+  /**
+   * History offers
+   *
+   * @return {OrderBook}
+   */
+  get historyOffers () {
+    return new resources.HistoryOffers(this, this._sdk)
+  }
+
   _parseResponseError (error) {
     if (error.response && error.response.status) {
       switch (error.response.status) {
