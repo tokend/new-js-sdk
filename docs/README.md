@@ -387,23 +387,19 @@ npm run coverage
 
 ### Building XDR Files
 
-SDK repos includes `xdr` git submodule which contains raw `.x` XDR files.
+SDK uses XDR JS wrappers generated out of raw `.x` files placed in [XDR TokenD repo](https://github.com/tokend/xdr).
 
 To update the JS wrappers:
 
-1. Checkout the `xdr` submodule to desired commit
-1. Install Ruby v 2.5.0 if needed
-1. Install `rake` and `bundler`:
+1. Checkout the [xdr repo](https://github.com/tokend/xdr) to desired commit or branch
+1. Install [Docker](https://docs.docker.com/install) if needed
+1. Make `generateXDR.sh` executable if needed
     ```
-    gem install rake bundler
+    chmod +x generateXDR.sh
     ```
-1. Install `xdrgen` dependencies
-    ```
-    bundle
-    ```
-1. Build the XDR wrappers:
-    ```
-    rake xdr:update
+1. Run the script
+    ```bash
+    ./generateXDR.sh master # assuming `master` is the desired branch
     ```
 
 ### Generating Docs

@@ -1,3 +1,0 @@
-[submodule "xdr"]
-	path = xdr
-	url = git@gitlab.com:tokend/xdr.git
