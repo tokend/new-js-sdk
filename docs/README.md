@@ -48,7 +48,7 @@ If you use webpack as your build system you'll need to exclude the optional nati
   ]
 ```
 
-You can also checkout package's [webpack config](https://gitlab.com/tokend/new-js-sdk/blob/master/webpack.config.js).
+You can also checkout package's [webpack config](https://github.com/tokend/new-js-sdk/blob/master/webpack.config.js).
 
 #### Prebuilt Minified Scripts
 
