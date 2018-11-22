@@ -14,7 +14,6 @@
     "docs": "rimraf docs/pages && npm run docs:xdr && jsdoc -c ./.jsdoc.json && rm docs/enums.js",
     "docs:md": "rimraf docs/markdown && node scripts/jsdoc_to_markdown.js",
     "docs:xdr": "node scripts/xdr_to_jsdoc.js",
-    "preinstall": "npm run build & npm run build:browser",
     "prepare": "npm run build & npm run build:browser"
   },
   "husky": {
