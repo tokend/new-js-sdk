@@ -69,10 +69,11 @@ export class Wallets extends ResourceGroupBase {
    *
    * @param {string} email User's email.
    * @param {string} password User's password.
+   * @param {Keypair} recoveryKeypair the keypair to later recover the account
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
-  async create (email, password) {
+  async create (email, password, recoveryKeypair) {
     let kdfResponse = await this.getKdfParams()
     let kdfParams = kdfResponse.data
 
@@ -85,7 +86,10 @@ export class Wallets extends ResourceGroupBase {
       password
     )
 
-    let recoveryKeypair = Keypair.random()
+    if (!recoveryKeypair) {
+      recoveryKeypair = Keypair.random()
+    }
+
     let encryptedRecoveryWallet = mainWallet.encryptRecoveryData(
       kdfParams,
       recoveryKeypair
