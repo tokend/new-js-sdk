@@ -1,6 +1,7 @@
 import uri from 'urijs'
 import { Keypair, hash } from './base'
 import { isString, isNumber, isArray } from 'lodash'
+import { MIMES } from './const'
 
 const SIGNATURE_VALID_SEC = 60
 const REQUEST_TARGET_HEADER = '(request-target)'
@@ -210,6 +211,10 @@ export class CallBuilder {
     if (this._customTimeout) {
       config.timeout = this._customTimeout
     }
+
+    config.headers = config.headers || {}
+    config.headers['Content-Type'] = MIMES.jsonApi
+    config.headers['Accept'] = MIMES.jsonApi
 
     return config
   }

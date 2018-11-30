@@ -13,3 +13,5 @@ export {
   REQUEST_STATES,
   REQUEST_STATES_STR
 } from './request-states.const'
+
+export { MIMES } from './mimes.const'

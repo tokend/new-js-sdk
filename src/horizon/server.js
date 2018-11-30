@@ -1,7 +1,6 @@
 import { ServerBase } from '../server_base'
 import { HorizonResponse } from './response'
-import * as errors from './errors'
-import { TFARequiredError } from '../api/errors'
+import * as errors from '../errors'
 import * as resources from './resources'
 
 /**
@@ -249,6 +248,15 @@ export class HorizonServer extends ServerBase {
     return new resources.V2(this, this._sdk)
   }
 
+  /**
+   * History offers
+   *
+   * @return {OrderBook}
+   */
+  get historyOffers () {
+    return new resources.HistoryOffers(this, this._sdk)
+  }
+
   _parseResponseError (error) {
     if (error.response && error.response.status) {
       switch (error.response.status) {
@@ -260,7 +268,7 @@ export class HorizonServer extends ServerBase {
           break
         case 403:
           // TFA errors are returned by API, parse as an API error
-          error = new TFARequiredError(error, this._axios)
+          error = new errors.TFARequiredError(error, this._axios)
           break
         case 404:
           error = new errors.NotFoundError(error, this._axios)

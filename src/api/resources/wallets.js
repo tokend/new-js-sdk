@@ -3,8 +3,7 @@ import { ResourceGroupBase } from '../../resource_group_base'
 import { Wallet } from '../../wallet'
 import { Keypair } from '../../base/keypair'
 import { makeChangeSignerTransaction } from './change_signers'
-import * as errors from '../errors'
-import { errors as horizonErrors } from '../../horizon'
+import * as errors from '../../errors'
 
 /**
  * Wallets.
@@ -337,7 +336,7 @@ export class Wallets extends ResourceGroupBase {
     return this._sdk.horizon.account.getSigners(accountId)
       .then(response => response.data.signers)
       .catch(err => {
-        if (err instanceof horizonErrors.NotFoundError) {
+        if (err instanceof errors.NotFoundError) {
           return []
         }
 

@@ -1,4 +1,6 @@
-// Automatically generated on 2018-10-23T16:40:27+03:00
+// revision: ed77c50c7af961081231927b15db35c3b6ac9454
+// branch:   product
+// Automatically generated on 2018-11-30T16:13:57+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -830,15 +832,16 @@ xdr.union("OperationResult", {
 //       txTOO_LATE = -3,          // ledger closeTime after maxTime
 //       txMISSING_OPERATION = -4, // no operation was specified
 //   
-//       txBAD_AUTH = -5,             // too few valid signatures / wrong network
-//       txNO_ACCOUNT = -6,           // source account not found
-//       txBAD_AUTH_EXTRA = -7,       // unused signatures attached to transaction
-//       txINTERNAL_ERROR = -8,       // an unknown error occured
-//   	txACCOUNT_BLOCKED = -9,      // account is blocked and cannot be source of tx
-//       txDUPLICATION = -10,         // if timing is stored
-//       txINSUFFICIENT_FEE = -11,    // the actual total fee amount is greater than the max total fee amount, provided by the source
-//       txSOURCE_UNDERFUNDED = -12,  // not enough tx fee asset on source balance
-//       txCOMMISSION_LINE_FULL = -13 // commission tx fee asset balance amount overflow
+//       txBAD_AUTH = -5,                   // too few valid signatures / wrong network
+//       txNO_ACCOUNT = -6,                 // source account not found
+//       txBAD_AUTH_EXTRA = -7,             // unused signatures attached to transaction
+//       txINTERNAL_ERROR = -8,             // an unknown error occured
+//       txACCOUNT_BLOCKED = -9,            // account is blocked and cannot be source of tx
+//       txDUPLICATION = -10,               // if timing is stored
+//       txINSUFFICIENT_FEE = -11,          // the actual total fee amount is greater than the max total fee amount, provided by the source
+//       txSOURCE_UNDERFUNDED = -12,        // not enough tx fee asset on source balance
+//       txCOMMISSION_LINE_FULL = -13,      // commission tx fee asset balance amount overflow
+//       txFEE_INCORRECT_PRECISION = -14    // fee amount is incompatible with asset precision
 //   };
 //
 // ===========================================================================
@@ -857,6 +860,7 @@ xdr.enum("TransactionResultCode", {
   txInsufficientFee: -11,
   txSourceUnderfunded: -12,
   txCommissionLineFull: -13,
+  txFeeIncorrectPrecision: -14,
 });
 
 // === xdr source ============================================================
@@ -1339,9 +1343,9 @@ xdr.struct("CreateAmlAlertRequestOp", [
 //       BALANCE_NOT_EXIST = 1, // balance doesn't exist
 //       INVALID_REASON = 2, //invalid reason for request
 //       UNDERFUNDED = 3, //when couldn't lock balance
-//   	REFERENCE_DUPLICATION = 4, // reference already exists
-//   	INVALID_AMOUNT = 5 // amount must be positive
-//   
+//       REFERENCE_DUPLICATION = 4, // reference already exists
+//       INVALID_AMOUNT = 5, // amount must be positive
+//       INCORRECT_PRECISION = 6
 //   
 //   };
 //
@@ -1353,6 +1357,7 @@ xdr.enum("CreateAmlAlertRequestResultCode", {
   underfunded: 3,
   referenceDuplication: 4,
   invalidAmount: 5,
+  incorrectPrecision: 6,
 });
 
 // === xdr source ============================================================
@@ -2028,7 +2033,8 @@ xdr.struct("PayoutOp", [
 //       MIN_AMOUNT_TOO_BIG = -11, // there is no appropriate holders balances
 //       LINE_FULL = -12, // destination balance amount overflows
 //       STATS_OVERFLOW = -13, // source statistics overflow
-//       LIMITS_EXCEEDED = -14 // source account limit exceeded
+//       LIMITS_EXCEEDED = -14, // source account limit exceeded
+//       INCORRECT_PRECISION = -15 // asset does not allow amounts with such precision
 //   };
 //
 // ===========================================================================
@@ -2048,6 +2054,7 @@ xdr.enum("PayoutResultCode", {
   lineFull: -12,
   statsOverflow: -13,
   limitsExceeded: -14,
+  incorrectPrecision: -15,
 });
 
 // === xdr source ============================================================
@@ -3903,7 +3910,8 @@ xdr.struct("ManageContractOp", [
 //       ALREADY_CONFIRMED = -6,
 //       INVOICE_NOT_APPROVED = -7, // all contract invoices must be approved
 //       DISPUTE_ALREADY_STARTED = -8,
-//       CUSTOMER_BALANCE_OVERFLOW = -9
+//       CUSTOMER_BALANCE_OVERFLOW = -9,
+//       INCORRECT_PRECISION = -10
 //   };
 //
 // ===========================================================================
@@ -3918,6 +3926,7 @@ xdr.enum("ManageContractResultCode", {
   invoiceNotApproved: -7,
   disputeAlreadyStarted: -8,
   customerBalanceOverflow: -9,
+  incorrectPrecision: -10,
 });
 
 // === xdr source ============================================================
@@ -4218,7 +4227,10 @@ xdr.struct("ManageAssetOp", [
 //   	REQUEST_ALREADY_EXISTS = -9,      // request for creation of unique entry already exists
 //   	STATS_ASSET_ALREADY_EXISTS = -10, // statistics quote asset already exists
 //   	INITIAL_PREISSUED_EXCEEDS_MAX_ISSUANCE = -11, // initial pre issued amount exceeds max issuance amount
-//   	INVALID_DETAILS = -12 // details must be a valid json
+//       INVALID_DETAILS = -12,                        // details must be a valid json
+//       INVALID_TRAILING_DIGITS_COUNT = -13,          // invalid number of trailing digits
+//       INVALID_PREISSUED_AMOUNT_PRECISION = -14,     // initial pre issued amount does not match precision set by trailing digits count
+//       INVALID_MAX_ISSUANCE_AMOUNT_PRECISION = -15   // maximum issuance amount does not match precision set by trailing digits count
 //   };
 //
 // ===========================================================================
@@ -4234,6 +4246,9 @@ xdr.enum("ManageAssetResultCode", {
   statsAssetAlreadyExist: -10,
   initialPreissuedExceedsMaxIssuance: -11,
   invalidDetail: -12,
+  invalidTrailingDigitsCount: -13,
+  invalidPreissuedAmountPrecision: -14,
+  invalidMaxIssuanceAmountPrecision: -15,
 });
 
 // === xdr source ============================================================
@@ -5528,6 +5543,8 @@ xdr.struct("SaleCreationRequest", [
 //       {
 //       case EMPTY_VERSION:
 //           void;
+//       case ADD_ASSET_BALANCE_PRECISION:
+//           uint32 trailingDigitsCount;
 //       }
 //
 // ===========================================================================
@@ -5536,8 +5553,10 @@ xdr.union("AssetCreationRequestExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
+    ["addAssetBalancePrecision", "trailingDigitsCount"],
   ],
   arms: {
+    trailingDigitsCount: xdr.lookup("Uint32"),
   },
 });
 
@@ -5557,6 +5576,8 @@ xdr.union("AssetCreationRequestExt", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
+//       case ADD_ASSET_BALANCE_PRECISION:
+//           uint32 trailingDigitsCount;
 //       }
 //       ext;
 //   };
@@ -5801,6 +5822,8 @@ xdr.enum("AssetSystemPolicies", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
+//       case ADD_ASSET_BALANCE_PRECISION:
+//           uint32 trailingDigitsCount;
 //       }
 //
 // ===========================================================================
@@ -5809,8 +5832,10 @@ xdr.union("AssetEntryExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
+    ["addAssetBalancePrecision", "trailingDigitsCount"],
   ],
   arms: {
+    trailingDigitsCount: xdr.lookup("Uint32"),
   },
 });
 
@@ -5833,6 +5858,8 @@ xdr.union("AssetEntryExt", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
+//       case ADD_ASSET_BALANCE_PRECISION:
+//           uint32 trailingDigitsCount;
 //       }
 //       ext;
 //   };
@@ -6849,7 +6876,8 @@ xdr.struct("ManageOfferOp", [
 //   	REQUIRES_KYC = -24, // source must have KYC in order to participate
 //   	SOURCE_UNDERFUNDED = -25,
 //   	SOURCE_BALANCE_LOCK_OVERFLOW = -26,
-//   	REQUIRES_VERIFICATION = -27 // source must be verified in order to participate
+//   	REQUIRES_VERIFICATION = -27, // source must be verified in order to participate
+//   	INCORRECT_AMOUNT_PRECISION = -28
 //   };
 //
 // ===========================================================================
@@ -6882,6 +6910,7 @@ xdr.enum("ManageOfferResultCode", {
   sourceUnderfunded: -25,
   sourceBalanceLockOverflow: -26,
   requiresVerification: -27,
+  incorrectAmountPrecision: -28,
 });
 
 // === xdr source ============================================================
@@ -7597,7 +7626,7 @@ xdr.struct("CreateIssuanceRequestOp", [
 //   
 //       // codes considered as "failure" for the operation
 //       ASSET_NOT_FOUND = -1,
-//   	INVALID_AMOUNT = -2,
+//   	INVALID_AMOUNT = -2,             // amount is 0
 //   	REFERENCE_DUPLICATION = -3,
 //   	NO_COUNTERPARTY = -4,
 //   	NOT_AUTHORIZED = -5,
@@ -7608,7 +7637,8 @@ xdr.struct("CreateIssuanceRequestOp", [
 //       REQUIRES_KYC = -10, // asset requires receiver to have KYC
 //       REQUIRES_VERIFICATION = -11, //asset requires receiver to be verified
 //       ISSUANCE_TASKS_NOT_FOUND = -12, // issuance tasks have not been provided by the source and don't exist in 'KeyValue' table
-//       SYSTEM_TASKS_NOT_ALLOWED = -13
+//       SYSTEM_TASKS_NOT_ALLOWED = -13,
+//       INVALID_AMOUNT_PRECISION = -14   // amount does not match asset's precision
 //   };
 //
 // ===========================================================================
@@ -7627,6 +7657,7 @@ xdr.enum("CreateIssuanceRequestResultCode", {
   requiresVerification: -11,
   issuanceTasksNotFound: -12,
   systemTasksNotAllowed: -13,
+  invalidAmountPrecision: -14,
 });
 
 // === xdr source ============================================================
@@ -11826,7 +11857,8 @@ xdr.struct("PaymentOp", [
 //       INVOICE_BALANCE_MISMATCH = -15,
 //       INVOICE_ACCOUNT_MISMATCH = -16,
 //       INVOICE_ALREADY_PAID = -17,
-//       PAYMENT_V1_NO_LONGER_SUPPORTED = -18
+//       PAYMENT_V1_NO_LONGER_SUPPORTED = -18,
+//       INCORRECT_PRECISION = -19
 //   };
 //
 // ===========================================================================
@@ -11850,6 +11882,7 @@ xdr.enum("PaymentResultCode", {
   invoiceAccountMismatch: -16,
   invoiceAlreadyPaid: -17,
   paymentV1NoLongerSupported: -18,
+  incorrectPrecision: -19,
 });
 
 // === xdr source ============================================================
@@ -13115,6 +13148,8 @@ xdr.union("PublicKey", {
 //       ADD_CAPITAL_DEPLOYMENT_FEE_TYPE = 48,
 //       ADD_TRANSACTION_FEE = 49,
 //       ADD_DEFAULT_ISSUANCE_TASKS = 50,
+//       EXTEND_REVIEW_ATOMIC_SWAP_REQUEST_RESULT = 51,
+//   	ADD_ASSET_BALANCE_PRECISION = 52,
 //       REPLACE_ACCOUNT_TYPES_WITH_POLICIES = 999999 // do not use it yet, there are features to be improved
 //   };
 //
@@ -13171,6 +13206,8 @@ xdr.enum("LedgerVersion", {
   addCapitalDeploymentFeeType: 48,
   addTransactionFee: 49,
   addDefaultIssuanceTask: 50,
+  extendReviewAtomicSwapRequestResult: 51,
+  addAssetBalancePrecision: 52,
   replaceAccountTypesWithPolicy: 999999,
 });
 
@@ -14125,6 +14162,64 @@ xdr.struct("ASwapBidExtended", [
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ASwapExtendedExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ASwapExtended
+//   {
+//       uint64 bidID;
+//       AccountID bidOwnerID;
+//       AccountID purchaserID;
+//       AssetCode baseAsset;
+//       AssetCode quoteAsset;
+//       uint64 baseAmount;
+//       uint64 quoteAmount;
+//       uint64 price;
+//       BalanceID bidOwnerBaseBalanceID;
+//       BalanceID purchaserBaseBalanceID;
+//   
+//       // Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ASwapExtended", [
+  ["bidId", xdr.lookup("Uint64")],
+  ["bidOwnerId", xdr.lookup("AccountId")],
+  ["purchaserId", xdr.lookup("AccountId")],
+  ["baseAsset", xdr.lookup("AssetCode")],
+  ["quoteAsset", xdr.lookup("AssetCode")],
+  ["baseAmount", xdr.lookup("Uint64")],
+  ["quoteAmount", xdr.lookup("Uint64")],
+  ["price", xdr.lookup("Uint64")],
+  ["bidOwnerBaseBalanceId", xdr.lookup("BalanceId")],
+  ["purchaserBaseBalanceId", xdr.lookup("BalanceId")],
+  ["ext", xdr.lookup("ASwapExtendedExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch(ReviewableRequestType requestType) {
 //       case SALE:
 //           SaleExtended saleExtended;
@@ -14132,6 +14227,8 @@ xdr.struct("ASwapBidExtended", [
 //           void;
 //       case CREATE_ATOMIC_SWAP_BID:
 //           ASwapBidExtended aSwapBidExtended;
+//       case ATOMIC_SWAP:
+//           ASwapExtended aSwapExtended;
 //       }
 //
 // ===========================================================================
@@ -14142,10 +14239,12 @@ xdr.union("ExtendedResultTypeExt", {
     ["sale", "saleExtended"],
     ["none", xdr.void()],
     ["createAtomicSwapBid", "aSwapBidExtended"],
+    ["atomicSwap", "aSwapExtended"],
   ],
   arms: {
     saleExtended: xdr.lookup("SaleExtended"),
     aSwapBidExtended: xdr.lookup("ASwapBidExtended"),
+    aSwapExtended: xdr.lookup("ASwapExtended"),
   },
 });
 
@@ -14180,6 +14279,8 @@ xdr.union("ExtendedResultExt", {
 //           void;
 //       case CREATE_ATOMIC_SWAP_BID:
 //           ASwapBidExtended aSwapBidExtended;
+//       case ATOMIC_SWAP:
+//           ASwapExtended aSwapExtended;
 //       } typeExt;
 //   
 //      // Reserved for future use
@@ -14341,6 +14442,7 @@ xdr.struct("ReviewRequestOp", [
 //   	INSUFFICIENT_AVAILABLE_FOR_ISSUANCE_AMOUNT = -41,
 //   	FULL_LINE = -42, // can't fund balance - total funds exceed UINT64_MAX
 //   	SYSTEM_TASKS_NOT_ALLOWED = -43,
+//       INCORRECT_PRECISION = -44,
 //   
 //   	// Sale creation requests
 //   	BASE_ASSET_DOES_NOT_EXISTS = -50,
@@ -14425,6 +14527,7 @@ xdr.enum("ReviewRequestResultCode", {
   insufficientAvailableForIssuanceAmount: -41,
   fullLine: -42,
   systemTasksNotAllowed: -43,
+  incorrectPrecision: -44,
   baseAssetDoesNotExist: -50,
   hardCapWillExceedMaxIssuance: -51,
   insufficientPreissuedForHardCap: -52,
@@ -14856,12 +14959,13 @@ xdr.struct("CreatePreIssuanceRequestOp", [
 //   
 //       // codes considered as "failure" for the operation
 //       ASSET_NOT_FOUND = -1,
-//       REFERENCE_DUPLICATION = -2,    // reference is already used
-//       NOT_AUTHORIZED_UPLOAD = -3, // tries to pre issue asset for not owned asset
+//       REFERENCE_DUPLICATION = -2,      // reference is already used
+//       NOT_AUTHORIZED_UPLOAD = -3,      // tries to pre issue asset for not owned asset
 //       INVALID_SIGNATURE = -4,
 //       EXCEEDED_MAX_AMOUNT = -5,
-//   	INVALID_AMOUNT = -6,
-//   	INVALID_REFERENCE = -7
+//       INVALID_AMOUNT = -6,             // amount is 0
+//       INVALID_REFERENCE = -7,
+//       INCORRECT_AMOUNT_PRECISION = -8  // amount does not fit to this asset's precision
 //   };
 //
 // ===========================================================================
@@ -14874,6 +14978,7 @@ xdr.enum("CreatePreIssuanceRequestResultCode", {
   exceededMaxAmount: -5,
   invalidAmount: -6,
   invalidReference: -7,
+  incorrectAmountPrecision: -8,
 });
 
 // === xdr source ============================================================

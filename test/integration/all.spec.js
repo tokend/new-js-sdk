@@ -55,24 +55,7 @@ describe("Integration test", function () {
             });
     }
 
-    /*it('Create Reference', function (done) {
-      let reference = 'SomeRandomReferenceWith64SymbolsLength' + Math.floor(Math.random() * 1000)
-      let meta = {
-        file_name: 'Large Tokenization FAQ',
-        document_type: 'pdf',
-        creator: 'Researcher',
-        counterparty: 'Team' + Math.floor(Math.random() * 1000),
-        extra: "Because we can"
-      }
-      referenceHelper.createReference(testHelper, reference, meta)
-        .then(() => done())
-        .catch(err => {
-          console.error(util.inspect(err, {showHidden: false, depth: null}))
-          done(err)
-        });
-    })*/
-
-    /*it("Charge transaction fee", function (done) {
+    it("Charge transaction fee", function (done) {
         let txFeeAssetCode = "BTC" + Math.floor(Math.random() * 1000);
         let preIssuedAmount = "10000.000000";
         let txSourceKP = base.Keypair.random();
@@ -1106,5 +1089,5 @@ describe("Integration test", function () {
             .then(balanceID => payoutHelper.performPayout(testHelper, syndicateKP, assetCode, balanceID, "500", "1", "1", "10", "50"))
             .then(() => done())
             .catch(helpers.errorHandler);
-    });*/
+    });
 });

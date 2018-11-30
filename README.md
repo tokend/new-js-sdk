@@ -27,11 +27,11 @@
     sdk.useWallet(wallet)
     ```
 
-1. Read the [docs](https://tokend.gitlab.io/new-js-sdk/index.html) and tokenize your assets!
+1. Read the [docs](https://tokend.github.io/new-js-sdk/) and tokenize your assets!
 
 ## Development
 
-Check out our [Development Guide](https://tokend.gitlab.io/new-js-sdk/index.html#development-guide).
+Check out our [Development Guide](https://tokend.github.io/new-js-sdk/#development-guide).
 
 ## License
 

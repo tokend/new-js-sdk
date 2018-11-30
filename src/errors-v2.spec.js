@@ -1,4 +1,4 @@
-import mocks from '../test_helpers/mock_factory'
+import mocks from './test_helpers/mock_factory'
 import * as errors from './errors'
 
 describe('errors', () => {
@@ -18,7 +18,7 @@ describe('errors', () => {
 
     beforeEach(async () => {
       let response = await makeRawError(rawError)
-      error = new errors.ApiError(response, axios)
+      error = new errors.ServerError(response, axios)
     })
 
     it('Should parse error extras.', () => {
