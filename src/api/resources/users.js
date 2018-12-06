@@ -43,7 +43,13 @@ export class Users extends ResourceGroupBase {
   create (accountId) {
     return this._makeCallBuilder()
       .appendAccountId(accountId)
-      .put({ data: { attributes: {} } })
+      .put({
+        data: {
+          attributes: {
+            type: 1
+          }
+        }
+      })
   }
 
   _makeCallBuilder () {
