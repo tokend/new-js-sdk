@@ -44,6 +44,10 @@ export class ApiServer extends ServerBase {
     )
     this.useResponseInterceptor(
       (response) => {
+        if (response.status === 204) {
+          return
+        }
+
         if (response.data.url) {
           return response.data
         }
