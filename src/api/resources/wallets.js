@@ -49,7 +49,7 @@ export class Wallets extends ResourceGroupBase {
       let verificationRequired = err instanceof errors.VerificationRequiredError
 
       if (verificationRequired) {
-        set(err.errors[0], 'meta.walletId', walletId)
+        set(err, '_meta.walletId', walletId)
       }
 
       throw err
