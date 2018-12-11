@@ -95,7 +95,7 @@ export class Wallets extends ResourceGroupBase {
       recoveryKeypair
     )
 
-    await this._makeWalletsCallBuilder()
+    const response = await this._makeWalletsCallBuilder()
       .post({
         data: {
           type: 'wallet',
@@ -140,6 +140,7 @@ export class Wallets extends ResourceGroupBase {
 
     return {
       wallet: mainWallet,
+      response: response,
       recoverySeed: recoveryKeypair.secret()
     }
   }
