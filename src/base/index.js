@@ -23,6 +23,7 @@ export { SetOptionsBuilder } from './operations/set_options_builder'
 export { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
 export { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
 export { CreateReferenceBuilder } from './operations/create_reference_builder'
+export { ManageLimitsBuilder } from './operations/manage_limits_builder'
 
 export * from './strkey'
 
