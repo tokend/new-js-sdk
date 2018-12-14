@@ -18,6 +18,7 @@ import { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_re
 import { ManageSaleBuilder } from './operations/manage_sale'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
 import { CreateReferenceBuilder } from './operations/create_reference_builder'
+import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 
 export class Operation extends BaseOperation {
@@ -612,6 +613,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.createSaleRequest():
         SaleRequestBuilder.crateSaleCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.manageLimit():
+        ManageLimitsBuilder.manageLimitsOpToObject(result, attrs)
         break
       case xdr.OperationType.checkSaleState():
         SaleRequestBuilder.checkSaleStateToObject(result, attrs)

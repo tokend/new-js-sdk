@@ -277,6 +277,14 @@ export class BaseOperation {
     return xdr.AccountType._byValue.get(rawAccountType)
   }
 
+  static _statsOpTypeFromNumber (rawStatsOpType) {
+    if (!BaseOperation._isValidStatsOpType(rawStatsOpType)) {
+      throw new Error(`XDR Read Error: Unknown StatsOpType member for value ${rawStatsOpType}`)
+    }
+
+    return xdr.StatsOpType._byValue.get(rawStatsOpType)
+  }
+
   static isFeeValid (fee) {
     return BaseOperation.isValidAmount(fee.fixed, true) &&
       BaseOperation.isValidAmount(fee.percent, true)
@@ -304,6 +312,10 @@ export class BaseOperation {
 
   static _isValidAccountType (rawAccountType) {
     return xdr.AccountType._byValue.has(rawAccountType)
+  }
+
+  static _isValidStatsOpType (rawStatsOpType) {
+    return xdr.StatsOpType._byValue.has(rawStatsOpType)
   }
 
   static _isValidRequestType (rawRequestType) {
