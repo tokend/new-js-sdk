@@ -19,6 +19,7 @@ import { ManageSaleBuilder } from './operations/manage_sale'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
 import { CreateReferenceBuilder } from './operations/create_reference_builder'
 import { ManageLimitsBuilder } from './operations/manage_limits_builder'
+import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -627,6 +628,9 @@ export class Operation extends BaseOperation {
           result,
           attrs
         )
+        break
+      case xdr.OperationType.manageKeyValue():
+        ManageKeyValueBuilder.manageKeyValueOpToObject(result, attrs)
         break
       case xdr.OperationType.manageSale():
         ManageSaleBuilder.manageSaleToObject(result, attrs)
