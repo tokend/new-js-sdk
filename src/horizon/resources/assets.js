@@ -23,9 +23,9 @@ export class Assets extends ResourceGroupBase {
    *
    * @return {HorizonResponse}
    */
-  getAll () {
+  getAll (query = {}) {
     return this._makeCallBuilder()
-      .get()
+      .get(query)
   }
 
   /**
