@@ -324,7 +324,7 @@ export class ReviewRequestBuilder {
     switch (attrs.requestDetails().switch()) {
       case xdr.ReviewableRequestType.withdraw(): {
         result.withdrawal = {
-          externalDetails: attrs.requestDetails().withdrawal().externalDetails()
+          externalDetails: attrs.requestDetails().withdrawal().externalDetails().toString()
         }
         break
       }
@@ -361,7 +361,7 @@ export class ReviewRequestBuilder {
           externalDetails: attrs
             .requestDetails()
             .twoStepWithdrawal()
-            .externalDetails()
+            .externalDetails().toString()
         }
         break
       }
@@ -369,13 +369,13 @@ export class ReviewRequestBuilder {
         result.updateKyc = {
           tasksToAdd: attrs.requestDetails().updateKyc().tasksToAdd(),
           tasksToRemove: attrs.requestDetails().updateKyc().tasksToRemove(),
-          externalDetails: attrs.requestDetails().updateKyc().externalDetails()
+          externalDetails: attrs.requestDetails().updateKyc().externalDetails().toString()
         }
         break
       }
       case xdr.ReviewableRequestType.amlAlert(): {
         result.amlAlert = {
-          comment: attrs.requestDetails().amlAlertDetails().comment()
+          comment: attrs.requestDetails().amlAlertDetails().comment().toString()
         }
         break
       }
@@ -397,7 +397,7 @@ export class ReviewRequestBuilder {
       }
     }
     result.action = attrs.action().value
-    result.reason = attrs.reason()
+    result.reason = attrs.reason().toString()
 
     switch (attrs.ext().switch()) {
       case xdr.LedgerVersion.addTasksToReviewableRequest(): {
