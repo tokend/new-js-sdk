@@ -21,7 +21,7 @@ export class Fees extends ResourceGroupBase {
   get (feeType, query = {}) {
     return this._makeCallBuilder()
       .appendUrlSegment(feeType)
-      .get()
+      .get(query)
   }
 
   /**
