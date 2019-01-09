@@ -25,6 +25,7 @@ export { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_re
 export { CreateReferenceBuilder } from './operations/create_reference_builder'
 export { ManageLimitsBuilder } from './operations/manage_limits_builder'
 export { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
+export { PaymentV2Builder } from './operations/payment_v2_builder'
 
 export * from './strkey'
 
