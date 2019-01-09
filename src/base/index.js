@@ -19,12 +19,14 @@ export { CreateIssuanceRequestBuilder } from './operations/create_issuance_reque
 export { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
 export { SaleRequestBuilder } from './operations/sale_request_builder'
 export { ManageOfferBuilder } from './operations/manage_offer_builder'
+export { ManageSaleBuilder } from './operations/manage_sale_builder'
 export { SetOptionsBuilder } from './operations/set_options_builder'
 export { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
 export { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
 export { CreateReferenceBuilder } from './operations/create_reference_builder'
 export { ManageLimitsBuilder } from './operations/manage_limits_builder'
 export { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
+export { PaymentV2Builder } from './operations/payment_v2_builder'
 
 export * from './strkey'
 

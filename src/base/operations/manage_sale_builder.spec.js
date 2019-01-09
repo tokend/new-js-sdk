@@ -1,7 +1,7 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { isEqual } from 'lodash'
 import { Operation } from '../operation'
-import { ManageSaleBuilder } from './manage_sale'
+import { ManageSaleBuilder } from './manage_sale_builder'
 
 describe('Manage sale', () => {
   it('Update sale details request op', () => {
