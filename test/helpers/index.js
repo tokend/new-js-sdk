@@ -1,4 +1,4 @@
-import config from './_config'
+import config from '../config'
 
 import { TokenD } from '../../src'
 import { base } from '../../src'
