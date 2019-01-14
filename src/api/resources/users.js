@@ -52,6 +52,19 @@ export class Users extends ResourceGroupBase {
       })
   }
 
+  /**
+   * Get account id by email
+   *
+   * @param {string} email user’s email
+   *
+   * @return {Promise}
+   */
+  getAccountIdByEmail (email) {
+    return this._server._makeCallBuilder()
+      .appendUrlSegment('user_id')
+      .get({ email })
+  }
+
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
       .appendUrlSegment('users')
