@@ -15,7 +15,7 @@ export class ManageAssetBuilder {
      * @param {string} opts.maxIssuanceAmount - Max amount can be issued of that asset
      * @param {number} opts.policies - Asset policies
      * @param {string} opts.initialPreissuedAmount - Amount of pre issued tokens available after creation of the asset
-     *
+     * @param {number} opts.allTasks - tasks for the request
      * @param {object} opts.details - Additional details about asset
      * @param {string} opts.details.name - Name of the asset
      * @param {array}  opts.details.documents - Documents attached to asset
@@ -58,18 +58,22 @@ export class ManageAssetBuilder {
 
     attrs.initialPreissuedAmount = BaseOperation
       ._toUnsignedXDRAmount(opts.initialPreissuedAmount)
+    attrs.sequenceNumber = 0
 
     attrs.ext = new xdr.AssetCreationRequestExt(
       xdr.LedgerVersion.emptyVersion()
     )
 
-    let assetCreationRequest = new xdr.AssetCreationRequest(attrs)
-    return ManageAssetBuilder._createManageAssetOp(
-      opts,
-      new xdr.ManageAssetOpRequest.createAssetCreationRequest(
-        assetCreationRequest
+    let assetCreationRequest = new xdr.ManageAssetOpCreateAssetCreationRequest({
+      createAsset: new xdr.AssetCreationRequest(attrs),
+      allTasks: BaseOperation._checkUnsignedIntValue('allTasks', opts.allTasks),
+      ext: new xdr.ManageAssetOpCreateAssetCreationRequestExt(
+        xdr.LedgerVersion.emptyVersion()
       )
-    )
+    })
+    let requestUnionSwitch = new xdr.ManageAssetOpRequest
+      .createAssetCreationRequest(assetCreationRequest)
+    return ManageAssetBuilder._createManageAssetOp(opts, requestUnionSwitch)
   }
 
   /**
@@ -79,6 +83,7 @@ export class ManageAssetBuilder {
      * @param {string} opts.requestID - request ID, if 0 - creates new, updates otherwise
      * @param {string} opts.code - Asset code
      * @param {number} opts.policies - asset policies
+     * @param {number} opts.allTasks - tasks for the request
      *
      * @param {object} opts.details - Additional details about asset
      * @param {string} opts.details.name - Name of the asset
@@ -95,8 +100,15 @@ export class ManageAssetBuilder {
      */
   static assetUpdateRequest (opts) {
     let attrs = ManageAssetBuilder._createUpdateAttrs(opts)
+    attrs.sequenceNumber = 0
     attrs.ext = new xdr.AssetUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
-    let assetUpdateRequest = new xdr.AssetUpdateRequest(attrs)
+    let assetUpdateRequest = new xdr.ManageAssetOpCreateAssetUpdateRequest({
+      updateAsset: new xdr.AssetUpdateRequest(attrs),
+      allTasks: BaseOperation._checkUnsignedIntValue('allTasks', opts.allTasks),
+      ext: new xdr.ManageAssetOpCreateAssetUpdateRequestExt(
+        xdr.LedgerVersion.emptyVersion()
+      )
+    })
 
     return ManageAssetBuilder._createManageAssetOp(
       opts,
@@ -198,11 +210,7 @@ export class ManageAssetBuilder {
       details.logo.type = ''
     }
 
-    return {
-      name: details.name,
-      logo: details.logo,
-      terms: details.terms
-    }
+    return details
   }
 
   static _createUpdateAttrs (opts) {
@@ -248,10 +256,12 @@ export class ManageAssetBuilder {
     switch (attrs.request().switch()) {
       case xdr.ManageAssetAction.createAssetCreationRequest():
       {
-        let request = attrs.request().createAsset()
+        let request = attrs.request().createAssetCreationRequest().createAsset()
+        result.allTasks = attrs.request().createAssetCreationRequest().allTasks()
         result.code = request.code().toString()
-        result.preissuedAssetSigner = BaseOperation
-          .accountIdtoAddress(request.preissuedAssetSigner())
+        result.preissuedAssetSigner = BaseOperation.accountIdtoAddress(
+          request.preissuedAssetSigner()
+        )
         result.policies = request.policies()
         result.maxIssuanceAmount = BaseOperation
           ._fromXDRAmount(request.maxIssuanceAmount())
@@ -262,7 +272,8 @@ export class ManageAssetBuilder {
       }
       case xdr.ManageAssetAction.createAssetUpdateRequest():
       {
-        let request = attrs.request().updateAsset()
+        let request = attrs.request().createAssetUpdateRequest().updateAsset()
+        result.allTasks = attrs.request().createAssetUpdateRequest().allTasks()
         result.code = request.code().toString()
         result.policies = request.policies()
         result.details = JSON.parse(request.details())

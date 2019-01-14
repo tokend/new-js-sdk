@@ -14,7 +14,8 @@ describe('ManageAssetBuilder', () => {
         initialPreissuedAmount: '12.14',
         details: {
           name: 'USD Name'
-        }
+        },
+        allTasks: 2
       }
       let op = ManageAssetBuilder.assetCreationRequest(opts)
       let xdrOp = op.toXDR('hex')
@@ -30,6 +31,7 @@ describe('ManageAssetBuilder', () => {
       expect(obj.policies).to.be.equal(opts.policies)
       expect(obj.initialPreissuedAmount)
         .to.be.equal(opts.initialPreissuedAmount)
+      expect(obj.allTasks).to.be.equal(opts.allTasks)
     })
   })
 
@@ -38,7 +40,8 @@ describe('ManageAssetBuilder', () => {
       let opts = {
         code: 'USD',
         policies: 12,
-        requestID: '0'
+        requestID: '0',
+        allTasks: 1
       }
       let op = ManageAssetBuilder.assetUpdateRequest(opts)
       let xdrOp = op.toXDR('hex')
@@ -49,6 +52,7 @@ describe('ManageAssetBuilder', () => {
       expect(obj.requestType).to.be.equal('createAssetUpdateRequest')
       expect(obj.code).to.be.equal(opts.code)
       expect(obj.policies).to.be.equal(opts.policies)
+      expect(obj.allTasks).to.be.equal(opts.allTasks)
     })
   })
 

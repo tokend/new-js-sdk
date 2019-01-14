@@ -17,7 +17,6 @@ import { CreateAMLRequestBuilder } from './operations/create_aml_request_builder
 import { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
 import { ManageSaleBuilder } from './operations/manage_sale_builder'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
-import { CreateReferenceBuilder } from './operations/create_reference_builder'
 import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 
@@ -638,8 +637,8 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.paymentV2():
         PaymentV2Builder.paymentV2ToObject(result, attrs)
         break
-      case xdr.OperationType.createReference():
-        CreateReferenceBuilder.createReferenceToObject(result, attrs)
+      case xdr.OperationType.cancelSaleRequest():
+        SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')
