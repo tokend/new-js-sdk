@@ -1,4 +1,6 @@
 import { base } from '../../src'
+import _get from 'lodash/get'
+import { BadRequestError } from '../../src/errors'
 
 export class Helper {
   /**
@@ -26,7 +28,7 @@ export class Helper {
    *
    * @returns {HorizonResponse}
    */
-  submit (operations, signerKp = this.masterKp, sourceId = signerKp.accountId()) {
+  async submit (operations, signerKp = this.masterKp, sourceId = signerKp.accountId()) {
     const transaction = new base
       .TransactionBuilder(sourceId)
       .addOperations(operations)
@@ -35,17 +37,30 @@ export class Helper {
     transaction.sign(signerKp)
 
     try {
-      return this
+      const response = await this
         .sdk
         .horizon
         .transactions
         .submit(transaction)
+      return response
     } catch (e) {
-      console.error('Failed to submit transaction')
-      console.log(e)
-
+      if (e instanceof BadRequestError) {
+        throw new Error(this.tryGetTxErrors(e))
+      }
       throw e
     }
+  }
+
+  tryGetTxErrors (errorObject) {
+    const resultCodes = _get(errorObject, 'meta.extras.resultCodes')
+    if (!resultCodes) {
+      return errorObject
+    }
+
+    const txCode = resultCodes.transaction
+    const opCodes = (resultCodes.operations || []).join(',')
+
+    return `Transaction Error: ${txCode}, operations: ${opCodes}`
   }
 }
 
