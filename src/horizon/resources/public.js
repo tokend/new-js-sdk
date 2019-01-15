@@ -30,6 +30,22 @@ export class Public extends ResourceGroupBase {
       .get(query)
   }
 
+
+  /**
+   * Get account id by email
+   * Actually user_id endpoint belongs to API, but due to the fact the response
+   * isn’t packaged into a json api format, we placed it here.
+   *
+   * @param {string} email user’s email
+   *
+   * @return {Promise}
+   */
+  getAccountIdByEmail (email) {
+    return this._server._makeCallBuilder()
+      .appendUrlSegment('user_id')
+      .get({ email })
+  }
+
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
       .appendUrlSegment('public')
