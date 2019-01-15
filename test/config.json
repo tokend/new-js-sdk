@@ -1,5 +1,6 @@
 {
   "master_seed": "SAMJKTZVW5UOHCDK5INYJNORF2HRKYI72M5XSZCBYAHQHR34FFR4Z6G4",
-  "api_url": "http://backend.com",
-  "allow_http": true
+  "api_url": "http://localhost:8000",
+  "allow_http": true,
+  "network_passphrase": "TokenD Developer Network"
 }
