@@ -5,7 +5,7 @@ export class Account extends Helper {
   /**
    * @param opts
    * @param opts.id
-   * @param opts.type
+   * @param opts.accountType
    * @param [opts.policies]
    * @param [opts.referrer]
    * @param [opts.recoveryKey]
@@ -15,7 +15,7 @@ export class Account extends Helper {
       destination: opts.id,
       accountPolicies: opts.policies || 0,
       referrer: opts.referrer || '',
-      accountType: opts.type || base.xdr.AccountType.notVerified().value,
+      accountType: opts.accountType || base.xdr.AccountType.notVerified().value,
       recoveryKey: opts.recoveryKey || base.Keypair.random().accountId(),
     })
 
