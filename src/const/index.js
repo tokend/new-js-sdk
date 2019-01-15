@@ -6,7 +6,8 @@ export {
   ACCOUNT_TYPES,
   ASSET_POLICIES,
   ASSET_PAIR_POLICIES,
-  PAYMENT_FEE_SUBTYPES
+  PAYMENT_FEE_SUBTYPES,
+  KEY_VALUE_ENTRY_TYPES
 } from './enums.const'
 
 export {
@@ -15,3 +16,4 @@ export {
 } from './request-states.const'
 
 export { MIMES } from './mimes.const'
+export { KEY_VALUE_KEYS } from './key-value.const'

@@ -45,3 +45,7 @@ export const OP_TYPES = Object.freeze(
 export const SALE_TYPES = Object.freeze(
   xdrEnumToConstant('SaleType')
 )
+
+export const KEY_VALUE_ENTRY_TYPES = Object.freeze(
+  xdrEnumToConstant('KeyValueEntryType')
+)
