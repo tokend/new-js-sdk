@@ -2,9 +2,13 @@ import { Helper, getRequestIdFromResultXdr } from './_helper'
 import { base } from '../../src'
 
 export class Asset extends Helper {
+  static randomCode (prefix = 'BTC') {
+    return prefix + Math.floor(Math.random() * 100000)
+  }
+
   /**
-   * @param {object} opts
-   * @param {string} opts.code
+   * @param {object} [opts]
+   * @param {string} [opts.code]
    * @param {string} [opts.preissuedAssetSigner]
    * @param {string} [opts.maxIssuanceAmount]
    * @param {number} [opts.policies]
@@ -12,17 +16,21 @@ export class Asset extends Helper {
    * @param {object} [opts.details]
    * @param {Keypair} ownerKp - the keypair of asset owner
    *
-   * @returns {string} - the request ID of newly created request
+   * @returns {array}[0] - the code of newly created request
+   * @returns {array}[1] - the request ID of newly created request
    */
   async create (opts, ownerKp = this.masterKp) {
+    const assetCode = opts.code || Asset.randomCode()
     const operation = base
       .ManageAssetBuilder
       .assetCreationRequest({
-        code: opts.code,
+        requestID: '0',
+        code: assetCode,
         policies: opts.policies || 0,
-        maxIssuanceAmount: opts.maxIssuanceAmount || "10000.0000",
-        initialPreissuedAmount: opts.initialPreissuedAmount || "10000.0000",
+        maxIssuanceAmount: opts.maxIssuanceAmount || "10000.000000",
+        initialPreissuedAmount: opts.initialPreissuedAmount || "10000.000000",
         preissuedAssetSigner: opts.preissuedAssetSigner || base.Keypair.random().accountId(),
+        details: opts.details || {},
       })
 
     const response = await this.submit(operation, ownerKp)
