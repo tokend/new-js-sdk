@@ -30,7 +30,6 @@ export class Public extends ResourceGroupBase {
       .get(query)
   }
 
-
   /**
    * Get account id by email
    * Actually user_id endpoint belongs to API, but due to the fact the response
