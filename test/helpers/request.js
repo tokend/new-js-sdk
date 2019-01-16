@@ -10,11 +10,11 @@ export class Request extends Helper {
     })
   }
 
-  async mustLoadNotPending (requestId) {
+  async mustLoadNotPending (requestId, delayMs = 1500) {
     const request = await this.mustLoad(requestId)
 
     if (request.requestState !== 'pending') {
-      await this.delay(1500)
+      await this.delay(delayMs)
       return this.mustLoadNotPending(requestId)
     }
 

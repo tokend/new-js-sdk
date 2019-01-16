@@ -1,8 +1,13 @@
 import { NotFoundError } from '../../src/errors'
 import { log } from '../log'
+import config from '../config'
 
 export class Running {
-  static async untilFound (asyncFn) {
+  static async delay (ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
+  static async untilFound (asyncFn, delayMs = config.retry_delay_ms) {
     try {
       const response = await asyncFn()
       if (!response) {
@@ -11,7 +16,8 @@ export class Running {
       return response
     } catch (e) {
       if (e instanceof NotFoundError) {
-        log.debug(`Got not found error on ${e.requestPath}, retrying...`)
+        log.debug(`Got not found error on ${e.requestPath}, retrying in ${delayMs}ms...`)
+        await this.delay(delayMs)
         return this.untilFound(asyncFn)
       }
       log.error(`The error got from ${e.requestPath} is not NotFoundError`)
@@ -19,9 +25,10 @@ export class Running {
     }
   }
 
-  static async untilReturnValueDefined (asyncFn) {
+  static async untilReturnValueDefined (asyncFn, delayMs = config.retry_delay_ms) {
     const response = await asyncFn()
     if (!response) {
+      await this.delay(delayMs)
       return this.untilReturnValueDefined(asyncFn)
     }
     return response

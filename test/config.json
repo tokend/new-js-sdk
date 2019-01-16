@@ -3,5 +3,6 @@
   "api_url": "http://localhost:8000",
   "allow_http": true,
   "network_passphrase": "TokenD Developer Network",
-  "log_level": "debug"
+  "log_level": "trace",
+  "retry_delay_ms": 1500
 }
