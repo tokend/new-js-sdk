@@ -1,5 +1,6 @@
 import { Helper, getRequestIdFromResultXdr } from './_helper'
-import { base } from '../../src'
+import { ASSET_POLICIES, base } from '../../src'
+import { Running } from './_running'
 
 export class Asset extends Helper {
   static randomCode (prefix = 'BTC') {
@@ -27,8 +28,8 @@ export class Asset extends Helper {
         requestID: '0',
         code: assetCode,
         policies: opts.policies || 0,
-        maxIssuanceAmount: opts.maxIssuanceAmount || "10000.000000",
-        initialPreissuedAmount: opts.initialPreissuedAmount || "10000.000000",
+        maxIssuanceAmount: opts.maxIssuanceAmount || '10000.000000',
+        initialPreissuedAmount: opts.initialPreissuedAmount || '10000.000000',
         preissuedAssetSigner: opts.preissuedAssetSigner || base.Keypair.random().accountId(),
         details: opts.details || {},
       })

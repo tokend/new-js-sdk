@@ -1,3 +1,4 @@
+import { Running } from './_running'
 import { NotFoundError } from '../../src/errors'
 import { getRequestIdFromResultXdr, Helper } from './_helper'
 import { base } from '../../src'
@@ -11,12 +12,14 @@ export class Sale extends Helper {
    * @param opts.baseAsset
    * @param opts.quoteAssets
    * @param opts.defaultQuoteAsset
-   * @param opts.baseAssetForHardCap
+   * @param opts.quoteAssets
+   * @param [opts.baseAssetForHardCap]
    * @param [opts.startTime]
    * @param [opts.endTime]
    * @param [opts.softCap]
    * @param [opts.hardCap]
    * @param [opts.details]
+   * @param [opts.saleType]
    * @param {Keypair} ownerKp
    *
    * @returns {string} the ID of the request
@@ -28,11 +31,19 @@ export class Sale extends Helper {
       quoteAssets: opts.quoteAssets,
       defaultQuoteAsset: opts.defaultQuoteAsset,
       baseAssetForHardCap: opts.baseAssetForHardCap,
-      startTime: opts.startTime || +moment.now().format('X'),
-      endTime: opts.endTime || +moment.now().add(1, 'day').format('X'),
+      startTime: opts.startTime || '' + moment().format('X'),
+      endTime: opts.endTime || '' + moment().add(1, 'day').format('X'),
       softCap: opts.softCap || '10000.000000',
       hardCap: opts.hardCap || '50000.000000',
-      details: opts.details || {},
+      details: opts.details || {
+        name: opts.baseAsset + 'sale',
+        short_description: 'Short description',
+        description: 'Not so short description',
+        logo: {
+          key: 'gjrhtbejwkrkwqq',
+          type: 'image/png'
+        }
+      },
       saleType: opts.saleType || SALE_TYPES.fixedPrice
     })
 
@@ -42,26 +53,18 @@ export class Sale extends Helper {
   }
 
   mustLoadById (id) {
-    try {
-      return this.sdk.horizon.sales.get(id)
-    } catch (e) {
-      if (e instanceof NotFoundError) {
-        return this.mustLoadById(id)
-      }
-
-      throw e
-    }
+    return Running.untilFound(async () => {
+      const { data } = await this.sdk.horizon.sales.get(id)
+      return data
+    })
   }
 
-  mustLoadByQuery (query) {
-    try {
-      return this.sdk.horizon.sales.getPage(query)
-    } catch (e) {
-      if (e instanceof NotFoundError) {
-        return this.mustLoadByQuery(query)
-      }
-
-      throw e
-    }
+  async mustLoadByBaseAsset (baseAsset) {
+    return Running.untilReturn(async () => {
+      const { data } = await this.sdk.horizon.sales.getPage({
+        base_asset: baseAsset
+      })
+      return data[0]
+    })
   }
 }
