@@ -1,41 +1,34 @@
-import { NotFoundError } from '../../src/errors'
 import { Helper } from './_helper'
 import { base } from '../../src'
+import { Running } from './_running'
 
 export class Request extends Helper {
   async mustLoad (requestId) {
-    try {
-      return this.sdk.horizon.request.get(id)
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        console.log('Request not found, retrying...')
-        return this.mustLoad(requestId)
-      }
-
-      throw err
-    }
+    return Running.untilFound(async () => {
+      const { data } = await this.sdk.horizon.request.get(requestId)
+      return data
+    })
   }
 
   async mustLoadNotPending (requestId) {
-    const response = this.mustLoad(requestId)
+    const request = await this.mustLoad(requestId)
 
-    if (response.data.requestState !== 'pending') {
-      console.log('request is still pending, retrying...')
+    if (request.requestState !== 'pending') {
       await this.delay(1500)
       return this.mustLoadNotPending(requestId)
     }
 
-    return response
+    return request
   }
 
   approve (requestId, opts) {
     const action = base.xdr.ReviewRequestOpAction.approve().value
-    return this.review(requestId,{ ...opts, action })
+    return this.review(requestId, { ...opts, action })
   }
 
   reject (requestId, opts) {
     const action = base.xdr.ReviewRequestOpAction.reject().value
-    return this.review(requestId,{ ...opts, action })
+    return this.review(requestId, { ...opts, action })
   }
 
   /**
@@ -48,7 +41,7 @@ export class Request extends Helper {
    * @param {object} [opts.externalDetails]
    */
   async review (requestId, opts) {
-    const { data: request } = await this.mustLoad(requestId)
+    const request = await this.mustLoad(requestId)
     const operation = base.ReviewRequestBuilder.reviewRequest({
       requestID: requestId,
       requestHash: request.hash,

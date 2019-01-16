@@ -37,4 +37,19 @@ export class Asset extends Helper {
 
     return getRequestIdFromResultXdr(response.resultXdr, 'manageAssetResult')
   }
+
+  async mustLoad (code) {
+    return Running.untilFound(async () => {
+      const { data } = await this.sdk.horizon.assets.get(code)
+      return data
+    })
+  }
+
+  async loadStatsQuoteAsset () {
+    const { data: assets } = await this.sdk.horizon.assets.getAll()
+
+    return assets.find(
+      asset => !!(asset.policy & ASSET_POLICIES.statsQuoteAsset)
+    )
+  }
 }
