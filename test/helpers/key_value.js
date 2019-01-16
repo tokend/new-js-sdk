@@ -1,9 +1,23 @@
 import { KEY_VALUE_ENTRY_TYPES } from '../../src/const'
 
 import { ManageKeyValueBuilder } from '../../src/base'
+import { NotFoundError } from '../../src/errors'
 import { Helper } from './_helper'
 
 export class KeyValue extends Helper {
+  async getEntryValue (key) {
+    try {
+      const { data } = await this.sdk.horizon.keyValue.get(key)
+      return data.type.value
+    } catch (e) {
+      if (e instanceof NotFoundError) {
+        return null
+      } else {
+        throw e
+      }
+    }
+  }
+
   putEntries (entries) {
     const operations = Object
       .entries(entries)
