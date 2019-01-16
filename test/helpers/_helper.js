@@ -37,12 +37,13 @@ export class Helper {
     transaction.sign(signerKp)
 
     try {
-      const response = await this
+      const { data } = await this
         .sdk
         .horizon
         .transactions
         .submit(transaction)
-      return response
+
+      return data
     } catch (e) {
       if (e instanceof BadRequestError) {
         throw new Error(this.tryGetTxErrors(e))
@@ -67,7 +68,7 @@ export class Helper {
 export const getRequestIdFromResultXdr = (resultXdr, resultType) => base
   .xdr
   .TransactionResult
-  .fromXDR(new Buffer(resultXdr, 'base64'))
+  .fromXDR(Buffer.from(resultXdr, 'base64'))
   .result()
   .results()[0]
   .tr()
