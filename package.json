@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rimraf lib && babel src -d lib --ignore spec.js,test_helpers",
     "test": "mocha --opts ./mocha.opts 'src/**/*.spec.js'",
-    "test:integration": "mocha --opts ./mocha.opts 'test/**/*.spec.js'",
+    "test:integration": "mocha --timeout 10000000 --opts ./mocha.opts 'test/**/*.spec.js'",
     "build:browser": "rimraf dist && webpack --ignore spec.js,test_helpers",
     "test:browser": "karma start",
     "lint": "eslint ./src --cache --fix",

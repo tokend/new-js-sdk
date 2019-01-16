@@ -1,4 +1,3 @@
---timeout 10000
 --require @babel/register
 --require mocha-requires.js
---reporter progress
+--reporter spec
