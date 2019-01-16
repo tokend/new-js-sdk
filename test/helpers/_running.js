@@ -6,15 +6,15 @@ export class Running {
     try {
       const response = await asyncFn()
       if (!response) {
-        log.warn('asyncFn returned empty response. It\'s probably because you\'ve passed non-async function to running')
+        log.warn('asyncFn returned empty response.')
       }
       return response
     } catch (e) {
       if (e instanceof NotFoundError) {
-        log.debug('Got not found error, retrying...')
+        log.debug(`Got not found error on ${e.requestPath}, retrying...`)
         return this.untilFound(asyncFn)
       }
-      log.debug('The error is not NotFound error, returning')
+      log.error(`The error got from ${e.requestPath} is not NotFoundError`)
       throw e
     }
   }

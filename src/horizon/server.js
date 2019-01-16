@@ -250,10 +250,6 @@ export class HorizonServer extends ServerBase {
 
   _parseResponseError (error) {
     if (error.response && error.response.status) {
-      if (error.response.request) {
-        console.error(`Request failed, path: ${error.response.request.path}`)
-      }
-
       switch (error.response.status) {
         case 400:
           error = new errors.BadRequestError(error, this._axios)
