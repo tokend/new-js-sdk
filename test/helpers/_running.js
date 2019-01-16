@@ -26,11 +26,11 @@ export class Running {
     }
   }
 
-  static async untilReturnValueDefined (asyncFn, delayMs = config.retry_delay_ms) {
+  static async untilGotReturnValue (asyncFn, delayMs = config.retry_delay_ms) {
     const response = await asyncFn()
     if (!response) {
       await this.delay(delayMs)
-      return this.untilReturnValueDefined(asyncFn)
+      return this.untilGotReturnValue(asyncFn)
     }
     return response
   }

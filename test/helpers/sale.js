@@ -59,7 +59,7 @@ export class Sale extends Helper {
   }
 
   async mustLoadByBaseAsset (baseAsset) {
-    return Running.untilReturnValueDefined(async () => {
+    return Running.untilGotReturnValue(async () => {
       const { data } = await this.sdk.horizon.sales.getPage({
         base_asset: baseAsset
       })
