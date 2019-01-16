@@ -6,8 +6,6 @@ describe('Sale', () => {
     const { assetCode, ownerKp } = await createAssetFromScratch()
     const { sale } = await createSale({ baseAsset: assetCode }, ownerKp)
 
-    console.log('sale created successfully')
-    console.log(sale)
     expect(sale.id).to.exist
   })
 })
