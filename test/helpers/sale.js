@@ -1,3 +1,4 @@
+import { SaleRequestBuilder } from '../../src/base'
 import { Running } from './_running'
 import { getRequestIdFromResultXdr, Helper } from './_helper'
 import { base } from '../../src'
@@ -49,6 +50,10 @@ export class Sale extends Helper {
     const response = await this.submit(operation, ownerKp)
 
     return getRequestIdFromResultXdr(response.resultXdr, 'createSaleCreationRequestResult')
+  }
+
+  checkSaleState (id) {
+    return this.submit(SaleRequestBuilder.checkSaleState({ saleID: id }))
   }
 
   mustLoadById (id) {

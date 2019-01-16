@@ -16,4 +16,5 @@ export {
 } from './request-states.const'
 
 export { MIMES } from './mimes.const'
+export { SALE_STATES } from './sale-states'
 export { KEY_VALUE_KEYS } from './key-value.const'

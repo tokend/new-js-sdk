@@ -46,9 +46,6 @@ export async function createOffer (opts, signerKp) {
     ensureAndGetBalanceId(account, opts.quoteAsset)
   ])
 
-  console.log('baseBalance, quoteBalance:')
-  console.log(baseBalance, quoteBalance)
-
   await offerHelper.create({
     fee: '0.000000', // TODO: load from horizon,
     baseBalance,
@@ -60,7 +57,7 @@ export async function createOffer (opts, signerKp) {
 export async function ensureAndGetBalanceId (account, assetCode) {
   const log = logger.new('ensureAndGetBalanceId')
 
-  const balance = balanceHelper.getMostFundedBalance(account, assetCode)
+  const balance = balanceHelper.getMostFundedBalance(account.balances, assetCode)
   if (balance) {
     return balance.balanceId
   }
@@ -71,7 +68,5 @@ export async function ensureAndGetBalanceId (account, assetCode) {
 
   // Querying `/balances` to ensure balances ingested:
   const newBalance = await balanceHelper.mustLoad(account.id, assetCode)
-  console.log('newBalance')
-  console.log(newBalance)
   return newBalance.balanceId
 }
