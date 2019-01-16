@@ -9,7 +9,7 @@ import {
   requestHelper
 } from '../helpers'
 
-import { log } from '../log'
+import { logger } from '../logger'
 import { getKvEntryWithFallback } from './get_task_from_kv'
 
 /**
@@ -17,6 +17,8 @@ import { getKvEntryWithFallback } from './get_task_from_kv'
  * @param [opts] - see all possible opts: {@link Asset.create}
  */
 export async function createAssetFromScratch (opts = {}) {
+  const log = logger.new('createAssetFromScratch')
+
   const ownerKp = Keypair.random()
   const code = Asset.randomCode()
 
@@ -44,6 +46,8 @@ export async function createAssetFromScratch (opts = {}) {
  * @param {Keypair} [ownerKp] - master will be owner if not provided
  */
 export async function createAndApproveAsset (opts, ownerKp) {
+  const log = logger.new('createAndApproveAsset')
+
   const tasksToRemove = await getKvEntryWithFallback(
     KEY_VALUE_KEYS.assetCreateTasks, 1
   )
@@ -63,6 +67,8 @@ export async function createAndApproveAsset (opts, ownerKp) {
  * exists, the script will just return it without creating the new one
  */
 export async function createStatsQuoteAsset () {
+  const log = logger.new('createStatsQuoteAsset')
+
   let asset = await assetHelper.loadStatsQuoteAsset()
 
   if (asset) {

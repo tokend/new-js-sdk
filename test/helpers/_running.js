@@ -1,5 +1,5 @@
 import { NotFoundError } from '../../src/errors'
-import { log } from '../log'
+import { logger } from '../logger'
 import config from '../config'
 
 export class Running {
@@ -8,6 +8,7 @@ export class Running {
   }
 
   static async untilFound (asyncFn, delayMs = config.retry_delay_ms) {
+    const log = logger.new('Running.untilFound')
     try {
       const response = await asyncFn()
       if (!response) {

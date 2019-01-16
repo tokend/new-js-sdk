@@ -2,8 +2,6 @@ import loglevel from 'loglevel'
 import prefix from 'loglevel-plugin-prefix'
 import chalk from 'chalk'
 
-import config from './config'
-
 const colors = {
   TRACE: chalk.magenta,
   DEBUG: chalk.cyan,
@@ -27,4 +25,7 @@ prefix.apply(loglevel.getLogger('critical'), {
   }
 })
 
-export const log = loglevel.getLogger(config.log_level)
+export const logger = {
+  ...loglevel,
+  new: loglevel.getLogger
+}

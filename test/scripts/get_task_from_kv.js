@@ -1,5 +1,5 @@
 import { keyValueHelper } from '../helpers'
-import { log } from '../log'
+import { logger } from '../logger'
 
 /**
  * Returns value from k/v storage, if the value is not present, creates the new
@@ -9,6 +9,8 @@ import { log } from '../log'
  * @param fallbackValue - will be set to k/v storage if no value present
  */
 export async function getKvEntryWithFallback (key, fallbackValue) {
+  const log = logger.new('getKvEntryWithFallback')
+
   const existingValue = await keyValueHelper.getEntryValue(key)
 
   if (existingValue) {

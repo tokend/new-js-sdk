@@ -13,7 +13,7 @@ import {
   saleHelper
 } from '../helpers'
 
-import { log } from '../log'
+import { logger } from '../logger'
 import { getKvEntryWithFallback } from './get_task_from_kv'
 
 /**
@@ -23,6 +23,8 @@ import { getKvEntryWithFallback } from './get_task_from_kv'
  * @param {Keypair} ownerKp
  */
 export async function createSale (opts, ownerKp) {
+  const log = logger.new('createSale')
+
   const quoteAssetCodes = _times(3, _ => Asset.randomCode())
   await Promise.all(
     quoteAssetCodes.map(quoteAssetCode => createAndApproveAsset({
