@@ -6,18 +6,21 @@ export class AssetPair extends Helper {
    * @param opts
    * @param opts.base
    * @param opts.quote
-   * @param [opts.price]
+   * @param [opts.physicalPrice]
    * @param [opts.policies]
    */
   create (opts) {
+    const DEFAULTS = {
+      physicalPrice: '1',
+      policies: 0
+    }
+
     const operation = Operation.manageAssetPair({
-      base: opts.base,
-      quote: opts.quote,
-      physicalPrice: opts.price || '1',
-      policies: opts.policies || 0,
+      ...DEFAULTS,
+      ...opts,
+      action: xdr.ManageAssetPairAction.create(),
       physicalPriceCorrection: '0',
-      maxPriceStep: '0',
-      action: xdr.ManageAssetPairAction.create()
+      maxPriceStep: '0'
     })
 
     return this.submit(operation)

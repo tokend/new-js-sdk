@@ -46,16 +46,20 @@ export class Helper {
       return data
     } catch (e) {
       if (e instanceof BadRequestError) {
-        throw new Error(this.tryGetTxErrors(e))
+        const errorString = this.tryGetTxErrorString(e)
+        if (errorString) {
+          throw new Error(errorString)
+        }
+        throw e
       }
       throw e
     }
   }
 
-  tryGetTxErrors (errorObject) {
+  tryGetTxErrorString (errorObject) {
     const resultCodes = _get(errorObject, 'meta.extras.resultCodes')
     if (!resultCodes) {
-      return errorObject
+      return null
     }
 
     const txCode = resultCodes.transaction

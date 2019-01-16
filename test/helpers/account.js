@@ -6,17 +6,21 @@ export class Account extends Helper {
    * @param opts
    * @param opts.id
    * @param opts.accountType
-   * @param [opts.policies]
+   * @param [opts.accountPolicies]
    * @param [opts.referrer]
    * @param [opts.recoveryKey]
    */
   create (opts) {
+    const DEFAULTS = {
+      referrer: '',
+      accountPolicies: 0,
+      recoveryKey: base.Keypair.random().accountId()
+    }
+
     const operation = base.Operation.createAccount({
       destination: opts.id,
-      accountPolicies: opts.policies || 0,
-      referrer: opts.referrer || '',
-      accountType: opts.accountType || base.xdr.AccountType.notVerified().value,
-      recoveryKey: opts.recoveryKey || base.Keypair.random().accountId(),
+      ...opts,
+      ...DEFAULTS
     })
 
     return this.submit(operation)
@@ -28,5 +32,9 @@ export class Account extends Helper {
 
   createSyndicate (id) {
     return this.create({ id, accountType: base.xdr.AccountType.syndicate().value })
+  }
+
+  createNotVerified (id) {
+    return this.create({ id, accountType: base.xdr.AccountType.notVerified().value })
   }
 }

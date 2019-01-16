@@ -1,7 +1,6 @@
 import config from '../config'
 
-import { TokenD } from '../../src'
-import { base } from '../../src'
+import { TokenD, base } from '../../src'
 
 import { Account } from './account'
 import { Asset } from './asset'
@@ -11,7 +10,7 @@ import { Request } from './request'
 import { Sale } from './sale'
 
 export const sdk = new TokenD(config.api_url, {
-  allowHttp: config.allow_http,
+  allowHttp: config.allow_http
 })
 
 sdk._useNetworkPassphrase(config.network_passphrase)

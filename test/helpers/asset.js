@@ -6,7 +6,6 @@ export class Asset extends Helper {
   static randomCode (prefix = 'BTC') {
     return prefix + Math.floor(Math.random() * 100000)
   }
-
   /**
    * @param {object} [opts]
    * @param {string} [opts.code]
@@ -17,26 +16,29 @@ export class Asset extends Helper {
    * @param {object} [opts.details]
    * @param {Keypair} ownerKp - the keypair of asset owner
    *
-   * @returns {array}[0] - the code of newly created request
-   * @returns {array}[1] - the request ID of newly created request
+   * @returns {string} - the request ID of newly created request
    */
   async create (opts, ownerKp = this.masterKp) {
-    const assetCode = opts.code || Asset.randomCode()
+    const DEFAULTS = {
+      policies: 0,
+      code: Asset.randomCode(),
+      maxIssuanceAmount: '10000.000000',
+      initialPreissuedAmount: '10000.000000',
+      preissuedAssetSigner: base.Keypair.random().accountId(),
+      details: {}
+    }
+
     const operation = base
       .ManageAssetBuilder
       .assetCreationRequest({
-        requestID: '0',
-        code: assetCode,
-        policies: opts.policies || 0,
-        maxIssuanceAmount: opts.maxIssuanceAmount || '10000.000000',
-        initialPreissuedAmount: opts.initialPreissuedAmount || '10000.000000',
-        preissuedAssetSigner: opts.preissuedAssetSigner || base.Keypair.random().accountId(),
-        details: opts.details || {},
+        ...DEFAULTS,
+        ...opts,
+        requestID: '0'
       })
 
-    const response = await this.submit(operation, ownerKp)
+    const { resultXdr } = await this.submit(operation, ownerKp)
 
-    return getRequestIdFromResultXdr(response.resultXdr, 'manageAssetResult')
+    return getRequestIdFromResultXdr(resultXdr, 'manageAssetResult')
   }
 
   async mustLoad (code) {
