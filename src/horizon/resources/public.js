@@ -45,6 +45,18 @@ export class Public extends ResourceGroupBase {
       .get({ email })
   }
 
+  /**
+   * Get public enums, such as countries, nationalities, genders, industries, etc.
+   *
+   * @return {Promise}
+   */
+  getEnums () {
+    return this._server._makeCallBuilder()
+      .appendUrlSegment('data')
+      .appendUrlSegment('enums')
+      .get()
+  }
+
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
       .appendUrlSegment('public')
