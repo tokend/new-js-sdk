@@ -17,7 +17,7 @@ export class ManageOfferBuilder {
      * For this operation, back-end creates a "calculated fee", that calculates
      * as amount * percent fee. We can ignore the fixed fee because of it's a
      * back-end business.
-     * @param {string} opts.fee – percent fee of the operation
+     * @param {string} opts.fee – Percent fee of the offer
      * @returns {xdr.ManageBalanceOp}
      */
   static manageOffer (opts) {
