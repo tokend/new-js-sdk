@@ -347,6 +347,7 @@ export class Operation extends BaseOperation {
      * Returns an XDR ManageBalanceOp. A "manage account" operations creates|deletes balance for account.
      * @param {object} opts
      * @param {string} opts.destination - Account to create account for.
+     * @param {string} opts.asset - Asset to manage asset for.
      * @param {xdr.ManageBalanceAction} – Delete or create
      * @returns {xdr.ManageBalanceOp}
      */
