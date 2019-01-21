@@ -11,9 +11,10 @@ export class ManageOfferBuilder {
      * @param {string} opts.baseBalance
      * @param {string} opts.quoteBalance
      * @param {boolean} opts.isBuy - if true - buys base asset, false - sells base asset
-     * @param {number|string} opts.amount - Amount of the base asset
-     * @param {number|string} opts.price - Price of the offer
-     * @param {number|string} opts.orderBookID - 0 - for secondary market, otherwise to participate in sale
+     * @param {string} opts.amount - Amount of the base asset
+     * @param {string} opts.price - Price of the offer
+     * @param {string} opts.orderBookID - 0 - for secondary market, otherwise to participate in sale
+     * @param {string} opts.fee – percent fee of the operation
      * @returns {xdr.ManageBalanceOp}
      */
   static manageOffer (opts) {
