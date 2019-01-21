@@ -14,6 +14,9 @@ export class ManageOfferBuilder {
      * @param {string} opts.amount - Amount of the base asset
      * @param {string} opts.price - Price of the offer
      * @param {string} opts.orderBookID - 0 - for secondary market, otherwise to participate in sale
+     * For this operation, back-end creates a "calculated fee", that calculates
+     * as amount * percent fee. We can ignore the fixed fee because of it's a
+     * back-end business.
      * @param {string} opts.fee – percent fee of the operation
      * @returns {xdr.ManageBalanceOp}
      */
