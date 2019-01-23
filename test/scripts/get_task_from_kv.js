@@ -13,8 +13,8 @@ export async function getKvEntryWithFallback (key, fallbackValue) {
 
   const existingValue = await keyValueHelper.getEntryValue(key)
 
-  if (existingValue) {
-    log.info(`Found existing value for ${key}: ${existingValue}`)
+  if (existingValue == fallbackValue) {
+    log.info(`Found existing value for "${key}": ${existingValue}`)
     return existingValue
   }
 
