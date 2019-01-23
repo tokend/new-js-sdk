@@ -1,14 +1,24 @@
 import { KEY_VALUE_ENTRY_TYPES } from '../../src/const'
 
-import { ManageKeyValueBuilder } from '../../src/base'
+import { ManageKeyValueBuilder, xdr } from '../../src/base'
 import { NotFoundError } from '../../src/errors'
 import { Helper } from './_helper'
+import { isUndefined } from 'util';
 
 export class KeyValue extends Helper {
-  async getEntryValue (key) {
+  async getEntryValue(key) {
     try {
       const { data } = await this.sdk.horizon.keyValue.get(key)
-      return data.type.value
+      switch (data.type.value) {
+        case xdr.KeyValueEntryType.uint32().value:
+          return data.uint32Value
+        case xdr.KeyValueEntryType.uint64().value:
+          return data.uint64Value
+        case xdr.KeyValueEntryType.string().value:
+          return data.stringValue
+        default:
+          throw new Error("Unexpected key value entry type: " + data.type.name)
+      }
     } catch (e) {
       if (e instanceof NotFoundError) {
         return null
@@ -18,7 +28,7 @@ export class KeyValue extends Helper {
     }
   }
 
-  putEntries (entries) {
+  putEntries(entries) {
     const operations = Object
       .entries(entries)
       .map(([key, value]) => {
@@ -43,7 +53,7 @@ export class KeyValue extends Helper {
     return this.submit(operations)
   }
 
-  delete (key) {
+  delete(key) {
     return this.submit(ManageKeyValueBuilder.deleteKeyValue({ key }))
   }
 }
