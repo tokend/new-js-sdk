@@ -178,7 +178,7 @@ export class SaleRequestBuilder {
     let req = new xdr.SaleCreationRequest(attrs)
 
     let requestOp = new xdr.CreateSaleCreationRequestOp({
-      requestID: UnsignedHyper.fromString(opts.requestID),
+      requestId: UnsignedHyper.fromString(opts.requestID),
       request: req,
       allTasks: attrs.allTasks,
       ext: new xdr.CreateSaleCreationRequestOpExt(

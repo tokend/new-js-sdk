@@ -59,8 +59,8 @@ export class ManageAssetBuilder {
       ._toUnsignedXDRAmount(opts.initialPreissuedAmount)
     attrs.sequenceNumber = 0
 
-    if (!BaseOperation.isValidAmount(
-      opts.trailingDigitsCount, true, 6, 0)) {
+    if (Number.isNaN(opts.trailingDigitsCount) &&
+      opts.trailingDigitsCount >= 0 && opts.trailingDigitsCount <= 6) {
       throw new Error('opts.trailingDigitsCount is invalid')
     }
 
@@ -70,15 +70,9 @@ export class ManageAssetBuilder {
       xdr.LedgerVersion.emptyVersion()
     )
 
-    if (isUndefined(opts.sequenceNumber)) {
-      opts.sequenceNumber = 0
-    }
-    attrs.sequenceNumber = opts.sequenceNumber
-
-    let assetCreationRequest = new xdr.AssetCreationRequest(attrs)
     let r = xdr.ManageAssetOpRequest.createAssetCreationRequest()
     r.set('createAssetCreationRequest', new xdr.ManageAssetOpCreateAssetCreationRequest({
-      createAsset: assetCreationRequest,
+      createAsset: new xdr.AssetCreationRequest(attrs),
       ext: new xdr.ManageAssetOpCreateAssetCreationRequestExt(xdr.LedgerVersion.emptyVersion())
     }))
 
@@ -111,17 +105,10 @@ export class ManageAssetBuilder {
     let attrs = ManageAssetBuilder._createUpdateAttrs(opts)
     attrs.sequenceNumber = 0
     attrs.ext = new xdr.AssetUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
-    let assetUpdateRequest = new xdr.ManageAssetOpCreateAssetUpdateRequest({
-      updateAsset: new xdr.AssetUpdateRequest(attrs),
-      allTasks: BaseOperation._checkUnsignedIntValue('allTasks', opts.allTasks),
-      ext: new xdr.ManageAssetOpCreateAssetUpdateRequestExt(
-        xdr.LedgerVersion.emptyVersion()
-      )
-    })
 
     let r = xdr.ManageAssetOpRequest.createAssetUpdateRequest()
     r.set('createAssetUpdateRequest', new xdr.ManageAssetOpCreateAssetUpdateRequest({
-      updateAsset: assetUpdateRequest,
+      updateAsset: new xdr.AssetUpdateRequest(attrs),
       ext: new xdr.ManageAssetOpCreateAssetUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
     }))
 
@@ -247,7 +234,8 @@ export class ManageAssetBuilder {
     let attrs = {
       code: opts.code,
       policies: opts.policies,
-      details: JSON.stringify(details)
+      details: JSON.stringify(details),
+      sequenceNumber: opts.sequenceNumber
     }
 
     return attrs
@@ -277,7 +265,6 @@ export class ManageAssetBuilder {
       case xdr.ManageAssetAction.createAssetCreationRequest():
       {
         let request = attrs.request().createAssetCreationRequest().createAsset()
-        result.allTasks = attrs.request().createAssetCreationRequest().allTasks()
         result.code = request.code().toString()
         result.preissuedAssetSigner = BaseOperation.accountIdtoAddress(
           request.preissuedAssetSigner()
@@ -293,7 +280,6 @@ export class ManageAssetBuilder {
       case xdr.ManageAssetAction.createAssetUpdateRequest():
       {
         let request = attrs.request().createAssetUpdateRequest().updateAsset()
-        result.allTasks = attrs.request().createAssetUpdateRequest().allTasks()
         result.code = request.code().toString()
         result.policies = request.policies()
         result.details = JSON.parse(request.details())
