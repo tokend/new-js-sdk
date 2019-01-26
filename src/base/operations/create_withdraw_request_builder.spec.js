@@ -13,13 +13,11 @@ describe('Withdraw request op', function () {
     }
     let balance = Keypair.random().balanceId()
     let externalDetails = { a: 'some details' }
-    let allTasks = 12
     let op = CreateWithdrawRequestBuilder.createWithdrawWithAutoConversion({
       balance: balance,
       amount: amount,
       fee: fee,
-      externalDetails: externalDetails,
-      allTasks: allTasks
+      externalDetails: externalDetails
     })
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
@@ -30,6 +28,5 @@ describe('Withdraw request op', function () {
     expect(fee.fixed).to.be.equal(obj.fee.fixed)
     expect(fee.percent).to.be.equal(obj.fee.percent)
     expect(isEqual(externalDetails, obj.externalDetails)).to.be.true
-    expect(allTasks).to.be.equal(obj.allTasks)
   })
 })

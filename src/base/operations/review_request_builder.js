@@ -33,6 +33,8 @@ export class ReviewRequestBuilder {
     let requestType = xdr.ReviewableRequestType._byValue.get(opts.requestType)
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails(requestType)
 
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
+
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
 
@@ -82,11 +84,10 @@ export class ReviewRequestBuilder {
     attrs.reviewDetails = new xdr.ReviewDetails({
       tasksToAdd: opts.tasksToAdd,
       tasksToRemove: opts.tasksToRemove,
-      externalDetails: JSON.stringify(opts.externalDetails),
+      externalDetails: opts.externalDetails.toString(),
       ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
     })
-
-    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
+    attrs.reviewDetails = reviewDetails
 
     return attrs
   }
@@ -118,6 +119,8 @@ export class ReviewRequestBuilder {
       })
     )
 
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
+
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
 
@@ -145,6 +148,7 @@ export class ReviewRequestBuilder {
         comment: opts.comment
       })
     )
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
 
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
@@ -240,6 +244,8 @@ export class ReviewRequestBuilder {
       })
     )
 
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
+
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
 
@@ -327,6 +333,12 @@ export class ReviewRequestBuilder {
 
         break
       }
+      case xdr.ReviewableRequestType.updateKyc(): {
+        result.updateKyc = {
+          externalDetails: attrs.requestDetails().updateKyc().externalDetails().toString()
+        }
+        break
+      }
       case xdr.ReviewableRequestType.amlAlert(): {
         result.amlAlert = {
           comment: attrs.requestDetails().amlAlertDetails().comment().toString()
@@ -336,8 +348,5 @@ export class ReviewRequestBuilder {
     }
     result.action = attrs.action().value
     result.reason = attrs.reason().toString()
-    result.tasksToAdd = attrs.reviewDetails().tasksToAdd()
-    result.tasksToRemove = attrs.reviewDetails().tasksToRemove()
-    result.externalDetails = attrs.reviewDetails().externalDetails().toString()
   }
 }

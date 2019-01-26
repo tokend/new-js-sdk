@@ -9,21 +9,14 @@ describe('PaymentV2 op', function () {
   let destinationAccountId = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
   let amount = '100'
 
-  it('PaymentV2 for balance success', function () {
-    let op = PaymentV2Builder.paymentV2({
-      sourceBalanceId: sourceBalanceId,
-      destination: destinationBalanceId,
-      amount: amount,
-      feeData: {
-        sourceFee: {
-          percent: '120',
-          fixed: '110'
-        },
-        destinationFee: {
-          percent: '20',
-          fixed: '10'
-        },
-        sourcePaysForDest: true
+    let feeData = {
+      sourceFee: {
+        percent: '1.001',
+        fixed: '0.001'
+      },
+      destinationFee: {
+        percent: '2.21',
+        fixed: '0.15'
       },
       subject: 'subj',
       reference: 'ref'
@@ -32,50 +25,19 @@ describe('PaymentV2 op', function () {
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
     expect(obj.type).to.be.equal('paymentV2')
-    expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
-    expect(obj.destination).to.be.equal(destinationBalanceId)
-    expect(obj.amount).to.be.equal(amount)
-    expect(obj.feeData.sourcePaysForDest).to.be.equal(true)
-    expect(obj.feeData.sourceFee.fixed).to.be.equal('110')
-    expect(obj.feeData.sourceFee.percent).to.be.equal('120')
-    expect(obj.feeData.destinationFee.fixed).to.be.equal('10')
-    expect(obj.feeData.destinationFee.percent).to.be.equal('20')
-    expect(obj.subject).to.be.equal('subj')
-    expect(obj.reference).to.be.equal('ref')
-  })
-  it('PaymentV2 for account success', function () {
-    let op = PaymentV2Builder.paymentV2({
-      sourceBalanceId: sourceBalanceId,
-      destination: destinationAccountId,
-      amount: amount,
-      feeData: {
-        sourceFee: {
-          percent: '120',
-          fixed: '110'
-        },
-        destinationFee: {
-          percent: '20',
-          fixed: '10'
-        },
-        sourcePaysForDest: true
-      },
-      subject: 'subj',
-      reference: 'ref'
-    })
-    let xdrOp = op.toXDR('hex')
-    let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
-    let obj = Operation.operationToObject(operation)
 
-    expect(obj.type).to.be.equal('paymentV2')
-    expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
-    expect(obj.destination).to.be.equal(destinationAccountId)
-    expect(obj.amount).to.be.equal(amount)
-    expect(obj.feeData.sourcePaysForDest).to.be.equal(true)
-    expect(obj.feeData.sourceFee.fixed).to.be.equal('110')
-    expect(obj.feeData.sourceFee.percent).to.be.equal('120')
-    expect(obj.feeData.destinationFee.fixed).to.be.equal('10')
-    expect(obj.feeData.destinationFee.percent).to.be.equal('20')
-    expect(obj.subject).to.be.equal('subj')
-    expect(obj.reference).to.be.equal('ref')
+    expect(obj.sourceBalanceId).to.equal(sourceBalanceId)
+
+    expect(obj.destination).to.equal(destination)
+    expect(obj.amount).to.equal(amount)
+    expect(obj.feeData.sourcePaysForDest).to.equal(sourcePaysForDest)
+    expect(obj.subject).to.equal(subject)
+    expect(obj.reference).to.equal(reference)
+    expect(obj.feeData.sourceFee.percent).to.equal(feeData.sourceFee.percent)
+    expect(obj.feeData.sourceFee.fixed).to.equal(feeData.sourceFee.fixed)
+    expect(obj.feeData.destinationFee.percent).to.equal(
+      feeData.destinationFee.percent
+    )
+    expect(obj.feeData.destinationFee.fixed).to.equal(feeData.destinationFee.fixed)
   })
 })
