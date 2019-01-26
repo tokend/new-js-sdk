@@ -15,7 +15,8 @@ describe('ManageAssetBuilder', () => {
         details: {
           name: 'USD Name'
         },
-        allTasks: 2
+        allTasks: 2,
+        assetType: '1'
       }
       let op = ManageAssetBuilder.assetCreationRequest(opts)
       let xdrOp = op.toXDR('hex')
@@ -32,6 +33,7 @@ describe('ManageAssetBuilder', () => {
       expect(obj.initialPreissuedAmount)
         .to.be.equal(opts.initialPreissuedAmount)
       expect(obj.allTasks).to.be.equal(opts.allTasks)
+      expect(obj.assetType).to.be.equal(opts.assetType)
     })
   })
 

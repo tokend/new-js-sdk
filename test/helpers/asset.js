@@ -22,6 +22,7 @@ export class Asset extends Helper {
     const DEFAULTS = {
       policies: 0,
       code: Asset.randomCode(),
+      assetType: '1',
       maxIssuanceAmount: '1000000000.000000',
       initialPreissuedAmount: '1000000000.000000',
       preissuedAssetSigner: base.Keypair.random().accountId(),

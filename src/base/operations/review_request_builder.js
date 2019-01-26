@@ -228,21 +228,6 @@ export class ReviewRequestBuilder {
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
 
-  static reviewUpdateKYCRequest (opts) {
-    let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.updateKyc(
-      new xdr.UpdateKycDetails({
-        tasksToAdd: opts.tasksToAdd,
-        tasksToRemove: opts.tasksToRemove,
-        externalDetails: JSON.stringify(opts.externalDetails),
-        ext: new xdr.UpdateKycDetailsExt(xdr.LedgerVersion.emptyVersion())
-      })
-    )
-
-    return ReviewRequestBuilder._createOp(opts, attrs)
-  }
-
   /**
    * Creates operation to review invoice request
    * @param {object} opts

@@ -14,6 +14,7 @@ export class ManageAssetBuilder {
      * @param {string} opts.preissuedAssetSigner - AccountID of keypair which will sign request for asset to be authrorized to be issued
      * @param {string} opts.maxIssuanceAmount - Max amount can be issued of that asset
      * @param {number} opts.policies - Asset policies
+     * @param {string} opts.assetType - asset type
      * @param {string} opts.initialPreissuedAmount - Amount of pre issued tokens available after creation of the asset
      * @param {number} opts.allTasks - tasks for the request
      * @param {object} opts.details - Additional details about asset
@@ -59,6 +60,7 @@ export class ManageAssetBuilder {
     attrs.initialPreissuedAmount = BaseOperation
       ._toUnsignedXDRAmount(opts.initialPreissuedAmount)
     attrs.sequenceNumber = 0
+    attrs.type = UnsignedHyper.fromString(opts.assetType)
 
     attrs.ext = new xdr.AssetCreationRequestExt(
       xdr.LedgerVersion.emptyVersion()
@@ -268,6 +270,7 @@ export class ManageAssetBuilder {
         result.initialPreissuedAmount = BaseOperation
           ._fromXDRAmount(request.initialPreissuedAmount())
         result.details = JSON.parse(request.details())
+        result.assetType = request.type().toString()
         break
       }
       case xdr.ManageAssetAction.createAssetUpdateRequest():

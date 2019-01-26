@@ -5,7 +5,7 @@ export class Account extends Helper {
   /**
    * @param opts
    * @param opts.id
-   * @param opts.accountType
+   * @param opts.roleID
    * @param [opts.accountPolicies]
    * @param [opts.referrer]
    * @param [opts.recoveryKey]
@@ -19,6 +19,7 @@ export class Account extends Helper {
 
     const operation = base.Operation.createAccount({
       destination: opts.id,
+      roleID: opts.roleID,
       ...opts,
       ...DEFAULTS
     })
@@ -31,7 +32,7 @@ export class Account extends Helper {
   }
 
   createSyndicate (id) {
-    return this.create({ id, accountType: base.xdr.AccountType.syndicate().value })
+    return this.create({ id, roleID: '1' })
   }
 
   createNotVerified (id) {

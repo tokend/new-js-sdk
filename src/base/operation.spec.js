@@ -9,10 +9,12 @@ describe('Operation', () => {
       let destination = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       let recoveryKey = 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV'
       let accountType = xdr.AccountType.general().value
+      let roleID = '1'
       let op = Operation.createAccount({
         destination,
         recoveryKey,
-        accountType
+        accountType,
+        roleID
       })
       let opXdr = op.toXDR('hex')
       let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
@@ -21,6 +23,7 @@ describe('Operation', () => {
       expect(obj.destination).to.be.equal(destination)
       expect(obj.recoveryKey).to.be.equal(recoveryKey)
       expect(obj.accountType).to.be.equal(accountType)
+      expect(obj.roleID).to.be.equal(roleID)
     })
 
     it('fails to create createAccount operation with an invalid destination address', () => {

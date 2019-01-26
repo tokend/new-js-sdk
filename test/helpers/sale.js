@@ -39,7 +39,8 @@ export class Sale extends Helper {
           type: 'image/png'
         }
       },
-      saleType: SALE_TYPES.fixedPrice
+      saleType: '1',
+      saleEnumType: SALE_TYPES.fixedPrice
     }
 
     const operation = base.SaleRequestBuilder.createSaleCreationRequest({

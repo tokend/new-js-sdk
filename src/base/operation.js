@@ -14,7 +14,7 @@ import { SaleRequestBuilder } from './operations/sale_request_builder'
 import { ManageOfferBuilder } from './operations/manage_offer_builder'
 import { SetOptionsBuilder } from './operations/set_options_builder'
 import { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
-import { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
+import { CreateChangeRoleRequestBuilder } from './operations/create_update_kyc_request_builder'
 import { ManageSaleBuilder } from './operations/manage_sale_builder'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
 import { ManageLimitsBuilder } from './operations/manage_limits_builder'
@@ -27,6 +27,7 @@ export class Operation extends BaseOperation {
      * @param {string} opts.destination - Destination account ID to create an account for.
      * @param {string} opts.recoveryKey - AccountID of recovery signer.
      * @param {string} opts.accountType - Type of the account to be created.
+     * @param {string} opts.roleID - id of the role for new account.
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      * * @param {string} opts.accountPolicies - The policies of the account.
      * @returns {xdr.CreateAccountOp}
@@ -45,7 +46,8 @@ export class Operation extends BaseOperation {
     attributes.recoveryKey = Keypair
       .fromAccountId(opts.recoveryKey)
       .xdrAccountId()
-    attributes.accountType = Operation._accountTypeFromNumber(opts.accountType)
+    attributes.accountType = Operation._accountTypeFromNumber(
+      xdr.AccountType.notVerified().value)
 
     if (!isUndefined(opts.accountPolicies)) {
       if (opts.accountPolicies < 0) {
@@ -62,6 +64,8 @@ export class Operation extends BaseOperation {
       }
       attributes.referrer = Keypair.fromAccountId(opts.referrer).xdrAccountId()
     }
+
+    attributes.roleId = UnsignedHyper.fromString(opts.roleID)
 
     attributes.ext = new xdr.CreateAccountOpExt(
       xdr.LedgerVersion.emptyVersion()
@@ -476,6 +480,7 @@ export class Operation extends BaseOperation {
         result.recoveryKey = accountIdtoAddress(attrs.recoveryKey())
         result.accountType = attrs.accountType().value
         result.policies = attrs.policies()
+        result.roleID = attrs.roleId().toString()
 
         if (attrs.referrer()) {
           result.referrer = accountIdtoAddress(attrs.referrer())
@@ -622,8 +627,8 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.createAmlAlert():
         CreateAMLRequestBuilder.createAmlAlertToObject(result, attrs)
         break
-      case xdr.OperationType.createKycRequest():
-        CreateUpdateKYCRequestBuilder.createUpdateKYCRequestOpToObject(
+      case xdr.OperationType.createChangeRoleRequest():
+        CreateChangeRoleRequestBuilder.createChangeRoleRequestOpToObject(
           result,
           attrs
         )

@@ -9,6 +9,7 @@ export class SaleRequestBuilder {
      * @param {object} opts
      * @param {string} opts.requestID - ID of the request. 0 - to create new;
      * @param {string} opts.baseAsset - asset for which sale will be performed
+     * @param {string} opts.saleType - Sale type
      * @param {string} opts.defaultQuoteAsset - asset in which hardcap/soft cap will be calculated
      * @param {string} opts.startTime - start time of the sale
      * @param {string} opts.endTime - close time of the sale
@@ -22,7 +23,7 @@ export class SaleRequestBuilder {
      * @param {array} opts.quoteAssets - accepted assets
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
-     * @param {number} opts.saleType - Sale type
+     * @param {number} opts.saleEnumType - Sale type
      * @param {string} opts.baseAssetForHardCap - specifies the amount of base asset required for hard cap
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CreateSaleCreationRequestOp}
@@ -69,6 +70,11 @@ export class SaleRequestBuilder {
     }
     attrs.baseAsset = opts.baseAsset
 
+    if (isUndefined(opts.saleType)) {
+      throw new Error('opts.saleType is undefined')
+    }
+    attrs.saleType = UnsignedHyper.fromString(opts.saleType)
+
     if (!BaseOperation.isValidAsset(opts.defaultQuoteAsset)) {
       throw new Error('opts.defaultQuoteAsset is invalid')
     }
@@ -98,16 +104,16 @@ export class SaleRequestBuilder {
     attrs.details = JSON.stringify(opts.details)
     attrs.ext = new xdr.SaleCreationRequestExt(xdr.LedgerVersion.emptyVersion())
 
-    if (isUndefined(opts.saleType) || !opts.saleType) {
-      attrs.saleType = xdr.SaleType.basicSale().value
-    } else if (opts.saleType === true) {
-      attrs.saleType = xdr.SaleType.crowdFunding().value
+    if (isUndefined(opts.saleEnumType) || !opts.saleEnumType) {
+      attrs.saleEnumType = xdr.SaleType.basicSale().value
+    } else if (opts.saleEnumType === true) {
+      attrs.saleEnumType = xdr.SaleType.crowdFunding().value
     } else {
-      attrs.saleType = opts.saleType
+      attrs.saleEnumType = opts.saleEnumType
     }
 
     let saleTypeExt
-    switch (attrs.saleType) {
+    switch (attrs.saleEnumType) {
       case xdr.SaleType.basicSale().value: {
         let basicSale = new xdr.BasicSale({
           ext: new xdr.BasicSaleExt(xdr.LedgerVersion.emptyVersion())
@@ -219,7 +225,8 @@ export class SaleRequestBuilder {
       request.requiredBaseAssetForHardCap()
     )
     result.details = JSON.parse(request.details())
-    result.saleType = request.saleTypeExt().switch().value
+    result.saleType = request.saleType().toString()
+    result.saleEnumType = request.saleTypeExt().switch().value
     result.quoteAssets = []
     for (let i = 0; i < request.quoteAssets().length; i++) {
       result.quoteAssets.push({
