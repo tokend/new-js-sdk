@@ -14,6 +14,9 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
+      allTasks: 3765764,
+      requiredBaseAssetForHardCap: '762354',
+      sequenceNumber: 12,
       details: {
         short_description: 'short description',
         description: 'Token sale description',
@@ -54,6 +57,9 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
+      allTasks: 3765764,
+      requiredBaseAssetForHardCap: '762354',
+      sequenceNumber: 13,
       details: {
         short_description: 'short description',
         description: 'Token sale description',

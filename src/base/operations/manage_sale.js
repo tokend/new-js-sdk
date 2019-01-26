@@ -205,59 +205,6 @@ export class ManageSaleBuilder {
         result.newDetails = JSON.parse(data.newDetails())
         break
       }
-      case xdr.ManageSaleAction.setState(): {
-        result.saleState = attrs.data().saleState()
-        break
-      }
-      case xdr.ManageSaleAction.createUpdateEndTimeRequest(): {
-        let data = attrs.data().updateSaleEndTimeData()
-        result.requestID = data.requestId().toString()
-        result.newEndTime = data.newEndTime().toString()
-        break
-      }
-      case xdr.ManageSaleAction.createPromotionUpdateRequest(): {
-        let data = attrs.data().promotionUpdateData()
-        result.requestID = data.requestId().toString()
-        let saleCreationRequest = data.newPromotionData()
-        result.baseAsset = saleCreationRequest.baseAsset()
-        result.defaultQuoteAsset = saleCreationRequest.defaultQuoteAsset()
-        result.startTime = saleCreationRequest.startTime().toString()
-        result.endTime = saleCreationRequest.endTime().toString()
-        result.softCap = BaseOperation._fromXDRAmount(
-          saleCreationRequest.softCap()
-        )
-        result.hardCap = BaseOperation._fromXDRAmount(
-          saleCreationRequest.hardCap()
-        )
-        result.details = JSON.parse(saleCreationRequest.details())
-        result.quoteAssets = []
-        for (let i = 0; i < saleCreationRequest.quoteAssets().length; i++) {
-          result.quoteAssets.push({
-            price: BaseOperation._fromXDRAmount(
-              saleCreationRequest.quoteAssets()[i].price()
-            ),
-            asset: saleCreationRequest.quoteAssets()[i].quoteAsset()
-          })
-        }
-        switch (saleCreationRequest.ext().switch()) {
-          case xdr
-            .LedgerVersion
-            .allowToSpecifyRequiredBaseAssetAmountForHardCap(): {
-            result.baseAssetForHardCap = BaseOperation._fromXDRAmount(
-              saleCreationRequest.ext().extV2().requiredBaseAssetForHardCap()
-            )
-            break
-          }
-          case xdr.LedgerVersion.statableSale(): {
-            result.baseAssetForHardCap = BaseOperation._fromXDRAmount(
-              saleCreationRequest.ext().extV3().requiredBaseAssetForHardCap()
-            )
-            result.saleState = saleCreationRequest.ext().extV3().state()
-            break
-          }
-        }
-        break
-      }
     }
   }
 }

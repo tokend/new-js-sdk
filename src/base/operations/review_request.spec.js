@@ -44,27 +44,6 @@ describe('ReviewRequest', () => {
       .to.be.equal(JSON.stringify(opts.externalDetails))
   })
 
-  it('Two step Withdraw request success', () => {
-    let opts = {
-      requestID: '1',
-      requestHash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
-      externalDetails: { details: 'External details of two step request' },
-      action: xdr.ReviewRequestOpAction.reject().value,
-      reason: 'Something is invalid'
-    }
-    let op = ReviewRequestBuilder.reviewTwoStepWithdrawRequest(opts)
-    let xdrOp = op.toXDR('hex')
-    let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
-    let obj = Operation.operationToObject(operation)
-    expect(obj.type).to.be.equal('reviewRequest')
-    expect(obj.requestID).to.be.equal(opts.requestID)
-    expect(obj.requestHash).to.be.equal(opts.requestHash)
-    expect(obj.action).to.be.equal(opts.action)
-    expect(obj.reason).to.be.equal(opts.reason)
-    expect(obj.twoStepWithdrawal.externalDetails)
-      .to.be.equal(JSON.stringify(opts.externalDetails))
-  })
-
   it('Aml alert request success', () => {
     let opts = {
       requestID: '1',
@@ -106,7 +85,5 @@ describe('ReviewRequest', () => {
     expect(obj.reason).to.be.equal(opts.reason)
     expect(obj.updateKyc.externalDetails)
       .to.be.equal(JSON.stringify(opts.externalDetails))
-    expect(obj.updateKyc.tasksToAdd).to.be.equal(opts.tasksToAdd)
-    expect(obj.updateKyc.tasksToRemove).to.be.equal(opts.tasksToRemove)
   })
 })

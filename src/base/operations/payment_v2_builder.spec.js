@@ -12,14 +12,12 @@ describe('PaymentV2RequestBuilder', () => {
 
     let feeData = {
       sourceFee: {
-        maxPaymentFee: '1.001',
-        fixedFee: '0.001',
-        feeAsset: 'BLC'
+        percent: '1.001',
+        fixed: '0.001'
       },
       destinationFee: {
-        maxPaymentFee: '2.21',
-        fixedFee: '0.15',
-        feeAsset: 'BLC'
+        percent: '2.21',
+        fixed: '0.15'
       },
       sourcePaysForDest
     }
@@ -39,22 +37,20 @@ describe('PaymentV2RequestBuilder', () => {
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
-
     expect(obj.type).to.be.equal('paymentV2')
 
     expect(obj.sourceBalanceId).to.equal(sourceBalanceId)
+
     expect(obj.destination).to.equal(destination)
     expect(obj.amount).to.equal(amount)
     expect(obj.feeData.sourcePaysForDest).to.equal(sourcePaysForDest)
     expect(obj.subject).to.equal(subject)
     expect(obj.reference).to.equal(reference)
-    expect(obj.feeData.sourceFee.maxPaymentFee).to.equal(feeData.sourceFee.maxPaymentFee)
-    expect(obj.feeData.sourceFee.fixedFee).to.equal(feeData.sourceFee.fixedFee)
-    expect(obj.feeData.sourceFee.feeAsset).to.equal(feeData.sourceFee.feeAsset)
-    expect(obj.feeData.destinationFee.maxPaymentFee).to.equal(
-      feeData.destinationFee.maxPaymentFee
+    expect(obj.feeData.sourceFee.percent).to.equal(feeData.sourceFee.percent)
+    expect(obj.feeData.sourceFee.fixed).to.equal(feeData.sourceFee.fixed)
+    expect(obj.feeData.destinationFee.percent).to.equal(
+      feeData.destinationFee.percent
     )
-    expect(obj.feeData.destinationFee.fixedFee).to.equal(feeData.destinationFee.fixedFee)
-    expect(obj.feeData.destinationFee.feeAsset).to.equal(feeData.destinationFee.feeAsset)
+    expect(obj.feeData.destinationFee.fixed).to.equal(feeData.destinationFee.fixed)
   })
 })

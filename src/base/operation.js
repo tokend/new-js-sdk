@@ -9,7 +9,6 @@ import { ManageAssetBuilder } from './operations/manage_asset_builder'
 import { ReviewRequestBuilder } from './operations/review_request_builder'
 import { PreIssuanceRequestOpBuilder } from './operations/pre_issuance_request_op_builder'
 import { CreateIssuanceRequestBuilder } from './operations/create_issuance_request_builder'
-import { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
 import { SaleRequestBuilder } from './operations/sale_request_builder'
 import { ManageOfferBuilder } from './operations/manage_offer_builder'
 import { SetOptionsBuilder } from './operations/set_options_builder'
@@ -20,6 +19,7 @@ import { PaymentV2Builder } from './operations/payment_v2_builder'
 import { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
 import { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
 import { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
+import { CreateWithdrawRequestBuilder} from './operations/create_withdraw_request_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -67,6 +67,9 @@ export class Operation extends BaseOperation {
     attributes.ext = new xdr.CreateAccountOpExt(
       xdr.LedgerVersion.emptyVersion()
     )
+
+    attributes.externalSystemIDs = []
+
     let createAccount = new xdr.CreateAccountOp(attributes)
 
     let opAttributes = {}
@@ -103,23 +106,21 @@ export class Operation extends BaseOperation {
     }
 
     if (!isUndefined(opts.feeData)) {
-      let sourceFee = new xdr.FeeData({
-        paymentFee: Operation._toXDRAmount(opts.feeData.sourceFee.paymentFee),
-        fixedFee: Operation._toXDRAmount(opts.feeData.sourceFee.fixedFee),
-        ext: new xdr.FeeDataExt(xdr.LedgerVersion.emptyVersion())
+      let sourceFee = new xdr.Fee({
+        percent: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.percent),
+        fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.fixed),
+        ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
       })
-      let destinationFee = new xdr.FeeData({
-        paymentFee: Operation._toXDRAmount(
-          opts.feeData.destinationFee.paymentFee
-        ),
-        fixedFee: Operation._toXDRAmount(opts.feeData.destinationFee.fixedFee),
-        ext: new xdr.FeeDataExt(xdr.LedgerVersion.emptyVersion())
+      let destinationFee = new xdr.Fee({
+        percent: BaseOperation._toUnsignedXDRAmount(opts.feeData.destinationFee.percent),
+        fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.destinationFee.fixed),
+        ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
       })
-      attributes.feeData = new xdr.PaymentFeeData({
+      attributes.feeData = new xdr.PaymentFeeDataV2({
         sourceFee,
         destinationFee,
         sourcePaysForDest: opts.feeData.sourcePaysForDest,
-        ext: new xdr.PaymentFeeDataExt(xdr.LedgerVersion.emptyVersion())
+        ext: new xdr.PaymentFeeDataV2Ext(xdr.LedgerVersion.emptyVersion())
       })
     } else {
       throw new Error('feeData argument must be defined')
@@ -129,46 +130,24 @@ export class Operation extends BaseOperation {
       opts.reference = ''
     }
 
-    if (!isUndefined(opts.invoiceReference)) {
-      let invoiceReference = new xdr.InvoiceReference({
-        invoiceId: UnsignedHyper.fromString(opts.invoiceReference.invoiceId),
-        accept: opts.invoiceReference.accept,
-        ext: new xdr.InvoiceReferenceExt(xdr.LedgerVersion.emptyVersion())
-      })
-      attributes.invoiceReference = invoiceReference
-    }
-
-    attributes.amount = Operation._toXDRAmount(opts.amount)
+    attributes.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
     attributes.sourceBalanceId = Keypair
       .fromBalanceId(opts.sourceBalanceId)
       .xdrBalanceId()
-    attributes.destinationBalanceId = Keypair
+
+    let d = xdr.PaymentOpV2Destination.balance()
+    d.set('balance', Keypair
       .fromBalanceId(opts.destinationBalanceId)
-      .xdrBalanceId()
+      .xdrBalanceId())
+    attributes.destination = d
+
     attributes.subject = opts.subject
     attributes.reference = opts.reference
-    attributes.ext = new xdr.PaymentOpExt(xdr.LedgerVersion.emptyVersion())
-    let payment = new xdr.PaymentOp(attributes)
+    attributes.ext = new xdr.PaymentOpV2Ext(xdr.LedgerVersion.emptyVersion())
+    let payment = new xdr.PaymentOpV2(attributes)
 
     let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.payment(payment)
-    Operation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
-  }
-
-  static directDebit (opts) {
-    if (!Keypair.isValidPublicKey(opts.from)) {
-      throw new TypeError('from is invalid')
-    }
-
-    let attributes = {}
-    attributes.from = Keypair.fromAccountId(opts.from).xdrAccountId()
-    attributes.paymentOp = Operation.payment(opts.paymentOp).body().value()
-    attributes.ext = new xdr.DirectDebitOpExt(xdr.LedgerVersion.emptyVersion())
-    let directDebit = new xdr.DirectDebitOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.directDebit(directDebit)
+    opAttributes.body = xdr.OperationBody.paymentV2(payment)
     Operation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)
   }
@@ -493,15 +472,15 @@ export class Operation extends BaseOperation {
         result.reference = attrs.reference().toString()
         result.feeData = {
           sourceFee: {
-            paymentFee: Operation
+            percent: Operation
               ._fromXDRAmount(attrs.feeData().sourceFee().paymentFee()),
-            fixedFee: Operation
+            fixed: Operation
               ._fromXDRAmount(attrs.feeData().sourceFee().fixedFee())
           },
           destinationFee: {
-            paymentFee: Operation
+            percent: Operation
               ._fromXDRAmount(attrs.feeData().destinationFee().paymentFee()),
-            fixedFee: Operation
+            fixed: Operation
               ._fromXDRAmount(attrs.feeData().destinationFee().fixedFee())
           },
           sourcePaysForDest: attrs.feeData().sourcePaysForDest()
@@ -511,34 +490,6 @@ export class Operation extends BaseOperation {
             invoiceId: attrs.invoiceReference().invoiceId().toString(),
             accept: attrs.invoiceReference().accept()
           }
-        }
-        break
-      case xdr.OperationType.directDebit():
-        let paymentOp = attrs.paymentOp()
-        result.amount = Operation._fromXDRAmount(paymentOp.amount())
-        result.feeFromSource = paymentOp.feeFromSource
-        result.sourceBalanceId = balanceIdtoString(paymentOp.sourceBalanceId())
-        result.destinationBalanceId = balanceIdtoString(
-          paymentOp.destinationBalanceId()
-        )
-        result.subject = paymentOp.subject().toString()
-        result.reference = paymentOp.reference().toString()
-        result.from = accountIdtoAddress(attrs.from())
-        result.feeData = {
-          sourceFee: {
-            paymentFee: Operation
-              ._fromXDRAmount(paymentOp.feeData().sourceFee().paymentFee()),
-            fixedFee: Operation
-              ._fromXDRAmount(paymentOp.feeData().sourceFee().fixedFee())
-          },
-          destinationFee: {
-            paymentFee: Operation._fromXDRAmount(
-              paymentOp.feeData().destinationFee().paymentFee()
-            ),
-            fixedFee: Operation
-              ._fromXDRAmount(paymentOp.feeData().destinationFee().fixedFee())
-          },
-          sourcePaysForDest: paymentOp.feeData().sourcePaysForDest()
         }
         break
       case xdr.OperationType.setOption():
