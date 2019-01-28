@@ -1,5 +1,3 @@
-// import AxiosMock from 'axios-mock-adapter'
-// import axios from 'axios'
 import sinon from 'sinon'
 import { Keypair } from '../base'
 import { Wallet } from '../wallet'
@@ -18,14 +16,14 @@ describe('api-caller unit test', () => {
 
       sandbox.stub(api, '_axios')
       sandbox.stub(middlewares, 'signRequest')
-      sandbox.stub(middlewares, 'parseQuery')
+      sandbox.stub(middlewares, 'flattenToAxiosJsonApiQuery')
       sandbox.stub(middlewares, 'setJsonapiHeaders')
       sandbox.stub(middlewares, 'parseJsonapiResponse')
     })
 
     afterEach(() => {
       middlewares.signRequest.restore()
-      middlewares.parseQuery.restore()
+      middlewares.flattenToAxiosJsonApiQuery.restore()
       middlewares.setJsonapiHeaders.restore()
       middlewares.parseJsonapiResponse.restore()
     })

@@ -3,9 +3,11 @@ import uri from 'urijs'
 import { hash, Keypair } from '../../base'
 
 const HEADER_SIGNATURE = 'signature'
+const HEADER_REQUEST_TARGET = '(request-target)'
+const HEADERS_TO_SIGN = [HEADER_REQUEST_TARGET]
 
 /**
- * @param {object} requestConfig - the config of the request
+ * @param {object} requestConfig - the axios config of the request
  * @param {Keypair} signerKp - keypair to sign with
  *
  * @return {object} requestConfig - modified config with header signature
@@ -18,11 +20,12 @@ export function signRequest (requestConfig, signerKp) {
   const config = _.cloneDeep(requestConfig)
 
   const url = getRequestUrl(config)
-  const digest = getRequestDigest(url, config)
-  const signature = getRequestSignature(digest, signerKp)
+  const digest = getRequestDigest(url, config, HEADERS_TO_SIGN)
+  const signature = signerKp.sign(digest).toString('base64')
+  const signatureHeader = getSignatureHeader(signerKp.accountId(), HEADERS_TO_SIGN, signature)
 
   config.headers = config.headers || {}
-  config.headers[HEADER_SIGNATURE] = signature
+  config.headers[HEADER_SIGNATURE] = signatureHeader
 
   return config
 }
@@ -37,27 +40,23 @@ function getRequestUrl (config) {
   return fullUrl.toString()
 }
 
-const REQUEST_TARGET_HEADER = '(request-target)'
-const SIGNED_HEADERS = [REQUEST_TARGET_HEADER]
-
-function getRequestDigest (url, config) {
-  let toSign = SIGNED_HEADERS.map(header => {
+function getRequestDigest (url, config, headersToSign) {
+  const toSign = headersToSign.map(header => {
     header = header.toLowerCase()
 
-    if (header === REQUEST_TARGET_HEADER) {
-      return `${REQUEST_TARGET_HEADER}: ${config.method.toLowerCase()} ${url}`
+    switch (header) {
+      case HEADER_REQUEST_TARGET:
+        return `${HEADER_REQUEST_TARGET}: ${config.method.toLowerCase()} ${url}`
+      default:
+        return `${header}: ${config.headers[header]}`
     }
-
-    return `${header}: ${config.headers[header]}`
   })
 
   return hash(toSign.join('\n'))
 }
 
-function getRequestSignature (digest, keypair) {
-  const signature = keypair.sign(digest).toString('base64')
-  const keyId = keypair.accountId()
+function getSignatureHeader (keyId, signedHeaders, signature) {
   const algorithm = 'ed25519-sha256'
 
-  return `keyId="${keyId}",algorithm="${algorithm}",headers="${SIGNED_HEADERS.join(' ')}",signature="${signature}"`
+  return `keyId="${keyId}",algorithm="${algorithm}",headers="${signedHeaders.join(' ')}",signature="${signature}"`
 }

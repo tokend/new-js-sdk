@@ -86,7 +86,7 @@ export class ApiCaller {
    * @param operations
    * @returns {Promise<*>}
    */
-  postTx (...operations) {
+  postOperations (...operations) {
     if (!this._wallet) {
       throw new Error('No wallet found to sign the transaction')
     }
@@ -139,10 +139,9 @@ export class ApiCaller {
    */
   async _call (endpoint, query, method, needSign = false) {
     let url = this._baseURL + endpoint // TODO: smartly build url
-    let config = { url, method }
+    let config = { url, method, params: query }
 
-    config.params = middlewares.parseQuery(query)
-
+    config = middlewares.flattenToAxiosJsonApiQuery(config)
     config = middlewares.setJsonapiHeaders(config)
 
     if (this._customTimeout) {
@@ -153,12 +152,15 @@ export class ApiCaller {
       config = middlewares.signRequest(config, this._wallet.keypair)
     }
 
+    let response
+
     try {
-      const response = await this._axios(config)
-      return middlewares.parseJsonapiResponse(response)
+      response = await this._axios(config)
     } catch (e) {
       throw middlewares.parseJsonapiError(e)
     }
+
+    return middlewares.parseJsonapiResponse(response)
   }
 
   /**

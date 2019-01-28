@@ -1,15 +1,15 @@
-import { parseQuery } from './parse-query'
+import { flattenToAxiosJsonApiQuery } from './flatten-to-axios-jsonapi-query'
 
-describe('parseQuery', () => {
+describe('flattenToAxiosJsonApiQuery', () => {
   it('should not modify object with primitive query parameters', () => {
     const query = {
       foo: 'bar',
       fizz: 'buzz'
     }
 
-    const result = parseQuery(query)
+    const result = flattenToAxiosJsonApiQuery({ params: query })
 
-    expect(result).to.deep.equal(query)
+    expect(result.params).to.deep.equal(query)
   })
 
   it('should properly modify object with array params', () => {
@@ -18,9 +18,9 @@ describe('parseQuery', () => {
       param2: ['abc', 123, 'qqq']
     }
 
-    const result = parseQuery(query)
+    const result = flattenToAxiosJsonApiQuery({ params: query })
 
-    expect(result).to.deep.equal({
+    expect(result.params).to.deep.equal({
       param: 'fizz,bar,buzz',
       param2: 'abc,123,qqq'
     })
@@ -38,9 +38,9 @@ describe('parseQuery', () => {
       }
     }
 
-    const result = parseQuery(query)
+    const result = flattenToAxiosJsonApiQuery({ params: query })
 
-    expect(result).to.deep.equal({
+    expect(result.params).to.deep.equal({
       'filter[first_name]': 'John',
       'filter[min_age]': 25,
       'page[number]': 2,
@@ -53,7 +53,9 @@ describe('parseQuery', () => {
       param: [1, 2, [3, 4]]
     }
 
-    expect(() => parseQuery(query)).to.throw('Nested arrays are not allowed for using in query params')
+    expect(() => flattenToAxiosJsonApiQuery({ params: query })).to.throw(
+      'Nested arrays or objects are not allowed for using in query params'
+    )
   })
 
   it('should throw the proper error when query has nested object param', () => {
@@ -65,6 +67,8 @@ describe('parseQuery', () => {
       }
     }
 
-    expect(() => parseQuery(query)).to.throw('Nested objects are not allowed for using in query params')
+    expect(() => flattenToAxiosJsonApiQuery({ params: query })).to.throw(
+      'Nested arrays or objects are not allowed for using in query params'
+    )
   })
 })

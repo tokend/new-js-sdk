@@ -72,12 +72,10 @@ export class JsonapiResponse {
   }
 
   _parseLinks (response) {
-    const result = {}
-
     if (response.links) {
-      Object.assign(result, response.links)
+      this._links = response.links
+    } else {
+      this._links = {}
     }
-
-    this._links = result
   }
 }
