@@ -1,6 +1,6 @@
-// revision: e85b1d82954fc0e6fdf31a2b1697907c998c6cbd
+// revision: 75f19dc58eaca067e8b1376415b35f3f18d89f45
 // branch:   feature/licensing
-// Automatically generated on 2019-01-25T13:42:49+00:00
+// Automatically generated on 2019-01-28T14:10:53+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -7753,7 +7753,8 @@ xdr.struct("TransactionEnvelope", [
 //       opCOUNTERPARTY_BLOCKED = -6,
 //       opCOUNTERPARTY_WRONG_TYPE = -7,
 //       opBAD_AUTH_EXTRA = -8,
-//       opNO_ROLE_PERMISSION = -9 // not allowed for this role of source account
+//       opNO_ROLE_PERMISSION = -9, // not allowed for this role of source account
+//       opLICENSE_VIOLATION = -10 // number of admins is greater than allowed
 //   };
 //
 // ===========================================================================
@@ -7768,6 +7769,7 @@ xdr.enum("OperationResultCode", {
   opCounterpartyWrongType: -7,
   opBadAuthExtra: -8,
   opNoRolePermission: -9,
+  opLicenseViolation: -10,
 });
 
 // === xdr source ============================================================
