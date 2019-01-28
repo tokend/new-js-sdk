@@ -441,10 +441,6 @@ export class Operation extends BaseOperation {
       return encodeCheck('accountId', accountId.ed25519())
     }
 
-    function balanceIdtoString (balanceId) {
-      return encodeCheck('balanceId', balanceId.ed25519())
-    }
-
     let result = {}
     if (operation.sourceAccount()) {
       result.source = accountIdtoAddress(operation.sourceAccount())
@@ -461,37 +457,6 @@ export class Operation extends BaseOperation {
 
         if (attrs.referrer()) {
           result.referrer = accountIdtoAddress(attrs.referrer())
-        }
-        break
-      case xdr.OperationType.payment():
-        result.amount = Operation._fromXDRAmount(attrs.amount())
-        result.feeFromSource = attrs.feeFromSource
-        result.sourceBalanceId = balanceIdtoString(attrs.sourceBalanceId())
-        result.destinationBalanceId = balanceIdtoString(
-          attrs.destinationBalanceId()
-        )
-        result.subject = attrs.subject().toString()
-        result.reference = attrs.reference().toString()
-        result.feeData = {
-          sourceFee: {
-            percent: Operation
-              ._fromXDRAmount(attrs.feeData().sourceFee().paymentFee()),
-            fixed: Operation
-              ._fromXDRAmount(attrs.feeData().sourceFee().fixedFee())
-          },
-          destinationFee: {
-            percent: Operation
-              ._fromXDRAmount(attrs.feeData().destinationFee().paymentFee()),
-            fixed: Operation
-              ._fromXDRAmount(attrs.feeData().destinationFee().fixedFee())
-          },
-          sourcePaysForDest: attrs.feeData().sourcePaysForDest()
-        }
-        if (attrs.invoiceReference()) {
-          result.invoiceReference = {
-            invoiceId: attrs.invoiceReference().invoiceId().toString(),
-            accept: attrs.invoiceReference().accept()
-          }
         }
         break
       case xdr.OperationType.setOption():

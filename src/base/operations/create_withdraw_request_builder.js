@@ -54,7 +54,6 @@ export class CreateWithdrawRequestBuilder {
     let request = new xdr.WithdrawalRequest(attrs)
     let withdrawRequestOp = new xdr.CreateWithdrawalRequestOp({
       request: request,
-      allTasks: rawAllTasks,
       ext: new xdr.CreateWithdrawalRequestOpExt(
         xdr.LedgerVersion.emptyVersion()
       )

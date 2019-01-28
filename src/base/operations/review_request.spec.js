@@ -1,7 +1,6 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { ReviewRequestBuilder } from './review_request_builder'
-import { Keypair } from '../keypair'
 
 describe('ReviewRequest', () => {
   it('Success', () => {
@@ -11,9 +10,6 @@ describe('ReviewRequest', () => {
       requestType: xdr.ReviewableRequestType.assetCreate().value,
       action: xdr.ReviewRequestOpAction.reject().value,
       reason: 'Something is invalid',
-      tasksToAdd: 0,
-      tasksToRemove: 4,
-      externalDetails: { details: 'All right' }
     }
     let op = ReviewRequestBuilder.reviewRequest(opts)
     let xdrOp = op.toXDR('hex')
@@ -25,19 +21,20 @@ describe('ReviewRequest', () => {
     expect(obj.requestType).to.be.equal(opts.requestType)
     expect(obj.action).to.be.equal(opts.action)
     expect(obj.reason).to.be.equal(opts.reason)
-    expect(obj.tasksToAdd).to.be.equal(opts.tasksToAdd)
-    expect(obj.tasksToRemove).to.be.equal(opts.tasksToRemove)
-    expect(obj.externalDetails).to.be.equal(JSON.stringify(opts.externalDetails))
   })
+
   it('Withdraw request success', () => {
     let opts = {
       requestID: '1',
       requestHash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
       action: xdr.ReviewRequestOpAction.reject().value,
       reason: 'Something is invalid',
-      tasksToAdd: 0,
-      tasksToRemove: 4,
-      externalDetails: { details: 'All right' }
+      requestDetails: '{}',
+      reviewDetails: {
+        tasksToAdd: 1,
+        tasksToRemove: 2,
+        externalDetails: 'All right'
+      }
     }
     let op = ReviewRequestBuilder.reviewWithdrawRequest(opts)
     let xdrOp = op.toXDR('hex')
@@ -50,9 +47,9 @@ describe('ReviewRequest', () => {
     expect(obj.reason).to.be.equal(opts.reason)
     expect(obj.withdrawal.externalDetails)
       .to.be.equal(JSON.stringify(opts.externalDetails))
-    expect(obj.tasksToAdd).to.be.equal(opts.tasksToAdd)
-    expect(obj.tasksToRemove).to.be.equal(opts.tasksToRemove)
-    expect(obj.externalDetails).to.be.equal(JSON.stringify(opts.externalDetails))
+    console.log(JSON.parse(obj.reviewDetails)._attributes.externalDetails)
+    expect(JSON.parse(obj.reviewDetails))
+      .to.be.equal(JSON.stringify(opts.reviewDetails))
   })
 
   it('Aml alert request success', () => {
@@ -62,8 +59,6 @@ describe('ReviewRequest', () => {
       comment: 'Testing aml alert',
       action: xdr.ReviewRequestOpAction.reject().value,
       reason: 'Something is invalid',
-      tasksToAdd: 0,
-      tasksToRemove: 4,
       externalDetails: { details: 'All right' }
     }
     let op = ReviewRequestBuilder.reviewAmlAlertRequest(opts)
@@ -76,9 +71,6 @@ describe('ReviewRequest', () => {
     expect(obj.action).to.be.equal(opts.action)
     expect(obj.reason).to.be.equal(opts.reason)
     expect(obj.amlAlert.comment).to.be.equal(opts.comment)
-    expect(obj.tasksToAdd).to.be.equal(opts.tasksToAdd)
-    expect(obj.tasksToRemove).to.be.equal(opts.tasksToRemove)
-    expect(obj.externalDetails).to.be.equal(JSON.stringify(opts.externalDetails))
   })
   it('Update KYC request success', () => {
     let opts = {
@@ -99,7 +91,7 @@ describe('ReviewRequest', () => {
     expect(obj.requestHash).to.be.equal(opts.requestHash)
     expect(obj.action).to.be.equal(opts.action)
     expect(obj.reason).to.be.equal(opts.reason)
-    expect(obj.externalDetails)
+    expect(obj.updateKyc.externalDetails)
       .to.be.equal(JSON.stringify(opts.externalDetails))
   })
 })

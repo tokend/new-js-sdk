@@ -18,7 +18,7 @@ export class ReviewRequestBuilder {
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @param {number|string} opts.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
    * @param {number|string} opts.tasksToRemove - tasks, which were done by the reviewer and should be removed
-   * @param {string} opts.ExternalDetails - the reviewer's commentary
+   * @param {string} opts.externalDetails - the reviewer's commentary
    * @returns {xdr.ReviewRequestOp}
    */
   static reviewRequest (opts) {
@@ -31,6 +31,8 @@ export class ReviewRequestBuilder {
     }
 
     let requestType = xdr.ReviewableRequestType._byValue.get(opts.requestType)
+
+
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails(requestType)
 
     attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
@@ -87,7 +89,6 @@ export class ReviewRequestBuilder {
       externalDetails: opts.externalDetails.toString(),
       ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
     })
-    attrs.reviewDetails = reviewDetails
 
     return attrs
   }
@@ -106,18 +107,25 @@ export class ReviewRequestBuilder {
    * @returns {xdr.ReviewRequestOp}
    */
   static reviewWithdrawRequest (opts) {
-    if (isUndefined(opts.externalDetails)) {
-      throw new Error('opts.externalDetails is invalid')
+    if (isUndefined(opts.reviewDetails.externalDetails)) {
+      throw new Error('opts.reviewDetails.externalDetails is invalid')
     }
 
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
 
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.withdraw(
-      new xdr.WithdrawalDetails({
-        ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion()),
-        externalDetails: JSON.stringify(opts.externalDetails)
-      })
-    )
+    let d = xdr.ReviewRequestOpRequestDetails.withdraw()
+    d.set('withdraw', new xdr.WithdrawalDetails({
+      externalDetails: opts.requestDetails,
+      ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion())
+    }))
+    attrs.requestDetails = d
+
+    attrs.reviewDetails = new xdr.ReviewDetails({
+      tasksToAdd: opts.reviewDetails.tasksToAdd,
+      tasksToRemove: opts.reviewDetails.tasksToRemove,
+      externalDetails: JSON.stringify(opts.reviewDetails.externalDetails),
+      ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
+    })
 
     attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
 
@@ -237,8 +245,6 @@ export class ReviewRequestBuilder {
 
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.updateKyc(
       new xdr.UpdateKycDetails({
-        tasksToAdd: opts.tasksToAdd,
-        tasksToRemove: opts.tasksToRemove,
         externalDetails: JSON.stringify(opts.externalDetails),
         ext: new xdr.UpdateKycDetailsExt(xdr.LedgerVersion.emptyVersion())
       })
@@ -348,5 +354,6 @@ export class ReviewRequestBuilder {
     }
     result.action = attrs.action().value
     result.reason = attrs.reason().toString()
+    result.reviewDetails = JSON.stringify(attrs.reviewDetails())
   }
 }

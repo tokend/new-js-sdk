@@ -252,7 +252,7 @@ export class ManageAssetBuilder {
       ext: new xdr.ManageAssetOpExt(xdr.LedgerVersion.emptyVersion())
     })
 
-    let opAttributes = { source: undefined }
+    let opAttributes = {}
     opAttributes.body = xdr.OperationBody.manageAsset(assetUpdateOp)
     BaseOperation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)

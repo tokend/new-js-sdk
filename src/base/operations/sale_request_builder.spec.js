@@ -77,7 +77,6 @@ describe('SaleRequestBuilder', () => {
         }
       ],
       saleType: true,
-      baseAssetForHardCap: '648251'
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
     let xdrOp = op.toXDR('hex')
@@ -92,7 +91,7 @@ describe('SaleRequestBuilder', () => {
     expect(opt.softCap).to.be.equal(obj.softCap)
     expect(opt.quoteAssets).to.be.jsonEqual(obj.quoteAssets)
     expect(isEqual(opt.details, obj.details)).to.be.true
-    expect(opt.baseAssetForHardCap).to.be.equal(obj.baseAssetForHardCap)
+    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
   })
   it('Success create basic sale', () => {
     let opt = {
@@ -120,7 +119,7 @@ describe('SaleRequestBuilder', () => {
         }
       ],
       saleType: false,
-      baseAssetForHardCap: '648251'
+      requiredBaseAssetForHardCap: '648251'
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
     let xdrOp = op.toXDR('hex')
@@ -135,7 +134,7 @@ describe('SaleRequestBuilder', () => {
     expect(opt.softCap).to.be.equal(obj.softCap)
     expect(JSON.stringify(opt.quoteAssets)).to.be.equal(JSON.stringify(obj.quoteAssets))
     expect(isEqual(opt.details, obj.details)).to.be.true
-    expect(opt.baseAssetForHardCap).to.be.equal(obj.baseAssetForHardCap)
+    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
   })
   it('Success cancel sale creation request', () => {
     let opt = {

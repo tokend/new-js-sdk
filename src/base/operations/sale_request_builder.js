@@ -101,7 +101,6 @@ export class SaleRequestBuilder {
     if (isUndefined(opts.allTasks)) {
       opts.allTasks = 0
     }
-    attrs.allTasks = opts.allTasks
 
     if (!BaseOperation.isValidAmount(opts.requiredBaseAssetForHardCap, true)) {
       throw new Error('opts.hardCap is invalid')
@@ -175,21 +174,23 @@ export class SaleRequestBuilder {
       }))
     }
 
-    let req = new xdr.SaleCreationRequest(attrs)
-
-    let requestOp = new xdr.CreateSaleCreationRequestOp({
-      requestId: UnsignedHyper.fromString(opts.requestID),
-      request: req,
-      allTasks: attrs.allTasks,
-      ext: new xdr.CreateSaleCreationRequestOpExt(
-        xdr.LedgerVersion.emptyVersion()
-      )
-    })
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.createSaleRequest(requestOp)
-    BaseOperation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
+    // let req =
+    //
+    // console.log(req)
+    //
+    // let requestOp = new xdr.CreateSaleCreationRequestOp({
+    //   requestId: UnsignedHyper.fromString(opts.requestID),
+    //   request: req,
+    //   allTasks: attrs.allTasks,
+    //   ext: new xdr.CreateSaleCreationRequestOpExt(
+    //     xdr.LedgerVersion.emptyVersion()
+    //   )
+    // })
+    //
+    // let opAttributes = {}
+    // opAttributes.body = xdr.OperationBody.createSaleRequest(requestOp)
+    // BaseOperation.setSourceAccount(opAttributes, opts)
+    return new xdr.SaleCreationRequest(attrs)
   }
 
   static validateDetail (details) {
@@ -223,7 +224,7 @@ export class SaleRequestBuilder {
     result.endTime = request.endTime().toString()
     result.softCap = BaseOperation._fromXDRAmount(request.softCap())
     result.hardCap = BaseOperation._fromXDRAmount(request.hardCap())
-    result.baseAssetForHardCap = BaseOperation._fromXDRAmount(
+    result.requiredBaseAssetForHardCap = BaseOperation._fromXDRAmount(
       request.requiredBaseAssetForHardCap()
     )
     result.details = JSON.parse(request.details())
@@ -234,21 +235,6 @@ export class SaleRequestBuilder {
         price: BaseOperation._fromXDRAmount(request.quoteAssets()[i].price()),
         asset: request.quoteAssets()[i].quoteAsset().toString()
       })
-    }
-    switch (request.ext().switch()) {
-      case xdr.LedgerVersion.allowToSpecifyRequiredBaseAssetAmountForHardCap(): {
-        result.baseAssetForHardCap = BaseOperation._fromXDRAmount(
-          request.ext().extV2().requiredBaseAssetForHardCap()
-        )
-        break
-      }
-      case xdr.LedgerVersion.statableSale(): {
-        result.baseAssetForHardCap = BaseOperation._fromXDRAmount(
-          request.ext().extV3().requiredBaseAssetForHardCap()
-        )
-        result.saleState = request.ext().extV3().state()
-        break
-      }
     }
   }
 
