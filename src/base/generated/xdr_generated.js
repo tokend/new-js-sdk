@@ -1,6 +1,6 @@
-// revision: d6ebe1b4315c996e3e24f80ee92c65497d97f4d8
+// revision: 714244891980ba5b2fb42ad75b54779bf2cb9ec5
 // branch:   feature/roles_rules
-// Automatically generated on 2019-01-28T11:15:31+00:00
+// Automatically generated on 2019-01-28T14:52:09+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -14329,8 +14329,7 @@ xdr.enum("LedgerEntryType", {
 //       ADD_DEFAULT_ISSUANCE_TASKS = 50,
 //       EXTEND_REVIEW_ATOMIC_SWAP_REQUEST_RESULT = 51,
 //   	WITHDRAWAL_TASKS = 52,
-//   	ADD_ASSET_BALANCE_PRECISION = 53,
-//       REPLACE_ACCOUNT_TYPES_WITH_POLICIES = 999999 // do not use it yet, there are features to be improved
+//   	ADD_ASSET_BALANCE_PRECISION = 53
 //   };
 //
 // ===========================================================================
@@ -14387,7 +14386,6 @@ xdr.enum("LedgerVersion", {
   extendReviewAtomicSwapRequestResult: 51,
   withdrawalTask: 52,
   addAssetBalancePrecision: 53,
-  replaceAccountTypesWithPolicy: 999999,
 });
 
 // === xdr source ============================================================
