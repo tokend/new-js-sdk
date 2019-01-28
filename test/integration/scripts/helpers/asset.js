@@ -9,6 +9,7 @@ function createAssetCreationRequest(testHelper, owner, issuer, assetCode, policy
         code: assetCode,
         preissuedAssetSigner: issuer,
         maxIssuanceAmount: maxIssuanceAmount,
+        trailingDigitsCount: 0,
         policies: policy,
         initialPreissuedAmount: initialPreissuedAmount,
         details: {

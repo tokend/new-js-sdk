@@ -1,6 +1,6 @@
 import { default as xdr } from './generated/xdr_generated'
 import { Keypair } from './keypair'
-import { UnsignedHyper, Hyper } from 'js-xdr'
+import { UnsignedHyper } from 'js-xdr'
 import { hash } from './hashing'
 import { encodeCheck } from './strkey'
 import isUndefined from 'lodash/isUndefined'
@@ -19,7 +19,7 @@ import { PaymentV2Builder } from './operations/payment_v2_builder'
 import { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
 import { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
 import { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
-import { CreateWithdrawRequestBuilder} from './operations/create_withdraw_request_builder'
+import { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -242,7 +242,7 @@ export class Operation extends BaseOperation {
         percentFee: Operation._toXDRAmount(opts.fee.percentFee),
         feeType: opts.fee.feeType,
         asset: opts.fee.asset,
-        subtype: Hyper.fromString(opts.fee.subtype),
+        subtype: UnsignedHyper.fromString(opts.fee.subtype),
         lowerBound: Operation._toXDRAmount(opts.fee.lowerBound),
         upperBound: Operation._toXDRAmount(opts.fee.upperBound),
         ext: new xdr.FeeEntryExt(xdr.LedgerVersion.emptyVersion())
@@ -439,10 +439,6 @@ export class Operation extends BaseOperation {
       return encodeCheck('accountId', accountId.ed25519())
     }
 
-    function balanceIdtoString (balanceId) {
-      return encodeCheck('balanceId', balanceId.ed25519())
-    }
-
     let result = {}
     if (operation.sourceAccount()) {
       result.source = accountIdtoAddress(operation.sourceAccount())
@@ -459,37 +455,6 @@ export class Operation extends BaseOperation {
 
         if (attrs.referrer()) {
           result.referrer = accountIdtoAddress(attrs.referrer())
-        }
-        break
-      case xdr.OperationType.payment():
-        result.amount = Operation._fromXDRAmount(attrs.amount())
-        result.feeFromSource = attrs.feeFromSource
-        result.sourceBalanceId = balanceIdtoString(attrs.sourceBalanceId())
-        result.destinationBalanceId = balanceIdtoString(
-          attrs.destinationBalanceId()
-        )
-        result.subject = attrs.subject().toString()
-        result.reference = attrs.reference().toString()
-        result.feeData = {
-          sourceFee: {
-            percent: Operation
-              ._fromXDRAmount(attrs.feeData().sourceFee().paymentFee()),
-            fixed: Operation
-              ._fromXDRAmount(attrs.feeData().sourceFee().fixedFee())
-          },
-          destinationFee: {
-            percent: Operation
-              ._fromXDRAmount(attrs.feeData().destinationFee().paymentFee()),
-            fixed: Operation
-              ._fromXDRAmount(attrs.feeData().destinationFee().fixedFee())
-          },
-          sourcePaysForDest: attrs.feeData().sourcePaysForDest()
-        }
-        if (attrs.invoiceReference()) {
-          result.invoiceReference = {
-            invoiceId: attrs.invoiceReference().invoiceId().toString(),
-            accept: attrs.invoiceReference().accept()
-          }
         }
         break
       case xdr.OperationType.setOption():

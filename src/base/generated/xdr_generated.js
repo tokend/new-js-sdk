@@ -1,6 +1,6 @@
-// revision: 520e69760063ee9fafbb7793f64122b7f3bd4167
+// revision: 5ea049e04a3502d18d605f77bd96be92128592a5
 // branch:   (detached
-// Automatically generated on 2019-01-25T19:26:50+00:00
+// Automatically generated on 2019-01-28T11:29:27+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -12765,7 +12765,6 @@ xdr.struct("Fee", [
 //   enum OperationType
 //   {
 //       CREATE_ACCOUNT = 0,
-//       PAYMENT = 1,
 //       SET_OPTIONS = 2,
 //       CREATE_ISSUANCE_REQUEST = 3,
 //       SET_FEES = 5,
@@ -12775,7 +12774,6 @@ xdr.struct("Fee", [
 //       MANAGE_ASSET = 11,
 //       CREATE_PREISSUANCE_REQUEST = 12,
 //       MANAGE_LIMITS = 13,
-//       DIRECT_DEBIT = 14,
 //   	MANAGE_ASSET_PAIR = 15,
 //   	MANAGE_OFFER = 16,
 //       MANAGE_INVOICE_REQUEST = 17,
@@ -12804,7 +12802,6 @@ xdr.struct("Fee", [
 // ===========================================================================
 xdr.enum("OperationType", {
   createAccount: 0,
-  payment: 1,
   setOption: 2,
   createIssuanceRequest: 3,
   setFee: 5,
@@ -12814,7 +12811,6 @@ xdr.enum("OperationType", {
   manageAsset: 11,
   createPreissuanceRequest: 12,
   manageLimit: 13,
-  directDebit: 14,
   manageAssetPair: 15,
   manageOffer: 16,
   manageInvoiceRequest: 17,

@@ -151,6 +151,7 @@ describe("Integration test", function () {
             .then(() => done())
             .catch(err => {
                 console.log(err);
+                console.log(err._meta.extras.resultCodes)
                 done(err);
             });
     });
