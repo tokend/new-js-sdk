@@ -3,6 +3,7 @@ import isUndefined from 'lodash/isUndefined'
 import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
 import { UnsignedHyper } from 'js-xdr'
+import { hash } from '../hashing'
 
 export class ManageAssetBuilder {
   /**
@@ -142,6 +143,7 @@ export class ManageAssetBuilder {
      * @param {object} opts
      * @param {string} opts.accountID - accountID to whome rights will be passed
      * @param {string} opts.code - asset code for which to rights will be passed
+     * @param {KeyPair} opts.keyPair - current pre issue signer of the asset
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      * @returns {xdr.ManageAssetOp}
      */
@@ -161,7 +163,8 @@ export class ManageAssetBuilder {
         xdr.LedgerVersion.emptyVersion()
       ),
       accountId: Keypair.fromAccountId(opts.accountID).xdrAccountId(),
-      code: opts.code
+      code: opts.code,
+      signature: opts.keyPair.signDecorated(this._getSignatureData(opts))
     }
     let changePreissuedSigner = new xdr.AssetChangePreissuedSigner(attrs)
 
@@ -171,6 +174,19 @@ export class ManageAssetBuilder {
         changePreissuedSigner
       )
     )
+  }
+
+  static _getSignatureData (opts) {
+    if (isUndefined(opts.accountID)) {
+      throw new Error('opts.accountId is invalid')
+    }
+
+    if (isUndefined(opts.code)) {
+      throw new Error('opts.code is invalid')
+    }
+
+    let rawSignatureData = `${opts.code}:${opts.accountID}`
+    return hash(rawSignatureData)
   }
 
   static _getValidDetails (opts) {

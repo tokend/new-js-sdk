@@ -26,7 +26,6 @@ export class Operation extends BaseOperation {
      * @param {object} opts
      * @param {string} opts.destination - Destination account ID to create an account for.
      * @param {string} opts.recoveryKey - AccountID of recovery signer.
-     * @param {string} opts.accountType - Type of the account to be created.
      * @param {string} opts.roleID - id of the role for new account.
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      * * @param {string} opts.accountPolicies - The policies of the account.

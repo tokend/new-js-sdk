@@ -8,12 +8,10 @@ describe('Operation', () => {
     it('creates a createAccountOp general', () => {
       let destination = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       let recoveryKey = 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV'
-      let accountType = xdr.AccountType.general().value
       let roleID = '1'
       let op = Operation.createAccount({
         destination,
         recoveryKey,
-        accountType,
         roleID
       })
       let opXdr = op.toXDR('hex')
@@ -22,15 +20,14 @@ describe('Operation', () => {
       expect(obj.type).to.be.equal('createAccount')
       expect(obj.destination).to.be.equal(destination)
       expect(obj.recoveryKey).to.be.equal(recoveryKey)
-      expect(obj.accountType).to.be.equal(accountType)
       expect(obj.roleID).to.be.equal(roleID)
     })
 
     it('fails to create createAccount operation with an invalid destination address', () => {
       let opts = {
         destination: 'GCEZW',
-        accountType: xdr.AccountType.general().value,
-        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
+        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
+        roleID: '1'
       }
       expectThrow(() => Operation.createAccount(opts))
     })
@@ -39,7 +36,7 @@ describe('Operation', () => {
       let opts = {
         destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         recoveryKey: 'GCEZ',
-        accountType: xdr.AccountType.general().value
+        roleID: '1'
       }
       expectThrow(() => Operation.createAccount(opts))
     })
@@ -48,16 +45,8 @@ describe('Operation', () => {
       let opts = {
         destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        accountType: xdr.AccountType.general().value,
+        roleID: '1',
         source: 'GCEZ'
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-    it('fails to create createAccount operation with an invalid account type', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
       }
       expectThrow(() => Operation.createAccount(opts))
     })
@@ -66,7 +55,7 @@ describe('Operation', () => {
         destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        accountType: xdr.AccountType.general().value,
+        roleID: '1',
         accountPolicies: -1
       }
       expectThrow(() => Operation.createAccount(opts))

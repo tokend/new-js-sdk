@@ -1,6 +1,7 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { ManageAssetBuilder } from './manage_asset_builder'
+import { Keypair } from '../keypair'
 
 describe('ManageAssetBuilder', () => {
   describe('assetCreationRequest', () => {
@@ -77,7 +78,8 @@ describe('ManageAssetBuilder', () => {
     it('Success', () => {
       let opts = {
         code: 'USD',
-        accountID: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
+        accountID: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
+        keyPair: Keypair.random()
       }
       let op = ManageAssetBuilder.changeAssetPreIssuer(opts)
       let xdrOp = op.toXDR('hex')

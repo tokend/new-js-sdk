@@ -1,6 +1,6 @@
-// revision: 3bba6a98f7f437d919f74da2e3555024d99d009f
+// revision: d6ebe1b4315c996e3e24f80ee92c65497d97f4d8
 // branch:   feature/roles_rules
-// Automatically generated on 2019-01-26T16:22:08+00:00
+// Automatically generated on 2019-01-28T11:15:31+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -4227,9 +4227,11 @@ xdr.struct("ManageAssetOp", [
 //   
 //       // codes considered as "failure" for the operation
 //   	REQUEST_NOT_FOUND = -1,           // failed to find asset request with such id
-//   	ASSET_ALREADY_EXISTS = -3,			   // asset with such code already exist
+//       INVALID_SIGNATURE = -2,           // only asset pre issuer can change asset pre issuer
+//   	ASSET_ALREADY_EXISTS = -3,	      // asset with such code already exist
 //       INVALID_MAX_ISSUANCE_AMOUNT = -4, // max issuance amount is 0
 //   	INVALID_CODE = -5,                // asset code is invalid (empty or contains space)
+//       INVALID_PRE_ISSUER = -6,          // pre issuer is the same as existing
 //   	INVALID_POLICIES = -7,            // asset policies (has flag which does not belong to AssetPolicies enum)
 //   	ASSET_NOT_FOUND = -8,             // asset does not exists
 //   	REQUEST_ALREADY_EXISTS = -9,      // request for creation of unique entry already exists
@@ -4249,9 +4251,11 @@ xdr.struct("ManageAssetOp", [
 xdr.enum("ManageAssetResultCode", {
   success: 0,
   requestNotFound: -1,
+  invalidSignature: -2,
   assetAlreadyExist: -3,
   invalidMaxIssuanceAmount: -4,
   invalidCode: -5,
+  invalidPreIssuer: -6,
   invalidPolicy: -7,
   assetNotFound: -8,
   requestAlreadyExist: -9,
@@ -5559,9 +5563,12 @@ xdr.union("AssetChangePreissuedSignerExt", {
 
 // === xdr source ============================================================
 //
-//   struct AssetChangePreissuedSigner {
+//   struct AssetChangePreissuedSigner
+//   {
 //   	AssetCode code;
 //   	AccountID accountID;
+//   	DecoratedSignature signature;
+//   
 //   	// reserved for future use
 //       union switch (LedgerVersion v)
 //       {
@@ -5575,6 +5582,7 @@ xdr.union("AssetChangePreissuedSignerExt", {
 xdr.struct("AssetChangePreissuedSigner", [
   ["code", xdr.lookup("AssetCode")],
   ["accountId", xdr.lookup("AccountId")],
+  ["signature", xdr.lookup("DecoratedSignature")],
   ["ext", xdr.lookup("AssetChangePreissuedSignerExt")],
 ]);
 
