@@ -309,6 +309,12 @@ export class ReviewRequestBuilder {
         result.withdrawal = {
           externalDetails: attrs.requestDetails().withdrawal().externalDetails().toString()
         }
+        let rd = attrs.reviewDetails()
+        result.reviewDetails = {
+          tasksToAdd: rd.tasksToAdd(),
+          tasksToRemove: rd.tasksToRemove(),
+          externalDetails: JSON.parse(rd.externalDetails())
+        }
         break
       }
       case xdr.ReviewableRequestType.limitsUpdate(): {
@@ -354,6 +360,5 @@ export class ReviewRequestBuilder {
     }
     result.action = attrs.action().value
     result.reason = attrs.reason().toString()
-    result.reviewDetails = JSON.stringify(attrs.reviewDetails())
   }
 }

@@ -33,7 +33,7 @@ describe('ReviewRequest', () => {
       reviewDetails: {
         tasksToAdd: 1,
         tasksToRemove: 2,
-        externalDetails: 'All right'
+        externalDetails: ['All right']
       }
     }
     let op = ReviewRequestBuilder.reviewWithdrawRequest(opts)
@@ -47,8 +47,8 @@ describe('ReviewRequest', () => {
     expect(obj.reason).to.be.equal(opts.reason)
     expect(obj.withdrawal.externalDetails)
       .to.be.equal(JSON.stringify(opts.externalDetails))
-    console.log(JSON.parse(obj.reviewDetails)._attributes.externalDetails)
-    expect(JSON.parse(obj.reviewDetails))
+    console.log(obj.reviewDetails === opts.reviewDetails)
+    expect(JSON.stringify(obj.reviewDetails))
       .to.be.equal(JSON.stringify(opts.reviewDetails))
   })
 
