@@ -1,6 +1,6 @@
 import { default as xdr } from './generated/xdr_generated'
 import { Keypair } from './keypair'
-import { UnsignedHyper } from 'js-xdr'
+import { Hyper } from 'js-xdr'
 import { hash } from './hashing'
 import { encodeCheck } from './strkey'
 import isUndefined from 'lodash/isUndefined'
@@ -19,7 +19,7 @@ import { PaymentV2Builder } from './operations/payment_v2_builder'
 import { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
 import { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
 import { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
-import { CreateWithdrawRequestBuilder} from './operations/create_withdraw_request_builder'
+import { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
 import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 
@@ -244,7 +244,7 @@ export class Operation extends BaseOperation {
         percentFee: Operation._toXDRAmount(opts.fee.percentFee),
         feeType: opts.fee.feeType,
         asset: opts.fee.asset,
-        subtype: UnsignedHyper.fromString(opts.fee.subtype),
+        subtype: Hyper.fromString(opts.fee.subtype),
         lowerBound: Operation._toXDRAmount(opts.fee.lowerBound),
         upperBound: Operation._toXDRAmount(opts.fee.upperBound),
         ext: new xdr.FeeEntryExt(xdr.LedgerVersion.emptyVersion())
@@ -572,15 +572,6 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.cancelSaleRequest():
         SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
         break
-      case xdr.OperationType.cancelAswapBid():
-        CancelAtomicSwapBidBuilder.cancelASwapBidToObject(result, attrs)
-        break
-      case xdr.OperationType.createAswapRequest():
-        CreateAtomicSwapRequestBuilder.createASwapRequestToObject(result, attrs)
-        break
-      /* case xdr.OperationType.createReference():
-        CreateReferenceBuilder.createReferenceToObject(result, attrs)
-        break */
       default:
         throw new Error('Unknown operation')
     }

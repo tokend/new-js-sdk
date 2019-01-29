@@ -173,23 +173,6 @@ export class SaleRequestBuilder {
         )
       }))
     }
-
-    // let req =
-    //
-    // console.log(req)
-    //
-    // let requestOp = new xdr.CreateSaleCreationRequestOp({
-    //   requestId: UnsignedHyper.fromString(opts.requestID),
-    //   request: req,
-    //   allTasks: attrs.allTasks,
-    //   ext: new xdr.CreateSaleCreationRequestOpExt(
-    //     xdr.LedgerVersion.emptyVersion()
-    //   )
-    // })
-    //
-    // let opAttributes = {}
-    // opAttributes.body = xdr.OperationBody.createSaleRequest(requestOp)
-    // BaseOperation.setSourceAccount(opAttributes, opts)
     return new xdr.SaleCreationRequest(attrs)
   }
 

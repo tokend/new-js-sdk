@@ -89,7 +89,6 @@ export class ReviewRequestBuilder {
       externalDetails: opts.externalDetails.toString(),
       ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
     })
-    attrs.reviewDetails = reviewDetails
 
     return attrs
   }
