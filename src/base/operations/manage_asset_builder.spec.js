@@ -17,6 +17,7 @@ describe('ManageAssetBuilder', () => {
         details: {
           name: 'USD Name'
         }
+        // allTasks: 3
       }
       let op = ManageAssetBuilder.assetCreationRequest(opts)
       let xdrOp = op.toXDR('hex')

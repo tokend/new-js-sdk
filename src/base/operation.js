@@ -1,6 +1,6 @@
 import { default as xdr } from './generated/xdr_generated'
 import { Keypair } from './keypair'
-import { UnsignedHyper, Hyper } from 'js-xdr'
+import { UnsignedHyper } from 'js-xdr'
 import { hash } from './hashing'
 import { encodeCheck } from './strkey'
 import isUndefined from 'lodash/isUndefined'
@@ -244,7 +244,7 @@ export class Operation extends BaseOperation {
         percentFee: Operation._toXDRAmount(opts.fee.percentFee),
         feeType: opts.fee.feeType,
         asset: opts.fee.asset,
-        subtype: Hyper.fromString(opts.fee.subtype),
+        subtype: UnsignedHyper.fromString(opts.fee.subtype),
         lowerBound: Operation._toXDRAmount(opts.fee.lowerBound),
         upperBound: Operation._toXDRAmount(opts.fee.upperBound),
         ext: new xdr.FeeEntryExt(xdr.LedgerVersion.emptyVersion())
@@ -572,6 +572,15 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.cancelSaleRequest():
         SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
         break
+      case xdr.OperationType.cancelAswapBid():
+        CancelAtomicSwapBidBuilder.cancelASwapBidToObject(result, attrs)
+        break
+      case xdr.OperationType.createAswapRequest():
+        CreateAtomicSwapRequestBuilder.createASwapRequestToObject(result, attrs)
+        break
+      /* case xdr.OperationType.createReference():
+        CreateReferenceBuilder.createReferenceToObject(result, attrs)
+        break */
       default:
         throw new Error('Unknown operation')
     }

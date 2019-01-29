@@ -66,6 +66,13 @@ export class ManageAssetBuilder {
 
     attrs.trailingDigitsCount = opts.trailingDigitsCount
 
+    if (Number.isNaN(opts.trailingDigitsCount) &&
+      opts.trailingDigitsCount >= 0 && opts.trailingDigitsCount <= 6) {
+      throw new Error('opts.trailingDigitsCount is invalid')
+    }
+
+    attrs.trailingDigitsCount = opts.trailingDigitsCount
+
     attrs.ext = new xdr.AssetCreationRequestExt(
       xdr.LedgerVersion.emptyVersion()
     )
@@ -252,7 +259,7 @@ export class ManageAssetBuilder {
       ext: new xdr.ManageAssetOpExt(xdr.LedgerVersion.emptyVersion())
     })
 
-    let opAttributes = {}
+    let opAttributes = { source: undefined }
     opAttributes.body = xdr.OperationBody.manageAsset(assetUpdateOp)
     BaseOperation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)
