@@ -277,7 +277,7 @@ export class Wallets extends ResourceGroupBase {
     )
     let signers = await this._getSigners(this._sdk.wallet.accountId)
     let tx = makeChangeSignerTransaction({
-      newPublicKey: oldWallet.accountId,
+      newPublicKey: newMainWallet.keypair.accountId(),
       signers,
       signingKeypair: oldWallet.keypair,
       soucreAccount: oldWallet.accountId,

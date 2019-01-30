@@ -84,7 +84,7 @@ export class Factors extends ResourceGroupBase {
         }
       })
 
-    return tfaError.retryFailedRequest()
+    return tfaError.retryRequest()
   }
 
   /**
@@ -107,7 +107,7 @@ export class Factors extends ResourceGroupBase {
         }
       })
 
-    return tfaError.retryFailedRequest()
+    return tfaError.retryRequest()
   }
 
   _makeCallBuilder (walletId) {
