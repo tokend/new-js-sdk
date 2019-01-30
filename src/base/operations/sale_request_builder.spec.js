@@ -76,7 +76,7 @@ describe('SaleRequestBuilder', () => {
           asset: 'BTC'
         }
       ],
-      saleType: true,
+      saleType: true
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
     let xdrOp = op.toXDR('hex')
