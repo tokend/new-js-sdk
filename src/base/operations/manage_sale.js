@@ -111,7 +111,7 @@ export class ManageSaleBuilder {
    * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
    * @param {object} opts.quoteAssets.asset - asset code of the quote asset
    * @param {object} opts.saleType - states sale type
-   * @param {string} opts.baseAssetForHardCap - specifies the amount of base asset required for hard cap
+   * @param {string} opts.requiredBaseAssetForHardCap - specifies the amount of base asset required for hard cap
    * @param {SaleState} opts.saleState - specifies the initial state of the sale
    * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
    * @returns {xdr.ManageSaleOp}

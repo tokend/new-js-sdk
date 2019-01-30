@@ -15,6 +15,7 @@ export class ReviewRequestBuilder {
    * @param {number} opts.requestType - Type of the request to be reviewed (xdr.ReviewableRequestType)
    * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
    * @param {string} opts.reason - Reject reason
+   * @param {object} opts.reviewDetails - Review details for reviewable request (xdr.ReviewDetails)
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @param {number|string} opts.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
    * @param {number|string} opts.tasksToRemove - tasks, which were done by the reviewer and should be removed
@@ -31,7 +32,6 @@ export class ReviewRequestBuilder {
     }
 
     let requestType = xdr.ReviewableRequestType._byValue.get(opts.requestType)
-
 
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails(requestType)
 
@@ -71,22 +71,26 @@ export class ReviewRequestBuilder {
 
     attrs.reason = opts.reason
 
-    if (isUndefined(opts.tasksToAdd)) {
-      opts.tasksToAdd = 0
+    if (isUndefined(opts.reviewDetails)) {
+      opts.reviewDetails = {}
     }
 
-    if (isUndefined(opts.tasksToRemove)) {
-      opts.tasksToRemove = 0
+    if (isUndefined(opts.reviewDetails.tasksToAdd)) {
+      opts.reviewDetails.tasksToAdd = 0
     }
 
-    if (isUndefined(opts.externalDetails)) {
-      opts.externalDetails = {}
+    if (isUndefined(opts.reviewDetails.tasksToRemove)) {
+      opts.reviewDetails.tasksToRemove = 0
+    }
+
+    if (isUndefined(opts.reviewDetails.externalDetails)) {
+      opts.reviewDetails.externalDetails = ''
     }
 
     attrs.reviewDetails = new xdr.ReviewDetails({
-      tasksToAdd: opts.tasksToAdd,
-      tasksToRemove: opts.tasksToRemove,
-      externalDetails: opts.externalDetails.toString(),
+      tasksToAdd: opts.reviewDetails.tasksToAdd,
+      tasksToRemove: opts.reviewDetails.tasksToRemove,
+      externalDetails: opts.reviewDetails.externalDetails,
       ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
     })
 
@@ -245,7 +249,7 @@ export class ReviewRequestBuilder {
 
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.updateKyc(
       new xdr.UpdateKycDetails({
-        externalDetails: JSON.stringify(opts.externalDetails),
+        externalDetails: JSON.stringify(opts.requestDetails),
         ext: new xdr.UpdateKycDetailsExt(xdr.LedgerVersion.emptyVersion())
       })
     )

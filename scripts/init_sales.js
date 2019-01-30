@@ -108,7 +108,7 @@ async function loadRequest (sdk, id) {
   }
 }
 
-async function approveRequest (sdk, request) {
+async function approveRequest (sdk, request, tasksToRemove = 1) {
   await delay(5000)
   const operation = base.ReviewRequestBuilder.reviewRequest({
     requestID: request.id,
@@ -116,9 +116,12 @@ async function approveRequest (sdk, request) {
     requestType: request.details.requestTypeI,
     action: base.xdr.ReviewRequestOpAction.approve().value,
     reason: '',
-    tasksToAdd: 0,
-    tasksToRemove: 0,
-    externalDetails: {}
+    reviewDetails: {
+      tasksToAdd: 0,
+      tasksToRemove: tasksToRemove,
+      externalDetails: ''
+    }
+
   })
 
   const response = await sdk
@@ -152,7 +155,7 @@ async function createSale (sdk, code) {
         }
       ],
       isCrowdfunding: true,
-      baseAssetForHardCap: '10000',
+      requiredBaseAssetForHardCap: '10000',
       saleState: base.xdr.SaleState.none(),
       details: {
         name: code + ' sale',

@@ -24,7 +24,6 @@ export class SaleRequestBuilder {
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
      * @param {number} opts.saleType - Sale type
-     * @param {string} opts.baseAssetForHardCap - specifies the amount of base asset required for hard cap
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CreateSaleCreationRequestOp}
      */
@@ -103,7 +102,7 @@ export class SaleRequestBuilder {
     }
 
     if (!BaseOperation.isValidAmount(opts.requiredBaseAssetForHardCap, true)) {
-      throw new Error('opts.hardCap is invalid')
+      throw new Error('opts.requiredBaseAssetForHardCap is invalid')
     }
     attrs.requiredBaseAssetForHardCap =
       BaseOperation._toUnsignedXDRAmount(opts.requiredBaseAssetForHardCap)
@@ -115,6 +114,7 @@ export class SaleRequestBuilder {
 
     let isCrowdfunding = !isUndefined(opts.isCrowdfunding) &&
       opts.isCrowdfunding
+
     let s
     if (isCrowdfunding) {
       s = xdr.SaleTypeExt.crowdFunding()

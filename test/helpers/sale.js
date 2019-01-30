@@ -13,7 +13,7 @@ export class Sale extends Helper {
    * @param opts.quoteAssets
    * @param opts.defaultQuoteAsset
    * @param opts.quoteAssets
-   * @param [opts.baseAssetForHardCap]
+   * @param [opts.requiredBaseAssetForHardCap]
    * @param [opts.startTime]
    * @param [opts.endTime]
    * @param [opts.softCap]

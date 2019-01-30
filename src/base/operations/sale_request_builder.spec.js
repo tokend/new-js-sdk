@@ -14,7 +14,7 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
-      allTasks: 3765764,
+      allTasks: 1,
       requiredBaseAssetForHardCap: '762354',
       sequenceNumber: 12,
       details: {
@@ -57,7 +57,7 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
-      allTasks: 3765764,
+      allTasks: 1,
       requiredBaseAssetForHardCap: '762354',
       sequenceNumber: 13,
       details: {
@@ -89,9 +89,10 @@ describe('SaleRequestBuilder', () => {
     expect(opt.startTime).to.be.equal(obj.startTime)
     expect(opt.endTime).to.be.equal(obj.endTime)
     expect(opt.softCap).to.be.equal(obj.softCap)
+    expect(opt.hardCap).to.be.equal(obj.hardCap)
+    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(opt.quoteAssets).to.be.jsonEqual(obj.quoteAssets)
     expect(isEqual(opt.details, obj.details)).to.be.true
-    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
   })
   it('Success create basic sale', () => {
     let opt = {

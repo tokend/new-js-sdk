@@ -25,6 +25,7 @@ export class Asset extends Helper {
       maxIssuanceAmount: '1000000000.000000',
       initialPreissuedAmount: '1000000000.000000',
       preissuedAssetSigner: base.Keypair.random().accountId(),
+      trailingDigitsCount: 6,
       details: {}
     }
 
