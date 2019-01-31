@@ -61,15 +61,17 @@ export class Factors extends ResourceGroupBase {
   async verifyPasswordFactorAndRetry (tfaError, password) {
     let meta = tfaError.meta
     let email = this._sdk.wallet.email
+    let accountId = this._sdk.wallet.accountId
 
     let kdfParams = await this._getKdfParams(email)
-    let factorWallet = Wallet.fromEncrypted(
-      meta.keychainData,
+    let factorWallet = Wallet.fromEncrypted({
+      keychainData: meta.keychainData,
       kdfParams,
-      meta.salt,
+      salt: meta.salt,
       email,
-      password
-    )
+      password,
+      accountId
+    })
 
     let otp = factorWallet.keypair.sign(meta.token).toString('base64')
 
