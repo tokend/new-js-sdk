@@ -42,7 +42,6 @@ export class CreateWithdrawRequestBuilder {
     if (isUndefined(opts.externalDetails)) {
       throw new Error('externalDetails is invalid')
     }
-
     attrs.externalDetails = JSON.stringify(opts.externalDetails)
 
     if (isUndefined(attrs.preConfirmationDetails)) {
@@ -51,9 +50,14 @@ export class CreateWithdrawRequestBuilder {
 
     attrs.ext = new xdr.WithdrawalRequestExt(xdr.LedgerVersion.emptyVersion())
 
+    if (isUndefined(opts.allTasks)) {
+      opts.allTasks = 0
+    }
+
     let request = new xdr.WithdrawalRequest(attrs)
     let withdrawRequestOp = new xdr.CreateWithdrawalRequestOp({
       request: request,
+      allTasks: opts.allTasks,
       ext: new xdr.CreateWithdrawalRequestOpExt(
         xdr.LedgerVersion.emptyVersion()
       )
@@ -75,6 +79,7 @@ export class CreateWithdrawRequestBuilder {
       percent: BaseOperation._fromXDRAmount(request.fee().percent())
     }
     result.universalAmount = BaseOperation._fromXDRAmount(request.universalAmount())
+    result.allTasks = attrs.allTasks()
     result.externalDetails = JSON.parse(request.externalDetails())
   }
 }

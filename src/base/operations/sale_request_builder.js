@@ -33,6 +33,7 @@ export class SaleRequestBuilder {
     let createSaleCreationRequestOp = new xdr.CreateSaleCreationRequestOp({
       requestId: UnsignedHyper.fromString(opts.requestID),
       request: request,
+      allTasks: opts.allTasks,
       ext: new xdr.CreateSaleCreationRequestOpExt(xdr.LedgerVersion.emptyVersion())
     })
     let opAttributes = {}
@@ -219,6 +220,7 @@ export class SaleRequestBuilder {
         asset: request.quoteAssets()[i].quoteAsset().toString()
       })
     }
+    result.allTasks = attrs.allTasks()
   }
 
   static cancelSaleCreationRequestToObject (result, attrs) {

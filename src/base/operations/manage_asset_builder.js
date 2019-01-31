@@ -77,9 +77,14 @@ export class ManageAssetBuilder {
       xdr.LedgerVersion.emptyVersion()
     )
 
+    if (isUndefined(opts.allTasks)) {
+      opts.allTasks = 0
+    }
+
     let r = xdr.ManageAssetOpRequest.createAssetCreationRequest()
     r.set('createAssetCreationRequest', new xdr.ManageAssetOpCreateAssetCreationRequest({
       createAsset: new xdr.AssetCreationRequest(attrs),
+      allTasks: opts.allTasks,
       ext: new xdr.ManageAssetOpCreateAssetCreationRequestExt(xdr.LedgerVersion.emptyVersion())
     }))
 
@@ -116,6 +121,7 @@ export class ManageAssetBuilder {
     let r = xdr.ManageAssetOpRequest.createAssetUpdateRequest()
     r.set('createAssetUpdateRequest', new xdr.ManageAssetOpCreateAssetUpdateRequest({
       updateAsset: new xdr.AssetUpdateRequest(attrs),
+      allTasks: opts.allTasks,
       ext: new xdr.ManageAssetOpCreateAssetUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
     }))
 
@@ -282,6 +288,7 @@ export class ManageAssetBuilder {
         result.initialPreissuedAmount = BaseOperation
           ._fromXDRAmount(request.initialPreissuedAmount())
         result.details = JSON.parse(request.details())
+        result.allTasks = attrs.request().createAssetCreationRequest().allTasks()
         break
       }
       case xdr.ManageAssetAction.createAssetUpdateRequest():
@@ -290,6 +297,7 @@ export class ManageAssetBuilder {
         result.code = request.code().toString()
         result.policies = request.policies()
         result.details = JSON.parse(request.details())
+        result.allTasks = attrs.request().createAssetUpdateRequest().allTasks()
         break
       }
       case xdr.ManageAssetAction.cancelAssetRequest():

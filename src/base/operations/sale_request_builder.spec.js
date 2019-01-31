@@ -45,6 +45,9 @@ describe('SaleRequestBuilder', () => {
     expect(opt.startTime).to.be.equal(obj.startTime)
     expect(opt.endTime).to.be.equal(obj.endTime)
     expect(opt.softCap).to.be.equal(obj.softCap)
+    expect(opt.hardCap).to.be.equal(obj.hardCap)
+    expect(opt.allTasks).to.be.equal(obj.allTasks)
+    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(JSON.stringify(opt.quoteAssets)).to.be.equal(JSON.stringify(obj.quoteAssets))
     expect(isEqual(opt.details, obj.details)).to.be.true
   })
@@ -90,6 +93,7 @@ describe('SaleRequestBuilder', () => {
     expect(opt.endTime).to.be.equal(obj.endTime)
     expect(opt.softCap).to.be.equal(obj.softCap)
     expect(opt.hardCap).to.be.equal(obj.hardCap)
+    expect(opt.allTasks).to.be.equal(obj.allTasks)
     expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(opt.quoteAssets).to.be.jsonEqual(obj.quoteAssets)
     expect(isEqual(opt.details, obj.details)).to.be.true
@@ -133,9 +137,11 @@ describe('SaleRequestBuilder', () => {
     expect(opt.startTime).to.be.equal(obj.startTime)
     expect(opt.endTime).to.be.equal(obj.endTime)
     expect(opt.softCap).to.be.equal(obj.softCap)
+    expect(opt.hardCap).to.be.equal(obj.hardCap)
+    expect(opt.allTasks).to.be.equal(obj.allTasks)
+    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(JSON.stringify(opt.quoteAssets)).to.be.equal(JSON.stringify(obj.quoteAssets))
     expect(isEqual(opt.details, obj.details)).to.be.true
-    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
   })
   it('Success cancel sale creation request', () => {
     let opt = {

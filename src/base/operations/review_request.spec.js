@@ -9,7 +9,12 @@ describe('ReviewRequest', () => {
       requestHash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
       requestType: xdr.ReviewableRequestType.assetCreate().value,
       action: xdr.ReviewRequestOpAction.reject().value,
-      reason: 'Something is invalid'
+      reason: 'Something is invalid',
+      reviewDetails: {
+        tasksToAdd: 0,
+        tasksToRemove: 4,
+        externalDetails: 'All right'
+      }
     }
     let op = ReviewRequestBuilder.reviewRequest(opts)
     let xdrOp = op.toXDR('hex')
@@ -21,6 +26,10 @@ describe('ReviewRequest', () => {
     expect(obj.requestType).to.be.equal(opts.requestType)
     expect(obj.action).to.be.equal(opts.action)
     expect(obj.reason).to.be.equal(opts.reason)
+    expect(obj.reviewDetails.tasksToAdd).to.be.equal(opts.reviewDetails.tasksToAdd)
+    expect(obj.reviewDetails.tasksToRemove).to.be.equal(opts.reviewDetails.tasksToRemove)
+    expect(obj.reviewDetails.externalDetails)
+      .to.be.equal(opts.reviewDetails.externalDetails)
   })
 
   it('Withdraw request success', () => {
@@ -33,7 +42,7 @@ describe('ReviewRequest', () => {
       reviewDetails: {
         tasksToAdd: 1,
         tasksToRemove: 1,
-        externalDetails: ['All right']
+        externalDetails: 'All right'
       }
     }
     let op = ReviewRequestBuilder.reviewWithdrawRequest(opts)
@@ -47,8 +56,10 @@ describe('ReviewRequest', () => {
     expect(obj.reason).to.be.equal(opts.reason)
     expect(JSON.stringify(obj.withdrawal.externalDetails))
       .to.be.equal(JSON.stringify(opts.requestDetails))
-    expect(JSON.stringify(obj.reviewDetails))
-      .to.be.equal(JSON.stringify(opts.reviewDetails))
+    expect(obj.reviewDetails.tasksToAdd).to.be.equal(opts.reviewDetails.tasksToAdd)
+    expect(obj.reviewDetails.tasksToRemove).to.be.equal(opts.reviewDetails.tasksToRemove)
+    expect(obj.reviewDetails.externalDetails)
+      .to.be.equal(JSON.stringify(opts.reviewDetails.externalDetails))
   })
 
   it('Aml alert request success', () => {
@@ -61,7 +72,7 @@ describe('ReviewRequest', () => {
       reviewDetails: {
         tasksToAdd: 1,
         tasksToRemove: 1,
-        externalDetails: ['All right']
+        externalDetails: 'All right'
       }
     }
     let op = ReviewRequestBuilder.reviewAmlAlertRequest(opts)
@@ -83,7 +94,7 @@ describe('ReviewRequest', () => {
       reason: 'Something is invalid',
       requestDetails: '{}',
       reviewDetails: {
-        externalDetails: ['Invalid identity'],
+        externalDetails: 'Invalid identity',
         tasksToAdd: 3,
         tasksToRemove: 0
       }
@@ -99,5 +110,9 @@ describe('ReviewRequest', () => {
     expect(obj.reason).to.be.equal(opts.reason)
     expect(obj.updateKyc.externalDetails)
       .to.be.equal(JSON.stringify(opts.requestDetails))
+    expect(obj.reviewDetails.tasksToAdd).to.be.equal(opts.reviewDetails.tasksToAdd)
+    expect(obj.reviewDetails.tasksToRemove).to.be.equal(opts.reviewDetails.tasksToRemove)
+    expect(obj.reviewDetails.externalDetails)
+      .to.be.equal(opts.reviewDetails.externalDetails)
   })
 })

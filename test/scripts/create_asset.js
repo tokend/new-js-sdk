@@ -57,11 +57,6 @@ export async function createAndApproveAsset (opts, ownerKp) {
 
   const response = await requestHelper.approve(requestId, { tasksToRemove: tasksToRemove })
   log.info(`Asset creation request #${requestId} approved`)
-  // console.log(response)
-  // console.log(JSON.parse(
-  //   xdr.TransactionEnvelope.fromXDR(response.envelopeXdr, 'base64').tx().operations()[0].body().value().reviewDetails().externalDetails()))
-  // console.log(xdr.TransactionResult.fromXDR(response.resultXdr, 'base64'))
-  // console.log(xdr.TransactionMeta.fromXDR(response.resultMetaXdr, 'base64'))
 
   return response
 }
