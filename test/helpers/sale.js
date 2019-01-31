@@ -30,6 +30,7 @@ export class Sale extends Helper {
       endTime: '' + moment().add(1, 'day').format('X'),
       softCap: '10000.000000',
       hardCap: '50000.000000',
+      allTasks: 1,
       details: {
         name: opts.baseAsset + 'sale',
         short_description: 'Short description',

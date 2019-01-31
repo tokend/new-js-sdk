@@ -84,6 +84,7 @@ async function createToken (sdk, code) {
       maxIssuanceAmount: config.ISSUANCE_AMOUNT,
       policies: config.POLICY,
       initialPreissuedAmount: config.ISSUANCE_AMOUNT,
+      allTasks: 1,
       details: {}
     })
   console.log('operation crafted')
@@ -144,6 +145,7 @@ async function createSale (sdk, code) {
       endTime: Math.floor(Date.now() / 1000 + 259200) + '',
       softCap: '10000',
       hardCap: '20000',
+      allTasks: 1,
       quoteAssets: [
         {
           price: '1',

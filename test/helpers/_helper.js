@@ -65,6 +65,7 @@ export class Helper {
     const txCode = resultCodes.transaction
     const opCodes = (resultCodes.operations || []).join(',')
 
+    console.log(errorObject.meta.extras.parsedEnvelope.tx.operations[0].body.reviewRequestOp)
     return `Transaction Error: ${txCode}, operations: ${opCodes}`
   }
 }
@@ -75,8 +76,7 @@ export const getRequestIdFromResultXdr = (resultXdr, resultType) => base
   .fromXDR(Buffer.from(resultXdr, 'base64'))
   .result()
   .results()[0]
-  .tr()
-  [resultType]()
+  .tr()[resultType]()
   .success()
   .requestId()
   .toString()
