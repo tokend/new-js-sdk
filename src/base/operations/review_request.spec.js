@@ -85,6 +85,10 @@ describe('ReviewRequest', () => {
     expect(obj.action).to.be.equal(opts.action)
     expect(obj.reason).to.be.equal(opts.reason)
     expect(obj.amlAlert.comment).to.be.equal(opts.comment)
+    expect(obj.reviewDetails.tasksToAdd).to.be.equal(opts.reviewDetails.tasksToAdd)
+    expect(obj.reviewDetails.tasksToRemove).to.be.equal(opts.reviewDetails.tasksToRemove)
+    expect(obj.reviewDetails.externalDetails)
+      .to.be.equal(opts.reviewDetails.externalDetails)
   })
   it('Update KYC request success', () => {
     let opts = {
