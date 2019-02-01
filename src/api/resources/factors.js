@@ -96,7 +96,18 @@ export class Factors extends ResourceGroupBase {
    * @return {ResponseBase} Response of the retried request.
    */
   async verifyTotpFactorAndRetry (tfaError, otp) {
-    await this._makeCallBuilder(tfaError.meta.walletId)
+    await this.verifyTotpFactor(tfaError, otp)
+    return tfaError.retryRequest()
+  }
+
+  /**
+   * Verify TOTP factor.
+   *
+   * @param {TFAError} tfaError TFA error instance.
+   * @param {string} otp One time password from a TOTP app.
+   */
+  verifyTotpFactor (tfaError, otp) {
+    return this._makeCallBuilder(tfaError.meta.walletId)
       .appendUrlSegment([tfaError.meta.factorId, 'verification'])
       .put({
         data: {
@@ -106,8 +117,6 @@ export class Factors extends ResourceGroupBase {
           }
         }
       })
-
-    return tfaError.retryRequest()
   }
 
   _makeCallBuilder (walletId) {
