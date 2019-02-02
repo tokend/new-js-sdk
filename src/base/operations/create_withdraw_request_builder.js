@@ -13,6 +13,7 @@ export class CreateWithdrawRequestBuilder {
    * @param {string} opts.fee.fixed - fixed fee to be charged
    * @param {string} opts.fee.percent - percent fee to be charged
    * @param {object} opts.externalDetails - External details needed for PSIM to process withdraw operation
+   * @param {number|string} opts.allTasks - Bitmask of all tasks which must be completed for the request approval
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @returns {xdr.CreateWithdrawalRequestOp}
    */
