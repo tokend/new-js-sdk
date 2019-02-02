@@ -13,7 +13,7 @@ export class Sale extends Helper {
    * @param opts.quoteAssets
    * @param opts.defaultQuoteAsset
    * @param opts.quoteAssets
-   * @param [opts.baseAssetForHardCap]
+   * @param [opts.requiredBaseAssetForHardCap]
    * @param [opts.startTime]
    * @param [opts.endTime]
    * @param [opts.softCap]
@@ -30,6 +30,7 @@ export class Sale extends Helper {
       endTime: '' + moment().add(1, 'day').format('X'),
       softCap: '10000.000000',
       hardCap: '50000.000000',
+      allTasks: 1,
       details: {
         name: opts.baseAsset + 'sale',
         short_description: 'Short description',

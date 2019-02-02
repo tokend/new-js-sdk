@@ -75,8 +75,7 @@ export const getRequestIdFromResultXdr = (resultXdr, resultType) => base
   .fromXDR(Buffer.from(resultXdr, 'base64'))
   .result()
   .results()[0]
-  .tr()
-  [resultType]()
+  .tr()[resultType]()
   .success()
   .requestId()
   .toString()

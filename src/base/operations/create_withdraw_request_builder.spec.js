@@ -30,6 +30,6 @@ describe('Withdraw request op', function () {
     expect(fee.fixed).to.be.equal(obj.fee.fixed)
     expect(fee.percent).to.be.equal(obj.fee.percent)
     expect(isEqual(externalDetails, obj.externalDetails)).to.be.true
-    expect(allTasks).to.be.equal(obj.allTasks)
+    expect(obj.allTasks).to.be.equal(allTasks)
   })
 })

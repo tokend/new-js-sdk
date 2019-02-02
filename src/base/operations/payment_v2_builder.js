@@ -43,19 +43,18 @@ export class PaymentV2Builder {
     } catch (e) {
       throw new TypeError('destination.' + e.message)
     }
-
     let sourceFee = new xdr.Fee({
-      percent: BaseOperation
-        ._toUnsignedXDRAmount(opts.feeData.sourceFee.percent),
-      fixed: BaseOperation
-        ._toUnsignedXDRAmount(opts.feeData.sourceFee.fixed),
+      percent: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.percent),
+      fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.fixed),
       ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
     })
     let destinationFee = new xdr.Fee({
-      percent: BaseOperation
-        ._toUnsignedXDRAmount(opts.feeData.destinationFee.percent),
-      fixed: BaseOperation
-        ._toUnsignedXDRAmount(opts.feeData.destinationFee.fixed),
+      percent: BaseOperation._toUnsignedXDRAmount(
+        opts.feeData.destinationFee.percent
+      ),
+      fixed: BaseOperation._toUnsignedXDRAmount(
+        opts.feeData.destinationFee.fixed
+      ),
       ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
     })
     attrs.feeData = new xdr.PaymentFeeDataV2({
@@ -134,24 +133,26 @@ export class PaymentV2Builder {
     result.amount = BaseOperation._fromXDRAmount(attrs.amount())
     result.feeData = {
       sourceFee: {
-        percent: BaseOperation._fromXDRAmount(
-          attrs.feeData().sourceFee().percent()
-        ),
         fixed: BaseOperation._fromXDRAmount(
           attrs.feeData().sourceFee().fixed()
+        ),
+        percent: BaseOperation._fromXDRAmount(
+          attrs.feeData().sourceFee().percent()
         )
       },
       destinationFee: {
-        percent: BaseOperation._fromXDRAmount(
-          attrs.feeData().destinationFee().percent()
-        ),
         fixed: BaseOperation._fromXDRAmount(
           attrs.feeData().destinationFee().fixed()
+        ),
+        percent: BaseOperation._fromXDRAmount(
+          attrs.feeData().destinationFee().percent()
         )
       },
       sourcePaysForDest: attrs.feeData().sourcePaysForDest()
     }
     result.subject = attrs.subject().toString()
     result.reference = attrs.reference().toString()
+
+    return result
   }
 }

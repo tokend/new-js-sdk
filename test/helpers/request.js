@@ -36,9 +36,10 @@ export class Request extends Helper {
    * @param {object} opts
    * @param {object} opts.action
    * @param {string} [opts.reason]
-   * @param {number} [opts.tasksToAdd]
-   * @param {number} [opts.tasksToRemove]
-   * @param {object} [opts.externalDetails]
+   * @param {object} [opts.reviewDetails]
+   * @param {number} [opts.reviewDetails.tasksToAdd]
+   * @param {number} [opts.reviewDetails.tasksToRemove]
+   * @param {object} [opts.reviewDetails.externalDetails]
    */
   async review (requestId, opts) {
     const request = await this.mustLoad(requestId)
@@ -48,11 +49,12 @@ export class Request extends Helper {
       requestType: request.details.requestTypeI,
       action: opts.action,
       reason: opts.reason || '',
-      tasksToAdd: opts.tasksToAdd || 0,
-      tasksToRemove: opts.tasksToRemove || 0,
-      externalDetails: opts.externalDetails || {}
+      reviewDetails: {
+        tasksToAdd: opts.tasksToAdd || 0,
+        tasksToRemove: opts.tasksToRemove || 0,
+        externalDetails: opts.externalDetails || ''
+      }
     })
-
     return this.submit(operation)
   }
 }

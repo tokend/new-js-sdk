@@ -65,7 +65,6 @@ describe('PaymentV2 op', function () {
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
-
     expect(obj.type).to.be.equal('paymentV2')
     expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
     expect(obj.destination).to.be.equal(destinationAccountId)
