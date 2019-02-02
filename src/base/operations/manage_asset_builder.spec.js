@@ -13,7 +13,7 @@ describe('ManageAssetBuilder', () => {
         policies: 12,
         requestID: '0',
         initialPreissuedAmount: '12.14',
-        details: {
+        creatorDetails: {
           name: 'USD Name'
         },
         allTasks: 2,
@@ -27,7 +27,7 @@ describe('ManageAssetBuilder', () => {
       expect(obj.requestID).to.be.equal(opts.requestID)
       expect(obj.requestType).to.be.equal('createAssetCreationRequest')
       expect(obj.code).to.be.equal(opts.code)
-      expect(obj.details.name).to.be.equal(opts.details.name)
+      expect(obj.creatorDetails.name).to.be.equal(opts.creatorDetails.name)
       expect(obj.preissuedAssetSigner).to.be.equal(opts.preissuedAssetSigner)
       expect(obj.maxIssuanceAmount).to.be.equal(opts.maxIssuanceAmount)
       expect(obj.policies).to.be.equal(opts.policies)

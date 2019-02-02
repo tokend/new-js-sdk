@@ -111,7 +111,7 @@ export class ReviewRequestBuilder {
 
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
 
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.withdraw(
+    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.createWithdraw(
       new xdr.WithdrawalDetails({
         ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion()),
         externalDetails: JSON.stringify(opts.externalDetails)
@@ -139,7 +139,7 @@ export class ReviewRequestBuilder {
 
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
 
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.amlAlert(
+    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.createAmlAlert(
       new xdr.AmlAlertDetails({
         ext: new xdr.AmlAlertDetailsExt(xdr.LedgerVersion.emptyVersion()),
         comment: opts.comment
@@ -218,7 +218,7 @@ export class ReviewRequestBuilder {
     )
 
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails
-      .limitsUpdate(
+      .updateLimit(
         new xdr.LimitsUpdateDetails({
           newLimitsV2: new xdr.LimitsV2Entry(rawLimitsV2Entry),
           ext: new xdr.LimitsUpdateDetailsExt(xdr.LedgerVersion.emptyVersion())
@@ -278,13 +278,13 @@ export class ReviewRequestBuilder {
     result.requestHash = attrs.requestHash().toString('hex')
     result.requestType = attrs.requestDetails().switch().value
     switch (attrs.requestDetails().switch()) {
-      case xdr.ReviewableRequestType.withdraw(): {
+      case xdr.ReviewableRequestType.createWithdraw(): {
         result.withdrawal = {
           externalDetails: attrs.requestDetails().withdrawal().externalDetails().toString()
         }
         break
       }
-      case xdr.ReviewableRequestType.limitsUpdate(): {
+      case xdr.ReviewableRequestType.updateLimit(): {
         let newLimitsV2 = attrs.requestDetails().limitsUpdate().newLimitsV2()
 
         result.limitsUpdate = {
@@ -312,7 +312,7 @@ export class ReviewRequestBuilder {
 
         break
       }
-      case xdr.ReviewableRequestType.amlAlert(): {
+      case xdr.ReviewableRequestType.createAmlAlert(): {
         result.amlAlert = {
           comment: attrs.requestDetails().amlAlertDetails().comment().toString()
         }

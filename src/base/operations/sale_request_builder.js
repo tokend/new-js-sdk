@@ -100,8 +100,8 @@ export class SaleRequestBuilder {
     }
     attrs.hardCap = BaseOperation._toUnsignedXDRAmount(opts.hardCap)
 
-    SaleRequestBuilder.validateDetail(opts.details)
-    attrs.details = JSON.stringify(opts.details)
+    SaleRequestBuilder.validateDetail(opts.creatorDetails)
+    attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
     attrs.ext = new xdr.SaleCreationRequestExt(xdr.LedgerVersion.emptyVersion())
 
     if (isUndefined(opts.saleEnumType) || !opts.saleEnumType) {
@@ -190,24 +190,24 @@ export class SaleRequestBuilder {
     return request
   }
 
-  static validateDetail (details) {
-    if (isUndefined(details)) {
+  static validateDetail (creatorDetails) {
+    if (isUndefined(creatorDetails)) {
       throw new Error('details is invalid')
     }
 
-    if (isUndefined(details.short_description)) {
+    if (isUndefined(creatorDetails.short_description)) {
       throw new Error('details.short_description is invalid')
     }
 
-    if (isUndefined(details.description)) {
+    if (isUndefined(creatorDetails.description)) {
       throw new Error('details.description is invalid')
     }
 
-    if (isUndefined(details.logo)) {
+    if (isUndefined(creatorDetails.logo)) {
       throw new Error('details.logo is invalid')
     }
 
-    if (isUndefined(details.name)) {
+    if (isUndefined(creatorDetails.name)) {
       throw new Error('details.name is invalid')
     }
   }
@@ -224,7 +224,7 @@ export class SaleRequestBuilder {
     result.baseAssetForHardCap = BaseOperation._fromXDRAmount(
       request.requiredBaseAssetForHardCap()
     )
-    result.details = JSON.parse(request.details())
+    result.creatorDetails = JSON.parse(request.creatorDetails())
     result.saleType = request.saleType().toString()
     result.saleEnumType = request.saleTypeExt().switch().value
     result.quoteAssets = []

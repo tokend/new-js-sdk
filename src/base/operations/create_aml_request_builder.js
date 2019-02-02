@@ -29,7 +29,7 @@ export class CreateAMLRequestBuilder {
     }
 
     rawRequest.balanceId = Keypair.fromBalanceId(opts.balanceID).xdrBalanceId()
-    rawRequest.reason = opts.reason
+    rawRequest.creatorDetails = opts.creatorDetails
     rawRequest.ext = new xdr.AmlAlertRequestExt(
       xdr.LedgerVersion.emptyVersion()
     )
@@ -58,7 +58,7 @@ export class CreateAMLRequestBuilder {
       .balanceIdtoString(attrs.amlAlertRequest().balanceId())
     result.amount = BaseOperation
       ._fromXDRAmount(attrs.amlAlertRequest().amount())
-    result.reason = attrs.amlAlertRequest().reason().toString()
+    result.creatorDetails = attrs.amlAlertRequest().creatorDetails().toString()
     result.reference = attrs.reference().toString()
   }
 }

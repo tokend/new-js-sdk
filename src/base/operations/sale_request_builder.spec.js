@@ -16,7 +16,7 @@ describe('SaleRequestBuilder', () => {
       softCap: '20000.21',
       hardCap: '648251',
       baseAssetForHardCap: '648251',
-      details: {
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -57,7 +57,7 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
-      details: {
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -101,7 +101,7 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
-      details: {
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -133,7 +133,7 @@ describe('SaleRequestBuilder', () => {
     expect(opt.endTime).to.be.equal(obj.endTime)
     expect(opt.softCap).to.be.equal(obj.softCap)
     expect(JSON.stringify(opt.quoteAssets)).to.be.equal(JSON.stringify(obj.quoteAssets))
-    expect(isEqual(opt.details, obj.details)).to.be.true
+    expect(isEqual(opt.creatorDetails, obj.creatorDetails)).to.be.true
     expect(opt.baseAssetForHardCap).to.be.equal(obj.baseAssetForHardCap)
   })
   it('Success cancel sale creation request', () => {

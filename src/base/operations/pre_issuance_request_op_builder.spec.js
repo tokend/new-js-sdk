@@ -10,11 +10,13 @@ describe('PreIssuanceRequestOpBuilder', () => {
     let reference = 'test'
     let asset = 'BLC'
     let keyPair = Keypair.random()
+    let creatorDetails = 'some details'
     let preIssuanceRequest = PreIssuanceRequest.build({
       amount,
       reference,
       asset,
-      keyPair
+      keyPair,
+      creatorDetails
     })
     let op = PreIssuanceRequestOpBuilder.createPreIssuanceRequestOp({
       request: preIssuanceRequest

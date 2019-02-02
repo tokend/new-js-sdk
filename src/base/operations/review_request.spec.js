@@ -8,7 +8,7 @@ describe('ReviewRequest', () => {
     let opts = {
       requestID: '1',
       requestHash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
-      requestType: xdr.ReviewableRequestType.assetCreate().value,
+      requestType: xdr.ReviewableRequestType.createAsset().value,
       action: xdr.ReviewRequestOpAction.reject().value,
       reason: 'Something is invalid',
       tasksToAdd: 0,

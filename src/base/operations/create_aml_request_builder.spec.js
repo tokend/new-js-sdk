@@ -8,7 +8,7 @@ describe('CreateAMLRequestBuilder', () => {
     let opt = {
       balanceID: Keypair.random().balanceId(),
       amount: '1002',
-      reason: 'Because we can',
+      creatorDetails: 'Because we can',
       reference: 'Some random reference'
     }
     let op = CreateAMLRequestBuilder.createAMLAlert(opt)

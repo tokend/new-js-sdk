@@ -1,6 +1,6 @@
-// revision: 714244891980ba5b2fb42ad75b54779bf2cb9ec5
+// revision: 08972a39fe505bd13768fdc0fb3ec4a6dbe29594
 // branch:   refactor/details
-// Automatically generated on 2019-01-31T20:27:18+00:00
+// Automatically generated on 2019-02-01T15:35:55+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1414,7 +1414,7 @@ xdr.struct("AccountRuleResourceReviewableRequestSale", [
 //
 //   union switch (ReviewableRequestType requestType)
 //           {
-//           case SALE:
+//           case CREATE_SALE:
 //               struct
 //               {
 //                   uint64 type;
@@ -1434,7 +1434,7 @@ xdr.union("AccountRuleResourceReviewableRequestDetails", {
   switchOn: xdr.lookup("ReviewableRequestType"),
   switchName: "requestType",
   switches: [
-    ["sale", "sale"],
+    ["createSale", "sale"],
   ],
   arms: {
     sale: xdr.lookup("AccountRuleResourceReviewableRequestSale"),
@@ -1467,7 +1467,7 @@ xdr.union("AccountRuleResourceReviewableRequestExt", {
 //       {
 //           union switch (ReviewableRequestType requestType)
 //           {
-//           case SALE:
+//           case CREATE_SALE:
 //               struct
 //               {
 //                   uint64 type;
@@ -2133,7 +2133,7 @@ xdr.struct("AccountRuleResourceAtomicSwapBid", [
 //       {
 //           union switch (ReviewableRequestType requestType)
 //           {
-//           case SALE:
+//           case CREATE_SALE:
 //               struct
 //               {
 //                   uint64 type;
@@ -3658,7 +3658,8 @@ xdr.union("AmlAlertRequestExt", {
 //   struct AMLAlertRequest {
 //       BalanceID balanceID;
 //       uint64 amount;
-//       longstring reason;
+//       longstring creatorDetails; // details set by requester
+//   
 //   	union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -3671,7 +3672,7 @@ xdr.union("AmlAlertRequestExt", {
 xdr.struct("AmlAlertRequest", [
   ["balanceId", xdr.lookup("BalanceId")],
   ["amount", xdr.lookup("Uint64")],
-  ["reason", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("AmlAlertRequestExt")],
 ]);
 
@@ -3938,7 +3939,7 @@ xdr.union("UpdateSaleDetailsRequestExt", {
 //
 //   struct UpdateSaleDetailsRequest {
 //       uint64 saleID; // ID of sale to update details
-//       longstring newDetails;
+//       longstring creatorDetails; // details set by requester
 //   
 //       uint32 sequenceNumber;
 //       // Reserved for future use
@@ -3953,7 +3954,7 @@ xdr.union("UpdateSaleDetailsRequestExt", {
 // ===========================================================================
 xdr.struct("UpdateSaleDetailsRequest", [
   ["saleId", xdr.lookup("Uint64")],
-  ["newDetails", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("UpdateSaleDetailsRequestExt")],
 ]);
@@ -4982,7 +4983,7 @@ xdr.union("AssetCreationRequestExt", {
 //   	uint64 maxIssuanceAmount;
 //   	uint64 initialPreissuedAmount;
 //       uint32 policies;
-//       longstring details;
+//       longstring creatorDetails; // details set by requester
 //       uint64 type;
 //   
 //   	uint32 sequenceNumber;
@@ -5005,7 +5006,7 @@ xdr.struct("AssetCreationRequest", [
   ["maxIssuanceAmount", xdr.lookup("Uint64")],
   ["initialPreissuedAmount", xdr.lookup("Uint64")],
   ["policies", xdr.lookup("Uint32")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["type", xdr.lookup("Uint64")],
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("AssetCreationRequestExt")],
@@ -5034,7 +5035,7 @@ xdr.union("AssetUpdateRequestExt", {
 //
 //   struct AssetUpdateRequest {
 //   	AssetCode code;
-//   	longstring details;
+//       longstring creatorDetails; // details set by requester
 //   	uint32 policies;
 //   
 //   	uint32 sequenceNumber;
@@ -5050,7 +5051,7 @@ xdr.union("AssetUpdateRequestExt", {
 // ===========================================================================
 xdr.struct("AssetUpdateRequest", [
   ["code", xdr.lookup("AssetCode")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["policies", xdr.lookup("Uint32")],
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("AssetUpdateRequestExt")],
@@ -6133,6 +6134,7 @@ xdr.union("PreIssuanceRequestExt", {
 //   	uint64 amount;
 //   	DecoratedSignature signature;
 //   	string64 reference;
+//       longstring creatorDetails; // details set by requester
 //   
 //   	// reserved for future use
 //       union switch (LedgerVersion v)
@@ -6149,6 +6151,7 @@ xdr.struct("PreIssuanceRequest", [
   ["amount", xdr.lookup("Uint64")],
   ["signature", xdr.lookup("DecoratedSignature")],
   ["reference", xdr.lookup("String64")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("PreIssuanceRequestExt")],
 ]);
 
@@ -7153,7 +7156,7 @@ xdr.union("WithdrawalRequestExt", {
 //       uint64 amount; // amount to be withdrawn
 //       uint64 universalAmount; // amount in stats asset
 //   	Fee fee; // expected fee to be paid
-//       longstring externalDetails; // details of the withdrawal (External system id, etc.)
+//       longstring creatorDetails; // details set by requester
 //   
 //   	union switch (LedgerVersion v)
 //       {
@@ -7169,7 +7172,7 @@ xdr.struct("WithdrawalRequest", [
   ["amount", xdr.lookup("Uint64")],
   ["universalAmount", xdr.lookup("Uint64")],
   ["fee", xdr.lookup("Fee")],
-  ["externalDetails", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("WithdrawalRequestExt")],
 ]);
 
@@ -8004,7 +8007,7 @@ xdr.union("ContractRequestExt", {
 //   {
 //       AccountID customer;
 //       AccountID escrow;
-//       longstring details;
+//       longstring creatorDetails; // details set by requester
 //   
 //       uint64 startTime;
 //       uint64 endTime;
@@ -8022,7 +8025,7 @@ xdr.union("ContractRequestExt", {
 xdr.struct("ContractRequest", [
   ["customer", xdr.lookup("AccountId")],
   ["escrow", xdr.lookup("AccountId")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["startTime", xdr.lookup("Uint64")],
   ["endTime", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("ContractRequestExt")],
@@ -8301,6 +8304,7 @@ xdr.union("ASwapRequestExt", {
 //       uint64 bidID;
 //       uint64 baseAmount;
 //       AssetCode quoteAsset;
+//       longstring creatorDetails; // details set by requester
 //   
 //       union switch (LedgerVersion v)
 //       {
@@ -8314,6 +8318,7 @@ xdr.struct("ASwapRequest", [
   ["bidId", xdr.lookup("Uint64")],
   ["baseAmount", xdr.lookup("Uint64")],
   ["quoteAsset", xdr.lookup("AssetCode")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("ASwapRequestExt")],
 ]);
 
@@ -8587,7 +8592,7 @@ xdr.union("ASwapBidCreationRequestExt", {
 //   {
 //       BalanceID baseBalance;
 //       uint64 amount;
-//       longstring details;
+//       longstring creatorDetails; // details set by requester
 //   
 //       ASwapBidQuoteAsset quoteAssets<>;
 //   
@@ -8603,7 +8608,7 @@ xdr.union("ASwapBidCreationRequestExt", {
 xdr.struct("ASwapBidCreationRequest", [
   ["baseBalance", xdr.lookup("BalanceId")],
   ["amount", xdr.lookup("Uint64")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["quoteAssets", xdr.varArray(xdr.lookup("ASwapBidQuoteAsset"), 2147483647)],
   ["ext", xdr.lookup("ASwapBidCreationRequestExt")],
 ]);
@@ -9426,7 +9431,7 @@ xdr.union("SaleCreationRequestExt", {
 //   	uint64 endTime; // close time of the sale
 //   	uint64 softCap; // minimum amount of quote asset to be received at which sale will be considered a successful
 //   	uint64 hardCap; // max amount of quote asset to be received
-//   	longstring details; // sale specific details
+//       longstring creatorDetails; // details set by requester
 //       SaleTypeExt saleTypeExt;
 //       uint64 requiredBaseAssetForHardCap;
 //   
@@ -9450,7 +9455,7 @@ xdr.struct("SaleCreationRequest", [
   ["endTime", xdr.lookup("Uint64")],
   ["softCap", xdr.lookup("Uint64")],
   ["hardCap", xdr.lookup("Uint64")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["saleTypeExt", xdr.lookup("SaleTypeExt")],
   ["requiredBaseAssetForHardCap", xdr.lookup("Uint64")],
   ["sequenceNumber", xdr.lookup("Uint32")],
@@ -10096,13 +10101,13 @@ xdr.struct("ASwapExtended", [
 // === xdr source ============================================================
 //
 //   union switch(ReviewableRequestType requestType) {
-//       case SALE:
+//       case CREATE_SALE:
 //           SaleExtended saleExtended;
 //       case NONE:
 //           void;
 //   	case CREATE_ATOMIC_SWAP_BID:
 //           ASwapBidExtended aSwapBidExtended;
-//       case ATOMIC_SWAP:
+//       case CREATE_ATOMIC_SWAP:
 //           ASwapExtended aSwapExtended;
 //       }
 //
@@ -10111,10 +10116,10 @@ xdr.union("ExtendedResultTypeExt", {
   switchOn: xdr.lookup("ReviewableRequestType"),
   switchName: "requestType",
   switches: [
-    ["sale", "saleExtended"],
+    ["createSale", "saleExtended"],
     ["none", xdr.void()],
     ["createAtomicSwapBid", "aSwapBidExtended"],
-    ["atomicSwap", "aSwapExtended"],
+    ["createAtomicSwap", "aSwapExtended"],
   ],
   arms: {
     saleExtended: xdr.lookup("SaleExtended"),
@@ -10148,13 +10153,13 @@ xdr.union("ExtendedResultExt", {
 //       bool fulfilled;
 //   
 //       union switch(ReviewableRequestType requestType) {
-//       case SALE:
+//       case CREATE_SALE:
 //           SaleExtended saleExtended;
 //       case NONE:
 //           void;
 //   	case CREATE_ATOMIC_SWAP_BID:
 //           ASwapBidExtended aSwapBidExtended;
-//       case ATOMIC_SWAP:
+//       case CREATE_ATOMIC_SWAP:
 //           ASwapExtended aSwapExtended;
 //       } typeExt;
 //   
@@ -10177,15 +10182,15 @@ xdr.struct("ExtendedResult", [
 // === xdr source ============================================================
 //
 //   union switch(ReviewableRequestType requestType) {
-//   	case WITHDRAW:
+//   	case CREATE_WITHDRAW:
 //   		WithdrawalDetails withdrawal;
-//       case LIMITS_UPDATE:
+//       case UPDATE_LIMITS:
 //           LimitsUpdateDetails limitsUpdate;
-//       case AML_ALERT:
+//       case CREATE_AML_ALERT:
 //           AMLAlertDetails amlAlertDetails;
-//       case INVOICE:
+//       case CREATE_INVOICE:
 //           BillPayDetails billPay;
-//       case CONTRACT:
+//       case MANAGE_CONTRACT:
 //           ContractDetails contract;
 //   	default:
 //   		void;
@@ -10196,11 +10201,11 @@ xdr.union("ReviewRequestOpRequestDetails", {
   switchOn: xdr.lookup("ReviewableRequestType"),
   switchName: "requestType",
   switches: [
-    ["withdraw", "withdrawal"],
-    ["limitsUpdate", "limitsUpdate"],
-    ["amlAlert", "amlAlertDetails"],
-    ["invoice", "billPay"],
-    ["contract", "contract"],
+    ["createWithdraw", "withdrawal"],
+    ["updateLimit", "limitsUpdate"],
+    ["createAmlAlert", "amlAlertDetails"],
+    ["createInvoice", "billPay"],
+    ["manageContract", "contract"],
   ],
   arms: {
     withdrawal: xdr.lookup("WithdrawalDetails"),
@@ -10238,15 +10243,15 @@ xdr.union("ReviewRequestOpExt", {
 //   	uint64 requestID;
 //   	Hash requestHash;
 //   	union switch(ReviewableRequestType requestType) {
-//   	case WITHDRAW:
+//   	case CREATE_WITHDRAW:
 //   		WithdrawalDetails withdrawal;
-//       case LIMITS_UPDATE:
+//       case UPDATE_LIMITS:
 //           LimitsUpdateDetails limitsUpdate;
-//       case AML_ALERT:
+//       case CREATE_AML_ALERT:
 //           AMLAlertDetails amlAlertDetails;
-//       case INVOICE:
+//       case CREATE_INVOICE:
 //           BillPayDetails billPay;
-//       case CONTRACT:
+//       case MANAGE_CONTRACT:
 //           ContractDetails contract;
 //   	default:
 //   		void;
@@ -10480,7 +10485,7 @@ xdr.union("InvoiceRequestExt", {
 //   
 //       uint64 *contractID;
 //       bool isApproved;
-//       longstring details;
+//       longstring creatorDetails; // details set by requester
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
@@ -10499,7 +10504,7 @@ xdr.struct("InvoiceRequest", [
   ["receiverBalance", xdr.lookup("BalanceId")],
   ["contractId", xdr.option(xdr.lookup("Uint64"))],
   ["isApproved", xdr.bool()],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("InvoiceRequestExt")],
 ]);
 
@@ -11447,40 +11452,40 @@ xdr.union("PayoutResult", {
 //   {
 //   	NONE = 0, // use this request type in ReviewRequestOp extended result if additional info is not required
 //   	ANY = 1,
-//   	PRE_ISSUANCE_CREATE = 2,
-//   	ISSUANCE_CREATE = 3,
-//   	WITHDRAW = 4,
-//   	SALE = 5,
-//   	LIMITS_UPDATE = 6,
-//       AML_ALERT = 7,
+//   	CREATE_PRE_ISSUANCE = 2,
+//   	CREATE_ISSUANCE = 3,
+//   	CREATE_WITHDRAW = 4,
+//   	CREATE_SALE = 5,
+//   	UPDATE_LIMITS = 6,
+//       CREATE_AML_ALERT = 7,
 //   	CHANGE_ROLE = 8,
 //   	UPDATE_SALE_DETAILS = 9,
-//   	ASSET_CREATE = 10,
-//   	INVOICE = 11,
-//   	CONTRACT = 12,
-//   	ASSET_UPDATE = 13,
+//   	CREATE_ASSET = 10,
+//   	CREATE_INVOICE = 11,
+//   	MANAGE_CONTRACT = 12,
+//   	UPDATE_ASSET = 13,
 //   	CREATE_ATOMIC_SWAP_BID = 16,
-//   	ATOMIC_SWAP = 17
+//   	CREATE_ATOMIC_SWAP = 17
 //   };
 //
 // ===========================================================================
 xdr.enum("ReviewableRequestType", {
   none: 0,
   any: 1,
-  preIssuanceCreate: 2,
-  issuanceCreate: 3,
-  withdraw: 4,
-  sale: 5,
-  limitsUpdate: 6,
-  amlAlert: 7,
+  createPreIssuance: 2,
+  createIssuance: 3,
+  createWithdraw: 4,
+  createSale: 5,
+  updateLimit: 6,
+  createAmlAlert: 7,
   changeRole: 8,
   updateSaleDetail: 9,
-  assetCreate: 10,
-  invoice: 11,
-  contract: 12,
-  assetUpdate: 13,
+  createAsset: 10,
+  createInvoice: 11,
+  manageContract: 12,
+  updateAsset: 13,
   createAtomicSwapBid: 16,
-  atomicSwap: 17,
+  createAtomicSwap: 17,
 });
 
 // === xdr source ============================================================
@@ -11532,33 +11537,33 @@ xdr.struct("TasksExt", [
 // === xdr source ============================================================
 //
 //   union switch (ReviewableRequestType type) {
-//   		case ASSET_CREATE:
+//   		case CREATE_ASSET:
 //   			AssetCreationRequest assetCreationRequest;
-//   		case ASSET_UPDATE:
+//   		case UPDATE_ASSET:
 //   			AssetUpdateRequest assetUpdateRequest;
-//   		case PRE_ISSUANCE_CREATE:
+//   		case CREATE_PRE_ISSUANCE:
 //   			PreIssuanceRequest preIssuanceRequest;
-//   		case ISSUANCE_CREATE:
+//   		case CREATE_ISSUANCE:
 //   			IssuanceRequest issuanceRequest;
-//   		case WITHDRAW:
+//   		case CREATE_WITHDRAW:
 //   			WithdrawalRequest withdrawalRequest;
-//   		case SALE:
+//   		case CREATE_SALE:
 //   			SaleCreationRequest saleCreationRequest;
-//           case LIMITS_UPDATE:
+//           case UPDATE_LIMITS:
 //               LimitsUpdateRequest limitsUpdateRequest;
-//           case AML_ALERT:
+//           case CREATE_AML_ALERT:
 //               AMLAlertRequest amlAlertRequest;
 //           case CHANGE_ROLE:
 //               ChangeRoleRequest changeRoleRequest;
 //           case UPDATE_SALE_DETAILS:
 //               UpdateSaleDetailsRequest updateSaleDetailsRequest;
-//           case INVOICE:
+//           case CREATE_INVOICE:
 //               InvoiceRequest invoiceRequest;
-//           case CONTRACT:
+//           case MANAGE_CONTRACT:
 //               ContractRequest contractRequest;
 //           case CREATE_ATOMIC_SWAP_BID:
 //               ASwapBidCreationRequest aSwapBidCreationRequest;
-//           case ATOMIC_SWAP:
+//           case CREATE_ATOMIC_SWAP:
 //               ASwapRequest aSwapRequest;
 //   	}
 //
@@ -11567,20 +11572,20 @@ xdr.union("ReviewableRequestEntryBody", {
   switchOn: xdr.lookup("ReviewableRequestType"),
   switchName: "type",
   switches: [
-    ["assetCreate", "assetCreationRequest"],
-    ["assetUpdate", "assetUpdateRequest"],
-    ["preIssuanceCreate", "preIssuanceRequest"],
-    ["issuanceCreate", "issuanceRequest"],
-    ["withdraw", "withdrawalRequest"],
-    ["sale", "saleCreationRequest"],
-    ["limitsUpdate", "limitsUpdateRequest"],
-    ["amlAlert", "amlAlertRequest"],
+    ["createAsset", "assetCreationRequest"],
+    ["updateAsset", "assetUpdateRequest"],
+    ["createPreIssuance", "preIssuanceRequest"],
+    ["createIssuance", "issuanceRequest"],
+    ["createWithdraw", "withdrawalRequest"],
+    ["createSale", "saleCreationRequest"],
+    ["updateLimit", "limitsUpdateRequest"],
+    ["createAmlAlert", "amlAlertRequest"],
     ["changeRole", "changeRoleRequest"],
     ["updateSaleDetail", "updateSaleDetailsRequest"],
-    ["invoice", "invoiceRequest"],
-    ["contract", "contractRequest"],
+    ["createInvoice", "invoiceRequest"],
+    ["manageContract", "contractRequest"],
     ["createAtomicSwapBid", "aSwapBidCreationRequest"],
-    ["atomicSwap", "aSwapRequest"],
+    ["createAtomicSwap", "aSwapRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -11631,33 +11636,33 @@ xdr.union("ReviewableRequestEntryExt", {
 //   	int64 createdAt; // when request was created
 //   
 //   	union switch (ReviewableRequestType type) {
-//   		case ASSET_CREATE:
+//   		case CREATE_ASSET:
 //   			AssetCreationRequest assetCreationRequest;
-//   		case ASSET_UPDATE:
+//   		case UPDATE_ASSET:
 //   			AssetUpdateRequest assetUpdateRequest;
-//   		case PRE_ISSUANCE_CREATE:
+//   		case CREATE_PRE_ISSUANCE:
 //   			PreIssuanceRequest preIssuanceRequest;
-//   		case ISSUANCE_CREATE:
+//   		case CREATE_ISSUANCE:
 //   			IssuanceRequest issuanceRequest;
-//   		case WITHDRAW:
+//   		case CREATE_WITHDRAW:
 //   			WithdrawalRequest withdrawalRequest;
-//   		case SALE:
+//   		case CREATE_SALE:
 //   			SaleCreationRequest saleCreationRequest;
-//           case LIMITS_UPDATE:
+//           case UPDATE_LIMITS:
 //               LimitsUpdateRequest limitsUpdateRequest;
-//           case AML_ALERT:
+//           case CREATE_AML_ALERT:
 //               AMLAlertRequest amlAlertRequest;
 //           case CHANGE_ROLE:
 //               ChangeRoleRequest changeRoleRequest;
 //           case UPDATE_SALE_DETAILS:
 //               UpdateSaleDetailsRequest updateSaleDetailsRequest;
-//           case INVOICE:
+//           case CREATE_INVOICE:
 //               InvoiceRequest invoiceRequest;
-//           case CONTRACT:
+//           case MANAGE_CONTRACT:
 //               ContractRequest contractRequest;
 //           case CREATE_ATOMIC_SWAP_BID:
 //               ASwapBidCreationRequest aSwapBidCreationRequest;
-//           case ATOMIC_SWAP:
+//           case CREATE_ATOMIC_SWAP:
 //               ASwapRequest aSwapRequest;
 //   	} body;
 //   
@@ -14237,7 +14242,9 @@ xdr.union("ChangeRoleRequestExt", {
 //   	// Sequence number increases when request is rejected
 //   	uint32 sequenceNumber;
 //   
-//   	// Reserved for future use
+//       longstring creatorDetails; // details set by requester
+//   
+//       // Reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -14252,6 +14259,7 @@ xdr.struct("ChangeRoleRequest", [
   ["accountRoleToSet", xdr.lookup("Uint64")],
   ["kycData", xdr.lookup("Longstring")],
   ["sequenceNumber", xdr.lookup("Uint32")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("ChangeRoleRequestExt")],
 ]);
 
@@ -14946,7 +14954,7 @@ xdr.struct("BalanceEntry", [
 //       case EMPTY_VERSION:
 //           void;
 //       case LIMITS_UPDATE_REQUEST_DEPRECATED_DOCUMENT_HASH:
-//           longstring details;
+//           longstring creatorDetails; // details set by requester
 //       }
 //
 // ===========================================================================
@@ -14955,10 +14963,10 @@ xdr.union("LimitsUpdateRequestExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["limitsUpdateRequestDeprecatedDocumentHash", "details"],
+    ["limitsUpdateRequestDeprecatedDocumentHash", "creatorDetails"],
   ],
   arms: {
-    details: xdr.lookup("Longstring"),
+    creatorDetails: xdr.lookup("Longstring"),
   },
 });
 
@@ -14973,7 +14981,7 @@ xdr.union("LimitsUpdateRequestExt", {
 //       case EMPTY_VERSION:
 //           void;
 //       case LIMITS_UPDATE_REQUEST_DEPRECATED_DOCUMENT_HASH:
-//           longstring details;
+//           longstring creatorDetails; // details set by requester
 //       }
 //       ext;
 //   };
