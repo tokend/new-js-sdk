@@ -4,6 +4,10 @@
 
 **TokenD JS SDK** is a client-side Javascript library for TokenD tokenization platform.
 
+## Changelog
+
+All notable changes to this project will be documented in [this file](./changelog.md). This project adheres to Semantic Versioning.
+
 ## Getting Started
 
 1. Add TokenD SDK to your project:
