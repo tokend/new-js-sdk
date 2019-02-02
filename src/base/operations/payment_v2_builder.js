@@ -32,6 +32,17 @@ export class PaymentV2Builder {
       throw new Error('feeData argument must be defined')
     }
 
+    try {
+      PaymentV2Builder.ensureFeeValid(opts.feeData.sourceFee)
+    } catch (e) {
+      throw new TypeError('sourceFee.' + e.message)
+    }
+
+    try {
+      PaymentV2Builder.ensureFeeValid(opts.feeData.destinationFee)
+    } catch (e) {
+      throw new TypeError('destination.' + e.message)
+    }
     let sourceFee = new xdr.Fee({
       percent: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.percent),
       fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.fixed),
