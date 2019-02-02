@@ -39,7 +39,7 @@ export class PaymentV2Builder {
     }
 
     try {
-      PaymentV2Builder.ensureFeeValid(opts.feeData.sourceFee)
+      PaymentV2Builder.ensureFeeValid(opts.feeData.destinationFee)
     } catch (e) {
       throw new TypeError('destination.' + e.message)
     }
