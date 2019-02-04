@@ -16,11 +16,11 @@ export class SaleRequestBuilder {
      * @param {string} opts.softCap - minimum amount of quote asset to be received at which sale will be considered a successful
      * @param {string} opts.hardCap - max amount of quote asset to be received
      * @param {string} opts.requiredBaseAssetForHardCap - max amount to be sold in base asset
-     * @param {object} opts.details - sale specific details
-     * @param {object} opts.details.name - name of the sale
-     * @param {object} opts.details.short_description - short description of the sale
-     * @param {object} opts.details.desciption - sale specific details
-     * @param {object} opts.details.logo - details of the logo
+     * @param {object} opts.creatorDetails - sale specific details
+     * @param {object} opts.creatorDetails.name - name of the sale
+     * @param {object} opts.creatorDetails.short_description - short description of the sale
+     * @param {object} opts.creatorDetails.desciption - sale specific details
+     * @param {object} opts.creatorDetails.logo - details of the logo
      * @param {array} opts.quoteAssets - accepted assets
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset

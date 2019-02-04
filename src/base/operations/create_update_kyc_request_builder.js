@@ -13,6 +13,7 @@ export class CreateChangeRoleRequestBuilder {
      * @param {string} opts.accountRoleToSet
      * @param {object} opts.kycData
      * @param {number|string} opts.allTasks
+     *
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      * @returns {xdr.CreateChangeRoleRequestOp}
      */

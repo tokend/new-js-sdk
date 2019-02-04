@@ -10,7 +10,7 @@ export class CreateAMLRequestBuilder {
      *
      * @param {string} opts.balanceID - balance for which specified amount will be locked
      * @param {string} opts.amount - amount to be locked
-     * @param {string} opts.reason - reason due to which alert was raised
+     * @param {string} opts.creatorDetails - details about the reason due to which alert was raised
      * @param {string} opts.reference - Unique reference of the alert
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      *
