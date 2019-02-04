@@ -1,6 +1,5 @@
 import { Keypair } from '../../src/base'
 import { Asset } from '../helpers/asset'
-
 import { ASSET_POLICIES, KEY_VALUE_KEYS } from '../../src/const'
 
 import {
@@ -56,10 +55,10 @@ export async function createAndApproveAsset (opts, ownerKp) {
   const requestId = await assetHelper.create(opts, ownerKp)
   log.info(`Asset created, code: ${opts.code}`)
 
-  const response = await requestHelper.approve(requestId, { tasksToRemove })
+  const response = await requestHelper.approve(requestId, { tasksToRemove: tasksToRemove })
   log.info(`Asset creation request #${requestId} approved`)
 
-  return response.data
+  return response
 }
 
 /**

@@ -26,5 +26,5 @@ export async function closeSale (saleId) {
   await saleHelper.checkSaleState(sale.id)
   log.info(`Checked sale state, looking for results`)
 
-  return saleHelper.mustLoadById(saleId)
+  return saleHelper.mustLoadClosed(saleId)
 }

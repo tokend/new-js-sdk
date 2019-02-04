@@ -57,15 +57,18 @@ export class Helper {
   }
 
   tryGetTxErrorString (errorObject) {
-    const resultCodes = _get(errorObject, 'meta.extras.resultCodes')
-    if (!resultCodes) {
-      return null
+    let resultCodes = _get(errorObject, 'meta.extras.resultCodes')
+
+    if (resultCodes) {
+      const txCode = resultCodes.transaction
+      const opCodes = (resultCodes.operations || []).join(',')
+
+      return `Transaction Error: ${txCode}, operations: ${opCodes}`
+    } else if (errorObject.title === 'Transaction Malformed') {
+      return `Transaction Malformed. SDK and horizon should use same XDR version`
+    } else {
+      return errorObject.title || null
     }
-
-    const txCode = resultCodes.transaction
-    const opCodes = (resultCodes.operations || []).join(',')
-
-    return `Transaction Error: ${txCode}, operations: ${opCodes}`
   }
 }
 
@@ -75,8 +78,7 @@ export const getRequestIdFromResultXdr = (resultXdr, resultType) => base
   .fromXDR(Buffer.from(resultXdr, 'base64'))
   .result()
   .results()[0]
-  .tr()
-  [resultType]()
+  .tr()[resultType]()
   .success()
   .requestId()
   .toString()

@@ -9,8 +9,6 @@
 /src/horizon_old/
 /docs_old/
 /website_old/
-/lib/
-/dist/
 /.git_copy/
 /examples_old/
 /docs/pages/
@@ -18,3 +16,5 @@
 /src/tmp.js
 #ignore master seeds
 /test/integration/scripts/master_seeds.js
+/dist/
+/lib/

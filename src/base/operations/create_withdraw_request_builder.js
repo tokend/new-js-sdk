@@ -5,18 +5,19 @@ import { Keypair } from '../keypair'
 
 export class CreateWithdrawRequestBuilder {
   /**
-     * Creates operation to create withdraw request with autoconversion
-     * @param {object} opts
-     * @param {string} opts.balance - Balance ID from which withdraw will be perfromed
-     * @param {string} opts.amount - amount to be withdrawn
-     * @param {object} opts.fee - fee to be charged
-     * @param {string} opts.fee.fixed - fixed fee to be charged
-     * @param {string} opts.fee.percent - percent fee to be charged
-     * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
-     * @param {number|string} opts.allTasks - Bitmask of all tasks which must be completed for the request approval
-     * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-     * @returns {xdr.CreateWithdrawalRequestOp}
-     */
+   * Creates operation to create withdraw request
+   * @param {object} opts
+   * @param {string} opts.balance - Balance ID from which withdraw will be perfromed
+   * @param {string} opts.amount - amount to be withdrawn
+   * @param {object} opts.fee - fee to be charged
+   * @param {string} opts.fee.fixed - fixed fee to be charged
+   * @param {string} opts.fee.percent - percent fee to be charged
+   * @param {object} opts.externalDetails - External details needed for PSIM to process withdraw operation
+   * @param {number|string} opts.allTasks - Bitmask of all tasks which must be completed for the request approval
+   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
+   * @returns {xdr.CreateWithdrawalRequestOp}
+   */
+
   static createWithdrawWithAutoConversion (opts) {
     let attrs = {}
 
@@ -42,17 +43,19 @@ export class CreateWithdrawRequestBuilder {
     if (isUndefined(opts.creatorDetails)) {
       throw new Error('creatorDetails is invalid')
     }
+    attrs.externalDetails = JSON.stringify(opts.externalDetails)
 
     attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
     attrs.ext = new xdr.WithdrawalRequestExt(xdr.LedgerVersion.emptyVersion())
 
-    let rawAllTasks = BaseOperation._checkUnsignedIntValue('allTasks', opts.allTasks)
+    if (isUndefined(opts.allTasks)) {
+      opts.allTasks = 0
+    }
 
-    attrs.preConfirmationDetails = ''
     let request = new xdr.WithdrawalRequest(attrs)
     let withdrawRequestOp = new xdr.CreateWithdrawalRequestOp({
       request: request,
-      allTasks: rawAllTasks,
+      allTasks: opts.allTasks,
       ext: new xdr.CreateWithdrawalRequestOpExt(
         xdr.LedgerVersion.emptyVersion()
       )
@@ -75,5 +78,6 @@ export class CreateWithdrawRequestBuilder {
     }
     result.creatorDetails = JSON.parse(request.creatorDetails())
     result.allTasks = attrs.allTasks()
+    result.universalAmount = BaseOperation._fromXDRAmount(request.universalAmount())
   }
 }

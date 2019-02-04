@@ -12,12 +12,13 @@ describe('ManageAssetBuilder', () => {
         maxIssuanceAmount: '1000.1211',
         policies: 12,
         requestID: '0',
+        trailingDigitsCount: 0,
+        sequenceNumber: 10,
         initialPreissuedAmount: '12.14',
         creatorDetails: {
           name: 'USD Name'
         },
-        allTasks: 2,
-        assetType: '1'
+        allTasks: 3
       }
       let op = ManageAssetBuilder.assetCreationRequest(opts)
       let xdrOp = op.toXDR('hex')
@@ -44,6 +45,10 @@ describe('ManageAssetBuilder', () => {
         code: 'USD',
         policies: 12,
         requestID: '0',
+        sequenceNumber: 10,
+        details: {
+          name: 'USD Name'
+        },
         allTasks: 1
       }
       let op = ManageAssetBuilder.assetUpdateRequest(opts)

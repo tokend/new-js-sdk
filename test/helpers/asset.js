@@ -26,6 +26,7 @@ export class Asset extends Helper {
       maxIssuanceAmount: '1000000000.000000',
       initialPreissuedAmount: '1000000000.000000',
       preissuedAssetSigner: base.Keypair.random().accountId(),
+      trailingDigitsCount: 6,
       details: {}
     }
 
@@ -34,7 +35,8 @@ export class Asset extends Helper {
       .assetCreationRequest({
         ...DEFAULTS,
         ...opts,
-        requestID: '0'
+        requestID: '0',
+        allTasks: 1
       })
 
     const { resultXdr } = await this.submit(operation, ownerKp)

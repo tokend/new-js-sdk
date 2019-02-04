@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 // revision: c84e5fc0345ebaa5e6c877150f515fdf6d278a8b
 // branch:   refactor/details
 // Automatically generated on 2019-02-04T14:09:33+00:00
+=======
+// revision: 4528535615a5db45006557d390186b1861724e74
+// branch:   3.0.0-x
+// Automatically generated on 2019-02-04T12:58:06+00:00
+>>>>>>> web2
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
