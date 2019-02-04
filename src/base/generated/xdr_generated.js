@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // revision: c84e5fc0345ebaa5e6c877150f515fdf6d278a8b
 // branch:   refactor/details
 // Automatically generated on 2019-02-04T14:09:33+00:00
@@ -12,6 +13,11 @@
 // revision: f01241418cda010fccfc686733dddfe6dc7e9534
 // branch:   feature/roles_rules
 // Automatically generated on 2019-02-04T10:50:32+00:00
+>>>>>>> roles_rules
+=======
+// revision: 7f328ee2da4ea10324fccecef0bcb894efe957dd
+// branch:   feature/roles_rules
+// Automatically generated on 2019-02-04T14:21:24+00:00
 >>>>>>> roles_rules
 // DO NOT EDIT or your changes may be overwritten
 
