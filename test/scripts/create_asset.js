@@ -1,4 +1,4 @@
-import { Keypair, xdr } from '../../src/base'
+import { Keypair } from '../../src/base'
 import { Asset } from '../helpers/asset'
 import { ASSET_POLICIES, KEY_VALUE_KEYS } from '../../src/const'
 
