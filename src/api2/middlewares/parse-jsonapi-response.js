@@ -66,7 +66,7 @@ export class JsonapiResponse {
     }
 
     const formatter = new Jsona()
-    const parsed = formatter.deserialize(response)
+    const parsed = formatter.deserialize(response.data)
 
     this._data = toCamelCaseDeep(parsed)
   }
