@@ -97,20 +97,20 @@ export class ReviewRequestBuilder {
     return attrs
   }
 
-  /**
-   * Creates operation to review withdraw request
-   * @param {object} opts
-   * @param {string} opts.requestID - request ID
-   * @param {string} opts.requestHash - Hash of the request to be reviewed
-   * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
-   * @param {string} opts.reason - Reject reason
-   * @param {string} opts.externalDetails - External System details
-   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-   * @param {number|string} opts.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
-   * @param {number|string} opts.tasksToRemove - tasks, which were done by the reviewer and should be removed
-   * @returns {xdr.ReviewRequestOp}
-   */
   static reviewWithdrawRequest (opts) {
+    /**
+     * Creates operation to review withdraw request
+     * @param {object} opts
+     * @param {string} opts.requestID - request ID
+     * @param {string} opts.requestHash - Hash of the request to be reviewed
+     * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
+     * @param {string} opts.reason - Reject reason
+     * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
+     * @param {number|string} opts.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
+     * @param {number|string} opts.tasksToRemove - tasks, which were done by the reviewer and should be removed
+     * @param {string} opts.externalDetails - External System details
+     * @returns {xdr.ReviewRequestOp}
+     */
     if (isUndefined(opts.reviewDetails.externalDetails)) {
       throw new Error('opts.reviewDetails.externalDetails is invalid')
     }
@@ -120,7 +120,7 @@ export class ReviewRequestBuilder {
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.createWithdraw(
       new xdr.WithdrawalDetails({
         ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion()),
-        externalDetails: JSON.stringify(opts.externalDetails)
+        externalDetails: opts.requestDetails
       })
     )
 

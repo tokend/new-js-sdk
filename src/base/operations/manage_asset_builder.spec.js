@@ -18,7 +18,6 @@ describe('ManageAssetBuilder', () => {
         creatorDetails: {
           name: 'USD Name'
         },
-        allTasks: 3
         allTasks: 2,
         assetType: '1'
       }

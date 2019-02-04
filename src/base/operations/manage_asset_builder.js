@@ -255,11 +255,10 @@ export class ManageAssetBuilder {
       opts.sequenceNumber = 0
     }
 
-
     let attrs = {
       code: opts.code,
       policies: opts.policies,
-      creatorDetails: JSON.stringify(creatorDetails)
+      creatorDetails: JSON.stringify(creatorDetails),
       sequenceNumber: opts.sequenceNumber
     }
 

@@ -9,7 +9,7 @@ describe('Create ASwapBidCreation request', function () {
     let opts = {
       balanceID: Keypair.random().balanceId(),
       amount: '911',
-      details: { 'reason': 'Because we can' },
+      creatorDetails: { 'reason': 'Because we can' },
       quoteAssets: [
         {
           price: '12.21',
@@ -28,7 +28,7 @@ describe('Create ASwapBidCreation request', function () {
     expect(obj.type).to.be.equal(xdr.OperationType.createAswapBidRequest().name)
     expect(obj.balanceID).to.be.equal(opts.balanceID)
     expect(obj.amount).to.be.equal(opts.amount)
-    expect(isEqual(obj.details, opts.details)).to.be.true
+    expect(isEqual(obj.creatorDetails, opts.creatorDetails)).to.be.true
     expect(isEqual(obj.quoteAssets, opts.quoteAssets)).to.be.true
   })
 })
