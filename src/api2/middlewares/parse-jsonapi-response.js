@@ -72,8 +72,8 @@ export class JsonapiResponse {
   }
 
   _parseLinks (response) {
-    if (response.links) {
-      this._links = response.links
+    if (response.data && response.data.links) {
+      this._links = response.data.links
     } else {
       this._links = {}
     }
