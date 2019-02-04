@@ -24,7 +24,8 @@ export class SaleRequestBuilder {
      * @param {array} opts.quoteAssets - accepted assets
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
-     * @param {number} opts.saleType - Sale type
+     * @param {number} opts.saleEnumType - Sale type
+     * @param {string} opts.baseAssetForHardCap - specifies the amount of base asset required for hard cap
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CreateSaleCreationRequestOp}
      */
@@ -105,6 +106,39 @@ export class SaleRequestBuilder {
     attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
     attrs.ext = new xdr.SaleCreationRequestExt(xdr.LedgerVersion.emptyVersion())
 
+    if (isUndefined(opts.saleEnumType) || !opts.saleEnumType) {
+      attrs.saleEnumType = xdr.SaleType.basicSale().value
+    } else if (opts.saleEnumType === true) {
+      attrs.saleEnumType = xdr.SaleType.crowdFunding().value
+    } else {
+      attrs.saleEnumType = opts.saleEnumType
+    }
+
+    let saleTypeExt
+    switch (attrs.saleEnumType) {
+      case xdr.SaleType.basicSale().value: {
+        let basicSale = new xdr.BasicSale({
+          ext: new xdr.BasicSaleExt(xdr.LedgerVersion.emptyVersion())
+        })
+        saleTypeExt = xdr.SaleTypeExt.basicSale(basicSale)
+        break
+      }
+      case xdr.SaleType.crowdFunding().value: {
+        let crowdFundingSale = new xdr.CrowdFundingSale({
+          ext: new xdr.CrowdFundingSaleExt(xdr.LedgerVersion.emptyVersion())
+        })
+        saleTypeExt = xdr.SaleTypeExt.crowdFunding(crowdFundingSale)
+        break
+      }
+      case xdr.SaleType.fixedPrice().value: {
+        let fixedPriceSale = new xdr.FixedPriceSale({
+          ext: new xdr.FixedPriceSaleExt(xdr.LedgerVersion.emptyVersion())
+        })
+        saleTypeExt = xdr.SaleTypeExt.fixedPrice(fixedPriceSale)
+        break
+      }
+    }
+
     if (isUndefined(opts.allTasks)) {
       opts.allTasks = 0
     }
@@ -120,22 +154,7 @@ export class SaleRequestBuilder {
     }
     attrs.sequenceNumber = opts.sequenceNumber
 
-    let isCrowdfunding = !isUndefined(opts.isCrowdfunding) &&
-      opts.isCrowdfunding
-
-    let s
-    if (isCrowdfunding) {
-      s = xdr.SaleTypeExt.crowdFunding()
-      s.set('crowdFunding', new xdr.CrowdFundingSale({
-        ext: new xdr.CrowdFundingSaleExt(xdr.LedgerVersion.emptyVersion())
-      }))
-    } else {
-      s = xdr.SaleTypeExt.basicSale()
-      s.set('basicSale', new xdr.BasicSale({
-        ext: new xdr.BasicSaleExt(xdr.LedgerVersion.emptyVersion())
-      }))
-    }
-    attrs.saleTypeExt = s
+    attrs.saleTypeExt = saleTypeExt
 
     attrs.ext = new xdr.SaleCreationRequestExt(xdr.LedgerVersion.emptyVersion())
 

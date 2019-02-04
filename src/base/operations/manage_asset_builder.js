@@ -17,6 +17,7 @@ export class ManageAssetBuilder {
      * @param {number} opts.policies - Asset policies
      * @param {string} opts.assetType - asset type
      * @param {string} opts.initialPreissuedAmount - Amount of pre issued tokens available after creation of the asset
+     * @param {number} opts.trailingDigitsCount - Count of digits after the comma
      * @param {number} opts.allTasks - tasks for the request
      * @param {object} opts.creatorDetails - Additional details about asset
      * @param {string} opts.creatorDetails.name - Name of the asset
@@ -61,13 +62,6 @@ export class ManageAssetBuilder {
       ._toUnsignedXDRAmount(opts.initialPreissuedAmount)
     attrs.sequenceNumber = 0
     attrs.type = UnsignedHyper.fromString(opts.assetType)
-
-    if (Number.isNaN(opts.trailingDigitsCount) &&
-      opts.trailingDigitsCount >= 0 && opts.trailingDigitsCount <= 6) {
-      throw new Error('opts.trailingDigitsCount is invalid')
-    }
-
-    attrs.trailingDigitsCount = opts.trailingDigitsCount
 
     if (Number.isNaN(opts.trailingDigitsCount) &&
       opts.trailingDigitsCount >= 0 && opts.trailingDigitsCount <= 6) {
@@ -307,6 +301,7 @@ export class ManageAssetBuilder {
           ._fromXDRAmount(request.initialPreissuedAmount())
         result.creatorDetails = JSON.parse(request.creatorDetails())
         result.assetType = request.type().toString()
+        result.allTasks = attrs.request().createAssetCreationRequest().allTasks()
         break
       }
       case xdr.ManageAssetAction.createAssetUpdateRequest():

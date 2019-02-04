@@ -1,6 +1,6 @@
 import { default as xdr } from './generated/xdr_generated'
 import { Keypair } from './keypair'
-import { Hyper } from 'js-xdr'
+import { UnsignedHyper, Hyper } from 'js-xdr'
 import { hash } from './hashing'
 import { encodeCheck } from './strkey'
 import isUndefined from 'lodash/isUndefined'

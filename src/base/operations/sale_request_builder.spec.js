@@ -81,7 +81,8 @@ describe('SaleRequestBuilder', () => {
           asset: 'BTC'
         }
       ],
-      saleType: true
+      saleType: '1',
+      saleEnumType: true
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
     let xdrOp = op.toXDR('hex')
@@ -125,7 +126,8 @@ describe('SaleRequestBuilder', () => {
           asset: 'BTC'
         }
       ],
-      saleType: false,
+      saleType: '1',
+      saleEnumType: false,
       requiredBaseAssetForHardCap: '648251'
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
