@@ -1,6 +1,6 @@
-// revision: f01241418cda010fccfc686733dddfe6dc7e9534
+// revision: 7f328ee2da4ea10324fccecef0bcb894efe957dd
 // branch:   feature/roles_rules
-// Automatically generated on 2019-02-04T10:50:32+00:00
+// Automatically generated on 2019-02-04T14:21:24+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
