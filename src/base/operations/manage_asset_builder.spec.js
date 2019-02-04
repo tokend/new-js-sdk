@@ -12,6 +12,8 @@ describe('ManageAssetBuilder', () => {
         maxIssuanceAmount: '1000.1211',
         policies: 12,
         requestID: '0',
+        trailingDigitsCount: 0,
+        sequenceNumber: 10,
         initialPreissuedAmount: '12.14',
         details: {
           name: 'USD Name'
@@ -44,6 +46,10 @@ describe('ManageAssetBuilder', () => {
         code: 'USD',
         policies: 12,
         requestID: '0',
+        sequenceNumber: 10,
+        details: {
+          name: 'USD Name'
+        },
         allTasks: 1
       }
       let op = ManageAssetBuilder.assetUpdateRequest(opts)

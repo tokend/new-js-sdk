@@ -75,18 +75,14 @@ describe('Operation', () => {
         sourceBalanceId,
         destinationBalanceId,
         reference: 'ref',
-        invoiceReference: {
-          invoiceId: '777',
-          accept: false
-        },
         feeData: {
           sourceFee: {
-            paymentFee: '120',
-            fixedFee: '110'
+            percent: '120',
+            fixed: '110'
           },
           destinationFee: {
-            paymentFee: '20',
-            fixedFee: '10'
+            percent: '20',
+            fixed: '10'
           },
           sourcePaysForDest: true
         }
@@ -94,21 +90,19 @@ describe('Operation', () => {
       let opXdr = op.toXDR('hex')
       let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
       let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('payment')
+      expect(obj.type).to.be.equal('paymentV2')
       expect(operation.body().value().amount().toString())
         .to.be.equal('1000000000')
       expect(obj.amount).to.be.equal(amount)
       expect(obj.subject).to.be.equal('subj')
       expect(obj.reference).to.be.equal('ref')
       expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
-      expect(obj.destinationBalanceId).to.be.equal(destinationBalanceId)
-      expect(obj.invoiceReference.invoiceId).to.be.equal('777')
-      expect(obj.invoiceReference.accept).to.be.equal(false)
+      expect(obj.destination).to.be.equal(destinationBalanceId)
       expect(obj.feeData.sourcePaysForDest).to.be.equal(true)
-      expect(obj.feeData.sourceFee.fixedFee).to.be.equal('110')
-      expect(obj.feeData.sourceFee.paymentFee).to.be.equal('120')
-      expect(obj.feeData.destinationFee.fixedFee).to.be.equal('10')
-      expect(obj.feeData.destinationFee.paymentFee).to.be.equal('20')
+      expect(obj.feeData.sourceFee.fixed).to.be.equal('110')
+      expect(obj.feeData.sourceFee.percent).to.be.equal('120')
+      expect(obj.feeData.destinationFee.fixed).to.be.equal('10')
+      expect(obj.feeData.destinationFee.percent).to.be.equal('20')
       expect(Operation.isPayment(op)).to.be.equal(true)
     })
 
@@ -212,87 +206,6 @@ describe('Operation', () => {
         }
       }
       expectThrow(() => Operation.payment(opts))
-    })
-  })
-
-  describe('.directDebit()', () => {
-    let sourceBalanceId = Keypair.random().balanceId()
-    let destinationBalanceId = Keypair.random().balanceId()
-    let from = Keypair.random().accountId()
-    it('creates a directDebitOp', () => {
-      let destination = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      let amount = '1000'
-      let op = Operation.directDebit({
-        paymentOp: {
-          destination,
-          amount,
-          subject: 'subj',
-          sourceBalanceId,
-          destinationBalanceId,
-          reference: 'ref',
-          feeData: {
-            sourceFee: {
-              paymentFee: '0',
-              fixedFee: '10'
-            },
-            destinationFee: {
-              paymentFee: '0',
-              fixedFee: '10'
-            },
-            sourcePaysForDest: true
-          }
-        },
-        from
-      })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('directDebit')
-      expect(obj.amount).to.be.equal(amount)
-      expect(obj.subject).to.be.equal('subj')
-      expect(obj.reference).to.be.equal('ref')
-      expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
-      expect(obj.destinationBalanceId).to.be.equal(destinationBalanceId)
-      expect(obj.from).to.be.equal(from)
-      expect(obj.feeData.sourcePaysForDest).to.be.equal(true)
-      expect(Operation.isPayment(op)).to.be.equal(false)
-    })
-
-    it('fails to create directDebit operation without feeData', () => {
-      let opts = {
-        paymentOp: {
-          amount: '20',
-          subject: 'subj',
-          sourceBalanceId,
-          destinationBalanceId
-        },
-        from
-      }
-      expectThrow(() => Operation.directDebit(opts))
-    })
-
-    it('fails to create directDebit operation with invalid from', () => {
-      let opts = {
-        paymentOp: {
-          amount: '20',
-          feeData: {
-            sourceFee: {
-              paymentFee: '0',
-              fixedFee: '10'
-            },
-            destinationFee: {
-              paymentFee: '0',
-              fixedFee: '10'
-            },
-            sourcePaysForDest: true
-          },
-          subject: 'subj',
-          sourceBalanceId,
-          destinationBalanceId
-        },
-        from: 123
-      }
-      expectThrow(() => Operation.directDebit(opts))
     })
   })
 

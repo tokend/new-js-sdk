@@ -16,18 +16,18 @@ describe('Transaction', () => {
     }
     let input = new TransactionBuilder(source, { timebounds })
       .addOperation(Operation.payment({
-        amount,
+        amount: amount,
         subject: 'test',
         sourceBalanceId,
         destinationBalanceId,
         feeData: {
           sourceFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           destinationFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           sourcePaysForDest: true
         }
@@ -43,7 +43,7 @@ describe('Transaction', () => {
 
     expect(transaction.source).to.be.equal(source)
     expect(transaction.memo.text().toString()).to.be.equal('Happy birthday!')
-    expect(operation.type).to.be.equal('payment')
+    expect(operation.type).to.be.equal('paymentV2')
     expect(operation.amount).to.be.equal(amount)
 
     done()
@@ -67,12 +67,12 @@ describe('Transaction', () => {
         destinationBalanceId,
         feeData: {
           sourceFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           destinationFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           sourcePaysForDest: true
         }
@@ -99,18 +99,18 @@ describe('Transaction', () => {
 
     let input = new TransactionBuilder(source, { fee: 0, timebounds })
       .addOperation(Operation.payment({
-        amount,
+        amount: amount,
         subject: 'test',
         sourceBalanceId,
         destinationBalanceId,
         feeData: {
           sourceFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           destinationFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           sourcePaysForDest: true
         }

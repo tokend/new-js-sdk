@@ -24,12 +24,11 @@ describe('Requests', () => {
     const method = 'get'
     const id = '10'
 
-    testGetRequest({
-      title: `Should get request by id.`,
+    testRequestSignature({
       horizon: sdk.horizon,
       resourceGroup,
-      args: [id],
       method,
+      args: [id],
       path: `/requests/${id}`
     })
   })
@@ -288,6 +287,52 @@ describe('Requests', () => {
       resourceGroup,
       method,
       args: [],
+      path: getPath(segment)
+    })
+  })
+
+  describe('.getAllForAtomicSwapBids', () => {
+    const method = 'getAllForAtomicSwapBids'
+    const segment = 'atomic_swap_bids'
+
+    testGetRequest({
+      title: `get atomic_swap_bids requests`,
+      horizon: sdk.horizon,
+      resourceGroup,
+      method,
+      args: [query],
+      path: getPath(segment)
+    })
+
+    testRequestSignature({
+      horizon: sdk.horizon,
+      resourceGroup,
+      method,
+      args: [query],
+      params: query,
+      path: getPath(segment)
+    })
+  })
+
+  describe('.getAllForAtomicSwap', () => {
+    const method = 'getAllForAtomicSwap'
+    const segment = 'atomic_swaps'
+
+    testGetRequest({
+      title: `get atomic_swap requests`,
+      horizon: sdk.horizon,
+      resourceGroup,
+      method,
+      args: [query],
+      path: getPath(segment)
+    })
+
+    testRequestSignature({
+      horizon: sdk.horizon,
+      resourceGroup,
+      method,
+      args: [query],
+      params: query,
       path: getPath(segment)
     })
   })
