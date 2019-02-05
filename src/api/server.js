@@ -76,7 +76,13 @@ export class ApiServer extends ServerBase {
           } else {
             switch (error.response.status) {
               case 400:
-                error = new errors.BadRequestError(error, this._axios)
+                const errCode = get(error, 'response.data.errors[0].code')
+                
+                if (errCode === 'transaction_failed') {
+                  error = new errors.TransactionError(error, this._axios)
+                } else {
+                  error = new errors.BadRequestError(error, this._axios)
+                }
                 break
               case 401:
                 error = new errors.NotAllowedError(error, this._axios)
