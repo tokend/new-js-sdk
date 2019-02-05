@@ -1,4 +1,5 @@
 import { toCamelCaseDeep } from './utils/case_converter'
+import { get } from 'lodash'
 
 /**
  * Network error.
@@ -127,6 +128,41 @@ export class BadRequestError extends ServerError {
    */
   get nestedErrors () {
     return this._nestedErrors
+  }
+}
+
+/**
+ * "Bad Request" error - transaction is failed.
+ * `error.nestedErrors` may contain per-field errors.
+ *
+ * @export
+ * @class
+ */
+export class TransactionError extends ServerError {
+  /**
+   * Wrap a raw API error response.
+   *
+   * @constructor
+   *
+   * @param {Error} originalError Original error response.
+   * @param {axios} axios Axios instance used for the request.
+   */
+  constructor (originalError, axios) {
+    super(originalError, axios)
+
+    let error = originalError.response.data.errors[0]
+
+    this._title = 'Transaction Failed'
+    this._detail = 'Transaction failed because of some operations. Check "resultCodes"'
+    this._resultCodes = get(error, 'meta.extras.result_codes')
+  }
+
+  /**
+   * Information about failed operations.
+   */
+
+  get resultCodes () {
+    return this._resultCodes
   }
 }
 
