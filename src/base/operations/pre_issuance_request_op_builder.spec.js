@@ -28,6 +28,7 @@ describe('PreIssuanceRequestOpBuilder', () => {
     expect(reference).to.be.equal(obj.request.reference)
     expect(amount).to.be.equal(obj.request.amount)
     expect(asset).to.be.equal(obj.request.asset)
+    expect(creatorDetails).to.be.equal(obj.creatorDetails)
     expect(preIssuanceRequest.signature().toXDR('hex'))
       .to.be.equal(obj.request.signature.toXDR('hex'))
   })
