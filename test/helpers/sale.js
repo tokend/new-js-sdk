@@ -3,7 +3,7 @@ import { Running } from './_running'
 import { getRequestIdFromResultXdr, Helper } from './_helper'
 import { base } from '../../src'
 import { SALE_TYPES } from '../../src/const/enums.const'
-
+import { SALE_STATES } from '../../src/const'
 import moment from 'moment'
 
 export class Sale extends Helper {
@@ -31,7 +31,7 @@ export class Sale extends Helper {
       softCap: '10000.000000',
       hardCap: '50000.000000',
       allTasks: 1,
-      details: {
+      creatorDetails: {
         name: opts.baseAsset + 'sale',
         short_description: 'Short description',
         description: 'Not so short description',
@@ -62,6 +62,16 @@ export class Sale extends Helper {
     return Running.untilFound(async () => {
       const { data } = await this.sdk.horizon.sales.get(id)
       return data
+    })
+  }
+
+  mustLoadClosed (id) {
+    return Running.untilGotReturnValue(async () => {
+      const { data: sale } = await this.sdk.horizon.sales.get(id)
+      if (sale.state.value !== SALE_STATES.closed) {
+        return undefined
+      }
+      return sale
     })
   }
 

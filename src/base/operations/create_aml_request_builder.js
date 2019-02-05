@@ -10,7 +10,7 @@ export class CreateAMLRequestBuilder {
      *
      * @param {string} opts.balanceID - balance for which specified amount will be locked
      * @param {string} opts.amount - amount to be locked
-     * @param {string} opts.reason - reason due to which alert was raised
+     * @param {string} opts.creatorDetails - details about the reason due to which alert was raised
      * @param {string} opts.reference - Unique reference of the alert
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      *
@@ -29,7 +29,7 @@ export class CreateAMLRequestBuilder {
     }
 
     rawRequest.balanceId = Keypair.fromBalanceId(opts.balanceID).xdrBalanceId()
-    rawRequest.reason = opts.reason
+    rawRequest.creatorDetails = opts.creatorDetails
     rawRequest.ext = new xdr.AmlAlertRequestExt(
       xdr.LedgerVersion.emptyVersion()
     )
@@ -58,7 +58,7 @@ export class CreateAMLRequestBuilder {
       .balanceIdtoString(attrs.amlAlertRequest().balanceId())
     result.amount = BaseOperation
       ._fromXDRAmount(attrs.amlAlertRequest().amount())
-    result.reason = attrs.amlAlertRequest().reason().toString()
+    result.creatorDetails = attrs.amlAlertRequest().creatorDetails().toString()
     result.reference = attrs.reference().toString()
   }
 }

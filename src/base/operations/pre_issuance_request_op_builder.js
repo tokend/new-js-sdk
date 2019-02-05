@@ -27,5 +27,6 @@ export class PreIssuanceRequestOpBuilder {
 
   static preIssuanceRequestOpToObject (result, attrs) {
     result.request = PreIssuanceRequest.dataFromXdr(attrs.request())
+    result.creatorDetails = attrs.request().creatorDetails().toString('utf8')
   }
 }

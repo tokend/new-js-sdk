@@ -11,7 +11,7 @@ export class CreateIssuanceRequestBuilder {
      * @param {string} opts.amount - amount to be issued
      * @param {string} opts.receiver - balance ID of the receiver
      * @param {string} opts.reference - Reference of the request
-     * @param {object} opts.externalDetails - External details needed for PSIM to process withdraw operation
+     * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      * @returns {xdr.CreateIssuanceRequestOp}
      */

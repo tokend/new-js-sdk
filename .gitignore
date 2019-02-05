@@ -16,3 +16,5 @@
 /src/tmp.js
 #ignore master seeds
 /test/integration/scripts/master_seeds.js
+/dist/
+/lib/

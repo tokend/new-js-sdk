@@ -104,10 +104,12 @@ export class ReviewRequestBuilder {
    * @param {string} opts.requestHash - Hash of the request to be reviewed
    * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
    * @param {string} opts.reason - Reject reason
-   * @param {string} opts.externalDetails - External System details
+   * @param {string} opts.request
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-   * @param {number|string} opts.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
-   * @param {number|string} opts.tasksToRemove - tasks, which were done by the reviewer and should be removed
+   * @param {object} opts.reviewDetails
+   * @param {number|string} opts.reviewDetails.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
+   * @param {number|string} opts.reviewDetails.tasksToRemove - tasks, which were done by the reviewer and should be removed
+   * @param {string} opts.reviewDetails.externalDetails - External System details
    * @returns {xdr.ReviewRequestOp}
    */
   static reviewWithdrawRequest (opts) {
@@ -117,12 +119,12 @@ export class ReviewRequestBuilder {
 
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
 
-    let d = xdr.ReviewRequestOpRequestDetails.withdraw()
-    d.set('withdraw', new xdr.WithdrawalDetails({
-      externalDetails: opts.requestDetails,
-      ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion())
-    }))
-    attrs.requestDetails = d
+    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.createWithdraw(
+      new xdr.WithdrawalDetails({
+        ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion()),
+        externalDetails: opts.requestDetails
+      })
+    )
 
     attrs.reviewDetails = new xdr.ReviewDetails({
       tasksToAdd: opts.reviewDetails.tasksToAdd,
@@ -154,7 +156,7 @@ export class ReviewRequestBuilder {
 
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
 
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.amlAlert(
+    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.createAmlAlert(
       new xdr.AmlAlertDetails({
         ext: new xdr.AmlAlertDetailsExt(xdr.LedgerVersion.emptyVersion()),
         comment: opts.comment
@@ -234,7 +236,7 @@ export class ReviewRequestBuilder {
     )
 
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails
-      .limitsUpdate(
+      .updateLimit(
         new xdr.LimitsUpdateDetails({
           newLimitsV2: new xdr.LimitsV2Entry(rawLimitsV2Entry),
           ext: new xdr.LimitsUpdateDetailsExt(xdr.LedgerVersion.emptyVersion())
@@ -294,13 +296,13 @@ export class ReviewRequestBuilder {
     result.requestHash = attrs.requestHash().toString('hex')
     result.requestType = attrs.requestDetails().switch().value
     switch (attrs.requestDetails().switch()) {
-      case xdr.ReviewableRequestType.withdraw(): {
+      case xdr.ReviewableRequestType.createWithdraw(): {
         result.withdrawal = {
           externalDetails: attrs.requestDetails().withdrawal().externalDetails().toString()
         }
         break
       }
-      case xdr.ReviewableRequestType.limitsUpdate(): {
+      case xdr.ReviewableRequestType.updateLimit(): {
         let newLimitsV2 = attrs.requestDetails().limitsUpdate().newLimitsV2()
 
         result.limitsUpdate = {
@@ -328,7 +330,7 @@ export class ReviewRequestBuilder {
 
         break
       }
-      case xdr.ReviewableRequestType.amlAlert(): {
+      case xdr.ReviewableRequestType.createAmlAlert(): {
         result.amlAlert = {
           comment: attrs.requestDetails().amlAlertDetails().comment().toString()
         }
