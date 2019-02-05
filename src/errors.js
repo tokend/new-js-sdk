@@ -149,9 +149,9 @@ export class TransactionError extends ServerError {
    */
   constructor (originalError, axios) {
     super(originalError, axios)
-    
+
     let error = originalError.response.data.errors[0]
-    
+
     this._title = 'Transaction Failed'
     this._detail = 'Transaction failed because of some operations. Check "resultCodes"'
     this._resultCodes = get(error, 'meta.extras.result_codes')
