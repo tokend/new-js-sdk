@@ -139,7 +139,7 @@ export class ApiCaller {
    */
   async _call (endpoint, query, method, needSign = false) {
     let url = this._baseURL + endpoint // TODO: smartly build url
-    let config = { url, method, params: query }
+    let config = { url, method, params: query || {} }
 
     config = middlewares.flattenToAxiosJsonApiQuery(config)
     config = middlewares.setJsonapiHeaders(config)
