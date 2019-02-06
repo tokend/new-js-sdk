@@ -135,6 +135,27 @@ export class SaleRequestBuilder {
     return new xdr.Operation(opAttributes)
   }
 
+  /**
+   * Creates operation to cancel sale request
+   * @param {object} opts
+   * @param {string} opts.requestID - ID of the request
+   * @param {string} [opts.source] - The source account for the operation.
+   * Defaults to the transaction's source account.
+   * @returns {xdr.CancelSaleCreationRequestOp}
+   */
+  static cancelSaleCreationRequest (opts) {
+    let cancelSaleCreationRequestOp = new xdr.CancelSaleCreationRequestOp({
+      requestId: UnsignedHyper.fromString(opts.requestID),
+      ext: new xdr.CancelSaleCreationRequestOpExt(
+        xdr.LedgerVersion.emptyVersion())
+    })
+    let opAttributes = {}
+    opAttributes.body = xdr.OperationBody.cancelSaleRequest(
+      cancelSaleCreationRequestOp)
+    BaseOperation.setSourceAccount(opAttributes, opts)
+    return new xdr.Operation(opAttributes)
+  }
+
   static validateDetail (details) {
     if (isUndefined(details)) {
       throw new Error('details is invalid')
