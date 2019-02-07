@@ -157,6 +157,10 @@ export class TransactionError extends ServerError {
     this._resultCodes = get(error, 'meta.extras.result_codes')
   }
 
+  includesOpCode (opCode) {
+    return this._resultCodes.operations.includes(opCode)
+  }
+
   /**
    * Information about failed operations.
    */
