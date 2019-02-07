@@ -616,6 +616,9 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.createSaleRequest():
         SaleRequestBuilder.crateSaleCreationRequestToObject(result, attrs)
         break
+      case xdr.OperationType.cancelSaleRequest():
+        SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
+        break
       case xdr.OperationType.manageLimit():
         ManageLimitsBuilder.manageLimitsOpToObject(result, attrs)
         break
