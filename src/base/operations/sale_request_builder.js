@@ -197,6 +197,10 @@ export class SaleRequestBuilder {
     }
   }
 
+  static cancelSaleCreationRequestToObject (result, attrs) {
+    result.requestID = attrs.requestId().toString()
+  }
+
   /**
      * Creates operation to check sale state
      * @param {object} opts
