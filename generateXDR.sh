@@ -8,7 +8,7 @@ function printHelp () {
   echo "Example of using"
   echo
   echo "	generateXDR.sh master"
-  echo "	generateXDR.sh 82bc102060187bb11cf9b111dc2d122429c58a1f"
+  echo "	generateXDR.sh 84135ed642bff4965ce69f9a91f566d6d525188d"
   echo
 }
 
