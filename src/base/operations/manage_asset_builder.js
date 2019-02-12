@@ -198,10 +198,15 @@ export class ManageAssetBuilder {
       details.logo.type = ''
     }
 
+    if (isUndefined(details.externalSystemType)) {
+      details.externalSystemType = ''
+    }
+
     return {
       name: details.name,
       logo: details.logo,
-      terms: details.terms
+      terms: details.terms,
+      external_system_type: details.externalSystemType
     }
   }
 
