@@ -4,6 +4,7 @@ import { Network, TransactionBuilder } from '../base'
 import { Wallet } from '../wallet'
 
 import middlewares from './middlewares'
+import { toCamelCaseDeep } from '../utils/case_converter'
 
 const SUBMIT_TRANSACTION_TIMEOUT = 60 * 10000
 
@@ -139,15 +140,28 @@ export class ApiCaller {
    * @param {string} envelope - a transaction envelope to be submitted.
    */
   async postTxEnvelope (envelope) {
-    this._customTimeout = SUBMIT_TRANSACTION_TIMEOUT
+    // using raw axios because we don't need most of middleware, but need custom
+    // request timeout here
+    let config = {
+      timeout: SUBMIT_TRANSACTION_TIMEOUT,
+      data: {
+        tx: envelope
+      },
+      method: methods.POST,
+      url: `${this._baseURL}/transactions`
+    }
 
-    const response = await this.post('/transactions', {
-      tx: envelope
-    })
+    let response
+    try {
+      response = await this._axios(config)
+    } catch (e) {
+      throw middlewares.parseJsonapiError(e)
+    }
 
-    this._customTimeout = null
-
-    return response
+    return {
+      // the response is not in JSON API format, but the error is
+      data: toCamelCaseDeep(response.data)
+    }
   }
 
   /**
