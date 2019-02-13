@@ -38,7 +38,7 @@ export class Users extends ResourceGroupBase {
    *
    * @param {string} [accountId] Account id of the user.
    *
-   * @return {Promise} Document information.
+   * @return {Promise} List of user's documents.
    */
 
   getUserDocuments (accountId) {
