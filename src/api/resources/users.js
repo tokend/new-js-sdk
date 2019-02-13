@@ -55,7 +55,7 @@ export class Users extends ResourceGroupBase {
    * @param {string} [query.accountId] Account id of the user.
    * @param {string} [query.fileKey] Key of the requested document (file).
    *
-   * @return {Promise} Document information.
+   * @return {Promise} Full document url.
    */
 
   getUserDocumentByFileKey ({ accountId, fileKey }) {
