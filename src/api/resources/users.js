@@ -34,6 +34,39 @@ export class Users extends ResourceGroupBase {
   }
 
   /**
+   * Get a user documents.
+   *
+   * @param {string} [accountId] Account id of the user.
+   *
+   * @return {Promise} Document information.
+   */
+
+  getUserDocuments (accountId) {
+    return this._makeCallBuilder()
+      .appendAccountId(accountId)
+      .appendUrlSegment('documents')
+      .get()
+  }
+
+  /**
+   * Get a user document by file key.
+   *
+   * @param {object} [query] Request options.
+   * @param {string} [query.accountId] Account id of the user.
+   * @param {string} [query.fileKey] Key of the requested document (file).
+   *
+   * @return {Promise} Document information.
+   */
+
+  getUserDocumentByFileKey ({ accountId, fileKey }) {
+    return this._makeCallBuilder()
+      .appendAccountId(accountId)
+      .appendUrlSegment('documents')
+      .appendUrlSegment(fileKey)
+      .get()
+  }
+
+  /**
    * Create a user.
    *
    * @param {string} [accountId] Other user's account.
