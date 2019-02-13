@@ -5,6 +5,7 @@ import { Wallet } from '../wallet'
 
 import middlewares from './middlewares'
 import { toCamelCaseDeep } from '../utils/case_converter'
+import { isEmpty } from 'lodash'
 
 const SUBMIT_TRANSACTION_TIMEOUT = 60 * 10000
 
@@ -63,7 +64,7 @@ export class ApiCaller {
   get (endpoint, query, needSign = false) {
     return this._call({
       method: methods.GET,
-      needSign: false,
+      needSign,
       endpoint,
       query
     })
@@ -76,7 +77,7 @@ export class ApiCaller {
   post (endpoint, data, needSign = false) {
     return this._call({
       method: methods.POST,
-      needSign: false,
+      needSign,
       endpoint,
       data
     })
@@ -86,10 +87,10 @@ export class ApiCaller {
     return this.post(endpoint, data, true)
   }
 
-  patch (endpoint, data) {
+  patch (endpoint, data, needSign = false) {
     return this._call({
       method: methods.PATCH,
-      needSign: false,
+      needSign,
       endpoint,
       data
     })
@@ -99,10 +100,10 @@ export class ApiCaller {
     return this.patch(endpoint, data, true)
   }
 
-  put (endpoint, data) {
+  put (endpoint, data, needSign = false) {
     return this._call({
       method: methods.PUT,
-      needSign: false,
+      needSign,
       endpoint,
       data
     })
@@ -165,17 +166,6 @@ export class ApiCaller {
   }
 
   /**
-   * Performs a request with signature
-   * @private
-   */
-  _callWithSignature (opts) {
-    return this._call({
-      ...opts,
-      needSign: true
-    })
-  }
-
-  /**
    * Performs a request
    *
    * @param {object} opts
@@ -214,7 +204,17 @@ export class ApiCaller {
       throw middlewares.parseJsonapiError(e)
     }
 
-    return middlewares.parseJsonapiResponse(response)
+    response = middlewares.parseJsonapiResponse(response)
+
+    if (!isEmpty(response.links)) {
+      if (opts.needSign) {
+        response.makeLinkCallersWithSignature(this)
+      } else {
+        response.makeLinkCallers(this)
+      }
+    }
+
+    return response
   }
 
   /**
