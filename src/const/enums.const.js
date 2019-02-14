@@ -49,3 +49,11 @@ export const SALE_TYPES = Object.freeze(
 export const KEY_VALUE_ENTRY_TYPES = Object.freeze(
   xdrEnumToConstant('KeyValueEntryType')
 )
+
+export const CHECK_SALE_STATE_EFFECTS = Object.freeze(
+  xdrEnumToConstant('CheckSaleStateEffect')
+)
+
+export const REVIEW_REQUEST_OP_ACTION = Object.freeze(
+  xdrEnumToConstant('ReviewRequestOpAction')
+)
