@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [0.3.31] 2019-02-14
 
 ### Added
 - Ability to getting info about private user docs
 
-[Unreleased]: https://github.com/tokend/admin-panel/compare/master...HEAD
+## Fixed
+- change password method
+
+[Unreleased]: https://github.com/tokend/admin-panel/compare/0.3.31...HEAD
+[0.3.31]: https://github.com/tokend/admin-panel/compare/0.3.30...0.3.31
