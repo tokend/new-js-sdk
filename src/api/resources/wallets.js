@@ -293,7 +293,7 @@ export class Wallets extends ResourceGroupBase {
           id: encryptedNewMainWallet.id,
           attributes: {
             email: oldWallet.email,
-            accountId: encryptedNewMainWallet.accountId,
+            accountId: newMainWallet.keypair.accountId(),
             salt: encryptedNewMainWallet.salt,
             keychainData: encryptedNewMainWallet.keychainData
           },
