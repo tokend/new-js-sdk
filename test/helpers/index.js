@@ -1,6 +1,6 @@
 import config from '../config'
 
-import { TokenD, base } from '../../src'
+import { ApiCaller, TokenD, base } from '../../src'
 
 import { Account } from './account'
 import { Asset } from './asset'
@@ -16,11 +16,14 @@ export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
 })
 
+export const api = ApiCaller.getInstance(config.api_url)
+
 sdk._useNetworkPassphrase(config.network_passphrase)
 
 const DEFAULTS = {
   masterKp: base.Keypair.fromSecret(config.master_seed),
-  sdk
+  sdk,
+  api
 }
 
 export const accountHelper = new Account(DEFAULTS)

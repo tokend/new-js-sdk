@@ -4,12 +4,14 @@ import { BadRequestError } from '../../src/errors'
 
 export class Helper {
   /**
-   * @param {object}  opts
-   * @param {TokenD}  opts.sdk
-   * @param {Keypair} opts.masterKp
+   * @param {object}    opts
+   * @param {TokenD}    opts.sdk
+   * @param {ApiCaller} opts.api
+   * @param {Keypair}   opts.masterKp
    */
   constructor (opts) {
     this._sdk = opts.sdk
+    this._api = opts.api
     this._masterKp = opts.masterKp
   }
 
@@ -18,6 +20,7 @@ export class Helper {
   }
 
   get sdk () { return this._sdk }
+  get api () { return this._api }
   get masterKp () { return this._masterKp }
   get masterId () { return this._masterKp.accountId() }
 
@@ -36,13 +39,10 @@ export class Helper {
 
     transaction.sign(signerKp)
 
-    try {
-      const { data } = await this
-        .sdk
-        .horizon
-        .transactions
-        .submit(transaction)
+    const envelope = transaction.toEnvelope().toXDR().toString('base64')
 
+    try {
+      const { data } = await this.api.postTxEnvelope(envelope)
       return data
     } catch (e) {
       if (e instanceof BadRequestError) {

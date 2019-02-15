@@ -4,6 +4,7 @@ import { Network, TransactionBuilder } from '../base'
 import { Wallet } from '../wallet'
 
 import middlewares from './middlewares'
+import { toCamelCaseDeep } from '../utils/case_converter'
 
 const SUBMIT_TRANSACTION_TIMEOUT = 60 * 10000
 
@@ -59,25 +60,56 @@ export class ApiCaller {
     return caller
   }
 
-  patch (endpoint, query) { return this._call(endpoint, query, methods.PATCH) }
-  post (endpoint, query) { return this._call(endpoint, query, methods.POST) }
-  put (endpoint, query) { return this._call(endpoint, query, methods.PUT) }
-  get (endpoint, query) { return this._call(endpoint, query, methods.GET) }
+  get (endpoint, query, needSign = false) {
+    return this._call({
+      method: methods.GET,
+      needSign: false,
+      endpoint,
+      query
+    })
+  }
 
   getWithSignature (endpoint, query) {
-    return this._callWithSignature(endpoint, query, methods.GET)
+    return this.get(endpoint, query, true)
   }
 
-  patchWithSignature (endpoint, query) {
-    return this._callWithSignature(endpoint, query, methods.PATCH)
+  post (endpoint, data, needSign = false) {
+    return this._call({
+      method: methods.POST,
+      needSign: false,
+      endpoint,
+      data
+    })
   }
 
-  postWithSignature (endpoint, query) {
-    return this._callWithSignature(endpoint, query, methods.POST)
+  postWithSignature (endpoint, data) {
+    return this.post(endpoint, data, true)
   }
 
-  putWithSignature (endpoint, query) {
-    return this._callWithSignature(endpoint, query, methods.PUT)
+  patch (endpoint, data) {
+    return this._call({
+      method: methods.PATCH,
+      needSign: false,
+      endpoint,
+      data
+    })
+  }
+
+  patchWithSignature (endpoint, data) {
+    return this.patch(endpoint, data, true)
+  }
+
+  put (endpoint, data) {
+    return this._call({
+      method: methods.PUT,
+      needSign: false,
+      endpoint,
+      data
+    })
+  }
+
+  putWithSignature (endpoint, data) {
+    return this.put(endpoint, data, true)
   }
 
   /**
@@ -108,38 +140,60 @@ export class ApiCaller {
    * @param {string} envelope - a transaction envelope to be submitted.
    */
   async postTxEnvelope (envelope) {
-    this._customTimeout = SUBMIT_TRANSACTION_TIMEOUT
+    // using raw axios because we don't need most of middleware, but need custom
+    // request timeout here
+    let config = {
+      timeout: SUBMIT_TRANSACTION_TIMEOUT,
+      data: {
+        tx: envelope
+      },
+      method: methods.POST,
+      url: `${this._baseURL}/transactions`
+    }
 
-    const response = await this.post('/transactions', {
-      tx: envelope
-    })
+    let response
+    try {
+      response = await this._axios(config)
+    } catch (e) {
+      throw middlewares.parseJsonapiError(e)
+    }
 
-    this._customTimeout = null
-
-    return response
+    return {
+      // the response is not in JSON API format, but the error is
+      data: toCamelCaseDeep(response.data)
+    }
   }
 
   /**
    * Performs a request with signature
    * @private
    */
-  _callWithSignature (endpoint, query, method) {
-    return this._call(endpoint, query, method, true)
+  _callWithSignature (opts) {
+    return this._call({
+      ...opts,
+      needSign: true
+    })
   }
 
   /**
    * Performs a request
    *
-   * @param {string} endpoint - endpoint where to make the call to, e.g. `/accounts`
-   * @param query - request query params. See {@link parseQuery} for details
-   * @param method - the http method of request
-   * @param needSign - defines if will try to sign the request, `false` by default
+   * @param {object} opts
+   * @param {string} opts.endpoint - endpoint where to make the call to, e.g. `/accounts`
+   * @param {object} opts.data - request data (for POST/PUT requests)
+   * @param {object} opts.query - request query params. See {@link parseQuery} for details
+   * @param {string} opts.method - the http method of request
+   * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
    *
    * @private
    */
-  async _call (endpoint, query, method, needSign = false) {
-    let url = this._baseURL + endpoint // TODO: smartly build url
-    let config = { url, method, params: query }
+  async _call (opts) {
+    let config = {
+      params: opts.query || {},
+      data: opts.data || {},
+      method: opts.method,
+      url: this._baseURL + opts.endpoint // TODO: smartly build url
+    }
 
     config = middlewares.flattenToAxiosJsonApiQuery(config)
     config = middlewares.setJsonapiHeaders(config)
@@ -148,7 +202,7 @@ export class ApiCaller {
       config.timeout = this._customTimeout
     }
 
-    if (needSign) {
+    if (opts.needSign) {
       config = middlewares.signRequest(config, this._wallet.keypair)
     }
 

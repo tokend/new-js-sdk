@@ -66,14 +66,14 @@ export class JsonapiResponse {
     }
 
     const formatter = new Jsona()
-    const parsed = formatter.deserialize(response)
+    const parsed = formatter.deserialize(response.data)
 
     this._data = toCamelCaseDeep(parsed)
   }
 
   _parseLinks (response) {
-    if (response.links) {
-      this._links = response.links
+    if (response.data && response.data.links) {
+      this._links = response.data.links
     } else {
       this._links = {}
     }
