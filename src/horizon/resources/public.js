@@ -46,6 +46,24 @@ export class Public extends ResourceGroupBase {
   }
 
   /**
+   * Get user's email by their account ID
+   *
+   * @param {string} accountId user’s account ID
+   *
+   * @return {String} user's email
+   */
+  async getEmailByAccountId (accountId) {
+    const { data } = await this._server._makeCallBuilder()
+      .appendUrlSegment('details')
+      .post({
+        addresses: [accountId]
+      })
+
+    const users = Object.values(data.users)
+    return users.length ? users[0].email : ''
+  }
+
+  /**
    * Get public enums, such as countries, nationalities, genders, industries, etc.
    *
    * @return {Promise}
