@@ -27,7 +27,7 @@ for further information about branching and tagging conventions.
 ## Fixed
 - change password method
 
-[Unreleased]: https://github.com/tokend/admin-panel/compare/0.3.33...HEAD
-[0.3.33]: https://github.com/tokend/admin-panel/compare/0.3.32...0.3.33
-[0.3.32]: https://github.com/tokend/admin-panel/compare/0.3.31...0.3.32
-[0.3.31]: https://github.com/tokend/admin-panel/compare/0.3.30...0.3.31
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/0.3.33...HEAD
+[0.3.33]: https://github.com/tokend/new-js-sdk/compare/0.3.32...0.3.33
+[0.3.32]: https://github.com/tokend/new-js-sdk/compare/0.3.31...0.3.32
+[0.3.31]: https://github.com/tokend/new-js-sdk/compare/0.3.30...0.3.31
