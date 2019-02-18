@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+## Fix
+- License
+
 ## [0.3.33] 2019-02-16
 ## Changed
 - Freezed dependencies
@@ -23,5 +27,7 @@ for further information about branching and tagging conventions.
 ## Fixed
 - change password method
 
-[Unreleased]: https://github.com/tokend/admin-panel/compare/0.3.31...HEAD
+[Unreleased]: https://github.com/tokend/admin-panel/compare/0.3.33...HEAD
+[0.3.33]: https://github.com/tokend/admin-panel/compare/0.3.32...0.3.33
+[0.3.32]: https://github.com/tokend/admin-panel/compare/0.3.31...0.3.32
 [0.3.31]: https://github.com/tokend/admin-panel/compare/0.3.30...0.3.31
