@@ -67,7 +67,7 @@ export async function createAndPopulateOrderBook () {
   }
 }
 
-function getRandomArbitrary (min, max) {
+export function getRandomArbitrary (min, max) {
   const n = Math.random() * (Number(max) - Number(min)) + Number(min)
   return n.toFixed(6)
 }

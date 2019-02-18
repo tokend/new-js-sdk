@@ -119,7 +119,7 @@ export class ReviewRequestBuilder {
 
     let d = xdr.ReviewRequestOpRequestDetails.withdraw()
     d.set('withdraw', new xdr.WithdrawalDetails({
-      externalDetails: opts.requestDetails,
+      externalDetails: opts.externalDetails,
       ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion())
     }))
     attrs.requestDetails = d

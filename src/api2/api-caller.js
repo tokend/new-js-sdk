@@ -151,6 +151,7 @@ export class ApiCaller {
       method: methods.POST,
       url: `${this._baseURL}/transactions`
     }
+    config = middlewares.setJsonapiHeaders(config)
 
     let response
     try {
