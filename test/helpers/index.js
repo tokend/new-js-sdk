@@ -13,6 +13,7 @@ import { Offer } from './offer'
 import { Request } from './request'
 import { Sale } from './sale'
 import { Withdraw } from './withdraw'
+import { Payment } from './payment'
 
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
@@ -37,5 +38,6 @@ export const requestHelper = new Request(DEFAULTS)
 export const saleHelper = new Sale(DEFAULTS)
 export const keyValueHelper = new KeyValue(DEFAULTS)
 export const offerHelper = new Offer(DEFAULTS)
+export const paymentHelper = new Payment(DEFAULTS)
 export const withdrawHelper = new Withdraw(DEFAULTS)
 export const amlAlertHelper = new AmlAlert(DEFAULTS)

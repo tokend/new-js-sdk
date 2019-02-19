@@ -4,5 +4,6 @@ export const KEY_VALUE_KEYS = Object.freeze({
   assetCreateTasks: 'asset_create_tasks',
   saleCreateTasks: 'sale_create_tasks:*',
   withdrawalTasks: 'withdrawal_tasks',
-  amlAlertTasks: 'aml_alert_tasks'
+  amlAlertTasks: 'aml_alert_tasks',
+  paymentCreateTasks: 'payment_create_tasks:*'
 })
