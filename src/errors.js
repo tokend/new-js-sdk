@@ -69,6 +69,10 @@ export class ServerErrorBase extends Error {
     return this._detail
   }
 
+  get requestPath () {
+    return this.originalError.response.request.path
+  }
+
   /**
    * Retry the failed request.
    * Use it to retry requests after 2FA.

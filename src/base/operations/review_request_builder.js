@@ -15,10 +15,11 @@ export class ReviewRequestBuilder {
    * @param {number} opts.requestType - Type of the request to be reviewed (xdr.ReviewableRequestType)
    * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
    * @param {string} opts.reason - Reject reason
+   * @param {object} opts.reviewDetails - Review details for reviewable request (xdr.ReviewDetails)
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @param {number|string} opts.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
    * @param {number|string} opts.tasksToRemove - tasks, which were done by the reviewer and should be removed
-   * @param {string} opts.ExternalDetails - the reviewer's commentary
+   * @param {string} opts.externalDetails - the reviewer's commentary
    * @returns {xdr.ReviewRequestOp}
    */
   static reviewRequest (opts) {
@@ -31,7 +32,10 @@ export class ReviewRequestBuilder {
     }
 
     let requestType = xdr.ReviewableRequestType._byValue.get(opts.requestType)
+
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails(requestType)
+
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
 
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
@@ -67,28 +71,28 @@ export class ReviewRequestBuilder {
 
     attrs.reason = opts.reason
 
-    if (isUndefined(opts.tasksToAdd)) {
-      opts.tasksToAdd = 0
+    if (isUndefined(opts.reviewDetails)) {
+      opts.reviewDetails = {}
     }
 
-    if (isUndefined(opts.tasksToRemove)) {
-      opts.tasksToRemove = 0
+    if (isUndefined(opts.reviewDetails.tasksToAdd)) {
+      opts.reviewDetails.tasksToAdd = 0
     }
 
-    if (isUndefined(opts.externalDetails)) {
-      opts.externalDetails = {}
+    if (isUndefined(opts.reviewDetails.tasksToRemove)) {
+      opts.reviewDetails.tasksToRemove = 0
     }
 
-    let reviewDetails = new xdr.ReviewDetails({
-      tasksToAdd: opts.tasksToAdd,
-      tasksToRemove: opts.tasksToRemove,
-      externalDetails: JSON.stringify(opts.externalDetails),
+    if (isUndefined(opts.reviewDetails.externalDetails)) {
+      opts.reviewDetails.externalDetails = ''
+    }
+
+    attrs.reviewDetails = new xdr.ReviewDetails({
+      tasksToAdd: opts.reviewDetails.tasksToAdd,
+      tasksToRemove: opts.reviewDetails.tasksToRemove,
+      externalDetails: opts.reviewDetails.externalDetails,
       ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
     })
-
-    attrs.ext = new xdr.ReviewRequestOpExt.addTasksToReviewableRequest(
-      reviewDetails
-    )
 
     return attrs
   }
@@ -102,21 +106,32 @@ export class ReviewRequestBuilder {
    * @param {string} opts.reason - Reject reason
    * @param {string} opts.externalDetails - External System details
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
+   * @param {number|string} opts.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
+   * @param {number|string} opts.tasksToRemove - tasks, which were done by the reviewer and should be removed
    * @returns {xdr.ReviewRequestOp}
    */
   static reviewWithdrawRequest (opts) {
-    if (isUndefined(opts.externalDetails)) {
-      throw new Error('opts.externalDetails is invalid')
+    if (isUndefined(opts.reviewDetails.externalDetails)) {
+      throw new Error('opts.reviewDetails.externalDetails is invalid')
     }
 
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
 
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.withdraw(
-      new xdr.WithdrawalDetails({
-        ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion()),
-        externalDetails: JSON.stringify(opts.externalDetails)
-      })
-    )
+    let d = xdr.ReviewRequestOpRequestDetails.withdraw()
+    d.set('withdraw', new xdr.WithdrawalDetails({
+      externalDetails: opts.externalDetails,
+      ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion())
+    }))
+    attrs.requestDetails = d
+
+    attrs.reviewDetails = new xdr.ReviewDetails({
+      tasksToAdd: opts.reviewDetails.tasksToAdd,
+      tasksToRemove: opts.reviewDetails.tasksToRemove,
+      externalDetails: JSON.stringify(opts.reviewDetails.externalDetails),
+      ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
+    })
+
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
 
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
@@ -145,35 +160,7 @@ export class ReviewRequestBuilder {
         comment: opts.comment
       })
     )
-
-    return ReviewRequestBuilder._createOp(opts, attrs)
-  }
-
-  /**
-   * Creates operation to review two step withdraw request
-   * @param {object} opts
-   * @param {string} opts.requestID - request ID
-   * @param {string} opts.requestHash - Hash of the request to be reviewed
-   * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
-   * @param {string} opts.reason - Reject reason
-   * @param {string} opts.externalDetails - External System details
-   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-   * @returns {xdr.ReviewRequestOp}
-   */
-  static reviewTwoStepWithdrawRequest (opts) {
-    if (isUndefined(opts.externalDetails)) {
-      throw new Error('opts.externalDetails is invalid')
-    }
-
-    let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails
-      .twoStepWithdrawal(
-        new xdr.WithdrawalDetails({
-          ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion()),
-          externalDetails: JSON.stringify(opts.externalDetails)
-        })
-      )
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
 
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
@@ -262,12 +249,12 @@ export class ReviewRequestBuilder {
 
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.updateKyc(
       new xdr.UpdateKycDetails({
-        tasksToAdd: opts.tasksToAdd,
-        tasksToRemove: opts.tasksToRemove,
-        externalDetails: JSON.stringify(opts.externalDetails),
+        externalDetails: JSON.stringify(opts.requestDetails),
         ext: new xdr.UpdateKycDetailsExt(xdr.LedgerVersion.emptyVersion())
       })
     )
+
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
 
     return ReviewRequestBuilder._createOp(opts, attrs)
   }
@@ -335,7 +322,7 @@ export class ReviewRequestBuilder {
           newLimits: {
             id: newLimitsV2.id().toString(),
             statsOpType: newLimitsV2.statsOpType().value,
-            assetCode: newLimitsV2.assetCode(),
+            assetCode: newLimitsV2.assetCode().toString(),
             isConvertNeeded: newLimitsV2.isConvertNeeded(),
             dailyOut: BaseOperation._fromXDRAmount(newLimitsV2.dailyOut()),
             weeklyOut: BaseOperation._fromXDRAmount(newLimitsV2.weeklyOut()),
@@ -356,19 +343,8 @@ export class ReviewRequestBuilder {
 
         break
       }
-      case xdr.ReviewableRequestType.twoStepWithdrawal(): {
-        result.twoStepWithdrawal = {
-          externalDetails: attrs
-            .requestDetails()
-            .twoStepWithdrawal()
-            .externalDetails().toString()
-        }
-        break
-      }
       case xdr.ReviewableRequestType.updateKyc(): {
         result.updateKyc = {
-          tasksToAdd: attrs.requestDetails().updateKyc().tasksToAdd(),
-          tasksToRemove: attrs.requestDetails().updateKyc().tasksToRemove(),
           externalDetails: attrs.requestDetails().updateKyc().externalDetails().toString()
         }
         break
@@ -379,34 +355,13 @@ export class ReviewRequestBuilder {
         }
         break
       }
-      case xdr.ReviewableRequestType.invoice(): {
-        let billPayDetails = {}
-        PaymentV2Builder.paymentV2ToObject(
-          billPayDetails, attrs.requestDetails().billPay().paymentDetails()
-        )
-        result.invoice = {
-          billPayDetails: billPayDetails
-        }
-        break
-      }
-      case xdr.ReviewableRequestType.contract(): {
-        result.contract = {
-          details: JSON.parse(attrs.requestDetails().contract().details())
-        }
-        break
-      }
+    }
+    result.reviewDetails = {
+      tasksToAdd: attrs.reviewDetails().tasksToAdd(),
+      tasksToRemove: attrs.reviewDetails().tasksToRemove(),
+      externalDetails: attrs.reviewDetails().externalDetails().toString('utf8')
     }
     result.action = attrs.action().value
     result.reason = attrs.reason().toString()
-
-    switch (attrs.ext().switch()) {
-      case xdr.LedgerVersion.addTasksToReviewableRequest(): {
-        let reviewDetails = attrs.ext().reviewDetails()
-        result.tasksToAdd = reviewDetails.tasksToAdd()
-        result.tasksToRemove = reviewDetails.tasksToRemove()
-        result.externalDetails = reviewDetails.externalDetails()
-        break
-      }
-    }
   }
 }

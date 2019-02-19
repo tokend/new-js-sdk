@@ -191,6 +191,69 @@ describe('ApiResponse', () => {
         })
     })
 
+    it('Should resolve included relationships', () => {
+      const rawResponse = cloneDeep(rawSingleItemResponse)
+      rawResponse.included = [{
+        id: 1,
+        type: 'authors',
+        attributes: {
+          first_name: 'John',
+          last_name: 'Doe',
+          age: 45
+        }
+      }]
+      const response = new ApiResponse({ data: rawResponse }, sdk)
+
+      expect(response.relationships)
+        .to.have.a.property('author')
+        .jsonEqual({
+          id: 1,
+          resourceType: 'authors',
+          attributes: {
+            firstName: 'John',
+            lastName: 'Doe',
+            age: 45
+          }
+        })
+    })
+
+    it('Should resolve included relationships', () => {
+      const rawResponse = cloneDeep(rawCollectionResponse)
+      rawResponse.included = [{
+        id: 1,
+        type: 'authors',
+        attributes: {
+          first_name: 'John',
+          last_name: 'Doe',
+          age: 45
+        }
+      }]
+      const response = new ApiResponse({ data: rawResponse }, sdk)
+
+      expect(response.data[0].relationships)
+        .to.have.a.property('author')
+        .jsonEqual({
+          id: 1,
+          resourceType: 'authors',
+          attributes: {
+            firstName: 'John',
+            lastName: 'Doe',
+            age: 45
+          }
+        })
+      expect(response.data[1].relationships)
+        .to.have.a.property('author')
+        .jsonEqual({
+          id: 1,
+          resourceType: 'authors',
+          attributes: {
+            firstName: 'John',
+            lastName: 'Doe',
+            age: 45
+          }
+        })
+    })
+
     it('Should resolve relationship links', async () => {
       expect(singleItemResponse.relationships.author)
         .to.have.a.property('fetchSelf').a('function')

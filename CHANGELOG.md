@@ -7,27 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
-## Fix
+## [1.0.0-x.8] - 2019-02-9
+### Changed
+- Squashed ledger version;
+
+### Removed
+- Payment and Direct Debit Operations
+
+### Fix
 - License
 
 ## [0.3.33] 2019-02-16
-## Changed
+### Changed
 - Freezed dependencies
 
 ## [0.3.32] 2019-02-16
-## Added
-- add horizon.public.getEmailByAccountId() method
+### Added
+- Add horizon.public.getEmailByAccountId() method
 
 ## [0.3.31] 2019-02-14
 
 ### Added
 - Ability to getting info about private user docs
 
-## Fixed
-- change password method
+### Fixed
+- Change password method
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/0.3.33...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.8...HEAD
+[1.0.0-x.8]: https://github.com/tokend/new-js-sdk/compare/0.3.33...1.0.0-x.8
 [0.3.33]: https://github.com/tokend/new-js-sdk/compare/0.3.32...0.3.33
 [0.3.32]: https://github.com/tokend/new-js-sdk/compare/0.3.31...0.3.32
 [0.3.31]: https://github.com/tokend/new-js-sdk/compare/0.3.30...0.3.31
