@@ -1,4 +1,5 @@
 import Jsona from 'jsona'
+import { camelCase, isString } from 'lodash'
 import { toCamelCaseDeep } from '../../utils/case_converter'
 
 export function parseJsonapiResponse (response) {
@@ -16,8 +17,10 @@ export class JsonapiResponse {
    *
    * @constructor
    * @param {object} rawResponse Raw axios.js response object.
+   * @param {ApiCaller} api - Instance of api that made the request
    */
-  constructor (rawResponse) {
+  constructor (rawResponse, api) {
+    this._api = api
     this._rawResponse = rawResponse
     this._parseResponse(rawResponse)
     this._parseLinks(rawResponse)
@@ -58,6 +61,24 @@ export class JsonapiResponse {
    */
   toJSON () {
     return this.data
+  }
+
+  makeLinkCallers (api) {
+    for (const [key, value] of Object.entries(this.links)) {
+      const methodName = camelCase('fetch_' + key)
+      const link = isString(value) ? value : value.href
+
+      this[methodName] = _ => api.get(link)
+    }
+  }
+
+  makeLinkCallersWithSignature (api) {
+    for (const [key, value] of Object.entries(this.links)) {
+      const methodName = camelCase('fetch_' + key)
+      const link = isString(value) ? value : value.href
+
+      this[methodName] = _ => api.getWithSignature(link)
+    }
   }
 
   _parseResponse (response) {

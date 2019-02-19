@@ -38,6 +38,8 @@ describe('Transaction', () => {
       .toEnvelope()
       .toXDR('base64')
 
+    console.log(input.toString())
+
     let transaction = new Transaction(input)
     let operation = transaction.operations[0]
 

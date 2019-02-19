@@ -1,7 +1,6 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { CreateAccountBuilder } from './create_account_builder'
-import { isEqual } from 'lodash'
 
 describe('create Account', () => {
   it('success', () => {

@@ -1,4 +1,5 @@
 import { ServerBase } from '../server_base'
+import { get } from 'lodash'
 import { HorizonResponse } from './response'
 import * as errors from '../errors'
 import * as resources from './resources'
@@ -259,9 +260,15 @@ export class HorizonServer extends ServerBase {
 
   _parseResponseError (error) {
     if (error.response && error.response.status) {
+      const errCode = get(error, 'response.data.errors[0].code')
+
       switch (error.response.status) {
         case 400:
-          error = new errors.BadRequestError(error, this._axios)
+          if (errCode === 'transaction_failed') {
+            error = new errors.TransactionError(error, this._axios)
+          } else {
+            error = new errors.BadRequestError(error, this._axios)
+          }
           break
         case 401:
           error = new errors.UnauthorizedError(error, this._axios)

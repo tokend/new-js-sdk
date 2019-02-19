@@ -74,16 +74,20 @@ export class ApiServer extends ServerBase {
                 error = new errors.ServerError(error, this._axios)
             }
           } else {
+            const errCode = get(error, 'response.data.errors[0].code')
+
             switch (error.response.status) {
               case 400:
-                error = new errors.BadRequestError(error, this._axios)
+                if (errCode === 'transaction_failed') {
+                  error = new errors.TransactionError(error, this._axios)
+                } else {
+                  error = new errors.BadRequestError(error, this._axios)
+                }
                 break
               case 401:
                 error = new errors.NotAllowedError(error, this._axios)
                 break
               case 403:
-                let errCode = get(error, 'response.data.errors[0].code')
-
                 if (errCode === 'tfa_required') {
                   error = new errors.TFARequiredError(error, this._axios)
                 } else if (errCode === 'verification_required') {

@@ -337,8 +337,6 @@ export class ReviewRequestBuilder {
         break
       }
     }
-    // let rd = attrs.reviewDetails()
-    // let parsed = JSON.stringify(JSON.parse(rd))
     result.reviewDetails = {
       tasksToAdd: attrs.reviewDetails().tasksToAdd(),
       tasksToRemove: attrs.reviewDetails().tasksToRemove(),

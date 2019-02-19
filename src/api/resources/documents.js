@@ -37,6 +37,8 @@ export class Documents extends ResourceGroupBase {
 
   /**
    * Create a document upload config.
+   * WARN: Works only for users, use {@link Documents.masterCreate()} for
+   * master and its signers
    *
    * @param {string} documentType Document type.
    * @param {string} mimeType Content type.
@@ -46,6 +48,34 @@ export class Documents extends ResourceGroupBase {
    */
   async create (documentType, mimeType) {
     let response = await this._makeCallBuilder()
+      .post({
+        data: {
+          type: documentType,
+          attributes: { contentType: mimeType }
+        }
+      })
+
+    let url = response.data.url
+    let formData = omit(response.data, ['id', 'url', 'resourceType'])
+    formData = toSnakeCaseDeep(formData)
+
+    return { url, formData }
+  }
+
+  /**
+   * Create a document upload config. Works for master account and its signers
+   * only
+   *
+   * @param {string} documentType Document type.
+   * @param {string} mimeType Content type.
+   * @param {Buffer} data Document contents.
+   *
+   * @return {Promise.<Object>} Upload URL and form data.
+   */
+  async masterCreate (documentType, mimeType) {
+    let response = await this._server._makeCallBuilder()
+      .appendUrlSegment('documents')
+      .withSignature()
       .post({
         data: {
           type: documentType,

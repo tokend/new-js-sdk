@@ -82,11 +82,11 @@ export class PaymentV2Builder {
   }
 
   static ensureFeeValid (fee) {
-    if (!BaseOperation.isValidAmount(fee.fixed)) {
+    if (!BaseOperation.isValidAmount(fee.fixed, true)) {
       throw new TypeError('fixed fee must be of type String and represent a positive number')
     }
 
-    if (!BaseOperation.isValidAmount(fee.percent)) {
+    if (!BaseOperation.isValidAmount(fee.percent, true)) {
       throw new TypeError('fixed fee must be of type String and represent a positive number')
     }
   }

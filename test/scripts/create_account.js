@@ -34,11 +34,20 @@ export async function createFundedAccount (roleID, balances) {
   })
   log.info(`Account created, id: ${accountId}`)
 
+  await fundAccount(accountId, balances)
+  return {
+    accountKp,
+    accountId
+  }
+}
+
+export async function fundAccount (accountId, balances) {
+  const log = logger.new('fundAccount')
   await Promise.all(
     Object
       .keys(balances)
       .map(assetCode => balanceHelper.create(
-        accountKp.accountId(),
+        accountId,
         assetCode
       ))
   )
@@ -69,11 +78,6 @@ export async function createFundedAccount (roleID, balances) {
       })
   )
   log.info(`Account ${accountId} funded`)
-
-  return {
-    accountKp,
-    accountId
-  }
 }
 
 export function createFundedGeneral (balances) {

@@ -6,7 +6,7 @@ import { Running } from './_running'
 export class Balance extends Helper {
   create (destinationAccountId, assetCode) {
     const operation = Operation.manageBalance({
-      action: xdr.ManageBalanceAction.create(),
+      action: xdr.ManageBalanceAction.createUnique(),
       destination: destinationAccountId,
       asset: assetCode
     })

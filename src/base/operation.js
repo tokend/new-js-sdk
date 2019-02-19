@@ -17,6 +17,8 @@ import { CreateAMLRequestBuilder } from './operations/create_aml_request_builder
 import { CreateChangeRoleRequestBuilder } from './operations/create_change_role_request_builder'
 import { ManageSaleBuilder } from './operations/manage_sale_builder'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
+import { BindExternalSystemAccountIdBuilder } from './operations/bind_external_system_account_id_builder'
+import { CreateManageLimitsRequestBuilder } from './operations/create_manage_limits_request_builder'
 import { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
 import { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
 import { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
@@ -195,6 +197,7 @@ export class Operation extends BaseOperation {
      * Returns an XDR ManageBalanceOp. A "manage account" operations creates|deletes balance for account.
      * @param {object} opts
      * @param {string} opts.destination - Account to create account for.
+     * @param {string} opts.asset - Asset to manage asset for.
      * @param {xdr.ManageBalanceAction} – Delete or create
      * @returns {xdr.ManageBalanceOp}
      */
@@ -386,6 +389,9 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.createSaleRequest():
         SaleRequestBuilder.crateSaleCreationRequestToObject(result, attrs)
         break
+      case xdr.OperationType.cancelSaleRequest():
+        SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
+        break
       case xdr.OperationType.manageLimit():
         ManageLimitsBuilder.manageLimitsOpToObject(result, attrs)
         break
@@ -410,6 +416,12 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.paymentV2():
         PaymentV2Builder.paymentV2ToObject(result, attrs)
         break
+      case xdr.OperationType.bindExternalSystemAccountId():
+        BindExternalSystemAccountIdBuilder.bindExternalSystemAccountIdToObject(result, attrs)
+        break
+      case xdr.OperationType.createManageLimitsRequest():
+        CreateManageLimitsRequestBuilder.createManageLimitsRequestToObject(result, attrs)
+        break
       case xdr.OperationType.createAswapBidRequest():
         CreateAtomicSwapBidCreationRequestBuilder
           .createASwapBidCreationRequestToObject(result, attrs)
@@ -419,12 +431,6 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.createAswapRequest():
         CreateAtomicSwapRequestBuilder.createASwapRequestToObject(result, attrs)
-        break
-      /* case xdr.OperationType.createReference():
-        CreateReferenceBuilder.createReferenceToObject(result, attrs)
-        break */
-      case xdr.OperationType.cancelSaleRequest():
-        SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

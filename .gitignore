@@ -18,3 +18,4 @@
 /test/integration/scripts/master_seeds.js
 /dist/
 /lib/
+/package-lock.json

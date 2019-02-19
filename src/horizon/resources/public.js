@@ -30,6 +30,51 @@ export class Public extends ResourceGroupBase {
       .get(query)
   }
 
+  /**
+   * Get account id by email
+   * Actually user_id endpoint belongs to API, but due to the fact the response
+   * isn’t packaged into a json api format, we placed it here.
+   *
+   * @param {string} email user’s email
+   *
+   * @return {Promise}
+   */
+  getAccountIdByEmail (email) {
+    return this._server._makeCallBuilder()
+      .appendUrlSegment('user_id')
+      .get({ email })
+  }
+
+  /**
+   * Get user's email by their account ID
+   *
+   * @param {string} accountId user’s account ID
+   *
+   * @return {String} user's email
+   */
+  async getEmailByAccountId (accountId) {
+    const { data } = await this._server._makeCallBuilder()
+      .appendUrlSegment('details')
+      .post({
+        addresses: [accountId]
+      })
+
+    const users = Object.values(data.users)
+    return users.length ? users[0].email : ''
+  }
+
+  /**
+   * Get public enums, such as countries, nationalities, genders, industries, etc.
+   *
+   * @return {Promise}
+   */
+  getEnums () {
+    return this._server._makeCallBuilder()
+      .appendUrlSegment('data')
+      .appendUrlSegment('enums')
+      .get()
+  }
+
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
       .appendUrlSegment('public')
