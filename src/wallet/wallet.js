@@ -93,7 +93,7 @@ export class Wallet {
     return new Wallet(
       email,
       Keypair.fromSecret(decryptedKeychain.seed),
-      decryptedKeychain.accountId,
+      Keypair.fromSecret(decryptedKeychain.seed).accountId(),
       sjcl.codec.hex.fromBits(rawWalletId)
     )
   }
