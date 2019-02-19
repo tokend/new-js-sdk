@@ -19,6 +19,7 @@ export { CreateIssuanceRequestBuilder } from './operations/create_issuance_reque
 export { SaleRequestBuilder } from './operations/sale_request_builder'
 export { ManageOfferBuilder } from './operations/manage_offer_builder'
 export { ManageSaleBuilder } from './operations/manage_sale_builder'
+export { CreateAccountBuilder} from './operations/create_account_builder'
 export { ManageSignerBuilder } from './operations/manage_signer_builder'
 export { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
 export { CreateChangeRoleRequestBuilder } from './operations/create_change_role_request_builder'

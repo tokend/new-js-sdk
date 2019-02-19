@@ -31,7 +31,8 @@ export class CreateAccountBuilder {
       ext: new xdr.CreateAccountOpExt(xdr.LedgerVersion.emptyVersion())
     }
 
-    if (!isUndefined(opts.referrer)) {
+    if (!isUndefined(opts.referrer) && !(opts.referrer === '')) {
+      console.log(opts.referrer)
       if (!Keypair.isValidPublicKey(opts.referrer)) {
         throw new TypeError('referrer is invalid')
       }
