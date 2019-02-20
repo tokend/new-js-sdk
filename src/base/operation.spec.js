@@ -4,72 +4,6 @@ import { Keypair } from './keypair'
 import { Operation } from './operation'
 
 describe('Operation', () => {
-  describe('.createAccount()', () => {
-    it('creates a createAccountOp general', () => {
-      let destination = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      let recoveryKey = 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV'
-      let accountType = xdr.AccountType.general().value
-      let op = Operation.createAccount({
-        destination,
-        recoveryKey,
-        accountType
-      })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('createAccount')
-      expect(obj.destination).to.be.equal(destination)
-      expect(obj.recoveryKey).to.be.equal(recoveryKey)
-      expect(obj.accountType).to.be.equal(accountType)
-    })
-
-    it('fails to create createAccount operation with an invalid destination address', () => {
-      let opts = {
-        destination: 'GCEZW',
-        accountType: xdr.AccountType.general().value,
-        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-
-    it('fails to create createAccount operation with an invalid recovery address', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GCEZ',
-        accountType: xdr.AccountType.general().value
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-
-    it('fails to create createAccount operation with an invalid source address', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        accountType: xdr.AccountType.general().value,
-        source: 'GCEZ'
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-    it('fails to create createAccount operation with an invalid account type', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-    it('fails to create createAccount with negative policies', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        accountType: xdr.AccountType.general().value,
-        accountPolicies: -1
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-  })
-
   describe('.payment()', () => {
     let sourceBalanceId = Keypair.random().balanceId()
     let destinationBalanceId = Keypair.random().balanceId()
@@ -216,65 +150,6 @@ describe('Operation', () => {
       expectThrow(() => Operation.payment(opts))
     })
   })
-
-  describe('.manageAccount()', () => {
-    it('creates a manageAccountOp block', () => {
-      let account = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      let blockReasonsToAdd = 1
-      let blockReasonsToRemove = 2
-      let accountType = xdr.AccountType.operational().value
-      let op = Operation.manageAccount({ account,
-        blockReasonsToAdd,
-        blockReasonsToRemove,
-        accountType
-      })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('manageAccount')
-      expect(obj.accountType).to.be.equal(accountType)
-      expect(obj.account).to.be.equal(account)
-      expect(obj.blockReasonsToAdd).to.be.equal(blockReasonsToAdd)
-      expect(obj.blockReasonsToRemove).to.be.equal(blockReasonsToRemove)
-    })
-    it('creates a manageAccountOp without block', () => {
-      let account = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      let accountType = xdr.AccountType.operational().value
-      let op = Operation.manageAccount({ account, accountType })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('manageAccount')
-      expect(obj.account).to.be.equal(account)
-      expect(obj.blockReasonsToAdd).to.be.equal(0)
-      expect(obj.blockReasonsToRemove).to.be.equal(0)
-    })
-
-    it('fails to create manageAccountOp operation with an invalid account', () => {
-      let opts = {
-        account: 'GCEZW',
-        accountType: xdr.AccountType.operational().value
-      }
-      expectThrow(() => Operation.manageAccount(opts))
-    })
-
-    it('fails to create manageAccount operation with an invalid source address', () => {
-      let opts = {
-        account: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        source: 'GCEZ',
-        accountType: xdr.AccountType.operational().value
-      }
-      expectThrow(() => Operation.manageAccount(opts))
-    })
-    it('fails to create manageAccount operation with an undefined accountType', () => {
-      let opts = {
-        account: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        block: true
-      }
-      expectThrow(() => Operation.manageAccount(opts))
-    })
-  })
-
   describe('.setFees', () => {
     it('valid setFees', () => {
       let feeType = xdr.FeeType.paymentFee()

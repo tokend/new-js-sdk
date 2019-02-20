@@ -1,6 +1,7 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
+import isUndefined from 'lodash/isUndefined'
 
 export class CreateAtomicSwapRequestBuilder {
   /**
@@ -10,6 +11,7 @@ export class CreateAtomicSwapRequestBuilder {
      * @param {string} opts.bidID - id of bid for which request will be created.
      * @param {string} opts.baseAmount - amount which will be bought
      * @param {string} opts.quoteAsset - accepted assets
+     * @param {string} opts.creatorDetails - request details set by creator
      * @param {string} [opts.source] - The source account for the operation.
      * Defaults to the transaction's source account.
      *
@@ -26,8 +28,13 @@ export class CreateAtomicSwapRequestBuilder {
     if (!BaseOperation.isValidAsset(opts.quoteAsset)) {
       throw new Error('opts.quoteAssets is invalid')
     }
-    rawRequest.quoteAsset = opts.quoteAsset
 
+    if (isUndefined(opts.creatorDetails)) {
+      throw new Error('opts.creatorDetails is undefined')
+    }
+
+    rawRequest.quoteAsset = opts.quoteAsset
+    rawRequest.creatorDetails = opts.creatorDetails
     rawRequest.bidId = UnsignedHyper.fromString(opts.bidID)
     rawRequest.ext = new xdr.ASwapRequestExt(
       xdr.LedgerVersion.emptyVersion())
@@ -49,5 +56,6 @@ export class CreateAtomicSwapRequestBuilder {
     result.baseAmount = BaseOperation._fromXDRAmount(
       attrs.request().baseAmount())
     result.quoteAsset = attrs.request().quoteAsset().toString()
+    result.creatorDetails = attrs.request().creatorDetails().toString()
   }
 }

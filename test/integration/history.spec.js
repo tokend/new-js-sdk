@@ -1,7 +1,7 @@
 import { Keypair } from '../../src/base'
 import { populateHistoryForAccount } from '../scripts/make_history'
 
-describe.only('history', () => {
+describe.skip('history', () => {
   it('should populate history with different issuance requests', async () => {
     const accountKp = Keypair.fromSecret('SAN5AXYMRILA7WG55GOVQBYOYWZHKASOIXOG3MYMCMKRNSYYNLN2NPO5')
 

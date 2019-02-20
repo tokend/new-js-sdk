@@ -1,6 +1,6 @@
 import { default as xdr } from './generated/xdr_generated'
 import { Keypair } from './keypair'
-import { Hyper } from 'js-xdr'
+import { UnsignedHyper, Hyper } from 'js-xdr'
 import { hash } from './hashing'
 import { encodeCheck } from './strkey'
 import isUndefined from 'lodash/isUndefined'
@@ -11,9 +11,10 @@ import { PreIssuanceRequestOpBuilder } from './operations/pre_issuance_request_o
 import { CreateIssuanceRequestBuilder } from './operations/create_issuance_request_builder'
 import { SaleRequestBuilder } from './operations/sale_request_builder'
 import { ManageOfferBuilder } from './operations/manage_offer_builder'
-import { SetOptionsBuilder } from './operations/set_options_builder'
+import { ManageSignerBuilder } from './operations/manage_signer_builder'
+import { CreateAccountBuilder } from './operations/create_account_builder'
 import { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
-import { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
+import { CreateChangeRoleRequestBuilder } from './operations/create_change_role_request_builder'
 import { ManageSaleBuilder } from './operations/manage_sale_builder'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
 import { BindExternalSystemAccountIdBuilder } from './operations/bind_external_system_account_id_builder'
@@ -26,62 +27,6 @@ import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 
 export class Operation extends BaseOperation {
-  /**
-     * Create and fund a non existent account.
-     * @param {object} opts
-     * @param {string} opts.destination - Destination account ID to create an account for.
-     * @param {string} opts.recoveryKey - AccountID of recovery signer.
-     * @param {string} opts.accountType - Type of the account to be created.
-     * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-     * * @param {string} opts.accountPolicies - The policies of the account.
-     * @returns {xdr.CreateAccountOp}
-     */
-  static createAccount (opts) {
-    if (!Keypair.isValidPublicKey(opts.destination)) {
-      throw new Error('destination is invalid')
-    }
-    if (!Keypair.isValidPublicKey(opts.recoveryKey)) {
-      throw new Error('recoveryKey is invalid')
-    }
-    let attributes = {}
-    attributes.destination = Keypair
-      .fromAccountId(opts.destination)
-      .xdrAccountId()
-    attributes.recoveryKey = Keypair
-      .fromAccountId(opts.recoveryKey)
-      .xdrAccountId()
-    attributes.accountType = Operation._accountTypeFromNumber(opts.accountType)
-
-    if (!isUndefined(opts.accountPolicies)) {
-      if (opts.accountPolicies < 0) {
-        throw new TypeError('accountPolicies should be positive or zero')
-      }
-      attributes.policies = opts.accountPolicies
-    } else {
-      attributes.policies = 0 // default no_permissions
-    }
-
-    if (opts.referrer) {
-      if (!Keypair.isValidPublicKey(opts.referrer)) {
-        throw new TypeError('referrer is invalid')
-      }
-      attributes.referrer = Keypair.fromAccountId(opts.referrer).xdrAccountId()
-    }
-
-    attributes.ext = new xdr.CreateAccountOpExt(
-      xdr.LedgerVersion.emptyVersion()
-    )
-
-    attributes.externalSystemIDs = []
-
-    let createAccount = new xdr.CreateAccountOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.createAccount(createAccount)
-    Operation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
-  }
-
   /**
      * Create a payment operation.
      * @param {object} opts
@@ -157,52 +102,17 @@ export class Operation extends BaseOperation {
   }
 
   /**
-     * Create a recovery op.
-     * @param {object} opts
-     * @param {string} opts.account - The target account to recover
-     * @param {string} opts.oldSigner - Signer to recover.
-     * @param {string} opts.newSigner - Signer to recover to.
-     * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-     * @returns {xdr.RecoverOp}
-     */
-  static recover (opts) {
-    if (!Keypair.isValidPublicKey(opts.account)) {
-      throw new TypeError('account is invalid')
-    }
-    if (!Keypair.isValidPublicKey(opts.oldSigner)) {
-      throw new TypeError('oldSigner is invalid')
-    }
-    if (!Keypair.isValidPublicKey(opts.newSigner)) {
-      throw new TypeError('newSigner is invalid')
-    }
-
-    let attributes = {
-      ext: new xdr.RecoverOpExt(xdr.LedgerVersion.emptyVersion())
-    }
-    attributes.account = Keypair.fromAccountId(opts.account).xdrAccountId()
-    attributes.oldSigner = Keypair.fromAccountId(opts.oldSigner).xdrAccountId()
-    attributes.newSigner = Keypair.fromAccountId(opts.newSigner).xdrAccountId()
-    attributes.action = opts.action
-
-    let recover = new xdr.RecoverOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.recover(recover)
-    Operation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
-  }
-
-  /**
-     * Set Fees to the ledger
-     * @param {object} opts
-     * @param {string} opts.destination - Destination account ID to create an account for.
-     * @param {Object} [opts.fee] - Amount in XLM the account should be funded for.
-     * @param {string} opts.fee.feeType - feeType
-     * @param {string} opts.fee.feeAmount - fee amount
-     * @param {bool} [opts.isDelete] - isDelete - true for remove fee
-     * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-     * @returns {xdr.SetFeesOp}
-     */
+   * Set Fees to the ledger
+   * @param {object} opts
+   * @param {string} opts.destination - Destination account ID to create an account for.
+   * @param {Object} [opts.fee] - Amount in XLM the account should be funded for.
+   * @param {string} opts.fee.feeType - feeType
+   * @param {string} opts.fee.feeAmount - fee amount
+   * @param {string} opts.fee.accountRole - id of account role
+   * @param {bool} [opts.isDelete] - isDelete - true for remove fee
+   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
+   * @returns {xdr.SetFeesOp}
+   */
   static setFees (opts) {
     let attributes = {
       ext: new xdr.SetFeesOpExt(xdr.LedgerVersion.emptyVersion())
@@ -262,15 +172,12 @@ export class Operation extends BaseOperation {
           data += `accountID:${opts.fee.accountId}`
         }
       }
-      if (opts.fee.accountType) {
-        feeData.accountType = Operation._accountTypeFromNumber(
-          opts.fee.accountType
-        )
-        data += `accountType:${opts.fee.accountType}`
+      if (opts.fee.accountRole) {
+        feeData.accountRole = UnsignedHyper.fromString(opts.fee.accountRole)
+        data += `accountRole:${opts.fee.accountRole}`
       }
       feeData.hash = hash(data)
-      let entry = new xdr.FeeEntry(feeData)
-      attributes.fee = entry
+      attributes.fee = new xdr.FeeEntry(feeData)
     }
 
     if (isUndefined(opts.isDelete)) {
@@ -282,46 +189,6 @@ export class Operation extends BaseOperation {
     let setfees = new xdr.SetFeesOp(attributes)
     let opAttributes = {}
     opAttributes.body = xdr.OperationBody.setFee(setfees)
-    Operation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
-  }
-
-  /**
-     * Returns an XDR ManageAccountOp. A "manage account" operations block|ublocks account.
-     * @param {object} opts
-     * @param {string} opts.account - Account to be managed.
-     * @param {boolean} [opts.block] - True to block account.
-     * @returns {xdr.ManageAccountOp}
-     */
-  static manageAccount (opts) {
-    let attributes = {
-      ext: new xdr.ManageAccountOpExt(xdr.LedgerVersion.emptyVersion())
-    }
-
-    if (!Keypair.isValidPublicKey(opts.account)) {
-      throw new Error('account is invalid')
-    }
-
-    attributes.account = Keypair.fromAccountId(opts.account).xdrAccountId()
-    if (isUndefined(opts.blockReasonsToAdd)) {
-      opts.blockReasonsToAdd = 0
-    }
-    if (isUndefined(opts.blockReasonsToRemove)) {
-      opts.blockReasonsToRemove = 0
-    }
-
-    if (isUndefined(opts.accountType)) {
-      throw new Error('accountType should be defined')
-    }
-
-    attributes.accountType = Operation._accountTypeFromNumber(opts.accountType)
-    attributes.blockReasonsToAdd = opts.blockReasonsToAdd
-    attributes.blockReasonsToRemove = opts.blockReasonsToRemove
-
-    let manageAccountOp = new xdr.ManageAccountOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.manageAccount(manageAccountOp)
     Operation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)
   }
@@ -453,17 +320,10 @@ export class Operation extends BaseOperation {
     result.type = operation.body().switch().name
     switch (operation.body().switch()) {
       case xdr.OperationType.createAccount():
-        result.destination = accountIdtoAddress(attrs.destination())
-        result.recoveryKey = accountIdtoAddress(attrs.recoveryKey())
-        result.accountType = attrs.accountType().value
-        result.policies = attrs.policies()
-
-        if (attrs.referrer()) {
-          result.referrer = accountIdtoAddress(attrs.referrer())
-        }
+        CreateAccountBuilder.createAccountToObject(result, attrs)
         break
-      case xdr.OperationType.setOption():
-        SetOptionsBuilder.setOptionsToObject(result, attrs)
+      case xdr.OperationType.manageSigner():
+        ManageSignerBuilder.manageSignerToObject(result, attrs)
         break
       case xdr.OperationType.setFee():
         if (!isUndefined(attrs.fee())) {
@@ -482,17 +342,11 @@ export class Operation extends BaseOperation {
           if (attrs.fee().accountId()) {
             result.fee.accountId = accountIdtoAddress(attrs.fee().accountId())
           }
-          if (attrs.fee().accountType()) {
-            result.fee.accountType = attrs.fee().accountType()
+          if (attrs.fee().accountRole()) {
+            result.fee.accountType = attrs.fee().accountRole().toString()
           }
           result.fee.hash = attrs.fee().hash()
         }
-        break
-      case xdr.OperationType.manageAccount():
-        result.account = accountIdtoAddress(attrs.account())
-        result.blockReasonsToAdd = attrs.blockReasonsToAdd()
-        result.blockReasonsToRemove = attrs.blockReasonsToRemove()
-        result.accountType = attrs.accountType().value
         break
       case xdr.OperationType.manageBalance():
         result.action = attrs.action()
@@ -547,8 +401,8 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.createAmlAlert():
         CreateAMLRequestBuilder.createAmlAlertToObject(result, attrs)
         break
-      case xdr.OperationType.createKycRequest():
-        CreateUpdateKYCRequestBuilder.createUpdateKYCRequestOpToObject(
+      case xdr.OperationType.createChangeRoleRequest():
+        CreateChangeRoleRequestBuilder.createChangeRoleRequestOpToObject(
           result,
           attrs
         )

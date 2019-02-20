@@ -9,21 +9,23 @@ export class SaleRequestBuilder {
      * @param {object} opts
      * @param {string} opts.requestID - ID of the request. 0 - to create new;
      * @param {string} opts.baseAsset - asset for which sale will be performed
+     * @param {string} opts.saleType - Sale type
      * @param {string} opts.defaultQuoteAsset - asset in which hardcap/soft cap will be calculated
      * @param {string} opts.startTime - start time of the sale
      * @param {string} opts.endTime - close time of the sale
      * @param {string} opts.softCap - minimum amount of quote asset to be received at which sale will be considered a successful
      * @param {string} opts.hardCap - max amount of quote asset to be received
      * @param {string} opts.requiredBaseAssetForHardCap - max amount to be sold in base asset
-     * @param {object} opts.details - sale specific details
-     * @param {object} opts.details.name - name of the sale
-     * @param {object} opts.details.short_description - short description of the sale
-     * @param {object} opts.details.desciption - sale specific details
-     * @param {object} opts.details.logo - details of the logo
+     * @param {object} opts.creatorDetails - sale specific details
+     * @param {object} opts.creatorDetails.name - name of the sale
+     * @param {object} opts.creatorDetails.short_description - short description of the sale
+     * @param {object} opts.creatorDetails.desciption - sale specific details
+     * @param {object} opts.creatorDetails.logo - details of the logo
      * @param {array} opts.quoteAssets - accepted assets
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
-     * @param {number} opts.saleType - Sale type
+     * @param {number} opts.saleEnumType - Sale type
+     * @param {string} opts.baseAssetForHardCap - specifies the amount of base asset required for hard cap
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CreateSaleCreationRequestOp}
      */
@@ -70,6 +72,11 @@ export class SaleRequestBuilder {
     }
     attrs.baseAsset = opts.baseAsset
 
+    if (isUndefined(opts.saleType)) {
+      throw new Error('opts.saleType is undefined')
+    }
+    attrs.saleType = UnsignedHyper.fromString(opts.saleType)
+
     if (!BaseOperation.isValidAsset(opts.defaultQuoteAsset)) {
       throw new Error('opts.defaultQuoteAsset is invalid')
     }
@@ -95,8 +102,42 @@ export class SaleRequestBuilder {
     }
     attrs.hardCap = BaseOperation._toUnsignedXDRAmount(opts.hardCap)
 
-    SaleRequestBuilder.validateDetail(opts.details)
-    attrs.details = JSON.stringify(opts.details)
+    SaleRequestBuilder.validateDetail(opts.creatorDetails)
+    attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
+    attrs.ext = new xdr.SaleCreationRequestExt(xdr.LedgerVersion.emptyVersion())
+
+    if (isUndefined(opts.saleEnumType) || !opts.saleEnumType) {
+      attrs.saleEnumType = xdr.SaleType.basicSale().value
+    } else if (opts.saleEnumType === true) {
+      attrs.saleEnumType = xdr.SaleType.crowdFunding().value
+    } else {
+      attrs.saleEnumType = opts.saleEnumType
+    }
+
+    let saleTypeExt
+    switch (attrs.saleEnumType) {
+      case xdr.SaleType.basicSale().value: {
+        let basicSale = new xdr.BasicSale({
+          ext: new xdr.BasicSaleExt(xdr.LedgerVersion.emptyVersion())
+        })
+        saleTypeExt = xdr.SaleTypeExt.basicSale(basicSale)
+        break
+      }
+      case xdr.SaleType.crowdFunding().value: {
+        let crowdFundingSale = new xdr.CrowdFundingSale({
+          ext: new xdr.CrowdFundingSaleExt(xdr.LedgerVersion.emptyVersion())
+        })
+        saleTypeExt = xdr.SaleTypeExt.crowdFunding(crowdFundingSale)
+        break
+      }
+      case xdr.SaleType.fixedPrice().value: {
+        let fixedPriceSale = new xdr.FixedPriceSale({
+          ext: new xdr.FixedPriceSaleExt(xdr.LedgerVersion.emptyVersion())
+        })
+        saleTypeExt = xdr.SaleTypeExt.fixedPrice(fixedPriceSale)
+        break
+      }
+    }
 
     if (isUndefined(opts.allTasks)) {
       opts.allTasks = 0
@@ -113,22 +154,7 @@ export class SaleRequestBuilder {
     }
     attrs.sequenceNumber = opts.sequenceNumber
 
-    let isCrowdfunding = !isUndefined(opts.isCrowdfunding) &&
-      opts.isCrowdfunding
-
-    let s
-    if (isCrowdfunding) {
-      s = xdr.SaleTypeExt.crowdFunding()
-      s.set('crowdFunding', new xdr.CrowdFundingSale({
-        ext: new xdr.CrowdFundingSaleExt(xdr.LedgerVersion.emptyVersion())
-      }))
-    } else {
-      s = xdr.SaleTypeExt.basicSale()
-      s.set('basicSale', new xdr.BasicSale({
-        ext: new xdr.BasicSaleExt(xdr.LedgerVersion.emptyVersion())
-      }))
-    }
-    attrs.saleTypeExt = s
+    attrs.saleTypeExt = saleTypeExt
 
     attrs.ext = new xdr.SaleCreationRequestExt(xdr.LedgerVersion.emptyVersion())
 
@@ -177,24 +203,24 @@ export class SaleRequestBuilder {
     return new xdr.SaleCreationRequest(attrs)
   }
 
-  static validateDetail (details) {
-    if (isUndefined(details)) {
+  static validateDetail (creatorDetails) {
+    if (isUndefined(creatorDetails)) {
       throw new Error('details is invalid')
     }
 
-    if (isUndefined(details.short_description)) {
+    if (isUndefined(creatorDetails.short_description)) {
       throw new Error('details.short_description is invalid')
     }
 
-    if (isUndefined(details.description)) {
+    if (isUndefined(creatorDetails.description)) {
       throw new Error('details.description is invalid')
     }
 
-    if (isUndefined(details.logo)) {
+    if (isUndefined(creatorDetails.logo)) {
       throw new Error('details.logo is invalid')
     }
 
-    if (isUndefined(details.name)) {
+    if (isUndefined(creatorDetails.name)) {
       throw new Error('details.name is invalid')
     }
   }
@@ -211,8 +237,9 @@ export class SaleRequestBuilder {
     result.requiredBaseAssetForHardCap = BaseOperation._fromXDRAmount(
       request.requiredBaseAssetForHardCap()
     )
-    result.details = JSON.parse(request.details())
-    result.saleType = request.saleTypeExt().switch().value
+    result.creatorDetails = JSON.parse(request.creatorDetails())
+    result.saleType = request.saleType().toString()
+    result.saleEnumType = request.saleTypeExt().switch().value
     result.quoteAssets = []
     for (let i = 0; i < request.quoteAssets().length; i++) {
       result.quoteAssets.push({

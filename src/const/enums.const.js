@@ -34,10 +34,6 @@ export const ASSET_PAIR_POLICIES = Object.freeze(
   xdrEnumToConstant('AssetPairPolicy')
 )
 
-export const ACCOUNT_TYPES = Object.freeze(
-  xdrEnumToConstant('AccountType')
-)
-
 export const OP_TYPES = Object.freeze(
   xdrEnumToConstant('OperationType')
 )

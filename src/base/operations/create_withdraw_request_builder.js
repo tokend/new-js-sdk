@@ -12,7 +12,7 @@ export class CreateWithdrawRequestBuilder {
    * @param {object} opts.fee - fee to be charged
    * @param {string} opts.fee.fixed - fixed fee to be charged
    * @param {string} opts.fee.percent - percent fee to be charged
-   * @param {object} opts.externalDetails - External details needed for PSIM to process withdraw operation
+   * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
    * @param {number|string} opts.allTasks - Bitmask of all tasks which must be completed for the request approval
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @returns {xdr.CreateWithdrawalRequestOp}
@@ -40,15 +40,12 @@ export class CreateWithdrawRequestBuilder {
 
     attrs.fee = BaseOperation.feeToXdr(opts.fee)
 
-    if (isUndefined(opts.externalDetails)) {
-      throw new Error('externalDetails is invalid')
+    if (isUndefined(opts.creatorDetails)) {
+      throw new Error('creatorDetails is invalid')
     }
     attrs.externalDetails = JSON.stringify(opts.externalDetails)
 
-    if (isUndefined(attrs.preConfirmationDetails)) {
-      attrs.preConfirmationDetails = ''
-    }
-
+    attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
     attrs.ext = new xdr.WithdrawalRequestExt(xdr.LedgerVersion.emptyVersion())
 
     let request = new xdr.WithdrawalRequest(attrs)
@@ -75,8 +72,8 @@ export class CreateWithdrawRequestBuilder {
       fixed: BaseOperation._fromXDRAmount(request.fee().fixed()),
       percent: BaseOperation._fromXDRAmount(request.fee().percent())
     }
-    result.universalAmount = BaseOperation._fromXDRAmount(request.universalAmount())
+    result.creatorDetails = JSON.parse(request.creatorDetails())
     result.allTasks = attrs.allTasks()
-    result.externalDetails = JSON.parse(request.externalDetails())
+    result.universalAmount = BaseOperation._fromXDRAmount(request.universalAmount())
   }
 }

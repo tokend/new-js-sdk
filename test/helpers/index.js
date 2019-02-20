@@ -3,6 +3,7 @@ import config from '../config'
 import { ApiCaller, TokenD, base } from '../../src'
 
 import { Account } from './account'
+import { Signer } from './signer'
 import { AmlAlert } from './aml-alert'
 import { Asset } from './asset'
 import { AssetPair } from './asset_pair'
@@ -30,6 +31,7 @@ const DEFAULTS = {
 }
 
 export const accountHelper = new Account(DEFAULTS)
+export const signerHelper = new Signer(DEFAULTS)
 export const assetHelper = new Asset(DEFAULTS)
 export const assetPairHelper = new AssetPair(DEFAULTS)
 export const balanceHelper = new Balance(DEFAULTS)

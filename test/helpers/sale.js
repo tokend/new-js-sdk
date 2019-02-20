@@ -31,7 +31,7 @@ export class Sale extends Helper {
       softCap: '10000.000000',
       hardCap: '50000.000000',
       allTasks: 1,
-      details: {
+      creatorDetails: {
         name: opts.baseAsset + 'sale',
         short_description: 'Short description',
         description: 'Not so short description',
@@ -40,7 +40,8 @@ export class Sale extends Helper {
           type: 'image/png'
         }
       },
-      saleType: SALE_TYPES.fixedPrice
+      saleType: '1',
+      saleEnumType: SALE_TYPES.fixedPrice
     }
 
     const operation = base.SaleRequestBuilder.createSaleCreationRequest({

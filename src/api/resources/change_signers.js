@@ -1,5 +1,5 @@
 import { TransactionBuilder } from '../../base/transaction_builder'
-import { SetOptionsBuilder } from '../../base/operations/set_options_builder'
+import { ManageSignerBuilder } from '../../base/operations/manage_signer_builder'
 import xdr from '../../base/generated/xdr_generated'
 
 export function makeChangeSignerTransaction ({
@@ -52,7 +52,7 @@ function removeAllSignersOps (signers, soucreAccount) {
 }
 
 function removeMasterOp () {
-  return SetOptionsBuilder.setOptions({
+  return ManageSignerBuilder.setOptions({
     masterWeight: 0
   })
 }
@@ -62,7 +62,7 @@ function isMaster (signer, masterAccountId) {
 }
 
 function removeOneSignerOp (signer) {
-  return SetOptionsBuilder.setOptions({
+  return ManageSignerBuilder.setOptions({
     signer: {
       pubKey: signer.publicKey,
       weight: 0,
@@ -73,7 +73,7 @@ function removeOneSignerOp (signer) {
 }
 
 function addSignerOp (newAccountId) {
-  return SetOptionsBuilder.setOptions({
+  return ManageSignerBuilder.setOptions({
     signer: {
       pubKey: newAccountId,
       weight: 255,

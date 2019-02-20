@@ -9,6 +9,7 @@ describe('SaleRequestBuilder', () => {
     let opt = {
       requestID: '12',
       baseAsset: 'XAAU',
+      saleType: '1',
       defaultQuoteAsset: 'USD',
       startTime: '4123421',
       endTime: '4123425',
@@ -17,7 +18,7 @@ describe('SaleRequestBuilder', () => {
       allTasks: 1,
       requiredBaseAssetForHardCap: '762354',
       sequenceNumber: 12,
-      details: {
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -41,6 +42,7 @@ describe('SaleRequestBuilder', () => {
     expect(obj.type).to.be.equal(xdr.OperationType.createSaleRequest().name)
     expect(opt.requestID).to.be.equal(obj.requestID)
     expect(opt.baseAsset).to.be.equal(obj.baseAsset)
+    expect(opt.saleType).to.be.equal(obj.saleType)
     expect(opt.defaultQuoteAsset).to.be.equal(obj.defaultQuoteAsset)
     expect(opt.startTime).to.be.equal(obj.startTime)
     expect(opt.endTime).to.be.equal(obj.endTime)
@@ -63,7 +65,7 @@ describe('SaleRequestBuilder', () => {
       allTasks: 1,
       requiredBaseAssetForHardCap: '762354',
       sequenceNumber: 13,
-      details: {
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -79,7 +81,8 @@ describe('SaleRequestBuilder', () => {
           asset: 'BTC'
         }
       ],
-      saleType: true
+      saleType: '1',
+      saleEnumType: true
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
     let xdrOp = op.toXDR('hex')
@@ -107,7 +110,7 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
-      details: {
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -123,7 +126,8 @@ describe('SaleRequestBuilder', () => {
           asset: 'BTC'
         }
       ],
-      saleType: false,
+      saleType: '1',
+      saleEnumType: false,
       requiredBaseAssetForHardCap: '648251'
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)

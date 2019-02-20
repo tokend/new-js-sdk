@@ -3,6 +3,7 @@ import isUndefined from 'lodash/isUndefined'
 import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
 import { UnsignedHyper } from 'js-xdr'
+import { hash } from '../hashing'
 
 export class ManageAssetBuilder {
   /**
@@ -14,17 +15,19 @@ export class ManageAssetBuilder {
      * @param {string} opts.preissuedAssetSigner - AccountID of keypair which will sign request for asset to be authrorized to be issued
      * @param {string} opts.maxIssuanceAmount - Max amount can be issued of that asset
      * @param {number} opts.policies - Asset policies
+     * @param {string} opts.assetType - asset type
      * @param {string} opts.initialPreissuedAmount - Amount of pre issued tokens available after creation of the asset
-     * @param {string} opts.trailingDigitsCount - Count of digits after the comma
-     * @param {object} opts.details - Additional details about asset
-     * @param {string} opts.details.name - Name of the asset
-     * @param {array}  opts.details.documents - Documents attached to asset
-     * @param {string} opts.details.logo - Asset picture
-     * @param {string} opts.details.logo.key - Key to compose asset picture url
-     * @param {string} opts.details.logo.type - Content type of asset logo
-     * @param {string} opts.details.terms - Asset terms
-     * @param {string} opts.details.terms.type - Content type of terms document
-     * @param {string} opts.details.terms.name - Name of terms document
+     * @param {number} opts.trailingDigitsCount - Count of digits after the comma
+     * @param {number} opts.allTasks - tasks for the request
+     * @param {object} opts.creatorDetails - Additional details about asset
+     * @param {string} opts.creatorDetails.name - Name of the asset
+     * @param {array}  opts.creatorDetails.documents - Documents attached to asset
+     * @param {string} opts.creatorDetails.logo - Asset picture
+     * @param {string} opts.creatorDetails.logo.key - Key to compose asset picture url
+     * @param {string} opts.creatorDetails.logo.type - Content type of asset logo
+     * @param {string} opts.creatorDetails.terms - Asset terms
+     * @param {string} opts.creatorDetails.terms.type - Content type of terms document
+     * @param {string} opts.creatorDetails.terms.name - Name of terms document
      *
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      *
@@ -58,13 +61,7 @@ export class ManageAssetBuilder {
     attrs.initialPreissuedAmount = BaseOperation
       ._toUnsignedXDRAmount(opts.initialPreissuedAmount)
     attrs.sequenceNumber = 0
-
-    if (Number.isNaN(opts.trailingDigitsCount) &&
-      opts.trailingDigitsCount >= 0 && opts.trailingDigitsCount <= 6) {
-      throw new Error('opts.trailingDigitsCount is invalid')
-    }
-
-    attrs.trailingDigitsCount = opts.trailingDigitsCount
+    attrs.type = UnsignedHyper.fromString(opts.assetType)
 
     if (Number.isNaN(opts.trailingDigitsCount) &&
       opts.trailingDigitsCount >= 0 && opts.trailingDigitsCount <= 6) {
@@ -100,14 +97,14 @@ export class ManageAssetBuilder {
      * @param {number} opts.policies - asset policies
      * @param {number} opts.allTasks - tasks for the request
      *
-     * @param {object} opts.details - Additional details about asset
-     * @param {string} opts.details.name - Name of the asset
-     * @param {string} opts.details.logo - Asset picture
-     * @param {string} opts.details.logo.key - Key to compose asset picture url
-     * @param {string} opts.details.logo.type - Content type of asset logo
-     * @param {string} opts.details.terms - Asset terms
-     * @param {string} opts.details.terms.type - Content type of terms document
-     * @param {string} opts.details.terms.name - Name of terms document
+     * @param {object} opts.creatorDetails - Additional details about asset
+     * @param {string} opts.creatorDetails.name - Name of the asset
+     * @param {string} opts.creatorDetails.logo - Asset picture
+     * @param {string} opts.creatorDetails.logo.key - Key to compose asset picture url
+     * @param {string} opts.creatorDetails.logo.type - Content type of asset logo
+     * @param {string} opts.creatorDetails.terms - Asset terms
+     * @param {string} opts.creatorDetails.terms.type - Content type of terms document
+     * @param {string} opts.creatorDetails.terms.name - Name of terms document
      *
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      *
@@ -152,6 +149,7 @@ export class ManageAssetBuilder {
      * @param {object} opts
      * @param {string} opts.accountID - accountID to whome rights will be passed
      * @param {string} opts.code - asset code for which to rights will be passed
+     * @param {KeyPair} opts.keyPair - current pre issue signer of the asset
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      * @returns {xdr.ManageAssetOp}
      */
@@ -171,7 +169,8 @@ export class ManageAssetBuilder {
         xdr.LedgerVersion.emptyVersion()
       ),
       accountId: Keypair.fromAccountId(opts.accountID).xdrAccountId(),
-      code: opts.code
+      code: opts.code,
+      signature: opts.keyPair.signDecorated(this._getSignatureData(opts))
     }
     let changePreissuedSigner = new xdr.AssetChangePreissuedSigner(attrs)
 
@@ -183,50 +182,59 @@ export class ManageAssetBuilder {
     )
   }
 
+  static _getSignatureData (opts) {
+    if (isUndefined(opts.accountID)) {
+      throw new Error('opts.accountId is invalid')
+    }
+
+    if (isUndefined(opts.code)) {
+      throw new Error('opts.code is invalid')
+    }
+
+    let rawSignatureData = `${opts.code}:${opts.accountID}`
+    return hash(rawSignatureData)
+  }
+
   static _getValidDetails (opts) {
-    let details = opts.details
+    let creatorDetails = opts.creatorDetails
 
-    if (isUndefined(details)) {
-      details = {}
+    if (isUndefined(creatorDetails)) {
+      creatorDetails = {}
     }
 
-    if (isUndefined(details.name)) {
-      details.name = ''
+    if (isUndefined(creatorDetails.name)) {
+      creatorDetails.name = ''
     }
 
-    if (isUndefined(details.terms)) {
-      details.terms = {}
+    if (isUndefined(creatorDetails.terms)) {
+      creatorDetails.terms = {}
     }
 
-    if (isUndefined(details.terms.key)) {
-      details.terms.key = ''
+    if (isUndefined(creatorDetails.terms.key)) {
+      creatorDetails.terms.key = ''
     }
 
-    if (isUndefined(details.terms.type)) {
-      details.terms.type = ''
+    if (isUndefined(creatorDetails.terms.type)) {
+      creatorDetails.terms.type = ''
     }
 
-    if (isUndefined(details.terms.name)) {
-      details.terms.name = ''
+    if (isUndefined(creatorDetails.terms.name)) {
+      creatorDetails.terms.name = ''
     }
 
-    if (isUndefined(details.logo)) {
-      details.logo = {}
+    if (isUndefined(creatorDetails.logo)) {
+      creatorDetails.logo = {}
     }
 
-    if (isUndefined(details.logo.key)) {
-      details.logo.key = ''
+    if (isUndefined(creatorDetails.logo.key)) {
+      creatorDetails.logo.key = ''
     }
 
-    if (isUndefined(details.logo.type)) {
-      details.logo.type = ''
+    if (isUndefined(creatorDetails.logo.type)) {
+      creatorDetails.logo.type = ''
     }
 
-    if (isUndefined(details.externalSystemType)) {
-      details.externalSystemType = ''
-    }
-
-    return details
+    return creatorDetails
   }
 
   static _createUpdateAttrs (opts) {
@@ -238,6 +246,7 @@ export class ManageAssetBuilder {
       throw new Error('opts.policies must be nonnegative number')
     }
 
+    let creatorDetails = ManageAssetBuilder._getValidDetails(opts)
     if (isUndefined(opts.requestID)) {
       opts.requestID = '0'
     }
@@ -246,12 +255,10 @@ export class ManageAssetBuilder {
       opts.sequenceNumber = 0
     }
 
-    let details = ManageAssetBuilder._getValidDetails(opts)
-
     let attrs = {
       code: opts.code,
       policies: opts.policies,
-      details: JSON.stringify(details),
+      creatorDetails: JSON.stringify(creatorDetails),
       sequenceNumber: opts.sequenceNumber
     }
 
@@ -291,7 +298,8 @@ export class ManageAssetBuilder {
           ._fromXDRAmount(request.maxIssuanceAmount())
         result.initialPreissuedAmount = BaseOperation
           ._fromXDRAmount(request.initialPreissuedAmount())
-        result.details = JSON.parse(request.details())
+        result.creatorDetails = JSON.parse(request.creatorDetails())
+        result.assetType = request.type().toString()
         result.allTasks = attrs.request().createAssetCreationRequest().allTasks()
         break
       }
@@ -300,7 +308,7 @@ export class ManageAssetBuilder {
         let request = attrs.request().createAssetUpdateRequest().updateAsset()
         result.code = request.code().toString()
         result.policies = request.policies()
-        result.details = JSON.parse(request.details())
+        result.creatorDetails = JSON.parse(request.creatorDetails())
         result.allTasks = attrs.request().createAssetUpdateRequest().allTasks()
         break
       }

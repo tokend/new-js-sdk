@@ -1,13 +1,13 @@
 import { ASSET_POLICIES } from '../../src/const'
 import { logger } from '../logger'
-import { sdk } from '../helpers'
+import { sdk, accountHelper } from '../helpers'
 import { fundAccount } from './create_account'
 import { Asset } from '../helpers/asset'
-import {
+/*import {
   createApprovedAmlAlertRequest,
   createPendingAmlAlertRequest,
   createRejecteAmlAlertRequest
-} from './create_aml_alert_request'
+} from './create_aml_alert_request'*/
 import { createAndApproveAsset } from './create_asset'
 import { getRandomArbitrary } from './populate_order_book'
 
@@ -45,6 +45,11 @@ export async function populateHistoryForAccount (accountId, signerKp) {
       policies: ASSET_POLICIES.withdrawable | ASSET_POLICIES.transferable
     })
   }
+
+  await accountHelper.create({
+    roleID: '1',
+    id: accountId
+  })
 
   await fundAccount(accountId, balances)
   log.info(`Funded ${accountId}`)
