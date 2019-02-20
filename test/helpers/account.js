@@ -1,5 +1,6 @@
 import { Helper } from './_helper'
 import { base } from '../../src'
+import { signerHelper } from '../helpers'
 
 export class Account extends Helper {
   /**
@@ -13,11 +14,10 @@ export class Account extends Helper {
   create (opts) {
     const DEFAULTS = {
       referrer: '',
-      accountPolicies: 0,
-      recoveryKey: base.Keypair.random().accountId()
+      signersData: [signerHelper.getBasicSignerData(opts)]
     }
 
-    const operation = base.Operation.createAccount({
+    const operation = base.CreateAccountBuilder.createAccount({
       destination: opts.id,
       roleID: opts.roleID,
       ...opts,

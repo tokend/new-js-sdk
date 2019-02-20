@@ -40,6 +40,7 @@ export class TokenD {
     let sdk = new TokenD(url, opts)
     let networkDetails = await sdk.horizon.getNetworkDetails()
 
+    sdk._setNetworkDetails(networkDetails.data)
     sdk._useNetworkPassphrase(networkDetails.data.networkPassphrase)
     sdk._calculateClockDiff(networkDetails.data.currentTime)
 
@@ -75,6 +76,13 @@ export class TokenD {
   }
 
   /**
+   * Network details, such as master account ID, network passphrase, etc.
+   */
+  get networkDetails () {
+    return this._networkDetails
+  }
+
+  /**
    * Use legacy signature scheme instead of IETF HTTP Signatures.
    */
   get legacySignatures () {
@@ -99,6 +107,10 @@ export class TokenD {
    */
   ejectWallet () {
     this._wallet = null
+  }
+
+  _setNetworkDetails (networkDetails) {
+    this._networkDetails = networkDetails
   }
 
   _useNetworkPassphrase (networkPassphrase) {

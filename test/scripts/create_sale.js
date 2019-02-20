@@ -1,4 +1,4 @@
-import { ASSET_POLICIES, KEY_VALUE_KEYS } from '../../src/const'
+import { KEY_VALUE_KEYS } from '../../src/const'
 import { Asset } from '../helpers/asset'
 import _times from 'lodash/times'
 

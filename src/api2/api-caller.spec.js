@@ -35,6 +35,7 @@ describe('api-caller unit test', () => {
         Keypair.random().accountId(),
         'anyRandomStringWeDoNotCareNow'
       )
+      middlewares.parseJsonapiResponse.returns([])
 
       await api._call('/foo/bar', {}, 'GET', true)
 

@@ -1,7 +1,7 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { isEqual } from 'lodash'
 import { Operation } from '../operation'
-import { CreateChangeRoleRequestBuilder } from './create_update_kyc_request_builder'
+import { CreateChangeRoleRequestBuilder } from './create_change_role_request_builder'
 
 describe('KYC request op', () => {
   it('Success', () => {
