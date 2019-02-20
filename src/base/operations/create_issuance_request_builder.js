@@ -40,7 +40,7 @@ export class CreateIssuanceRequestBuilder {
     }
 
     if (isUndefined(opts.creatorDetails)) {
-      throw new Error('externalDetails is invalid')
+      throw new Error('creatorDetails is invalid')
     }
 
     attrs.externalDetails = JSON.stringify(opts.creatorDetails)

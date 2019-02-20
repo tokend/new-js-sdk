@@ -9,8 +9,17 @@ for further information about branching and tagging conventions.
 
 ## Unreleased
 
-###Added
+### Added
+
 - Limits & bind external system ID unit tests
+
+### Fixed
+
+- Create manage limits request builder
+
+### Changed
+
+- Use opts.creatorDetails in issuance request builder instead external details
 
 
 ## [1.0.0-x.12] - 2019-02-20
