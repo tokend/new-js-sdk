@@ -43,7 +43,7 @@ export class CreateIssuanceRequestBuilder {
       throw new Error('creatorDetails is invalid')
     }
 
-    attrs.externalDetails = JSON.stringify(opts.externalDetails)
+    attrs.externalDetails = JSON.stringify(opts.creatorDetails)
 
     let fee = {
       fixed: '0',

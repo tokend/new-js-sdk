@@ -9,7 +9,7 @@ describe('CreateIssuanceRequestBuilder', () => {
     let reference = 'test'
     let asset = 'BLC'
     let receiver = Keypair.random().balanceId()
-    let externalDetails = { 'data': 'some details' }
+    let creatorDetails = { 'data': 'some details' }
     let op = CreateIssuanceRequestBuilder.createIssuanceRequest({
       asset,
       amount,
@@ -25,6 +25,6 @@ describe('CreateIssuanceRequestBuilder', () => {
     expect(amount).to.be.equal(obj.amount)
     expect(asset).to.be.equal(obj.asset)
     expect(receiver).to.be.equal(obj.receiver)
-    expect(JSON.stringify(externalDetails)).to.be.equal(JSON.stringify(obj.externalDetails))
+    expect(JSON.stringify(creatorDetails)).to.be.equal(JSON.stringify(obj.creatorDetails))
   })
 })
