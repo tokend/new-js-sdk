@@ -1,5 +1,6 @@
 import { default as xdr } from '../generated/xdr_generated'
 import isUndefined from 'lodash/isUndefined'
+import isString from 'lodash/isString'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
 import { Hasher } from '../util/hasher'
@@ -90,7 +91,9 @@ export class ReviewRequestBuilder {
     attrs.reviewDetails = new xdr.ReviewDetails({
       tasksToAdd: opts.reviewDetails.tasksToAdd,
       tasksToRemove: opts.reviewDetails.tasksToRemove,
-      externalDetails: opts.reviewDetails.externalDetails,
+      externalDetails: isString(opts.reviewDetails.externalDetails)
+        ? opts.reviewDetails.externalDetails
+        : JSON.stringify(opts.reviewDetails.externalDetails),
       ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
     })
 

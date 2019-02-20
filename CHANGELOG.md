@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+### Fixed
+- Fix issue of non-stringed external details of review request builder
+
 ## [1.0.0-x.10] - 2019-02-20
 ### Fixed
 - Passing account ID to `Wallet.fromEncrypted` method
