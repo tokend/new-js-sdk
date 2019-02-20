@@ -1,10 +1,6 @@
 // revision: f710477e73ba20bbd3c19f49a274fc7668d19ff4
 // branch:   master
-<<<<<<< HEAD
-// Automatically generated on 2019-02-20T15:06:53+00:00
-=======
-// Automatically generated on 2019-02-20T14:43:26+00:00
->>>>>>> master
+// Automatically generated on 2019-02-20T18:04:43+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
