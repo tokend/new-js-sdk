@@ -1,5 +1,4 @@
 import { default as xdr } from '../generated/xdr_generated'
-import { isEqual } from 'lodash'
 import { Keypair } from '../keypair'
 import { Operation } from '../operation'
 import { CreateIssuanceRequestBuilder } from './create_issuance_request_builder'
@@ -10,7 +9,7 @@ describe('CreateIssuanceRequestBuilder', () => {
     let reference = 'test'
     let asset = 'BLC'
     let receiver = Keypair.random().balanceId()
-    let creatorDetails = { 'data': 'some details' }
+    let externalDetails = { 'data': 'some details' }
     let op = CreateIssuanceRequestBuilder.createIssuanceRequest({
       asset,
       amount,
@@ -26,6 +25,6 @@ describe('CreateIssuanceRequestBuilder', () => {
     expect(amount).to.be.equal(obj.amount)
     expect(asset).to.be.equal(obj.asset)
     expect(receiver).to.be.equal(obj.receiver)
-    expect(isEqual(creatorDetails, obj.creatorDetails)).to.be.true
+    expect(JSON.stringify(externalDetails)).to.be.equal(JSON.stringify(obj.externalDetails))
   })
 })

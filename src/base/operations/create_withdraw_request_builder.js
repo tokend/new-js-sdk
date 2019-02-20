@@ -43,7 +43,6 @@ export class CreateWithdrawRequestBuilder {
     if (isUndefined(opts.creatorDetails)) {
       throw new Error('creatorDetails is invalid')
     }
-    attrs.externalDetails = JSON.stringify(opts.externalDetails)
 
     attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
     attrs.ext = new xdr.WithdrawalRequestExt(xdr.LedgerVersion.emptyVersion())

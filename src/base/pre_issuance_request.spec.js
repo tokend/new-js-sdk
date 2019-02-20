@@ -7,7 +7,7 @@ describe('PreIssuanceRequest', () => {
     let reference = 'test'
     let asset = 'BLC'
     let keyPair = Keypair.random()
-    let creatorDetails = JSON.stringify({ 'data': 'some details' })
+    let creatorDetails = { 'data': 'some details' }
     let preIssuanceRequest = PreIssuanceRequest.build({
       amount,
       reference,
@@ -24,6 +24,6 @@ describe('PreIssuanceRequest', () => {
       keyPair
     )
     expect(isSigned).to.be.true
-    expect(creatorDetails).to.be.equal(JSON.stringify(recovered.creatorDetails))
+    expect(JSON.stringify(creatorDetails)).to.be.equal(JSON.stringify(recovered.creatorDetails))
   })
 })

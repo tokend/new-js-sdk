@@ -23,7 +23,7 @@ export class CreateManageLimitsRequestBuilder {
     }
 
     let limitsUpdateRequest = new xdr.LimitsUpdateRequest({
-      creatorDetails: opts.creatorDetails,
+      creatorDetails: JSON.stringify(opts.creatorDetails),
       ext: new xdr.LimitsUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
     })
 

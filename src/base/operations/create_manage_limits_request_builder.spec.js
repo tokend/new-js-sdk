@@ -13,14 +13,14 @@ describe('createManageLimitsRequest', () => {
       monthlyOut: '100',
       weeklyOut: '100'
     }
-    const creatorDetails = JSON.stringify({
+    const creatorDetails = {
       operationType: 'deposit',
       statsOpType: 4,
       asset: 'BTC',
       limits,
       requestType: 'initial',
       note: 'some text'
-    })
+    }
     let op = CreateManageLimitsRequestBuilder.createManageLimitsRequest({
       requestID,
       allTasks,
@@ -30,6 +30,6 @@ describe('createManageLimitsRequest', () => {
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
     expect(obj.type).to.be.equal('createManageLimitsRequest')
-    expect(creatorDetails).to.be.equal(JSON.stringify(obj.creatorDetails))
+    expect(JSON.stringify(creatorDetails)).to.be.equal(JSON.stringify(obj.creatorDetails))
   })
 })

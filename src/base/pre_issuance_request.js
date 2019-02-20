@@ -41,7 +41,7 @@ export class PreIssuanceRequest {
       amount: opts.amount,
       asset: opts.asset,
       signature: signature,
-      creatorDetails: opts.creatorDetails,
+      creatorDetails: JSON.stringify(opts.creatorDetails),
       ext: new xdr.PreIssuanceRequestExt(xdr.LedgerVersion.emptyVersion())
     })
   }
