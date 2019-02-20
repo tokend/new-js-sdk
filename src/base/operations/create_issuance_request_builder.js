@@ -11,7 +11,7 @@ export class CreateIssuanceRequestBuilder {
      * @param {string} opts.amount - amount to be issued
      * @param {string} opts.receiver - balance ID of the receiver
      * @param {string} opts.reference - Reference of the request
-     * @param {object} opts.externalDetails - External details needed for PSIM to process withdraw operation
+     * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
      * @returns {xdr.CreateIssuanceRequestOp}
      */
@@ -39,11 +39,11 @@ export class CreateIssuanceRequestBuilder {
       throw new Error('opts.reference is invalid')
     }
 
-    if (isUndefined(opts.externalDetails)) {
+    if (isUndefined(opts.creatorDetails)) {
       throw new Error('externalDetails is invalid')
     }
 
-    attrs.externalDetails = opts.externalDetails
+    attrs.externalDetails = JSON.stringify(opts.creatorDetails)
 
     let fee = {
       fixed: '0',
@@ -71,6 +71,6 @@ export class CreateIssuanceRequestBuilder {
     result.asset = request.asset().toString()
     result.amount = BaseOperation._fromXDRAmount(request.amount())
     result.receiver = BaseOperation.balanceIdtoString(request.receiver())
-    result.externalDetails = JSON.parse(request.externalDetails())
+    result.creatorDetails = JSON.parse(request.externalDetails())
   }
 }
