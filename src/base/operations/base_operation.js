@@ -31,7 +31,7 @@ export class BaseOperation {
     if (!(op instanceof xdr.Operation)) {
       throw new Error('should be used for operations')
     }
-    return op.body().switch().name === 'payment'
+    return op.body().switch().name === 'paymentV2'
   }
 
   static isValidAsset (value) {
@@ -285,6 +285,22 @@ export class BaseOperation {
     return xdr.StatsOpType._byValue.get(rawStatsOpType)
   }
 
+  static _keyValueTypeFromNumber (rawKVType) {
+    if (!BaseOperation._isValidKVType(rawKVType)) {
+      throw new Error(`XDR Read Error: Unknown KeyValueType number for value ${rawKVType}`)
+    }
+
+    return xdr.KeyValueEntryType._byValue.get(rawKVType)
+  }
+
+  static _keyValueActionFromNumber (rawKVAction) {
+    if (!BaseOperation._isValidKVAction(rawKVAction)) {
+      throw new Error(`XDR Read Error: Unknown KeyValueAction number for value ${rawKVAction}`)
+    }
+
+    return xdr.ManageKvAction._byValue.get(rawKVAction)
+  }
+
   static isFeeValid (fee) {
     return BaseOperation.isValidAmount(fee.fixed, true) &&
       BaseOperation.isValidAmount(fee.percent, true)
@@ -316,6 +332,14 @@ export class BaseOperation {
 
   static _isValidStatsOpType (rawStatsOpType) {
     return xdr.StatsOpType._byValue.has(rawStatsOpType)
+  }
+
+  static _isValidKVType (rawKVType) {
+    return xdr.KeyValueEntryType._byValue.has(rawKVType)
+  }
+
+  static _isValidKVAction (rawKVAction) {
+    return xdr.ManageKvAction._byValue.has(rawKVAction)
   }
 
   static _isValidRequestType (rawRequestType) {

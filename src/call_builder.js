@@ -95,7 +95,6 @@ export class CallBuilder {
     this._wallet = wallet || this._sdk.wallet
 
     if (!this._wallet) {
-      console.warn('Skipping signing the request cause no _wallet instance was found. Please re-check if it is an expected behaviour')
       return this
     }
 

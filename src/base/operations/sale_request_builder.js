@@ -5,7 +5,7 @@ import { UnsignedHyper } from 'js-xdr'
 
 export class SaleRequestBuilder {
   /**
-     * Creates operation to create withdraw request with autoconversion
+     * Creates operation to create sale request
      * @param {object} opts
      * @param {string} opts.requestID - ID of the request. 0 - to create new;
      * @param {string} opts.baseAsset - asset for which sale will be performed
@@ -14,6 +14,7 @@ export class SaleRequestBuilder {
      * @param {string} opts.endTime - close time of the sale
      * @param {string} opts.softCap - minimum amount of quote asset to be received at which sale will be considered a successful
      * @param {string} opts.hardCap - max amount of quote asset to be received
+     * @param {string} opts.requiredBaseAssetForHardCap - max amount to be sold in base asset
      * @param {object} opts.details - sale specific details
      * @param {object} opts.details.name - name of the sale
      * @param {object} opts.details.short_description - short description of the sale
@@ -22,13 +23,48 @@ export class SaleRequestBuilder {
      * @param {array} opts.quoteAssets - accepted assets
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
-     * @param {object} opts.isCrowdfunding - states if sale type is crowd funding
+     * @param {number} opts.saleType - Sale type
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CreateSaleCreationRequestOp}
      */
   static createSaleCreationRequest (opts) {
-    let attrs = {}
+    let request = this.validateSaleCreationRequest(opts)
 
+    let createSaleCreationRequestOp = new xdr.CreateSaleCreationRequestOp({
+      requestId: UnsignedHyper.fromString(opts.requestID),
+      request: request,
+      allTasks: opts.allTasks,
+      ext: new xdr.CreateSaleCreationRequestOpExt(xdr.LedgerVersion.emptyVersion())
+    })
+    let opAttributes = {}
+    opAttributes.body = xdr.OperationBody.createSaleRequest(createSaleCreationRequestOp)
+    BaseOperation.setSourceAccount(opAttributes, opts)
+    return new xdr.Operation(opAttributes)
+  }
+
+  /**
+   * Creates operation to cancel sale request
+   * @param {object} opts
+   * @param {string} opts.requestID - ID of the request
+   * @param {string} [opts.source] - The source account for the operation.
+   * Defaults to the transaction's source account.
+   * @returns {xdr.CancelSaleCreationRequestOp}
+   */
+  static cancelSaleCreationRequest (opts) {
+    let cancelSaleCreationRequestOp = new xdr.CancelSaleCreationRequestOp({
+      requestId: UnsignedHyper.fromString(opts.requestID),
+      ext: new xdr.CancelSaleCreationRequestOpExt(
+        xdr.LedgerVersion.emptyVersion())
+    })
+    let opAttributes = {}
+    opAttributes.body = xdr.OperationBody.cancelSaleRequest(
+      cancelSaleCreationRequestOp)
+    BaseOperation.setSourceAccount(opAttributes, opts)
+    return new xdr.Operation(opAttributes)
+  }
+
+  static validateSaleCreationRequest (opts) {
+    let attrs = {}
     if (!BaseOperation.isValidAsset(opts.baseAsset)) {
       throw new Error('opts.baseAsset is invalid')
     }
@@ -61,23 +97,40 @@ export class SaleRequestBuilder {
 
     SaleRequestBuilder.validateDetail(opts.details)
     attrs.details = JSON.stringify(opts.details)
-    attrs.ext = new xdr.SaleCreationRequestExt(xdr.LedgerVersion.emptyVersion())
+
+    if (isUndefined(opts.allTasks)) {
+      opts.allTasks = 0
+    }
+
+    if (!BaseOperation.isValidAmount(opts.requiredBaseAssetForHardCap, true)) {
+      throw new Error('opts.requiredBaseAssetForHardCap is invalid')
+    }
+    attrs.requiredBaseAssetForHardCap =
+      BaseOperation._toUnsignedXDRAmount(opts.requiredBaseAssetForHardCap)
+
+    if (isUndefined(opts.sequenceNumber) || opts.sequenceNumber < 0) {
+      opts.sequenceNumber = 0
+    }
+    attrs.sequenceNumber = opts.sequenceNumber
 
     let isCrowdfunding = !isUndefined(opts.isCrowdfunding) &&
       opts.isCrowdfunding
-    if (isCrowdfunding) {
-      let crowdFundingSale = new xdr.CrowdFundingSale({
-        ext: new xdr.CrowdFundingSaleExt(xdr.LedgerVersion.emptyVersion())
-      })
-      let saleTypeExtTypedSale = xdr.SaleTypeExtTypedSale
-        .crowdFunding(crowdFundingSale)
-      let saleTypeExt = new xdr.SaleTypeExt({
-        typedSale: saleTypeExtTypedSale
-      })
 
-      attrs.ext = xdr.SaleCreationRequestExt.typedSale(saleTypeExt)
+    let s
+    if (isCrowdfunding) {
+      s = xdr.SaleTypeExt.crowdFunding()
+      s.set('crowdFunding', new xdr.CrowdFundingSale({
+        ext: new xdr.CrowdFundingSaleExt(xdr.LedgerVersion.emptyVersion())
+      }))
+    } else {
+      s = xdr.SaleTypeExt.basicSale()
+      s.set('basicSale', new xdr.BasicSale({
+        ext: new xdr.BasicSaleExt(xdr.LedgerVersion.emptyVersion())
+      }))
     }
-    let request = new xdr.SaleCreationRequest(attrs)
+    attrs.saleTypeExt = s
+
+    attrs.ext = new xdr.SaleCreationRequestExt(xdr.LedgerVersion.emptyVersion())
 
     if (isUndefined(opts.requestID)) {
       opts.requestID = '0'
@@ -86,13 +139,13 @@ export class SaleRequestBuilder {
     if (isUndefined(opts.quoteAssets) || opts.quoteAssets.length === 0) {
       throw new Error('opts.quoteAssets is invalid')
     }
-
     attrs.quoteAssets = []
+
     for (let i = 0; i < opts.quoteAssets.length; i++) {
       let quoteAsset = opts.quoteAssets[i]
       let minAmount
       let maxAmount
-      if (isCrowdfunding) {
+      if (attrs.saleType === xdr.SaleType.crowdFunding().value) {
         minAmount = 1
         maxAmount = 1
       }
@@ -103,12 +156,12 @@ export class SaleRequestBuilder {
         minAmount,
         maxAmount
       )
+
       if (!validAmount) {
         throw new Error(
           `opts.quoteAssets[i].price is invalid: ${quoteAsset.price}`
         )
       }
-
       if (isUndefined(quoteAsset.asset)) {
         throw new Error('opts.quoteAssets[i].asset is invalid')
       }
@@ -121,18 +174,7 @@ export class SaleRequestBuilder {
         )
       }))
     }
-
-    let withdrawRequestOp = new xdr.CreateSaleCreationRequestOp({
-      requestId: UnsignedHyper.fromString(opts.requestID),
-      request: request,
-      ext: new xdr.CreateSaleCreationRequestOpExt(
-        xdr.LedgerVersion.emptyVersion()
-      )
-    })
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.createSaleRequest(withdrawRequestOp)
-    BaseOperation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
+    return new xdr.SaleCreationRequest(attrs)
   }
 
   static validateDetail (details) {
@@ -166,7 +208,11 @@ export class SaleRequestBuilder {
     result.endTime = request.endTime().toString()
     result.softCap = BaseOperation._fromXDRAmount(request.softCap())
     result.hardCap = BaseOperation._fromXDRAmount(request.hardCap())
+    result.requiredBaseAssetForHardCap = BaseOperation._fromXDRAmount(
+      request.requiredBaseAssetForHardCap()
+    )
     result.details = JSON.parse(request.details())
+    result.saleType = request.saleTypeExt().switch().value
     result.quoteAssets = []
     for (let i = 0; i < request.quoteAssets().length; i++) {
       result.quoteAssets.push({
@@ -174,6 +220,11 @@ export class SaleRequestBuilder {
         asset: request.quoteAssets()[i].quoteAsset().toString()
       })
     }
+    result.allTasks = attrs.allTasks()
+  }
+
+  static cancelSaleCreationRequestToObject (result, attrs) {
+    result.requestID = attrs.requestId().toString()
   }
 
   /**

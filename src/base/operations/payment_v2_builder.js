@@ -32,28 +32,30 @@ export class PaymentV2Builder {
       throw new Error('feeData argument must be defined')
     }
 
-    if (!BaseOperation.isValidAsset(opts.feeData.sourceFee.feeAsset)) {
-      throw new TypeError('Source fee asset is invalid')
-    }
-    if (!BaseOperation.isValidAsset(opts.feeData.destinationFee.feeAsset)) {
-      throw new TypeError('Destination fee asset is invalid')
+    try {
+      PaymentV2Builder.ensureFeeValid(opts.feeData.sourceFee)
+    } catch (e) {
+      throw new TypeError('sourceFee.' + e.message)
     }
 
-    let sourceFee = new xdr.FeeDataV2({
-      maxPaymentFee: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.maxPaymentFee),
-      fixedFee: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.fixedFee),
-      feeAsset: opts.feeData.sourceFee.feeAsset,
-      ext: new xdr.FeeDataV2Ext(xdr.LedgerVersion.emptyVersion())
+    try {
+      PaymentV2Builder.ensureFeeValid(opts.feeData.destinationFee)
+    } catch (e) {
+      throw new TypeError('destination.' + e.message)
+    }
+    let sourceFee = new xdr.Fee({
+      percent: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.percent),
+      fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.fixed),
+      ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
     })
-    let destinationFee = new xdr.FeeDataV2({
-      maxPaymentFee: BaseOperation._toUnsignedXDRAmount(
-        opts.feeData.destinationFee.maxPaymentFee
+    let destinationFee = new xdr.Fee({
+      percent: BaseOperation._toUnsignedXDRAmount(
+        opts.feeData.destinationFee.percent
       ),
-      fixedFee: BaseOperation._toUnsignedXDRAmount(
-        opts.feeData.destinationFee.fixedFee
+      fixed: BaseOperation._toUnsignedXDRAmount(
+        opts.feeData.destinationFee.fixed
       ),
-      feeAsset: opts.feeData.destinationFee.feeAsset,
-      ext: new xdr.FeeDataV2Ext(xdr.LedgerVersion.emptyVersion())
+      ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
     })
     attrs.feeData = new xdr.PaymentFeeDataV2({
       sourceFee,
@@ -79,6 +81,16 @@ export class PaymentV2Builder {
     return attrs
   }
 
+  static ensureFeeValid (fee) {
+    if (!BaseOperation.isValidAmount(fee.fixed, true)) {
+      throw new TypeError('fixed fee must be of type String and represent a positive number')
+    }
+
+    if (!BaseOperation.isValidAmount(fee.percent, true)) {
+      throw new TypeError('fixed fee must be of type String and represent a positive number')
+    }
+  }
+
   /**
    * Creates PaymentV2 operation where destination is AccountID or BalanceID
    * @param {object} opts
@@ -87,13 +99,11 @@ export class PaymentV2Builder {
    * @param {number|string} opts.amount
    * @param {object} opts.feeData
    * * @param {object} opts.feeData.sourceFee
-   * * * @param {number|string} opts.feeData.sourceFee.maxPaymentFee
-   * * * @param {number|string} opts.feeData.sourceFee.fixedFee
-   * * * @param {string} opts.feeData.sourceFee.feeAsset
+   * * * @param {number|string} opts.feeData.sourceFee.percent
+   * * * @param {number|string} opts.feeData.sourceFee.fixed
    * * @param {object} opts.feeData.destinationFee
-   * * * @param {number|string} opts.feeData.destinationFee.maxPaymentFee
-   * * * @param {number|string} opts.feeData.destinationFee.fixedFee
-   * * * @param {string} opts.feeData.destinationFee.feeAsset
+   * * * @param {number|string} opts.feeData.destinationFee.percent
+   * * * @param {number|string} opts.feeData.destinationFee.fixed
    * * @param {bool} opts.feeData.sourcePaysForDest
    * @param {string} opts.subject
    * @param {string} opts.reference
@@ -123,26 +133,26 @@ export class PaymentV2Builder {
     result.amount = BaseOperation._fromXDRAmount(attrs.amount())
     result.feeData = {
       sourceFee: {
-        maxPaymentFee: BaseOperation._fromXDRAmount(
-          attrs.feeData().sourceFee().maxPaymentFee()
+        fixed: BaseOperation._fromXDRAmount(
+          attrs.feeData().sourceFee().fixed()
         ),
-        fixedFee: BaseOperation._fromXDRAmount(
-          attrs.feeData().sourceFee().fixedFee()
-        ),
-        feeAsset: attrs.feeData().sourceFee().feeAsset().toString()
+        percent: BaseOperation._fromXDRAmount(
+          attrs.feeData().sourceFee().percent()
+        )
       },
       destinationFee: {
-        maxPaymentFee: BaseOperation._fromXDRAmount(
-          attrs.feeData().destinationFee().maxPaymentFee()
+        fixed: BaseOperation._fromXDRAmount(
+          attrs.feeData().destinationFee().fixed()
         ),
-        fixedFee: BaseOperation._fromXDRAmount(
-          attrs.feeData().destinationFee().fixedFee()
-        ),
-        feeAsset: attrs.feeData().destinationFee().feeAsset().toString()
+        percent: BaseOperation._fromXDRAmount(
+          attrs.feeData().destinationFee().percent()
+        )
       },
       sourcePaysForDest: attrs.feeData().sourcePaysForDest()
     }
     result.subject = attrs.subject().toString()
     result.reference = attrs.reference().toString()
+
+    return result
   }
 }

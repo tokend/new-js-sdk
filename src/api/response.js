@@ -42,7 +42,7 @@ export class ApiResponse extends ResponseBase {
     if (isArray(body.data)) {
       this._data = body.data.map((item) => {
         let parsed = this._parseResourceObjectData(item)
-        this._resolveRelationships(item, parsed)
+        this._resolveRelationships(item, parsed, body.included)
         this._resolveLinks(item, parsed)
 
         return parsed
@@ -52,7 +52,7 @@ export class ApiResponse extends ResponseBase {
       this._data = body
     } else {
       this._data = this._parseResourceObjectData(body.data)
-      this._resolveRelationships(body.data, this)
+      this._resolveRelationships(body.data, this, body.included)
     }
 
     this._resolveLinks(body, this)
@@ -99,7 +99,7 @@ export class ApiResponse extends ResponseBase {
     }
   }
 
-  _resolveRelationships (source, target) {
+  _resolveRelationships (source, target, inclusions = []) {
     if (!source.relationships) {
       return
     }
@@ -112,9 +112,21 @@ export class ApiResponse extends ResponseBase {
         resourceType: value.data.type
       }
       this._resolveLinks(value, relationships[key])
+      if (inclusions.length) {
+        this._findInclusion(inclusions, relationships[key])
+      }
     })
 
     delete source.relationships
-    target.relationships = relationships
+    target.relationships = toCamelCaseDeep(relationships)
+  }
+
+  _findInclusion (inclusions, target) {
+    const inclusion = inclusions
+      .find(i => i.type === target.resourceType && i.id === target.id)
+
+    if (inclusion) {
+      target.attributes = inclusion.attributes
+    }
   }
 }

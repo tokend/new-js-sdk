@@ -1,6 +1,6 @@
 import { default as xdr } from './generated/xdr_generated'
 import { Keypair } from './keypair'
-import { UnsignedHyper, Hyper } from 'js-xdr'
+import { Hyper } from 'js-xdr'
 import { hash } from './hashing'
 import { encodeCheck } from './strkey'
 import isUndefined from 'lodash/isUndefined'
@@ -9,7 +9,6 @@ import { ManageAssetBuilder } from './operations/manage_asset_builder'
 import { ReviewRequestBuilder } from './operations/review_request_builder'
 import { PreIssuanceRequestOpBuilder } from './operations/pre_issuance_request_op_builder'
 import { CreateIssuanceRequestBuilder } from './operations/create_issuance_request_builder'
-import { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
 import { SaleRequestBuilder } from './operations/sale_request_builder'
 import { ManageOfferBuilder } from './operations/manage_offer_builder'
 import { SetOptionsBuilder } from './operations/set_options_builder'
@@ -18,7 +17,11 @@ import { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_re
 import { ManageSaleBuilder } from './operations/manage_sale_builder'
 import { PaymentV2Builder } from './operations/payment_v2_builder'
 import { BindExternalSystemAccountIdBuilder } from './operations/bind_external_system_account_id_builder'
-import { CreateReferenceBuilder } from './operations/create_reference_builder'
+import { CreateManageLimitsRequestBuilder } from './operations/create_manage_limits_request_builder'
+import { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
+import { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
+import { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
+import { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
 import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 
@@ -68,6 +71,9 @@ export class Operation extends BaseOperation {
     attributes.ext = new xdr.CreateAccountOpExt(
       xdr.LedgerVersion.emptyVersion()
     )
+
+    attributes.externalSystemIDs = []
+
     let createAccount = new xdr.CreateAccountOp(attributes)
 
     let opAttributes = {}
@@ -104,23 +110,21 @@ export class Operation extends BaseOperation {
     }
 
     if (!isUndefined(opts.feeData)) {
-      let sourceFee = new xdr.FeeData({
-        paymentFee: Operation._toXDRAmount(opts.feeData.sourceFee.paymentFee),
-        fixedFee: Operation._toXDRAmount(opts.feeData.sourceFee.fixedFee),
-        ext: new xdr.FeeDataExt(xdr.LedgerVersion.emptyVersion())
+      let sourceFee = new xdr.Fee({
+        percent: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.percent),
+        fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.fixed),
+        ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
       })
-      let destinationFee = new xdr.FeeData({
-        paymentFee: Operation._toXDRAmount(
-          opts.feeData.destinationFee.paymentFee
-        ),
-        fixedFee: Operation._toXDRAmount(opts.feeData.destinationFee.fixedFee),
-        ext: new xdr.FeeDataExt(xdr.LedgerVersion.emptyVersion())
+      let destinationFee = new xdr.Fee({
+        percent: BaseOperation._toUnsignedXDRAmount(opts.feeData.destinationFee.percent),
+        fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.destinationFee.fixed),
+        ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
       })
-      attributes.feeData = new xdr.PaymentFeeData({
+      attributes.feeData = new xdr.PaymentFeeDataV2({
         sourceFee,
         destinationFee,
         sourcePaysForDest: opts.feeData.sourcePaysForDest,
-        ext: new xdr.PaymentFeeDataExt(xdr.LedgerVersion.emptyVersion())
+        ext: new xdr.PaymentFeeDataV2Ext(xdr.LedgerVersion.emptyVersion())
       })
     } else {
       throw new Error('feeData argument must be defined')
@@ -130,46 +134,24 @@ export class Operation extends BaseOperation {
       opts.reference = ''
     }
 
-    if (!isUndefined(opts.invoiceReference)) {
-      let invoiceReference = new xdr.InvoiceReference({
-        invoiceId: UnsignedHyper.fromString(opts.invoiceReference.invoiceId),
-        accept: opts.invoiceReference.accept,
-        ext: new xdr.InvoiceReferenceExt(xdr.LedgerVersion.emptyVersion())
-      })
-      attributes.invoiceReference = invoiceReference
-    }
-
-    attributes.amount = Operation._toXDRAmount(opts.amount)
+    attributes.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
     attributes.sourceBalanceId = Keypair
       .fromBalanceId(opts.sourceBalanceId)
       .xdrBalanceId()
-    attributes.destinationBalanceId = Keypair
+
+    let d = xdr.PaymentOpV2Destination.balance()
+    d.set('balance', Keypair
       .fromBalanceId(opts.destinationBalanceId)
-      .xdrBalanceId()
+      .xdrBalanceId())
+    attributes.destination = d
+
     attributes.subject = opts.subject
     attributes.reference = opts.reference
-    attributes.ext = new xdr.PaymentOpExt(xdr.LedgerVersion.emptyVersion())
-    let payment = new xdr.PaymentOp(attributes)
+    attributes.ext = new xdr.PaymentOpV2Ext(xdr.LedgerVersion.emptyVersion())
+    let payment = new xdr.PaymentOpV2(attributes)
 
     let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.payment(payment)
-    Operation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
-  }
-
-  static directDebit (opts) {
-    if (!Keypair.isValidPublicKey(opts.from)) {
-      throw new TypeError('from is invalid')
-    }
-
-    let attributes = {}
-    attributes.from = Keypair.fromAccountId(opts.from).xdrAccountId()
-    attributes.paymentOp = Operation.payment(opts.paymentOp).body().value()
-    attributes.ext = new xdr.DirectDebitOpExt(xdr.LedgerVersion.emptyVersion())
-    let directDebit = new xdr.DirectDebitOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.directDebit(directDebit)
+    opAttributes.body = xdr.OperationBody.paymentV2(payment)
     Operation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)
   }
@@ -348,6 +330,7 @@ export class Operation extends BaseOperation {
      * Returns an XDR ManageBalanceOp. A "manage account" operations creates|deletes balance for account.
      * @param {object} opts
      * @param {string} opts.destination - Account to create account for.
+     * @param {string} opts.asset - Asset to manage asset for.
      * @param {xdr.ManageBalanceAction} – Delete or create
      * @returns {xdr.ManageBalanceOp}
      */
@@ -461,10 +444,6 @@ export class Operation extends BaseOperation {
       return encodeCheck('accountId', accountId.ed25519())
     }
 
-    function balanceIdtoString (balanceId) {
-      return encodeCheck('balanceId', balanceId.ed25519())
-    }
-
     let result = {}
     if (operation.sourceAccount()) {
       result.source = accountIdtoAddress(operation.sourceAccount())
@@ -481,65 +460,6 @@ export class Operation extends BaseOperation {
 
         if (attrs.referrer()) {
           result.referrer = accountIdtoAddress(attrs.referrer())
-        }
-        break
-      case xdr.OperationType.payment():
-        result.amount = Operation._fromXDRAmount(attrs.amount())
-        result.feeFromSource = attrs.feeFromSource
-        result.sourceBalanceId = balanceIdtoString(attrs.sourceBalanceId())
-        result.destinationBalanceId = balanceIdtoString(
-          attrs.destinationBalanceId()
-        )
-        result.subject = attrs.subject().toString()
-        result.reference = attrs.reference().toString()
-        result.feeData = {
-          sourceFee: {
-            paymentFee: Operation
-              ._fromXDRAmount(attrs.feeData().sourceFee().paymentFee()),
-            fixedFee: Operation
-              ._fromXDRAmount(attrs.feeData().sourceFee().fixedFee())
-          },
-          destinationFee: {
-            paymentFee: Operation
-              ._fromXDRAmount(attrs.feeData().destinationFee().paymentFee()),
-            fixedFee: Operation
-              ._fromXDRAmount(attrs.feeData().destinationFee().fixedFee())
-          },
-          sourcePaysForDest: attrs.feeData().sourcePaysForDest()
-        }
-        if (attrs.invoiceReference()) {
-          result.invoiceReference = {
-            invoiceId: attrs.invoiceReference().invoiceId().toString(),
-            accept: attrs.invoiceReference().accept()
-          }
-        }
-        break
-      case xdr.OperationType.directDebit():
-        let paymentOp = attrs.paymentOp()
-        result.amount = Operation._fromXDRAmount(paymentOp.amount())
-        result.feeFromSource = paymentOp.feeFromSource
-        result.sourceBalanceId = balanceIdtoString(paymentOp.sourceBalanceId())
-        result.destinationBalanceId = balanceIdtoString(
-          paymentOp.destinationBalanceId()
-        )
-        result.subject = paymentOp.subject().toString()
-        result.reference = paymentOp.reference().toString()
-        result.from = accountIdtoAddress(attrs.from())
-        result.feeData = {
-          sourceFee: {
-            paymentFee: Operation
-              ._fromXDRAmount(paymentOp.feeData().sourceFee().paymentFee()),
-            fixedFee: Operation
-              ._fromXDRAmount(paymentOp.feeData().sourceFee().fixedFee())
-          },
-          destinationFee: {
-            paymentFee: Operation._fromXDRAmount(
-              paymentOp.feeData().destinationFee().paymentFee()
-            ),
-            fixedFee: Operation
-              ._fromXDRAmount(paymentOp.feeData().destinationFee().fixedFee())
-          },
-          sourcePaysForDest: paymentOp.feeData().sourcePaysForDest()
         }
         break
       case xdr.OperationType.setOption():
@@ -615,6 +535,9 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.createSaleRequest():
         SaleRequestBuilder.crateSaleCreationRequestToObject(result, attrs)
         break
+      case xdr.OperationType.cancelSaleRequest():
+        SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
+        break
       case xdr.OperationType.manageLimit():
         ManageLimitsBuilder.manageLimitsOpToObject(result, attrs)
         break
@@ -642,8 +565,18 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.bindExternalSystemAccountId():
         BindExternalSystemAccountIdBuilder.bindExternalSystemAccountIdToObject(result, attrs)
         break
-      case xdr.OperationType.createReference():
-        CreateReferenceBuilder.createReferenceToObject(result, attrs)
+      case xdr.OperationType.createManageLimitsRequest():
+        CreateManageLimitsRequestBuilder.createManageLimitsRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createAswapBidRequest():
+        CreateAtomicSwapBidCreationRequestBuilder
+          .createASwapBidCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelAswapBid():
+        CancelAtomicSwapBidBuilder.cancelASwapBidToObject(result, attrs)
+        break
+      case xdr.OperationType.createAswapRequest():
+        CreateAtomicSwapRequestBuilder.createASwapRequestToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

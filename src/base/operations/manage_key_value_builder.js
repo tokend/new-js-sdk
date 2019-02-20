@@ -23,7 +23,7 @@ export class ManageKeyValueBuilder {
     if (isNaN(opts.value) || opts.entryType === xdr.KeyValueEntryType.string().value) {
       value = new xdr.KeyValueEntryValue.string(opts.value)
     } else if (isUndefined(opts.entryType) ||
-        opts.entryType === xdr.KeyValueEntryType.uint32().value) {
+      opts.entryType === xdr.KeyValueEntryType.uint32().value) {
       value = new xdr.KeyValueEntryValue.uint32(Number(opts.value))
     } else if (opts.entryType === xdr.KeyValueEntryType.uint64().value) {
       value = new xdr.KeyValueEntryValue.uint64((UnsignedHyper.fromString(opts.value)))
@@ -31,13 +31,10 @@ export class ManageKeyValueBuilder {
       throw new Error('Cannot figure out value type')
     }
 
-    let KVEntry = new xdr.KeyValueEntry({
-      key: opts.key,
-      value: value,
-      ext: new xdr.KeyValueEntryExt(xdr.LedgerVersion.emptyVersion())
-    })
-
-    attributes.action = new xdr.ManageKeyValueOpAction(xdr.ManageKvAction.put(), KVEntry)
+    attributes.action = new xdr.ManageKeyValueOpAction(
+      xdr.ManageKvAction.put(),
+      value
+    )
 
     return ManageKeyValueBuilder.createManageKeyValueOp(attributes, opts)
   }
@@ -81,20 +78,20 @@ export class ManageKeyValueBuilder {
   }
 
   static manageKeyValueOpToObject (result, attrs) {
-    result.key = attrs.key()
+    result.key = attrs.key().toString()
     let action = attrs.action().value()
     switch (attrs.action().switch()) {
       case xdr.ManageKvAction.put():
         result.action = new xdr.ManageKvAction.put().value
-        switch (action.value().switch()) {
+        switch (action.switch()) {
           case xdr.KeyValueEntryType.string():
-            result.value = action.value().stringValue().toString()
+            result.value = action.stringValue().toString()
             break
           case xdr.KeyValueEntryType.uint32():
-            result.value = action.value().ui32Value().toString()
+            result.value = action.ui32Value().toString()
             break
           case xdr.KeyValueEntryType.uint64():
-            result.value = action.value().ui64Value().toString()
+            result.value = action.ui64Value().toString()
             break
         }
         break

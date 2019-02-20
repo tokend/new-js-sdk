@@ -45,3 +45,19 @@ export const OP_TYPES = Object.freeze(
 export const STATS_OPERATION_TYPES = Object.freeze(
   xdrEnumToConstant('StatsOpType')
 )
+
+export const SALE_TYPES = Object.freeze(
+  xdrEnumToConstant('SaleType')
+)
+
+export const KEY_VALUE_ENTRY_TYPES = Object.freeze(
+  xdrEnumToConstant('KeyValueEntryType')
+)
+
+export const CHECK_SALE_STATE_EFFECTS = Object.freeze(
+  xdrEnumToConstant('CheckSaleStateEffect')
+)
+
+export const REVIEW_REQUEST_OP_ACTION = Object.freeze(
+  xdrEnumToConstant('ReviewRequestOpAction')
+)

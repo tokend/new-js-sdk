@@ -15,7 +15,7 @@ export class ManageAssetBuilder {
      * @param {string} opts.maxIssuanceAmount - Max amount can be issued of that asset
      * @param {number} opts.policies - Asset policies
      * @param {string} opts.initialPreissuedAmount - Amount of pre issued tokens available after creation of the asset
-     *
+     * @param {string} opts.trailingDigitsCount - Count of digits after the comma
      * @param {object} opts.details - Additional details about asset
      * @param {string} opts.details.name - Name of the asset
      * @param {array}  opts.details.documents - Documents attached to asset
@@ -45,8 +45,7 @@ export class ManageAssetBuilder {
       throw new Error('opts.maxIssuanceAmount is invalid')
     }
 
-    attrs.maxIssuanceAmount = BaseOperation
-      ._toUnsignedXDRAmount(opts.maxIssuanceAmount)
+    attrs.maxIssuanceAmount = BaseOperation._toUnsignedXDRAmount(opts.maxIssuanceAmount)
 
     if (isUndefined(opts.initialPreissuedAmount)) {
       opts.initialPreissuedAmount = '0'
@@ -58,18 +57,38 @@ export class ManageAssetBuilder {
 
     attrs.initialPreissuedAmount = BaseOperation
       ._toUnsignedXDRAmount(opts.initialPreissuedAmount)
+    attrs.sequenceNumber = 0
+
+    if (Number.isNaN(opts.trailingDigitsCount) &&
+      opts.trailingDigitsCount >= 0 && opts.trailingDigitsCount <= 6) {
+      throw new Error('opts.trailingDigitsCount is invalid')
+    }
+
+    attrs.trailingDigitsCount = opts.trailingDigitsCount
+
+    if (Number.isNaN(opts.trailingDigitsCount) &&
+      opts.trailingDigitsCount >= 0 && opts.trailingDigitsCount <= 6) {
+      throw new Error('opts.trailingDigitsCount is invalid')
+    }
+
+    attrs.trailingDigitsCount = opts.trailingDigitsCount
 
     attrs.ext = new xdr.AssetCreationRequestExt(
       xdr.LedgerVersion.emptyVersion()
     )
 
-    let assetCreationRequest = new xdr.AssetCreationRequest(attrs)
-    return ManageAssetBuilder._createManageAssetOp(
-      opts,
-      new xdr.ManageAssetOpRequest.createAssetCreationRequest(
-        assetCreationRequest
-      )
-    )
+    if (isUndefined(opts.allTasks)) {
+      opts.allTasks = 0
+    }
+
+    let r = xdr.ManageAssetOpRequest.createAssetCreationRequest()
+    r.set('createAssetCreationRequest', new xdr.ManageAssetOpCreateAssetCreationRequest({
+      createAsset: new xdr.AssetCreationRequest(attrs),
+      allTasks: opts.allTasks,
+      ext: new xdr.ManageAssetOpCreateAssetCreationRequestExt(xdr.LedgerVersion.emptyVersion())
+    }))
+
+    return ManageAssetBuilder._createManageAssetOp(opts, r)
   }
 
   /**
@@ -79,6 +98,7 @@ export class ManageAssetBuilder {
      * @param {string} opts.requestID - request ID, if 0 - creates new, updates otherwise
      * @param {string} opts.code - Asset code
      * @param {number} opts.policies - asset policies
+     * @param {number} opts.allTasks - tasks for the request
      *
      * @param {object} opts.details - Additional details about asset
      * @param {string} opts.details.name - Name of the asset
@@ -95,13 +115,17 @@ export class ManageAssetBuilder {
      */
   static assetUpdateRequest (opts) {
     let attrs = ManageAssetBuilder._createUpdateAttrs(opts)
+    attrs.sequenceNumber = 0
     attrs.ext = new xdr.AssetUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
-    let assetUpdateRequest = new xdr.AssetUpdateRequest(attrs)
 
-    return ManageAssetBuilder._createManageAssetOp(
-      opts,
-      new xdr.ManageAssetOpRequest.createAssetUpdateRequest(assetUpdateRequest)
-    )
+    let r = xdr.ManageAssetOpRequest.createAssetUpdateRequest()
+    r.set('createAssetUpdateRequest', new xdr.ManageAssetOpCreateAssetUpdateRequest({
+      updateAsset: new xdr.AssetUpdateRequest(attrs),
+      allTasks: opts.allTasks,
+      ext: new xdr.ManageAssetOpCreateAssetUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
+    }))
+
+    return ManageAssetBuilder._createManageAssetOp(opts, r)
   }
 
   /**
@@ -198,11 +222,11 @@ export class ManageAssetBuilder {
       details.logo.type = ''
     }
 
-    return {
-      name: details.name,
-      logo: details.logo,
-      terms: details.terms
+    if (isUndefined(details.externalSystemType)) {
+      details.externalSystemType = ''
     }
+
+    return details
   }
 
   static _createUpdateAttrs (opts) {
@@ -214,12 +238,21 @@ export class ManageAssetBuilder {
       throw new Error('opts.policies must be nonnegative number')
     }
 
+    if (isUndefined(opts.requestID)) {
+      opts.requestID = '0'
+    }
+
+    if (isUndefined(opts.sequenceNumber)) {
+      opts.sequenceNumber = 0
+    }
+
     let details = ManageAssetBuilder._getValidDetails(opts)
 
     let attrs = {
       code: opts.code,
       policies: opts.policies,
-      details: JSON.stringify(details)
+      details: JSON.stringify(details),
+      sequenceNumber: opts.sequenceNumber
     }
 
     return attrs
@@ -236,7 +269,7 @@ export class ManageAssetBuilder {
       ext: new xdr.ManageAssetOpExt(xdr.LedgerVersion.emptyVersion())
     })
 
-    let opAttributes = {}
+    let opAttributes = { source: undefined }
     opAttributes.body = xdr.OperationBody.manageAsset(assetUpdateOp)
     BaseOperation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)
@@ -248,24 +281,27 @@ export class ManageAssetBuilder {
     switch (attrs.request().switch()) {
       case xdr.ManageAssetAction.createAssetCreationRequest():
       {
-        let request = attrs.request().createAsset()
+        let request = attrs.request().createAssetCreationRequest().createAsset()
         result.code = request.code().toString()
-        result.preissuedAssetSigner = BaseOperation
-          .accountIdtoAddress(request.preissuedAssetSigner())
+        result.preissuedAssetSigner = BaseOperation.accountIdtoAddress(
+          request.preissuedAssetSigner()
+        )
         result.policies = request.policies()
         result.maxIssuanceAmount = BaseOperation
           ._fromXDRAmount(request.maxIssuanceAmount())
         result.initialPreissuedAmount = BaseOperation
           ._fromXDRAmount(request.initialPreissuedAmount())
         result.details = JSON.parse(request.details())
+        result.allTasks = attrs.request().createAssetCreationRequest().allTasks()
         break
       }
       case xdr.ManageAssetAction.createAssetUpdateRequest():
       {
-        let request = attrs.request().updateAsset()
+        let request = attrs.request().createAssetUpdateRequest().updateAsset()
         result.code = request.code().toString()
         result.policies = request.policies()
         result.details = JSON.parse(request.details())
+        result.allTasks = attrs.request().createAssetUpdateRequest().allTasks()
         break
       }
       case xdr.ManageAssetAction.cancelAssetRequest():
