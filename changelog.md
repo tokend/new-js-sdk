@@ -9,6 +9,7 @@
 ### Changed
 
 * Rename update kyc request to change role request
+* Renamed fields with names like `details` to `creatorDetails` according to new XDR structs
 
 ### Deprecated
 
