@@ -55,13 +55,14 @@ export class Wallets extends ResourceGroupBase {
       throw err
     }
 
-    return Wallet.fromEncrypted(
-      walletResponse.data.keychainData,
+    return Wallet.fromEncrypted({
+      keychainData: walletResponse.data.keychainData,
       kdfParams,
-      kdfParams.salt,
+      salt: kdfParams.salt,
       email,
-      password
-    )
+      password,
+      accountId: walletResponse.data.accountId
+    })
   }
 
   /**

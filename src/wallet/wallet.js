@@ -71,29 +71,31 @@ export class Wallet {
   /**
    * Decrypt a wallet obtained from a wallet server.
    *
-   * @param {object} keychainData Encrypted wallet seed.
-   * @param {object} kdfParams Scrypt params used for encryption.
-   * @param {string} salt Salt used for encryption.
-   * @param {string} email User's email.
-   * @param {string} password User's password.
+   * @param {object} opts
+   * @param {object} opts.keychainData Encrypted wallet seed.
+   * @param {object} opts.kdfParams Scrypt params used for encryption.
+   * @param {string} opts.salt Salt used for encryption.
+   * @param {string} opts.email User's email.
+   * @param {string} opts.password User's password.
+   * @param {string} opts.accountId User's account ID.
    */
-  static fromEncrypted (keychainData, kdfParams, salt, email, password) {
+  static fromEncrypted (opts) {
     let rawMasterKey = crypto.calculateMasterKey(
-      salt,
-      email,
-      password,
-      kdfParams
+      opts.salt,
+      opts.email,
+      opts.password,
+      opts.kdfParams
     )
     let rawWalletId = crypto.deriveWalletId(rawMasterKey)
     let rawWalletKey = crypto.deriveWalletKey(rawMasterKey)
     let decryptedKeychain = JSON.parse(
-      crypto.decryptData(keychainData, rawWalletKey)
+      crypto.decryptData(opts.keychainData, rawWalletKey)
     )
 
     return new Wallet(
-      email,
+      opts.email,
       Keypair.fromSecret(decryptedKeychain.seed),
-      Keypair.fromSecret(decryptedKeychain.seed).accountId(),
+      opts.accountId,
       sjcl.codec.hex.fromBits(rawWalletId)
     )
   }
