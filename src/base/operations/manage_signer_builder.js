@@ -1,7 +1,7 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { Keypair } from '../keypair'
 import isUndefined from 'lodash/isUndefined'
-import { UnsignedHyper, Hyper } from 'js-xdr'
+import { UnsignedHyper } from 'js-xdr'
 import { BaseOperation } from './base_operation'
 
 export class ManageSignerBuilder {

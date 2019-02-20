@@ -74,14 +74,15 @@ describe('Wallet', () => {
 
   describe('.fromEncrypted', () => {
     it('Should decrypt a wallet.', () => {
-      let encryptedKeychain = 'eyJJViI6IllLa1RKbGgyUE1nVjBxRWYiLCJjaXBoZXJUZXh0IjoidXhRRHN3NXoyeWdZMFo3VmVGTmYzTHI1N0JpMnpoV1FZZThtRVhyWlZtUnJnTGpPU01mQlBmZElEMWtGOVZaOStsaGNTZXBIaTJnbERsbFk1QjZRUndCRmMvR2VwRjcvUlVwZnRwRWRUNVN1ci9HOVQvUnJ1T0E5dk42NUoyWkppYnhjRXVuYVFRenFCYVFwOTNVZ0Z2T3lMVlg3T1NrbVQvdnNJUGxoVk5yN3U2VGNuR2lrbGlqaWVrdlk0ZEp2NmwrVWRHWmkyZGhOeWc9PSIsImNpcGhlck5hbWUiOiJhZXMiLCJtb2RlTmFtZSI6ImdjbSJ9'
-      let decryptedWallet = Wallet.fromEncrypted(
-        encryptedKeychain,
+      let keychainData = 'eyJJViI6IllLa1RKbGgyUE1nVjBxRWYiLCJjaXBoZXJUZXh0IjoidXhRRHN3NXoyeWdZMFo3VmVGTmYzTHI1N0JpMnpoV1FZZThtRVhyWlZtUnJnTGpPU01mQlBmZElEMWtGOVZaOStsaGNTZXBIaTJnbERsbFk1QjZRUndCRmMvR2VwRjcvUlVwZnRwRWRUNVN1ci9HOVQvUnJ1T0E5dk42NUoyWkppYnhjRXVuYVFRenFCYVFwOTNVZ0Z2T3lMVlg3T1NrbVQvdnNJUGxoVk5yN3U2VGNuR2lrbGlqaWVrdlk0ZEp2NmwrVWRHWmkyZGhOeWc9PSIsImNpcGhlck5hbWUiOiJhZXMiLCJtb2RlTmFtZSI6ImdjbSJ9'
+      let decryptedWallet = Wallet.fromEncrypted({
+        keychainData,
         kdfParams,
         salt,
         email,
-        password
-      )
+        password,
+        accountId
+      })
 
       expect(decryptedWallet).to.be.an.instanceOf(Wallet)
     })

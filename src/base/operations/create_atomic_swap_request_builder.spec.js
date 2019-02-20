@@ -8,7 +8,7 @@ describe('Create ASwapBidCreation request', function () {
       baseAmount: '911',
       bidID: '69',
       quoteAsset: 'ETH',
-      creatorDetails: '',
+      creatorDetails: ''
     }
     let op = CreateAtomicSwapRequestBuilder.createASwapRequest(opts)
     let xdrOp = op.toXDR('hex')

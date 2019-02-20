@@ -65,7 +65,7 @@ describe('create Account', () => {
     let opts = {
       destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
       source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-      roleID: '1',
+      roleID: '1'
     }
     expectThrow(() => Operation.createAccount(opts))
   })

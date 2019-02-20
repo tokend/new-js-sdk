@@ -17,8 +17,8 @@ const STATUS_CODES = {
  * @returns {Promise<never>}
  */
 export function parseJsonapiError (error, axiosInstance) {
-  const status = error.response.status
-  const data = error.response.data
+  const status = get(error, 'response.status')
+  const data = get(error, 'response.data')
 
   switch (status) {
     case STATUS_CODES.badRequest:

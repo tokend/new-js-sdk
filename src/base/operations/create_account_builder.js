@@ -83,5 +83,4 @@ export class CreateAccountBuilder {
       result.signersData.push(ManageSignerBuilder.signerDataToObject(result, signerData))
     }
   }
-
 }

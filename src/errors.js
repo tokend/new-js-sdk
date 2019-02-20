@@ -90,7 +90,7 @@ export class ServerError extends ServerErrorBase {
   constructor (originalError, axios) {
     super(originalError, axios)
 
-    const unwrappedError = originalError.response.data.errors[0]
+    const unwrappedError = get(originalError, 'response.data.errors[0]', {})
     this._title = unwrappedError.title
     this._detail = unwrappedError.detail
     this._meta = toCamelCaseDeep(unwrappedError.meta || {})

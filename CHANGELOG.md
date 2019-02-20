@@ -7,17 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## Unreleased
-
+## [1.0.0-x.12] - 2019-02-20
 ### Added
-
-* Manage singer and create account builders
+- Manage singer and create account builders
 
 ### Changed
+- Change asset pre issuer operation
+- Squashed ledger version;
+- Rename update kyc request to change role request
 
-* Change asset pre issuer operation
-* Squashed ledger version;
-* Rename update kyc request to change role request
+- Renamed request types:
+  - `xdr.ReviewableRequestType.preIssuanceCreate -> xdr.ReviewableRequestType.createPreIssuance`
+  - `xdr.ReviewableRequestType.issuanceCreate -> xdr.ReviewableRequestType.createIssuance`
+  - `xdr.ReviewableRequestType.withdraw -> xdr.ReviewableRequestType.createWithdraw`
+  - `xdr.ReviewableRequestType.sale -> xdr.ReviewableRequestType.createSale`
+  - `xdr.ReviewableRequestType.limitsUpdate -> xdr.ReviewableRequestType.updateLimit`
+  - `xdr.ReviewableRequestType.amlAlert -> xdr.ReviewableRequestType.createAmlAlert`
+  - `xdr.ReviewableRequestType.updateKyc -> xdr.ReviewableRequestType.changeRole`
+  - `xdr.ReviewableRequestType.updateSaleDetail -> xdr.ReviewableRequestType.updateSaleDetail`
+  - `xdr.ReviewableRequestType.assetCreate -> xdr.ReviewableRequestType.createAsset`
+  - `xdr.ReviewableRequestType.invoice -> xdr.ReviewableRequestType.createInvoice`
+  - `xdr.ReviewableRequestType.contract -> xdr.ReviewableRequestType.manageContract`
+  - `xdr.ReviewableRequestType.assetUpdate -> xdr.ReviewableRequestType.updateAsset`
+  - `xdr.ReviewableRequestType.createAtomicSwapBid -> xdr.ReviewableRequestType.createAtomicSwapBid`
+  - `xdr.ReviewableRequestType.atomicSwap -> xdr.ReviewableRequestType.createAtomicSwap`
+
 * Renamed fields with names like `details` to `creatorDetails` according to new XDR structs
     * `createAmlAlert (opts)`:
         * field `opts.reason -> opts.creatorDetails`
@@ -60,35 +74,30 @@ for further information about branching and tagging conventions.
     * `PreIssuanceRequest.build (opts)`:
         * introduced required field `result.creatorDetails`
 
-* Renamed request types:
-    * `xdr.ReviewableRequestType.preIssuanceCreate -> xdr.ReviewableRequestType.createPreIssuance`
-    * `xdr.ReviewableRequestType.issuanceCreate -> xdr.ReviewableRequestType.createIssuance`
-    * `xdr.ReviewableRequestType.withdraw -> xdr.ReviewableRequestType.createWithdraw`
-    * `xdr.ReviewableRequestType.sale -> xdr.ReviewableRequestType.createSale`
-    * `xdr.ReviewableRequestType.limitsUpdate -> xdr.ReviewableRequestType.updateLimit`
-    * `xdr.ReviewableRequestType.amlAlert -> xdr.ReviewableRequestType.createAmlAlert`
-    * `xdr.ReviewableRequestType.updateKyc -> xdr.ReviewableRequestType.changeRole`
-    * `xdr.ReviewableRequestType.updateSaleDetail -> xdr.ReviewableRequestType.updateSaleDetail`
-    * `xdr.ReviewableRequestType.assetCreate -> xdr.ReviewableRequestType.createAsset`
-    * `xdr.ReviewableRequestType.invoice -> xdr.ReviewableRequestType.createInvoice`
-    * `xdr.ReviewableRequestType.contract -> xdr.ReviewableRequestType.manageContract`
-    * `xdr.ReviewableRequestType.assetUpdate -> xdr.ReviewableRequestType.updateAsset`
-    * `xdr.ReviewableRequestType.createAtomicSwapBid -> xdr.ReviewableRequestType.createAtomicSwapBid`
-    * `xdr.ReviewableRequestType.atomicSwap -> xdr.ReviewableRequestType.createAtomicSwap`
-
-
 ### Deprecated
-
-* payout
-* manage contract and invoices
-* atomic swap
+- payout
+- manage contract and invoices
+- atomic swap
 
 ### Removed
+- Payment and Direct Debit Operations
+- SetOptions and ManageAccount operations
 
-* Payment and Direct Debit Operations
-* SetOptions and ManageAccount operations
 
-## [1.0.0-x.8] - 2019-02-9
+## [1.0.0-x.11] - 2019-02-20
+### Fixed
+- Fix issue of non-stringed external details of review request builder
+
+## [1.0.0-x.10] - 2019-02-20
+### Fixed
+- Passing account ID to `Wallet.fromEncrypted` method
+- Using object for `Wallet.fromEncrypted` method params
+
+## [1.0.0-x.9] - 2019-02-20
+### Fixed
+- Deriving of account in Wallet.fromSeed()
+
+## [1.0.0-x.8] - 2019-02-19
 ### Changed
 - Squashed ledger version;
 
@@ -114,7 +123,11 @@ for further information about branching and tagging conventions.
 ### Fixed
 - Change password method
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.8...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.12...HEAD
+[1.0.0-x.12]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.11...1.0.0-x.12
+[1.0.0-x.11]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.10...1.0.0-x.11
+[1.0.0-x.10]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.9...1.0.0-x.10
+[1.0.0-x.9]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.8...1.0.0-x.9
 [1.0.0-x.8]: https://github.com/tokend/new-js-sdk/compare/0.3.33...1.0.0-x.8
 [0.3.33]: https://github.com/tokend/new-js-sdk/compare/0.3.32...0.3.33
 [0.3.32]: https://github.com/tokend/new-js-sdk/compare/0.3.31...0.3.32
