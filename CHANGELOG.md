@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.0.0-x.9] - 2019-02-20
 ### Fixed
 - Deriving of account in Wallet.fromSeed()
 
-## [1.0.0-x.8] - 2019-02-9
+## [1.0.0-x.8] - 2019-02-19
 ### Changed
 - Squashed ledger version;
 
@@ -37,7 +37,8 @@ for further information about branching and tagging conventions.
 ### Fixed
 - Change password method
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.8...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.9...HEAD
+[1.0.0-x.9]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.8...1.0.0-x.9
 [1.0.0-x.8]: https://github.com/tokend/new-js-sdk/compare/0.3.33...1.0.0-x.8
 [0.3.33]: https://github.com/tokend/new-js-sdk/compare/0.3.32...0.3.33
 [0.3.32]: https://github.com/tokend/new-js-sdk/compare/0.3.31...0.3.32
