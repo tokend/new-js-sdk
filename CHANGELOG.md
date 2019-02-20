@@ -31,11 +31,11 @@ for further information about branching and tagging conventions.
         * introduced required field `opts.creatorDetails`
     * `createASwapRequestToObject (result, attrs)`:
         * introduced field `result.creatorDetails`
-    * `createIssuanceRequest (opts)`: // TODO in another branch
+    * `createIssuanceRequest (opts)`:
         * field `opts.externalDetails -> opts.creatorDetails`
-    * `createIssuanceRequestToObject (result, attrs)`: // TODO in another branch
+    * `createIssuanceRequestToObject (result, attrs)`:
         * field `result.externalDetails -> result.creatorDetails`
-    * `createChangeRoleRequest (opts)`: // TODO in another branch
+    * `createChangeRoleRequest (opts)`:
         * field `opts.kycData -> opts.creatorDetails`
     * `createChangeRoleRequestOpToObject (result, attrs)`
         * field `result.kycData -> result.creatorDetails`
@@ -49,14 +49,6 @@ for further information about branching and tagging conventions.
         * field `opts.details -> opts.creatorDetails`
     * `manageAssetToObject (result, attrs)`:
         * field `opts.reason -> opts.creatorDetails`
-    * `createUpdateSaleDetailsRequest (opts)`:
-        * field `opts.newDetails -> opts.creatorDetails` // TODO in new branch
-    * `manageSaleToObject (result, attrs)`: // TODO in new branch
-        * field `result.newDetails -> result.creatorDetails`
-    * `createPreIssuanceRequestOp (opts)`: // TODO in new branch
-        * introduced field `opts.creatorDetails`
-    * `preIssuanceRequestOpToObject (result, attrs)`: // TODO in new branch
-        * introduced field `result.creatorDetails`
     * `reviewWithdrawRequest (opts)`:
         * fields `opts.tasksToAdd, opts.TasksToRemove, opts.externalDetails`
           composed into the object `opts.reviewDetails`:

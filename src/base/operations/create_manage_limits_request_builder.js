@@ -7,14 +7,15 @@ export class CreateManageLimitsRequestBuilder {
   /**
    * Creates limits update request
    * @param {object} opts
-   * @param {object} opts.details - details to review
+   * @param {object} opts.creatorDetails - details to review
+   * @param {number} opts.allTasks - Bitmask of all tasks which must be completed for the request approval
    * @param {string|number} opts.requestID - if 0 - create request, else - update existing request
    * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
    * @returns {xdr.CreateManageLimitsRequestOp}
    */
   static createManageLimitsRequest (opts) {
-    if (isUndefined(opts.details)) {
-      throw new Error('opts.details is not defined')
+    if (isUndefined(opts.creatorDetails)) {
+      throw new Error('opts.creatorDetails is not defined')
     }
 
     if (isUndefined(opts.requestID)) {
@@ -22,18 +23,15 @@ export class CreateManageLimitsRequestBuilder {
     }
 
     let limitsUpdateRequest = new xdr.LimitsUpdateRequest({
-      deprecatedDocumentHash: Buffer.alloc(32),
-      ext: new xdr
-        .LimitsUpdateRequestExt
-        .limitsUpdateRequestDeprecatedDocumentHash(JSON.stringify(opts.details))
+      creatorDetails: opts.creatorDetails,
+      ext: new xdr.LimitsUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
     })
 
     let createManageLimitsRequestOp = new xdr.CreateManageLimitsRequestOp({
       manageLimitsRequest: limitsUpdateRequest,
-      ext: new xdr.CreateManageLimitsRequestOpExt
-        .allowToUpdateAndRejectLimitsUpdateRequest(
-          UnsignedHyper.fromString(opts.requestID)
-        )
+      allTasks: opts.allTasks,
+      requestId: UnsignedHyper.fromString(opts.requestID),
+      ext: new xdr.CreateManageLimitsRequestOpExt(xdr.LedgerVersion.emptyVersion())
     })
 
     let opAttrs = {}
@@ -45,7 +43,7 @@ export class CreateManageLimitsRequestBuilder {
   }
 
   static createManageLimitsRequestToObject (result, attrs) {
-    result.details = JSON.parse(attrs.manageLimitsRequest().ext().details())
-    result.requestID = attrs.ext().requestId().toString()
+    result.creatorDetails = JSON.parse(attrs.manageLimitsRequest().creatorDetails())
+    result.requestId = attrs.requestId().toString()
   }
 }

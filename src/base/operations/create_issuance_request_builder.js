@@ -39,11 +39,11 @@ export class CreateIssuanceRequestBuilder {
       throw new Error('opts.reference is invalid')
     }
 
-    if (isUndefined(opts.externalDetails)) {
-      throw new Error('externalDetails is invalid')
+    if (isUndefined(opts.creatorDetails)) {
+      throw new Error('creatorDetails is invalid')
     }
 
-    attrs.externalDetails = JSON.stringify(opts.externalDetails)
+    attrs.creatorDetails = opts.creatorDetails
 
     let fee = {
       fixed: '0',
@@ -56,7 +56,6 @@ export class CreateIssuanceRequestBuilder {
     let issuanceRequestOp = new xdr.CreateIssuanceRequestOp({
       request: request,
       reference: opts.reference,
-      externalDetails: request.externalDetails(),
       ext: new xdr.CreateIssuanceRequestOpExt(xdr.LedgerVersion.emptyVersion())
     })
     let opAttributes = {}
@@ -72,6 +71,6 @@ export class CreateIssuanceRequestBuilder {
     result.asset = request.asset().toString()
     result.amount = BaseOperation._fromXDRAmount(request.amount())
     result.receiver = BaseOperation.balanceIdtoString(request.receiver())
-    result.externalDetails = JSON.parse(request.externalDetails())
+    result.creatorDetails = JSON.parse(request.creatorDetails())
   }
 }

@@ -10,7 +10,7 @@ describe('PreIssuanceRequestOpBuilder', () => {
     let reference = 'test'
     let asset = 'BLC'
     let keyPair = Keypair.random()
-    let creatorDetails = 'some details'
+    let creatorDetails = JSON.stringify({ 'data': 'some details' })
     let preIssuanceRequest = PreIssuanceRequest.build({
       amount,
       reference,
@@ -28,7 +28,7 @@ describe('PreIssuanceRequestOpBuilder', () => {
     expect(reference).to.be.equal(obj.request.reference)
     expect(amount).to.be.equal(obj.request.amount)
     expect(asset).to.be.equal(obj.request.asset)
-    expect(creatorDetails).to.be.equal(obj.creatorDetails)
+    expect(creatorDetails).to.be.equal(JSON.stringify(obj.request.creatorDetails))
     expect(preIssuanceRequest.signature().toXDR('hex'))
       .to.be.equal(obj.request.signature.toXDR('hex'))
   })

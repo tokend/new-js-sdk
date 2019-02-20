@@ -10,11 +10,11 @@ export class ManageSaleBuilder {
      * @param {object} opts
      * @param {number|string} opts.requestID - set to zero to create new request
      * @param {string} opts.saleID - ID of the sale to create new update details request
-     * @param {object} opts.creatorDetails - new sale specific details
-     * @param {object} opts.creatorDetails.name - name of the sale
-     * @param {object} opts.creatorDetails.short_description - short description of the sale
-     * @param {object} opts.creatorDetails.description - sale description
-     * @param {object} opts.creatorDetails.logo - details of the logo
+     * @param {object} opts.newDetails - new sale specific details
+     * @param {object} opts.newDetails.name - name of the sale
+     * @param {object} opts.newDetails.short_description - short description of the sale
+     * @param {object} opts.newDetails.description - sale description
+     * @param {object} opts.newDetails.logo - details of the logo
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.ManageSaleOp}
      */

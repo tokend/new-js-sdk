@@ -10,13 +10,13 @@ describe('CreateIssuanceRequestBuilder', () => {
     let reference = 'test'
     let asset = 'BLC'
     let receiver = Keypair.random().balanceId()
-    let externalDetails = { a: 'some details' }
+    let creatorDetails = JSON.stringify({ 'data': 'some details' })
     let op = CreateIssuanceRequestBuilder.createIssuanceRequest({
-      asset: asset,
-      amount: amount,
-      reference: reference,
-      receiver: receiver,
-      externalDetails: externalDetails
+      asset,
+      amount,
+      reference,
+      receiver,
+      creatorDetails
     })
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
@@ -26,6 +26,6 @@ describe('CreateIssuanceRequestBuilder', () => {
     expect(amount).to.be.equal(obj.amount)
     expect(asset).to.be.equal(obj.asset)
     expect(receiver).to.be.equal(obj.receiver)
-    expect(isEqual(externalDetails, obj.externalDetails)).to.be.true
+    expect(creatorDetails).to.be.equal(JSON.stringify(obj.creatorDetails))
   })
 })
