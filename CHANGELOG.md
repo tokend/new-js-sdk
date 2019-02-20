@@ -9,8 +9,8 @@ for further information about branching and tagging conventions.
 
 ## [Unreleased]
 ### Fixed
-- Passing account ID to Wallet.fromEncrypted method
-- Using object for Wallet.fromEncrypted method params
+- Passing account ID to `Wallet.fromEncrypted` method
+- Using object for `Wallet.fromEncrypted` method params
 
 ## [1.0.0-x.9] - 2019-02-20
 ### Fixed
