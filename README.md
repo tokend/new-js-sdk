@@ -6,7 +6,7 @@
 
 ## Changelog
 
-All notable changes to this project will be documented in [this file](./changelog.md). This project adheres to Semantic Versioning.
+All notable changes to this project will be documented in [this file](./CHANGELOG.md). This project adheres to Semantic Versioning.
 
 ## Getting Started
 
