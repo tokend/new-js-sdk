@@ -31,7 +31,7 @@ export class PreIssuanceRequest {
     }
 
     if (isUndefined(opts.creatorDetails)) {
-      throw new TypeError('opts.creatorDetais is invalid')
+      throw new TypeError('opts.creatorDetails is invalid')
     }
 
     opts.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
@@ -41,7 +41,7 @@ export class PreIssuanceRequest {
       amount: opts.amount,
       asset: opts.asset,
       signature: signature,
-      creatorDetails: opts.creatorDetails,
+      creatorDetails: JSON.stringify(opts.creatorDetails),
       ext: new xdr.PreIssuanceRequestExt(xdr.LedgerVersion.emptyVersion())
     })
   }
@@ -61,6 +61,7 @@ export class PreIssuanceRequest {
     attributes.reference = xdr.reference().toString()
     attributes.asset = xdr.asset().toString()
     attributes.signature = xdr.signature()
+    attributes.creatorDetails = JSON.parse(xdr.creatorDetails().toString())
     return attributes
   }
 

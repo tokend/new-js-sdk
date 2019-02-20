@@ -1,18 +1,18 @@
 import { default as xdr } from '../generated/xdr_generated'
-import { isEqual } from 'lodash'
 import { Operation } from '../operation'
 import { CreateManageLimitsRequestBuilder } from './create_manage_limits_request_builder'
 
 describe('createManageLimitsRequest', () => {
   it('Success', () => {
     let requestID = '0'
+    let allTasks = 1
     const limits = {
       annualOut: '100',
       dailyOut: '100',
       monthlyOut: '100',
       weeklyOut: '100'
     }
-    const details = {
+    const creatorDetails = {
       operationType: 'deposit',
       statsOpType: 4,
       asset: 'BTC',
@@ -22,12 +22,13 @@ describe('createManageLimitsRequest', () => {
     }
     let op = CreateManageLimitsRequestBuilder.createManageLimitsRequest({
       requestID,
-      details
+      allTasks,
+      creatorDetails
     })
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
     expect(obj.type).to.be.equal('createManageLimitsRequest')
-    expect(isEqual(details, obj.details)).to.be.true
+    expect(JSON.stringify(creatorDetails)).to.be.equal(JSON.stringify(obj.creatorDetails))
   })
 })

@@ -8,7 +8,7 @@ describe('Manage sale', () => {
     let opts = {
       saleID: '1',
       requestID: '0',
-      newDetails: {
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: {
@@ -25,7 +25,7 @@ describe('Manage sale', () => {
     let obj = Operation.operationToObject(operation)
     expect(obj.saleID).to.be.equal(opts.saleID)
     expect(obj.requestID).to.be.equal(opts.requestID)
-    expect(isEqual(obj.newDetails, opts.newDetails)).to.be.true
+    expect(isEqual(obj.creatorDetails, opts.creatorDetails)).to.be.true
   })
   it('Cancel sale', () => {
     let opts = {
