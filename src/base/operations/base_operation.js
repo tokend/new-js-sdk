@@ -247,6 +247,13 @@ export class BaseOperation {
   /**
      * @private
      */
+  static _numberFromXDR (value) {
+    return new BigNumber(value).toString()
+  }
+
+  /**
+     * @private
+     */
   static _toXDRPrice (price) {
     let xdrObject
     if (price.n && price.d) {
@@ -265,16 +272,6 @@ export class BaseOperation {
     }
 
     return xdrObject
-  }
-
-  static _accountTypeFromNumber (rawAccountType) {
-    if (!BaseOperation._isValidAccountType(rawAccountType)) {
-      throw new Error(
-        `XDR Read Error: Unknown AccountType member for value ${rawAccountType}`
-      )
-    }
-
-    return xdr.AccountType._byValue.get(rawAccountType)
   }
 
   static _statsOpTypeFromNumber (rawStatsOpType) {
@@ -324,10 +321,6 @@ export class BaseOperation {
     }
 
     return xdr.RequestType._byValue.get(rawRequestType)
-  }
-
-  static _isValidAccountType (rawAccountType) {
-    return xdr.AccountType._byValue.has(rawAccountType)
   }
 
   static _isValidStatsOpType (rawStatsOpType) {
