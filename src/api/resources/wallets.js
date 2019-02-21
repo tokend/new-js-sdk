@@ -105,10 +105,10 @@ export class Wallets extends ResourceGroupBase {
           type: 'wallet',
           id: encryptedMainWallet.id,
           attributes: {
-            accountId: encryptedMainWallet.accountId,
-            keychainData: encryptedMainWallet.keychainData,
             email,
-            salt: encryptedMainWallet.salt
+            salt: encryptedMainWallet.salt,
+            accountId: encryptedMainWallet.accountId,
+            keychainData: encryptedMainWallet.keychainData
           },
           relationships: {
             kdf: {
@@ -120,26 +120,37 @@ export class Wallets extends ResourceGroupBase {
             recovery: {
               data: {
                 type: 'recovery',
-                id: encryptedRecoveryWallet.id,
-                attributes: {
-                  accountId: encryptedRecoveryWallet.accountId,
-                  keychainData: encryptedRecoveryWallet.keychainData,
-                  salt: encryptedRecoveryWallet.salt
-                }
+                id: encryptedRecoveryWallet.id
               }
             },
             factor: {
               data: {
                 type: 'password',
-                attributes: {
-                  accountId: secondFactorWallet.accountId,
-                  keychainData: encryptedSecondFactorWallet.keychainData,
-                  salt: encryptedSecondFactorWallet.salt
-                }
+                id: encryptedMainWallet.id
               }
             }
           }
-        }
+        },
+        included: [
+          {
+            type: 'password',
+            id: encryptedMainWallet.id,
+            attributes: {
+              accountId: secondFactorWallet.accountId,
+              keychainData: encryptedSecondFactorWallet.keychainData,
+              salt: encryptedSecondFactorWallet.salt
+            }
+          },
+          {
+            type: 'recovery',
+            id: encryptedRecoveryWallet.id,
+            attributes: {
+              accountId: encryptedRecoveryWallet.accountId,
+              keychainData: encryptedRecoveryWallet.keychainData,
+              salt: encryptedRecoveryWallet.salt
+            }
+          }
+        ]
       })
 
     return {
@@ -245,15 +256,22 @@ export class Wallets extends ResourceGroupBase {
             factor: {
               data: {
                 type: 'password',
-                attributes: {
-                  accountId: encryptedSecondFactorWallet.accountId,
-                  keychainData: encryptedSecondFactorWallet.keychainData,
-                  salt: encryptedSecondFactorWallet.salt
-                }
+                id: encryptedNewMainWallet.id
               }
             }
           }
-        }
+        },
+        included: [
+          {
+            id: encryptedNewMainWallet.id,
+            type: 'password',
+            attributes: {
+              accountId: encryptedSecondFactorWallet.accountId,
+              keychainData: encryptedSecondFactorWallet.keychainData,
+              salt: encryptedSecondFactorWallet.salt
+            }
+          }
+        ]
       })
 
     return newMainWallet
