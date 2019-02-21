@@ -14,7 +14,7 @@ describe('KYC request op', () => {
       requestID: requestID,
       destinationAccount: accountID,
       accountRoleToSet: accountRole,
-      kycData: kycData,
+      creatorDetails: kycData,
       allTasks: allTasks
     })
     let xdrOp = op.toXDR('hex')
@@ -23,7 +23,7 @@ describe('KYC request op', () => {
     expect(obj.type).to.be.equal('createChangeRoleRequest')
     expect(obj.destinationAccount).to.be.equal(accountID)
     expect(obj.accountRoleToSet).to.be.equal(accountRole)
-    expect(isEqual(obj.kycData, kycData)).to.be.true
+    expect(isEqual(obj.creatorDetails, kycData)).to.be.true
     expect(obj.allTasks).to.be.equal(allTasks)
   })
 })

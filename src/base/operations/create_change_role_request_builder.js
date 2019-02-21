@@ -11,7 +11,7 @@ export class CreateChangeRoleRequestBuilder {
      * @param {number|string} opts.requestID - set to zero to create new request
      * @param {string} opts.destinationAccount
      * @param {string} opts.accountRoleToSet
-     * @param {object} opts.kycData
+     * @param {object} opts.creatorDetails
      * @param {number|string} opts.allTasks
      * @param {string} opts.creatorDetails - request details set by creator
      * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
@@ -32,7 +32,7 @@ export class CreateChangeRoleRequestBuilder {
       .fromAccountId(opts.destinationAccount)
       .xdrAccountId()
     attrs.accountRoleToSet = UnsignedHyper.fromString(opts.accountRoleToSet)
-    attrs.kycData = JSON.stringify(opts.kycData)
+    attrs.kycData = JSON.stringify(opts.creatorDetails)
 
     attrs.requestId = UnsignedHyper.fromString(opts.requestID)
     attrs.allTasks = BaseOperation._checkUnsignedIntValue('allTasks', opts.allTasks)
@@ -49,7 +49,7 @@ export class CreateChangeRoleRequestBuilder {
     result.requestID = attrs.requestId
     result.destinationAccount = BaseOperation.accountIdtoAddress(attrs.destinationAccount())
     result.accountRoleToSet = attrs.accountRoleToSet().toString()
-    result.kycData = JSON.parse(attrs.kycData())
+    result.creatorDetails = JSON.parse(attrs.kycData())
     result.allTasks = attrs.allTasks()
   }
 }

@@ -9,14 +9,14 @@ export class ManageLimitsBuilder {
      * Create limits for account or account type
      * @param {object} opts
      * @param {string} opts.accountID - account to create limits for
-     * @param {string} opts.accountType - account type to create limits for
+     * @param {string} opts.accountRole - account role to create limits for
      * @param {string} opts.statsOpType - operation type of stats
      * @param {string} opts.assetCode - asset code of limits
      * @param {boolean} opts.isConvertNeeded - if true - can use another assets for stats
-     * @param {number|string} opts.dailyOut - limit per day
-     * @param {number|string} opts.weeklyOut - limit per week
-     * @param {number|string} opts.monthlyOut - limit per month
-     * @param {number|string} opts.annualOut - limit per year
+     * @param {string} opts.dailyOut - limit per day
+     * @param {string} opts.weeklyOut - limit per week
+     * @param {string} opts.monthlyOut - limit per month
+     * @param {string} opts.annualOut - limit per year
      * @param {string} [opts.source] - The source account for the limits creation. Defaults to the transaction's source account.
      * @returns {xdr.ManageLimitsOp}
      */
@@ -34,9 +34,8 @@ export class ManageLimitsBuilder {
       rawLimitsCreateDetails.accountId = Keypair.fromAccountId(opts.accountID).xdrAccountId()
     }
 
-    if (!isUndefined(opts.accountType)) {
-      rawLimitsCreateDetails.accountType = BaseOperation
-        ._accountTypeFromNumber(opts.accountType)
+    if (!isUndefined(opts.accountRole)) {
+      rawLimitsCreateDetails.accountRole = UnsignedHyper.fromString(opts.accountRole)
     }
 
     if (isUndefined(opts.statsOpType)) {
@@ -58,6 +57,9 @@ export class ManageLimitsBuilder {
     rawLimitsCreateDetails.weeklyOut = BaseOperation._toUnsignedXDRAmount(opts.weeklyOut)
     rawLimitsCreateDetails.monthlyOut = BaseOperation._toUnsignedXDRAmount(opts.monthlyOut)
     rawLimitsCreateDetails.annualOut = BaseOperation._toUnsignedXDRAmount(opts.annualOut)
+
+    rawLimitsCreateDetails.ext =
+      new xdr.LimitsCreateDetailsExt(xdr.LedgerVersion.emptyVersion())
 
     let limitsCreateDetails = new xdr.LimitsCreateDetails(rawLimitsCreateDetails)
 
@@ -100,12 +102,12 @@ export class ManageLimitsBuilder {
         if (details.accountId()) {
           result.account = BaseOperation.accountIdtoAddress(details.accountId())
         }
-        if (details.accountType()) {
-          result.accountType = details.accountType().value
+        if (details.accountRole()) {
+          result.accountRole = details.accountRole().toString()
         }
 
-        result.statsOpType = details.statsOpType().value
-        result.assetCode = details.assetCode()
+        result.statsOpType = BaseOperation._numberFromXDR(details.statsOpType().value)
+        result.assetCode = details.assetCode().toString()
         result.isConvertNeeded = details.isConvertNeeded()
         result.dailyOut = BaseOperation._fromXDRAmount(details.dailyOut())
         result.weeklyOut = BaseOperation._fromXDRAmount(details.weeklyOut())

@@ -15,7 +15,7 @@ export class Issuance extends Helper {
       amount: opts.amount,
       receiver: opts.balanceId,
       reference: Keypair.random().accountId(),
-      externalDetails: {}
+      creatorDetails: {}
     })
 
     const response = await this.submit(operation, assetOwnerKp)

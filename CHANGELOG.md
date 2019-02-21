@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.0.0-x.14] - 2019-02-21
+### Added
+- KeyServerCaller
+
+### Fixed
+- Wallet.fromEncrypted in cases when you provide seed only
+
+## [1.0.0-x.13] - 2019-02-21
+### Added
+- Limits & bind external system ID unit tests
+
+### Fixed
+- Create manage limits request builder
+
+### Changed
+- Use opts.creatorDetails in issuance request builder instead external details
+- Renamed fields with names like `details` to `creatorDetails` according to new XDR structs
+  - `createIssuanceRequest (opts)`:
+    - field `opts.externalDetails -> opts.creatorDetails`
+  - `createIssuanceRequestToObject (result, attrs)`:
+    - field `result.externalDetails -> result.creatorDetails`
+  - `createChangeRoleRequest (opts)`:
+    - field `opts.kycData -> opts.creatorDetails`
+  - `createChangeRoleRequestOpToObject (result, attrs)`
+    - field `result.kycData -> result.creatorDetails`
+  - `createUpdateSaleDetailsRequest (opts)`:
+    - field `opts.newDetails -> opts.creatorDetails`
+  - `manageSaleToObject (result, attrs)`:
+    - field `result.newDetails -> result.creatorDetails`
+  - `createPreIssuanceRequestOp (opts)`:
+    - introduced field `opts.creatorDetails`
+  - `preIssuanceRequestOpToObject (result, attrs)`:
+    - introduced field `result.creatorDetails`
+
+
 ## [1.0.0-x.12] - 2019-02-20
 ### Added
 - Manage singer and create account builders
@@ -28,14 +63,6 @@ for further information about branching and tagging conventions.
     - introduced required field `opts.creatorDetails`
   - `createASwapRequestToObject (result, attrs)`:
     - introduced field `result.creatorDetails`
-  - `createIssuanceRequest (opts)`: // TODO in another branch
-    - field `opts.externalDetails -> opts.creatorDetails`
-  - `createIssuanceRequestToObject (result, attrs)`: // TODO in another branch
-    - field `result.externalDetails -> result.creatorDetails`
-  - `createChangeRoleRequest (opts)`: // TODO in another branch
-    - field `opts.kycData -> opts.creatorDetails`
-  - `createChangeRoleRequestOpToObject (result, attrs)`
-    - field `result.kycData -> result.creatorDetails`
   - `createWithdrawWithAutoConversion (opts)`:
     - field `opts.externalDetails -> opts.creatorDetails`
   - `createWithdrawalRequestOpToObject (result, attrs)`:
@@ -46,14 +73,6 @@ for further information about branching and tagging conventions.
     - field `opts.details -> opts.creatorDetails`
   - `manageAssetToObject (result, attrs)`:
     - field `opts.reason -> opts.creatorDetails`
-  - `createUpdateSaleDetailsRequest (opts)`:
-    - field `opts.newDetails -> opts.creatorDetails` // TODO in new branch
-  - `manageSaleToObject (result, attrs)`: // TODO in new branch
-    - field `result.newDetails -> result.creatorDetails`
-  - `createPreIssuanceRequestOp (opts)`: // TODO in new branch
-    - introduced field `opts.creatorDetails`
-  - `preIssuanceRequestOpToObject (result, attrs)`: // TODO in new branch
-    - introduced field `result.creatorDetails`
   - `reviewWithdrawRequest (opts)`:
     - fields `opts.tasksToAdd, opts.TasksToRemove, opts.externalDetails`
         composed into the object `opts.reviewDetails`:
@@ -65,21 +84,21 @@ for further information about branching and tagging conventions.
   - `PreIssuanceRequest.build (opts)`:
     - introduced required field `result.creatorDetails`
 
-- Renamed request types:
-  - `xdr.ReviewableRequestType.preIssuanceCreate -> xdr.ReviewableRequestType.createPreIssuance`
-  - `xdr.ReviewableRequestType.issuanceCreate -> xdr.ReviewableRequestType.createIssuance`
-  - `xdr.ReviewableRequestType.withdraw -> xdr.ReviewableRequestType.createWithdraw`
-  - `xdr.ReviewableRequestType.sale -> xdr.ReviewableRequestType.createSale`
-  - `xdr.ReviewableRequestType.limitsUpdate -> xdr.ReviewableRequestType.updateLimit`
-  - `xdr.ReviewableRequestType.amlAlert -> xdr.ReviewableRequestType.createAmlAlert`
-  - `xdr.ReviewableRequestType.updateKyc -> xdr.ReviewableRequestType.changeRole`
-  - `xdr.ReviewableRequestType.updateSaleDetail -> xdr.ReviewableRequestType.updateSaleDetail`
-  - `xdr.ReviewableRequestType.assetCreate -> xdr.ReviewableRequestType.createAsset`
-  - `xdr.ReviewableRequestType.invoice -> xdr.ReviewableRequestType.createInvoice`
-  - `xdr.ReviewableRequestType.contract -> xdr.ReviewableRequestType.manageContract`
-  - `xdr.ReviewableRequestType.assetUpdate -> xdr.ReviewableRequestType.updateAsset`
-  - `xdr.ReviewableRequestType.createAtomicSwapBid -> xdr.ReviewableRequestType.createAtomicSwapBid`
-  - `xdr.ReviewableRequestType.atomicSwap -> xdr.ReviewableRequestType.createAtomicSwap`
+  - Renamed request types:
+    - `xdr.ReviewableRequestType.preIssuanceCreate -> xdr.ReviewableRequestType.createPreIssuance`
+    - `xdr.ReviewableRequestType.issuanceCreate -> xdr.ReviewableRequestType.createIssuance`
+    - `xdr.ReviewableRequestType.withdraw -> xdr.ReviewableRequestType.createWithdraw`
+    - `xdr.ReviewableRequestType.sale -> xdr.ReviewableRequestType.createSale`
+    - `xdr.ReviewableRequestType.limitsUpdate -> xdr.ReviewableRequestType.updateLimit`
+    - `xdr.ReviewableRequestType.amlAlert -> xdr.ReviewableRequestType.createAmlAlert`
+    - `xdr.ReviewableRequestType.updateKyc -> xdr.ReviewableRequestType.changeRole`
+    - `xdr.ReviewableRequestType.updateSaleDetail -> xdr.ReviewableRequestType.updateSaleDetail`
+    - `xdr.ReviewableRequestType.assetCreate -> xdr.ReviewableRequestType.createAsset`
+    - `xdr.ReviewableRequestType.invoice -> xdr.ReviewableRequestType.createInvoice`
+    - `xdr.ReviewableRequestType.contract -> xdr.ReviewableRequestType.manageContract`
+    - `xdr.ReviewableRequestType.assetUpdate -> xdr.ReviewableRequestType.updateAsset`
+    - `xdr.ReviewableRequestType.createAtomicSwapBid -> xdr.ReviewableRequestType.createAtomicSwapBid`
+    - `xdr.ReviewableRequestType.atomicSwap -> xdr.ReviewableRequestType.createAtomicSwap`
 
 ### Deprecated
 - payout
@@ -130,7 +149,8 @@ for further information about branching and tagging conventions.
 ### Fixed
 - Change password method
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.12...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.13...HEAD
+[1.0.0-x.13]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.11...1.0.0-x.13
 [1.0.0-x.12]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.11...1.0.0-x.12
 [1.0.0-x.11]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.10...1.0.0-x.11
 [1.0.0-x.10]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.9...1.0.0-x.10
