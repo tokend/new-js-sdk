@@ -181,10 +181,11 @@ export class Wallets extends ResourceGroupBase {
    * @param {string} email User's email.
    * @param {string} recoverySeed User's recovery seed.
    * @param {string} newPassword Desired password.
+   * @param {Array} signers Account's signers.
    *
    * @return {Wallet} New wallet.
    */
-  async recovery (email, recoverySeed, newPassword) {
+  async recovery (email, recoverySeed, newPassword, signers) {
     let kdfResponse = await this.getKdfParams(email, true)
     let kdfParams = kdfResponse.data
 
@@ -204,7 +205,6 @@ export class Wallets extends ResourceGroupBase {
       newPassword
     )
     let accountId = await this._getAccountIdByRecoveryId(recoveryWallet.id)
-    let signers = await this._getSigners(accountId)
     let tx = makeChangeSignerTransaction({
       newPublicKey: newMainWallet.accountId,
       signers,
@@ -260,6 +260,8 @@ export class Wallets extends ResourceGroupBase {
    * Change password.
    *
    * @param {string} newPassword Desired password.
+   * @param {Array} signers Account's signers.
+   *
    * @return {Wallet} New wallet.
    */
   async changePassword (newPassword, signers) {
