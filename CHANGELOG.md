@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.0.0-x.13] - 2019-02-21
 ### Adde
 - Limits & bind external system ID unit tests
 
@@ -142,7 +142,8 @@ for further information about branching and tagging conventions.
 ### Fixed
 - Change password method
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.12...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.13...HEAD
+[1.0.0-x.13]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.11...1.0.0-x.13
 [1.0.0-x.12]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.11...1.0.0-x.12
 [1.0.0-x.11]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.10...1.0.0-x.11
 [1.0.0-x.10]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.9...1.0.0-x.10
