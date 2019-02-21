@@ -31,23 +31,11 @@ export class KeyServerCaller {
     this._urlSegments = []
   }
 
-  /**
-     * Authorize this request.
-     *
-     * @param {wallet} [wallet] Use another wallet for signature.
-     * @return {CallBuilder} Self.
-     */
   addWallet (wallet) {
     this._wallet = wallet
     return this
   }
 
-  /**
-     * Perform a POST request.
-     *
-     * @param {Object} [data] Request body.
-     * @return {Promise} Request result.
-     */
   post (urlSegment, data) {
     this._appendUrlSegment(urlSegment)
     let config = this._getRequestConfig({
@@ -71,12 +59,6 @@ export class KeyServerCaller {
     return this._axios(config)
   }
 
-  /**
-     * Perform a GET request.
-     *
-     * @param {Object} [query] Request body.
-     * @return {Promise} Request result.
-     */
   get (urlSegment, query) {
     this._appendUrlSegment(urlSegment)
     let config = this._getRequestConfig({
@@ -98,12 +80,6 @@ export class KeyServerCaller {
     return this._axios(config)
   }
 
-  /**
-     * Perform a PATCH request.
-     *
-     * @param {Object} [data] Request body.
-     * @return {Promise} Request result.
-     */
   patch (urlSegment, data) {
     this._appendUrlSegment(urlSegment)
     let config = this._getRequestConfig({
