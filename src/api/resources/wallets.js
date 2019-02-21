@@ -5,9 +5,12 @@ import { Keypair } from '../../base/keypair'
 import { makeChangeSignerTransaction } from './change_signers'
 import * as errors from '../../errors'
 
+const HORIZON_VERSION_PREFIX = 'v3'
+
 /**
  * Wallets.
  */
+
 export class Wallets extends ResourceGroupBase {
   /**
    * Get key derivation params.
@@ -342,7 +345,7 @@ export class Wallets extends ResourceGroupBase {
   _getSigners (accountId) {
     return this._server
       ._makeCallBuilder()
-      .appendUrlSegment('v3')
+      .appendUrlSegment(HORIZON_VERSION_PREFIX)
       .appendUrlSegment('accounts')
       .appendAccountId(accountId)
       .appendUrlSegment('signers')
