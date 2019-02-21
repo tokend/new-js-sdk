@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.0.0-x.14] - 2019-02-21
+### Added
+- KeyServerCaller
+
+### Fixed
+- Wallet.fromEncrypted in cases when you provide seed only
+
 ## [1.0.0-x.13] - 2019-02-21
-### Adde
+### Added
 - Limits & bind external system ID unit tests
 
 ### Fixed
