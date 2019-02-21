@@ -77,7 +77,7 @@ export class Wallet {
    * @param {string} opts.salt Salt used for encryption.
    * @param {string} opts.email User's email.
    * @param {string} opts.password User's password.
-   * @param {string} opts.accountId User's account ID.
+   * @param {string} [opts.accountId] User's account ID.
    */
   static fromEncrypted (opts) {
     let rawMasterKey = crypto.calculateMasterKey(
@@ -95,7 +95,7 @@ export class Wallet {
     return new Wallet(
       opts.email,
       Keypair.fromSecret(decryptedKeychain.seed),
-      opts.accountId,
+      opts.accountId || Keypair.fromSecret(decryptedKeychain.seed).accountId(),
       sjcl.codec.hex.fromBits(rawWalletId)
     )
   }
