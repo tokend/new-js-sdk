@@ -1,6 +1,5 @@
 import { TransactionBuilder } from '../../base/transaction_builder'
 import { ManageSignerBuilder } from '../../base/operations/manage_signer_builder'
-import xdr from '../../base/generated/xdr_generated'
 
 export function makeChangeSignerTransaction ({
   newPublicKey,
@@ -18,7 +17,7 @@ export function makeChangeSignerTransaction ({
       : removeAllSignersOps(signers, soucreAccount)
     operations.push(...removeSignerOps)
   } else {
-    operations.push(removeMasterOp())
+    operations.push(removeSignerOp(soucreAccount))
   }
 
   const tx = new TransactionBuilder(soucreAccount)
@@ -32,59 +31,28 @@ export function makeChangeSignerTransaction ({
 function removeMasterAndCurrentSignerOps (signers, soucreAccount, publicKey) {
   return signers
     .filter(signer => {
-      return signer.publicKey !== soucreAccount &&
-        signer.publicKey !== publicKey
+      return signer.id === soucreAccount ||
+        signer.id === publicKey
     })
-    .map(signer => {
-      return isMaster(signer, soucreAccount)
-        ? removeMasterOp()
-        : removeOneSignerOp(signer)
-    })
+    .map(signer => removeSignerOp(signer))
 }
 
-function removeAllSignersOps (signers, soucreAccount) {
-  return signers
-    .map(signer => {
-      return isMaster(signer, soucreAccount)
-        ? removeMasterOp()
-        : removeOneSignerOp(signer)
-    })
+function removeAllSignersOps (signers) {
+  return signers.map(signer => removeSignerOp(signer))
 }
 
-function removeMasterOp () {
-  return ManageSignerBuilder.setOptions({
-    masterWeight: 0
-  })
-}
-
-function isMaster (signer, masterAccountId) {
-  return signer.publicKey === masterAccountId
-}
-
-function removeOneSignerOp (signer) {
-  return ManageSignerBuilder.setOptions({
-    signer: {
-      pubKey: signer.publicKey,
-      weight: 0,
-      identity: signer.signerIdentity,
-      signerType: 1
-    }
+function removeSignerOp (signer) {
+  return ManageSignerBuilder.deleteSigner({
+    publicKey: signer.id
   })
 }
 
 function addSignerOp (newAccountId) {
-  return ManageSignerBuilder.setOptions({
-    signer: {
-      pubKey: newAccountId,
-      weight: 255,
-      identity: 0,
-      signerType: signerTypeAll()
-    }
+  return ManageSignerBuilder.createSigner({
+    publicKey: newAccountId,
+    weight: 1000,
+    identity: 1,
+    roleID: '1',
+    details: {}
   })
-}
-
-function signerTypeAll () {
-  return xdr.SignerType.values()
-    .map(value => value.value)
-    .reduce((total, value) => value | total)
 }

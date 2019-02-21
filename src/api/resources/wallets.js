@@ -262,7 +262,7 @@ export class Wallets extends ResourceGroupBase {
    * @param {string} newPassword Desired password.
    * @return {Wallet} New wallet.
    */
-  async changePassword (newPassword) {
+  async changePassword (newPassword, signers) {
     const oldWallet = this._sdk.wallet
 
     let kdfResponse = await this.getKdfParams(oldWallet.email, true)
@@ -276,7 +276,6 @@ export class Wallets extends ResourceGroupBase {
       kdfParams,
       newPassword
     )
-    let signers = await this._getSigners(this._sdk.wallet.accountId)
     let tx = makeChangeSignerTransaction({
       newPublicKey: newMainWallet.keypair.accountId(),
       signers,
