@@ -31,7 +31,7 @@ export class ManageSaleBuilder {
 
     let updateSaleDetailsData = new xdr.UpdateSaleDetailsData({
       requestId: UnsignedHyper.fromString(opts.requestID),
-      newDetails: JSON.stringify(opts.creatorDetails),
+      creatorDetails: JSON.stringify(opts.creatorDetails),
       ext: new xdr.UpdateSaleDetailsDataExt(xdr.LedgerVersion.emptyVersion())
     })
 
@@ -79,7 +79,7 @@ export class ManageSaleBuilder {
       case xdr.ManageSaleAction.createUpdateDetailsRequest(): {
         let data = attrs.data().updateSaleDetailsData()
         result.requestID = data.requestId().toString()
-        result.creatorDetails = JSON.parse(data.newDetails())
+        result.creatorDetails = JSON.parse(data.creatorDetails())
         break
       }
     }

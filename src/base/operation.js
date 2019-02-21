@@ -16,7 +16,7 @@ import { CreateAccountBuilder } from './operations/create_account_builder'
 import { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
 import { CreateChangeRoleRequestBuilder } from './operations/create_change_role_request_builder'
 import { ManageSaleBuilder } from './operations/manage_sale_builder'
-import { PaymentV2Builder } from './operations/payment_v2_builder'
+import { PaymentBuilder } from './operations/payment_builder'
 import { BindExternalSystemAccountIdBuilder } from './operations/bind_external_system_account_id_builder'
 import { CreateManageLimitsRequestBuilder } from './operations/create_manage_limits_request_builder'
 import { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
@@ -65,11 +65,11 @@ export class Operation extends BaseOperation {
         fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.destinationFee.fixed),
         ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
       })
-      attributes.feeData = new xdr.PaymentFeeDataV2({
+      attributes.feeData = new xdr.PaymentFeeData({
         sourceFee,
         destinationFee,
         sourcePaysForDest: opts.feeData.sourcePaysForDest,
-        ext: new xdr.PaymentFeeDataV2Ext(xdr.LedgerVersion.emptyVersion())
+        ext: new xdr.PaymentFeeDataExt(xdr.LedgerVersion.emptyVersion())
       })
     } else {
       throw new Error('feeData argument must be defined')
@@ -84,7 +84,7 @@ export class Operation extends BaseOperation {
       .fromBalanceId(opts.sourceBalanceId)
       .xdrBalanceId()
 
-    let d = xdr.PaymentOpV2Destination.balance()
+    let d = xdr.PaymentOpDestination.balance()
     d.set('balance', Keypair
       .fromBalanceId(opts.destinationBalanceId)
       .xdrBalanceId())
@@ -92,11 +92,11 @@ export class Operation extends BaseOperation {
 
     attributes.subject = opts.subject
     attributes.reference = opts.reference
-    attributes.ext = new xdr.PaymentOpV2Ext(xdr.LedgerVersion.emptyVersion())
-    let payment = new xdr.PaymentOpV2(attributes)
+    attributes.ext = new xdr.PaymentOpExt(xdr.LedgerVersion.emptyVersion())
+    let payment = new xdr.PaymentOp(attributes)
 
     let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.paymentV2(payment)
+    opAttributes.body = xdr.OperationBody.payment(payment)
     Operation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)
   }
@@ -413,8 +413,8 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.manageSale():
         ManageSaleBuilder.manageSaleToObject(result, attrs)
         break
-      case xdr.OperationType.paymentV2():
-        PaymentV2Builder.paymentV2ToObject(result, attrs)
+      case xdr.OperationType.payment():
+        PaymentBuilder.paymentToObject(result, attrs)
         break
       case xdr.OperationType.bindExternalSystemAccountId():
         BindExternalSystemAccountIdBuilder.bindExternalSystemAccountIdToObject(result, attrs)

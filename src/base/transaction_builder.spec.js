@@ -53,7 +53,7 @@ describe('TransactionBuilder', () => {
 
     it('should have one payment operation', function (done) {
       expect(transaction.operations.length).to.be.equal(1)
-      expect(transaction.operations[0].type).to.be.equal('paymentV2')
+      expect(transaction.operations[0].type).to.be.equal('payment')
       done()
     })
   })
@@ -128,8 +128,8 @@ describe('TransactionBuilder', () => {
 
     it('should have two payment operation', function (done) {
       expect(transaction.operations.length).to.be.equal(2)
-      expect(transaction.operations[0].type).to.be.equal('paymentV2')
-      expect(transaction.operations[1].type).to.be.equal('paymentV2')
+      expect(transaction.operations[0].type).to.be.equal('payment')
+      expect(transaction.operations[1].type).to.be.equal('payment')
       done()
     })
   })
