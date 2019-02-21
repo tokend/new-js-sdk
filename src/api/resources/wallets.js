@@ -181,11 +181,10 @@ export class Wallets extends ResourceGroupBase {
    * @param {string} email User's email.
    * @param {string} recoverySeed User's recovery seed.
    * @param {string} newPassword Desired password.
-   * @param {Array} signers Account's signers.
    *
    * @return {Wallet} New wallet.
    */
-  async recovery (email, recoverySeed, newPassword, signers) {
+  async recovery (email, recoverySeed, newPassword) {
     let kdfResponse = await this.getKdfParams(email, true)
     let kdfParams = kdfResponse.data
 
@@ -205,6 +204,7 @@ export class Wallets extends ResourceGroupBase {
       newPassword
     )
     let accountId = await this._getAccountIdByRecoveryId(recoveryWallet.id)
+    let signers = await this._getSigners(accountId)
     let tx = makeChangeSignerTransaction({
       newPublicKey: newMainWallet.accountId,
       signers,
@@ -260,11 +260,10 @@ export class Wallets extends ResourceGroupBase {
    * Change password.
    *
    * @param {string} newPassword Desired password.
-   * @param {Array} signers Account's signers.
    *
    * @return {Wallet} New wallet.
    */
-  async changePassword (newPassword, signers) {
+  async changePassword (newPassword) {
     const oldWallet = this._sdk.wallet
 
     let kdfResponse = await this.getKdfParams(oldWallet.email, true)
@@ -278,6 +277,7 @@ export class Wallets extends ResourceGroupBase {
       kdfParams,
       newPassword
     )
+    let signers = await this._getSigners(this._sdk.wallet.accountId)
     let tx = makeChangeSignerTransaction({
       newPublicKey: newMainWallet.keypair.accountId(),
       signers,
@@ -340,8 +340,14 @@ export class Wallets extends ResourceGroupBase {
   }
 
   _getSigners (accountId) {
-    return this._sdk.horizon.account.getSigners(accountId)
-      .then(response => response.data.signers)
+    return this._server
+      ._makeCallBuilder()
+      .appendUrlSegment('v3')
+      .appendUrlSegment('accounts')
+      .appendAccountId(accountId)
+      .appendUrlSegment('signers')
+      .get()
+      .then(response => response.data)
       .catch(err => {
         if (err instanceof errors.NotFoundError) {
           return []

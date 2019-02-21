@@ -9,15 +9,19 @@ export function makeChangeSignerTransaction ({
   signingKeypair
 }) {
   let operations = []
-
   operations.push(addSignerOp(newPublicKey))
-  if (signers) {
+
+  let nonRecoverySigners = getNonRecoverySigners(signers)
+
+  if (nonRecoverySigners.length) {
     let removeSignerOps = signerToReplace
-      ? removeMasterAndCurrentSignerOps(signers, soucreAccount, signerToReplace)
-      : removeAllSignersOps(signers, soucreAccount)
+      ? removeMasterAndCurrentSignerOps(
+        nonRecoverySigners,
+        soucreAccount,
+        signerToReplace
+      )
+      : removeAllSignersOps(nonRecoverySigners, soucreAccount)
     operations.push(...removeSignerOps)
-  } else {
-    operations.push(removeSignerOp(soucreAccount))
   }
 
   const tx = new TransactionBuilder(soucreAccount)
@@ -47,11 +51,15 @@ function removeSignerOp (signer) {
   })
 }
 
+function getNonRecoverySigners (signers) {
+  return signers.filter(signer => signer.identity !== 1)
+}
+
 function addSignerOp (newAccountId) {
   return ManageSignerBuilder.createSigner({
     publicKey: newAccountId,
     weight: 1000,
-    identity: 1,
+    identity: 0,
     roleID: '1',
     details: {}
   })
