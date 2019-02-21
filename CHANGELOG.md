@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## Unreleased
+
+### Changed
+
+- Rename PaymentV2 builder to Payment builder
+
 ## [1.0.0-x.13] - 2019-02-21
 ### Adde
 - Limits & bind external system ID unit tests

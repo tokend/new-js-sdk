@@ -25,7 +25,7 @@ export class Payment extends Helper {
    */
 
   async create (opts, ownerKp = this.masterKp) {
-    const op = base.PaymentV2Builder.paymentV2(opts)
+    const op = base.PaymentV2Builder.payment(opts)
     const response = await this.submit(op, ownerKp)
     return response
   }
