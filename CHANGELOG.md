@@ -13,6 +13,7 @@ for further information about branching and tagging conventions.
 
 ### Changed
 - `Wallets._getSigners` method according to the new API
+- Rename PaymentV2 builder to Payment builder
 
 ### Fixed
 - `makeChangeSignerTransaction` function according to the signer roles

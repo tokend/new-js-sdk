@@ -45,7 +45,7 @@ describe('Transaction', () => {
 
     expect(transaction.source).to.be.equal(source)
     expect(transaction.memo.text().toString()).to.be.equal('Happy birthday!')
-    expect(operation.type).to.be.equal('paymentV2')
+    expect(operation.type).to.be.equal('payment')
     expect(operation.amount).to.be.equal(amount)
 
     done()

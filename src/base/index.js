@@ -27,7 +27,7 @@ export { CreateChangeRoleRequestBuilder } from './operations/create_change_role_
 export { CreateReferenceBuilder } from './operations/create_reference_builder'
 export { ManageLimitsBuilder } from './operations/manage_limits_builder'
 export { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
-export { PaymentV2Builder } from './operations/payment_v2_builder'
+export { PaymentBuilder } from './operations/payment_builder'
 export { BindExternalSystemAccountIdBuilder } from './operations/bind_external_system_account_id_builder'
 export { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
 export { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'

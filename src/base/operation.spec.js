@@ -32,7 +32,7 @@ describe('Operation', () => {
       let opXdr = op.toXDR('hex')
       let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
       let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('paymentV2')
+      expect(obj.type).to.be.equal('payment')
       expect(operation.body().value().amount().toString())
         .to.be.equal('1000000000')
       expect(obj.amount).to.be.equal(amount)

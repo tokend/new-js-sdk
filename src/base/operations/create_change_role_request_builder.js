@@ -32,7 +32,7 @@ export class CreateChangeRoleRequestBuilder {
       .fromAccountId(opts.destinationAccount)
       .xdrAccountId()
     attrs.accountRoleToSet = UnsignedHyper.fromString(opts.accountRoleToSet)
-    attrs.kycData = JSON.stringify(opts.creatorDetails)
+    attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
 
     attrs.requestId = UnsignedHyper.fromString(opts.requestID)
     attrs.allTasks = BaseOperation._checkUnsignedIntValue('allTasks', opts.allTasks)
@@ -49,7 +49,7 @@ export class CreateChangeRoleRequestBuilder {
     result.requestID = attrs.requestId
     result.destinationAccount = BaseOperation.accountIdtoAddress(attrs.destinationAccount())
     result.accountRoleToSet = attrs.accountRoleToSet().toString()
-    result.creatorDetails = JSON.parse(attrs.kycData())
+    result.creatorDetails = JSON.parse(attrs.creatorDetails())
     result.allTasks = attrs.allTasks()
   }
 }

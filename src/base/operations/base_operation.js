@@ -31,7 +31,7 @@ export class BaseOperation {
     if (!(op instanceof xdr.Operation)) {
       throw new Error('should be used for operations')
     }
-    return op.body().switch().name === 'paymentV2'
+    return op.body().switch().name === 'payment'
   }
 
   static isValidAsset (value) {
