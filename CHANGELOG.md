@@ -8,6 +8,11 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
+
+### Changed
+
+- xdr revision
+
 ### Fixed
 - accountRole field enveloping in setFees operation
 - do not throw error if cannot parse errors in BadRequestError

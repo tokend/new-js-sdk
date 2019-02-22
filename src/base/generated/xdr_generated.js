@@ -1,6 +1,6 @@
-// revision: 48e4c546e0ea993542c3983f6345cdee1b4bc513
-// branch:   feature/roles_rules
-// Automatically generated on 2019-02-21T14:08:59+00:00
+// revision: b55ad8258aaca99da4c10414291bceb2e6df868b
+// branch:   fix/fee_amount_precision
+// Automatically generated on 2019-02-22T18:59:11+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -3517,7 +3517,7 @@ xdr.struct("AccountEntry", [
 //
 //   struct
 //       {
-//           RequestTypedResource details;
+//           ReviewableRequestResource details;
 //   
 //           uint64 tasksToAdd;
 //           uint64 tasksToRemove;
@@ -3528,7 +3528,7 @@ xdr.struct("AccountEntry", [
 //
 // ===========================================================================
 xdr.struct("SignerRuleResourceReviewableRequest", [
-  ["details", xdr.lookup("RequestTypedResource")],
+  ["details", xdr.lookup("ReviewableRequestResource")],
   ["tasksToAdd", xdr.lookup("Uint64")],
   ["tasksToRemove", xdr.lookup("Uint64")],
   ["allTasks", xdr.lookup("Uint64")],
@@ -3658,12 +3658,27 @@ xdr.struct("SignerRuleResourceSigner", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           longstring keyPrefix;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceKeyValue", [
+  ["keyPrefix", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union SignerRuleResource switch (LedgerEntryType type)
 //   {
 //   case REVIEWABLE_REQUEST:
 //       struct
 //       {
-//           RequestTypedResource details;
+//           ReviewableRequestResource details;
 //   
 //           uint64 tasksToAdd;
 //           uint64 tasksToRemove;
@@ -3731,6 +3746,13 @@ xdr.struct("SignerRuleResourceSigner", [
 //   
 //           EmptyExt ext;
 //       } signer;
+//   case KEY_VALUE:
+//       struct
+//       {
+//           longstring keyPrefix;
+//   
+//           EmptyExt ext;
+//       } keyValue;
 //   default:
 //       EmptyExt ext;
 //   };
@@ -3749,6 +3771,7 @@ xdr.union("SignerRuleResource", {
     ["signerRule", "signerRule"],
     ["signerRole", "signerRole"],
     ["signer", "signer"],
+    ["keyValue", "keyValue"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -3759,6 +3782,7 @@ xdr.union("SignerRuleResource", {
     signerRule: xdr.lookup("SignerRuleResourceSignerRule"),
     signerRole: xdr.lookup("SignerRuleResourceSignerRole"),
     signer: xdr.lookup("SignerRuleResourceSigner"),
+    keyValue: xdr.lookup("SignerRuleResourceKeyValue"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -7375,7 +7399,7 @@ xdr.struct("ExternalSystemAccountId", [
 //       }
 //
 // ===========================================================================
-xdr.struct("RequestTypedResourceSale", [
+xdr.struct("ReviewableRequestResourceCreateSale", [
   ["type", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
@@ -7391,7 +7415,7 @@ xdr.struct("RequestTypedResourceSale", [
 //       }
 //
 // ===========================================================================
-xdr.struct("RequestTypedResourceIssuance", [
+xdr.struct("ReviewableRequestResourceCreateIssuance", [
   ["assetCode", xdr.lookup("AssetCode")],
   ["assetType", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("EmptyExt")],
@@ -7408,7 +7432,7 @@ xdr.struct("RequestTypedResourceIssuance", [
 //       }
 //
 // ===========================================================================
-xdr.struct("RequestTypedResourceWithdraw", [
+xdr.struct("ReviewableRequestResourceCreateWithdraw", [
   ["assetCode", xdr.lookup("AssetCode")],
   ["assetType", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("EmptyExt")],
@@ -7416,7 +7440,7 @@ xdr.struct("RequestTypedResourceWithdraw", [
 
 // === xdr source ============================================================
 //
-//   union RequestTypedResource switch (ReviewableRequestType requestType)
+//   union ReviewableRequestResource switch (ReviewableRequestType requestType)
 //   {
 //   case CREATE_SALE:
 //       struct
@@ -7424,7 +7448,7 @@ xdr.struct("RequestTypedResourceWithdraw", [
 //           uint64 type;
 //   
 //           EmptyExt ext;
-//       } sale;
+//       } createSale;
 //   case CREATE_ISSUANCE:
 //       struct
 //       {
@@ -7432,7 +7456,7 @@ xdr.struct("RequestTypedResourceWithdraw", [
 //           uint64 assetType;
 //   
 //           EmptyExt ext;
-//       } issuance;
+//       } createIssuance;
 //   case CREATE_WITHDRAW:
 //       struct
 //       {
@@ -7440,24 +7464,24 @@ xdr.struct("RequestTypedResourceWithdraw", [
 //           uint64 assetType;
 //   
 //           EmptyExt ext;
-//       } withdraw;
+//       } createWithdraw;
 //   default:
 //       EmptyExt ext;
 //   };
 //
 // ===========================================================================
-xdr.union("RequestTypedResource", {
+xdr.union("ReviewableRequestResource", {
   switchOn: xdr.lookup("ReviewableRequestType"),
   switchName: "requestType",
   switches: [
-    ["createSale", "sale"],
-    ["createIssuance", "issuance"],
-    ["createWithdraw", "withdraw"],
+    ["createSale", "createSale"],
+    ["createIssuance", "createIssuance"],
+    ["createWithdraw", "createWithdraw"],
   ],
   arms: {
-    sale: xdr.lookup("RequestTypedResourceSale"),
-    issuance: xdr.lookup("RequestTypedResourceIssuance"),
-    withdraw: xdr.lookup("RequestTypedResourceWithdraw"),
+    createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
+    createIssuance: xdr.lookup("ReviewableRequestResourceCreateIssuance"),
+    createWithdraw: xdr.lookup("ReviewableRequestResourceCreateWithdraw"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -7484,14 +7508,14 @@ xdr.struct("AccountRuleResourceAsset", [
 //
 //   struct
 //       {
-//           RequestTypedResource details;
+//           ReviewableRequestResource details;
 //   
 //           EmptyExt ext;
 //       }
 //
 // ===========================================================================
 xdr.struct("AccountRuleResourceReviewableRequest", [
-  ["details", xdr.lookup("RequestTypedResource")],
+  ["details", xdr.lookup("ReviewableRequestResource")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -7556,10 +7580,23 @@ xdr.struct("AccountRuleResourceAtomicSwapBid", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           longstring keyPrefix;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceKeyValue", [
+  ["keyPrefix", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
-//   case TRANSACTION:
-//       EmptyExt tx;
 //   case ASSET:
 //       struct
 //       {
@@ -7571,7 +7608,7 @@ xdr.struct("AccountRuleResourceAtomicSwapBid", [
 //   case REVIEWABLE_REQUEST:
 //       struct
 //       {
-//           RequestTypedResource details;
+//           ReviewableRequestResource details;
 //   
 //           EmptyExt ext;
 //       } reviewableRequest;
@@ -7606,6 +7643,13 @@ xdr.struct("AccountRuleResourceAtomicSwapBid", [
 //   
 //           EmptyExt ext;
 //       } atomicSwapBid;
+//   case KEY_VALUE:
+//       struct
+//       {
+//           longstring keyPrefix;
+//   
+//           EmptyExt ext;
+//       } keyValue;
 //   default:
 //       EmptyExt ext;
 //   };
@@ -7615,21 +7659,21 @@ xdr.union("AccountRuleResource", {
   switchOn: xdr.lookup("LedgerEntryType"),
   switchName: "type",
   switches: [
-    ["transaction", "tx"],
     ["asset", "asset"],
     ["reviewableRequest", "reviewableRequest"],
     ["any", xdr.void()],
     ["offerEntry", "offer"],
     ["sale", "sale"],
     ["atomicSwapBid", "atomicSwapBid"],
+    ["keyValue", "keyValue"],
   ],
   arms: {
-    tx: xdr.lookup("EmptyExt"),
     asset: xdr.lookup("AccountRuleResourceAsset"),
     reviewableRequest: xdr.lookup("AccountRuleResourceReviewableRequest"),
     offer: xdr.lookup("AccountRuleResourceOffer"),
     sale: xdr.lookup("AccountRuleResourceSale"),
     atomicSwapBid: xdr.lookup("AccountRuleResourceAtomicSwapBid"),
+    keyValue: xdr.lookup("AccountRuleResourceKeyValue"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -8787,7 +8831,9 @@ xdr.struct("SetFeesOp", [
 //   		FEE_ASSET_NOT_FOUND = -14,
 //   		ASSET_PAIR_NOT_FOUND = -15, // cannot create cross asset fee entry without existing asset pair
 //   		INVALID_ASSET_PAIR_PRICE = -16,
-//   		INVALID_FEE_HASH = -17
+//   		INVALID_FEE_HASH = -17,
+//   		//: Fixed fee amount must fit asset precision
+//   		INVALID_AMOUNT_PRECISION = -18
 //       };
 //
 // ===========================================================================
@@ -8810,6 +8856,7 @@ xdr.enum("SetFeesResultCode", {
   assetPairNotFound: -15,
   invalidAssetPairPrice: -16,
   invalidFeeHash: -17,
+  invalidAmountPrecision: -18,
 });
 
 // === xdr source ============================================================
