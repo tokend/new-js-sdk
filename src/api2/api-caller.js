@@ -180,10 +180,11 @@ export class ApiCaller {
    */
   async _call (opts) {
     let config = {
+      baseURL: this._baseURL,
       params: opts.query || {},
       data: opts.data || {},
       method: opts.method,
-      url: this._baseURL + opts.endpoint // TODO: smartly build url
+      url: opts.endpoint // TODO: smartly build url
     }
 
     config = middlewares.flattenToAxiosJsonApiQuery(config)
