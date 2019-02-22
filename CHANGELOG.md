@@ -10,6 +10,7 @@ for further information about branching and tagging conventions.
 ## [Unreleased]
 ### Fixed
 - accountRole field enveloping in setFees operation
+- do not throw error if cannot parse errors in BadRequestError
 
 ## [1.0.0-x.15] - 2019-02-21
 ### Added

@@ -115,7 +115,7 @@ export class BadRequestError extends ServerError {
    */
   constructor (originalError, axios) {
     super(originalError, axios)
-    let errors = originalError.response.data.errors
+    let errors = get(originalError, 'response.data.errors', [])
     if (errors.length > 1) {
       this._title = 'Request contains some errors.'
       this._detail = 'Request contains some errors. Check "nestedErrors"'
