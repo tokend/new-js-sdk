@@ -247,9 +247,8 @@ export class Wallets extends ResourceGroupBase {
           relationships: {
             transaction: {
               data: {
-                attributes: {
-                  envelope: tx
-                }
+                type: 'transaction',
+                id: '1'
               }
             },
             kdf: {
@@ -267,6 +266,13 @@ export class Wallets extends ResourceGroupBase {
           }
         },
         included: [
+          {
+            type: 'transaction',
+            id: '1',
+            attributes: {
+              envelope: tx
+            }
+          },
           {
             id: encryptedNewMainWallet.id,
             type: 'password',
