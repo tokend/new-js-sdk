@@ -19,7 +19,7 @@ export function makeChangeSignerTransaction ({
   let nonRecoverySigners = getNonRecoverySigners(signers)
 
   if (nonRecoverySigners.length) {
-    let removeSignerOps = signerToReplace
+    const removeSignerOps = signerToReplace
       ? removeMasterAndCurrentSignerOps(
         nonRecoverySigners,
         soucreAccount,

@@ -104,7 +104,7 @@ export class Documents extends ResourceGroupBase {
 
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
-      .appendUrlSegment('users')
+      .appendUrlSegment('accounts')
       .appendAccountId()
       .appendUrlSegment('documents')
       .withSignature()

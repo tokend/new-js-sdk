@@ -332,9 +332,8 @@ export class Wallets extends ResourceGroupBase {
           relationships: {
             transaction: {
               data: {
-                attributes: {
-                  envelope: tx
-                }
+                type: 'transaction',
+                id: '1'
               }
             },
             kdf: {
@@ -346,15 +345,29 @@ export class Wallets extends ResourceGroupBase {
             factor: {
               data: {
                 type: 'password',
-                attributes: {
-                  accountId: encryptedSecondFactorWallet.accountId,
-                  keychainData: encryptedSecondFactorWallet.keychainData,
-                  salt: encryptedSecondFactorWallet.salt
-                }
+                id: encryptedNewMainWallet.id
               }
             }
           }
-        }
+        },
+        included: [
+          {
+            type: 'transaction',
+            id: '1',
+            attributes: {
+              envelope: tx
+            }
+          },
+          {
+            type: 'password',
+            id: encryptedNewMainWallet.id,
+            attributes: {
+              accountId: encryptedSecondFactorWallet.accountId,
+              keychainData: encryptedSecondFactorWallet.keychainData,
+              salt: encryptedSecondFactorWallet.salt
+            }
+          }
+        ]
       })
 
     return newMainWallet
@@ -399,5 +412,9 @@ export class Wallets extends ResourceGroupBase {
       await this._sdk.horizon.keyValue.get(DEFAULT_SIGNER_ROLE_KEY)
 
     return String(data.uint32Value)
+  }
+
+  _submitOperation (operation) {
+    return this._sdk.horizon.transactions.submitOperations(operation)
   }
 }
