@@ -343,7 +343,7 @@ export class Operation extends BaseOperation {
             result.fee.accountId = accountIdtoAddress(attrs.fee().accountId())
           }
           if (attrs.fee().accountRole()) {
-            result.fee.accountType = attrs.fee().accountRole().toString()
+            result.fee.accountRole = attrs.fee().accountRole().toString()
           }
           result.fee.hash = attrs.fee().hash()
         }
