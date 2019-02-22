@@ -4,7 +4,7 @@ import isString from 'lodash/isString'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
 import { Hasher } from '../util/hasher'
-import { PaymentV2Builder } from './payment_v2_builder'
+import { PaymentBuilder } from './payment_builder'
 import { Keypair } from '../keypair'
 
 export class ReviewRequestBuilder {
@@ -262,7 +262,7 @@ export class ReviewRequestBuilder {
    */
   static reviewInvoiceRequest (opts) {
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-    let billPayDetails = PaymentV2Builder.prepareAttrs(opts.billPayDetails)
+    let billPayDetails = PaymentBuilder.prepareAttrs(opts.billPayDetails)
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.invoice(
       new xdr.BillPayDetails({
         paymentDetails: new xdr.PaymentOpV2(billPayDetails),

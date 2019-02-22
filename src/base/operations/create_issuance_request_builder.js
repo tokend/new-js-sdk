@@ -43,7 +43,7 @@ export class CreateIssuanceRequestBuilder {
       throw new Error('creatorDetails is invalid')
     }
 
-    attrs.externalDetails = JSON.stringify(opts.creatorDetails)
+    attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
 
     let fee = {
       fixed: '0',
@@ -71,6 +71,6 @@ export class CreateIssuanceRequestBuilder {
     result.asset = request.asset().toString()
     result.amount = BaseOperation._fromXDRAmount(request.amount())
     result.receiver = BaseOperation.balanceIdtoString(request.receiver())
-    result.creatorDetails = JSON.parse(request.externalDetails())
+    result.creatorDetails = JSON.parse(request.creatorDetails())
   }
 }
