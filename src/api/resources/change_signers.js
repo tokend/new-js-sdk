@@ -1,15 +1,20 @@
 import { TransactionBuilder } from '../../base/transaction_builder'
 import { ManageSignerBuilder } from '../../base/operations/manage_signer_builder'
 
+const RECOVERY_SIGNER_IDENTITY = 1
+const DEFAULT_SIGNER_IDENTITY = 0
+const DEFAULT_SIGNER_WEIGHT = 1000
+
 export function makeChangeSignerTransaction ({
   newPublicKey,
   soucreAccount,
   signers,
   signerToReplace,
-  signingKeypair
+  signingKeypair,
+  signerRoleId
 }) {
   let operations = []
-  operations.push(addSignerOp(newPublicKey))
+  operations.push(addSignerOp(newPublicKey, signerRoleId))
 
   let nonRecoverySigners = getNonRecoverySigners(signers)
 
@@ -52,15 +57,15 @@ function removeSignerOp (signer) {
 }
 
 function getNonRecoverySigners (signers) {
-  return signers.filter(signer => signer.identity !== 1)
+  return signers.filter(signer => signer.identity !== RECOVERY_SIGNER_IDENTITY)
 }
 
-function addSignerOp (newAccountId) {
+function addSignerOp (newAccountId, roleId) {
   return ManageSignerBuilder.createSigner({
     publicKey: newAccountId,
-    weight: 1000,
-    identity: 0,
-    roleID: '1',
+    weight: DEFAULT_SIGNER_WEIGHT,
+    identity: DEFAULT_SIGNER_IDENTITY,
+    roleID: roleId,
     details: {}
   })
 }
