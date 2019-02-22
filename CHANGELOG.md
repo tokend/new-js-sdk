@@ -17,6 +17,7 @@ for further information about branching and tagging conventions.
 
 ### Fixed
 - `makeChangeSignerTransaction` function according to the signer roles
+- Serializing of the axios params before submitting
 
 ## [1.0.0-x.14] - 2019-02-21
 ### Added

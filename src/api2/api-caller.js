@@ -182,6 +182,11 @@ export class ApiCaller {
     let config = {
       baseURL: this._baseURL,
       params: opts.query || {},
+      paramsSerializer: function (params) {
+        return Object.entries(params)
+          .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+          .join('&')
+      },
       data: opts.data || {},
       method: opts.method,
       url: opts.endpoint // TODO: smartly build url
