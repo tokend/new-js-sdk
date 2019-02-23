@@ -8,8 +8,8 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
-
-- 
+### Removed
+- All tasks from createSaleCreationRequest
 
 ## [1.0.0-x.16] - 2019-02-23
 
