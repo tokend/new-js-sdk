@@ -78,10 +78,11 @@ export class JsonapiResponse {
       const methodName = camelCase('fetch_' + key)
       const link = isString(value) ? value : value.href
 
-      const endpoint = uri.parse(link).path
-      const query = uri.parseQuery(link)
+      const url = uri(link)
+      const path = url.path()
+      const query = url.search(true)
 
-      this[methodName] = _ => api.getWithSignature(endpoint, query)
+      this[methodName] = _ => api.getWithSignature(path, query)
     }
   }
 
