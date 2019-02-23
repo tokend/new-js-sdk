@@ -8,9 +8,18 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
-### Fixed
+
+--
+
+## [1.0.0-x.156] - 2019-02-23
+
+- `blobs` resource now work with `/account/:id/blobs` endpoint instead of `/users/:id/blobs`
+- `documents` resource now work with `/account/:id/documents` endpoint instead of `/users/:id/documents`
+- `api.wallets.create` and `api.wallets.recovery` now work with `/v3` horizon endpoints
+- `wallets.create` now building the parameters in valid JSON API format
 - accountRole field enveloping in setFees operation
 - do not throw error if cannot parse errors in BadRequestError
+- fixed invalid signature on fetching response links
 
 ## [1.0.0-x.15] - 2019-02-21
 ### Added
