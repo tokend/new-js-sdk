@@ -9,11 +9,15 @@ for further information about branching and tagging conventions.
 
 ## [Unreleased]
 
+- 
+
+## [1.0.0-x.16] - 2019-02-23
+
 ### Fixed
 
-- tasks for create asset
+- setting 0 create_asset_tasks when no value provided
 
-## [1.0.0-x.156] - 2019-02-23
+## [1.0.0-x.16] - 2019-02-23
 
 - `blobs` resource now work with `/account/:id/blobs` endpoint instead of `/users/:id/blobs`
 - `documents` resource now work with `/account/:id/documents` endpoint instead of `/users/:id/documents`
