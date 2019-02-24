@@ -1,6 +1,6 @@
-// revision: b55ad8258aaca99da4c10414291bceb2e6df868b
-// branch:   fix/fee_amount_precision
-// Automatically generated on 2019-02-22T18:59:11+00:00
+// revision: 9a51aac54d92c674976b1207586949581c1ab288
+// branch:   feature/result_fields_for_no_role_permission
+// Automatically generated on 2019-02-23T16:42:40+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -522,6 +522,23 @@ xdr.enum("OperationResultCode", {
 
 // === xdr source ============================================================
 //
+//   struct AccountRuleRequirement
+//   {
+//       AccountRuleResource resource;
+//       AccountRuleAction action;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("AccountRuleRequirement", [
+  ["resource", xdr.lookup("AccountRuleResource")],
+  ["action", xdr.lookup("AccountRuleAction")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch (OperationType type)
 //       {
 //       case CREATE_ACCOUNT:
@@ -751,6 +768,8 @@ xdr.union("OperationResultTr", {
 //       tr;
 //   case opNO_ENTRY:
 //       LedgerEntryType entryType;
+//   case opNO_ROLE_PERMISSION:
+//       AccountRuleRequirement requirement;
 //   default:
 //       void;
 //   };
@@ -762,10 +781,12 @@ xdr.union("OperationResult", {
   switches: [
     ["opInner", "tr"],
     ["opNoEntry", "entryType"],
+    ["opNoRolePermission", "requirement"],
   ],
   arms: {
     tr: xdr.lookup("OperationResultTr"),
     entryType: xdr.lookup("LedgerEntryType"),
+    requirement: xdr.lookup("AccountRuleRequirement"),
   },
   defaultArm: xdr.void(),
 });
@@ -864,6 +885,8 @@ xdr.struct("OperationFee", [
 //       case txSUCCESS:
 //       case txFAILED:
 //           OperationResult results<>;
+//       case txNO_ROLE_PERMISSION:
+//           AccountRuleRequirement requirement;
 //       default:
 //           void;
 //       }
@@ -875,9 +898,11 @@ xdr.union("TransactionResultResult", {
   switches: [
     ["txSuccess", "results"],
     ["txFailed", "results"],
+    ["txNoRolePermission", "requirement"],
   ],
   arms: {
     results: xdr.varArray(xdr.lookup("OperationResult"), 2147483647),
+    requirement: xdr.lookup("AccountRuleRequirement"),
   },
   defaultArm: xdr.void(),
 });
@@ -912,6 +937,8 @@ xdr.union("TransactionResultExt", {
 //       case txSUCCESS:
 //       case txFAILED:
 //           OperationResult results<>;
+//       case txNO_ROLE_PERMISSION:
+//           AccountRuleRequirement requirement;
 //       default:
 //           void;
 //       }
@@ -6570,7 +6597,8 @@ xdr.struct("ManageKeyValueSuccess", [
 //       {
 //           SUCCESS = 0,
 //           NOT_FOUND = -1,
-//           INVALID_TYPE = -2
+//           INVALID_TYPE = -2,
+//           ZERO_VALUE_NOT_ALLOWED = -3
 //       };
 //
 // ===========================================================================
@@ -6578,6 +6606,7 @@ xdr.enum("ManageKeyValueResultCode", {
   success: 0,
   notFound: -1,
   invalidType: -2,
+  zeroValueNotAllowed: -3,
 });
 
 // === xdr source ============================================================
