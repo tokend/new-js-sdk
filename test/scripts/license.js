@@ -4,12 +4,6 @@ import {
   licenseHelper
 } from '../helpers'
 
-/**
- * Creates a syndicate account, creates key-value an asset and reviews it.
- * @param [opts]
- * @param [keys]
- * @param [source]
- */
 export async function fullLicenseSubmit (opts, keys, source) {
   const log = logger.new('fullLicenseSubmit')
 
