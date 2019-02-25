@@ -35,7 +35,6 @@ export class SaleRequestBuilder {
     let createSaleCreationRequestOp = new xdr.CreateSaleCreationRequestOp({
       requestId: UnsignedHyper.fromString(opts.requestID),
       request: request,
-      allTasks: opts.allTasks,
       ext: new xdr.CreateSaleCreationRequestOpExt(xdr.LedgerVersion.emptyVersion())
     })
     let opAttributes = {}
@@ -137,10 +136,6 @@ export class SaleRequestBuilder {
         saleTypeExt = xdr.SaleTypeExt.fixedPrice(fixedPriceSale)
         break
       }
-    }
-
-    if (isUndefined(opts.allTasks)) {
-      opts.allTasks = 0
     }
 
     if (!BaseOperation.isValidAmount(opts.requiredBaseAssetForHardCap, true)) {
@@ -247,7 +242,6 @@ export class SaleRequestBuilder {
         asset: request.quoteAssets()[i].quoteAsset().toString()
       })
     }
-    result.allTasks = attrs.allTasks()
   }
 
   static cancelSaleCreationRequestToObject (result, attrs) {
