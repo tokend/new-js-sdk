@@ -7,11 +7,13 @@ describe('PreIssuanceRequest', () => {
     let reference = 'test'
     let asset = 'BLC'
     let keyPair = Keypair.random()
+    let creatorDetails = { 'data': 'some details' }
     let preIssuanceRequest = PreIssuanceRequest.build({
       amount,
       reference,
       asset,
-      keyPair
+      keyPair,
+      creatorDetails
     })
     let recovered = PreIssuanceRequest.dataFromXdr(preIssuanceRequest)
     expect(reference).to.be.equal(recovered.reference)
@@ -22,5 +24,6 @@ describe('PreIssuanceRequest', () => {
       keyPair
     )
     expect(isSigned).to.be.true
+    expect(JSON.stringify(creatorDetails)).to.equal(JSON.stringify(recovered.creatorDetails))
   })
 })

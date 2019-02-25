@@ -1,5 +1,5 @@
 import { CreateIssuanceRequestBuilder, Keypair } from '../../src/base'
-import { Helper } from './_helper'
+import { getRequestIdFromResultXdr, Helper } from './_helper'
 
 export class Issuance extends Helper {
   /**
@@ -9,15 +9,17 @@ export class Issuance extends Helper {
    * @param {object} opts.balanceId
    * @param {Keypair} assetOwnerKp
    */
-  fundAccount (opts, assetOwnerKp = this.masterKp) {
+  async fundAccount (opts, assetOwnerKp = this.masterKp) {
     const operation = CreateIssuanceRequestBuilder.createIssuanceRequest({
       asset: opts.asset,
       amount: opts.amount,
       receiver: opts.balanceId,
       reference: Keypair.random().accountId(),
-      externalDetails: {}
+      creatorDetails: {}
     })
 
-    return this.submit(operation, assetOwnerKp)
+    const response = await this.submit(operation, assetOwnerKp)
+
+    return getRequestIdFromResultXdr(response.resultXdr, 'createIssuanceRequestResult')
   }
 }

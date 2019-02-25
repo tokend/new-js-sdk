@@ -4,72 +4,6 @@ import { Keypair } from './keypair'
 import { Operation } from './operation'
 
 describe('Operation', () => {
-  describe('.createAccount()', () => {
-    it('creates a createAccountOp general', () => {
-      let destination = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      let recoveryKey = 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV'
-      let accountType = xdr.AccountType.general().value
-      let op = Operation.createAccount({
-        destination,
-        recoveryKey,
-        accountType
-      })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('createAccount')
-      expect(obj.destination).to.be.equal(destination)
-      expect(obj.recoveryKey).to.be.equal(recoveryKey)
-      expect(obj.accountType).to.be.equal(accountType)
-    })
-
-    it('fails to create createAccount operation with an invalid destination address', () => {
-      let opts = {
-        destination: 'GCEZW',
-        accountType: xdr.AccountType.general().value,
-        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-
-    it('fails to create createAccount operation with an invalid recovery address', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GCEZ',
-        accountType: xdr.AccountType.general().value
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-
-    it('fails to create createAccount operation with an invalid source address', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        accountType: xdr.AccountType.general().value,
-        source: 'GCEZ'
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-    it('fails to create createAccount operation with an invalid account type', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-    it('fails to create createAccount with negative policies', () => {
-      let opts = {
-        destination: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        source: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        recoveryKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
-        accountType: xdr.AccountType.general().value,
-        accountPolicies: -1
-      }
-      expectThrow(() => Operation.createAccount(opts))
-    })
-  })
-
   describe('.payment()', () => {
     let sourceBalanceId = Keypair.random().balanceId()
     let destinationBalanceId = Keypair.random().balanceId()
@@ -83,18 +17,14 @@ describe('Operation', () => {
         sourceBalanceId,
         destinationBalanceId,
         reference: 'ref',
-        invoiceReference: {
-          invoiceId: '777',
-          accept: false
-        },
         feeData: {
           sourceFee: {
-            paymentFee: '120',
-            fixedFee: '110'
+            percent: '120',
+            fixed: '110'
           },
           destinationFee: {
-            paymentFee: '20',
-            fixedFee: '10'
+            percent: '20',
+            fixed: '10'
           },
           sourcePaysForDest: true
         }
@@ -109,14 +39,12 @@ describe('Operation', () => {
       expect(obj.subject).to.be.equal('subj')
       expect(obj.reference).to.be.equal('ref')
       expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
-      expect(obj.destinationBalanceId).to.be.equal(destinationBalanceId)
-      expect(obj.invoiceReference.invoiceId).to.be.equal('777')
-      expect(obj.invoiceReference.accept).to.be.equal(false)
+      expect(obj.destination).to.be.equal(destinationBalanceId)
       expect(obj.feeData.sourcePaysForDest).to.be.equal(true)
-      expect(obj.feeData.sourceFee.fixedFee).to.be.equal('110')
-      expect(obj.feeData.sourceFee.paymentFee).to.be.equal('120')
-      expect(obj.feeData.destinationFee.fixedFee).to.be.equal('10')
-      expect(obj.feeData.destinationFee.paymentFee).to.be.equal('20')
+      expect(obj.feeData.sourceFee.fixed).to.be.equal('110')
+      expect(obj.feeData.sourceFee.percent).to.be.equal('120')
+      expect(obj.feeData.destinationFee.fixed).to.be.equal('10')
+      expect(obj.feeData.destinationFee.percent).to.be.equal('20')
       expect(Operation.isPayment(op)).to.be.equal(true)
     })
 
@@ -222,146 +150,6 @@ describe('Operation', () => {
       expectThrow(() => Operation.payment(opts))
     })
   })
-
-  describe('.directDebit()', () => {
-    let sourceBalanceId = Keypair.random().balanceId()
-    let destinationBalanceId = Keypair.random().balanceId()
-    let from = Keypair.random().accountId()
-    it('creates a directDebitOp', () => {
-      let destination = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      let amount = '1000'
-      let op = Operation.directDebit({
-        paymentOp: {
-          destination,
-          amount,
-          subject: 'subj',
-          sourceBalanceId,
-          destinationBalanceId,
-          reference: 'ref',
-          feeData: {
-            sourceFee: {
-              paymentFee: '0',
-              fixedFee: '10'
-            },
-            destinationFee: {
-              paymentFee: '0',
-              fixedFee: '10'
-            },
-            sourcePaysForDest: true
-          }
-        },
-        from
-      })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('directDebit')
-      expect(obj.amount).to.be.equal(amount)
-      expect(obj.subject).to.be.equal('subj')
-      expect(obj.reference).to.be.equal('ref')
-      expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
-      expect(obj.destinationBalanceId).to.be.equal(destinationBalanceId)
-      expect(obj.from).to.be.equal(from)
-      expect(obj.feeData.sourcePaysForDest).to.be.equal(true)
-      expect(Operation.isPayment(op)).to.be.equal(false)
-    })
-
-    it('fails to create directDebit operation without feeData', () => {
-      let opts = {
-        paymentOp: {
-          amount: '20',
-          subject: 'subj',
-          sourceBalanceId,
-          destinationBalanceId
-        },
-        from
-      }
-      expectThrow(() => Operation.directDebit(opts))
-    })
-
-    it('fails to create directDebit operation with invalid from', () => {
-      let opts = {
-        paymentOp: {
-          amount: '20',
-          feeData: {
-            sourceFee: {
-              paymentFee: '0',
-              fixedFee: '10'
-            },
-            destinationFee: {
-              paymentFee: '0',
-              fixedFee: '10'
-            },
-            sourcePaysForDest: true
-          },
-          subject: 'subj',
-          sourceBalanceId,
-          destinationBalanceId
-        },
-        from: 123
-      }
-      expectThrow(() => Operation.directDebit(opts))
-    })
-  })
-
-  describe('.manageAccount()', () => {
-    it('creates a manageAccountOp block', () => {
-      let account = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      let blockReasonsToAdd = 1
-      let blockReasonsToRemove = 2
-      let accountType = xdr.AccountType.operational().value
-      let op = Operation.manageAccount({ account,
-        blockReasonsToAdd,
-        blockReasonsToRemove,
-        accountType
-      })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('manageAccount')
-      expect(obj.accountType).to.be.equal(accountType)
-      expect(obj.account).to.be.equal(account)
-      expect(obj.blockReasonsToAdd).to.be.equal(blockReasonsToAdd)
-      expect(obj.blockReasonsToRemove).to.be.equal(blockReasonsToRemove)
-    })
-    it('creates a manageAccountOp without block', () => {
-      let account = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-      let accountType = xdr.AccountType.operational().value
-      let op = Operation.manageAccount({ account, accountType })
-      let opXdr = op.toXDR('hex')
-      let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-      let obj = Operation.operationToObject(operation)
-      expect(obj.type).to.be.equal('manageAccount')
-      expect(obj.account).to.be.equal(account)
-      expect(obj.blockReasonsToAdd).to.be.equal(0)
-      expect(obj.blockReasonsToRemove).to.be.equal(0)
-    })
-
-    it('fails to create manageAccountOp operation with an invalid account', () => {
-      let opts = {
-        account: 'GCEZW',
-        accountType: xdr.AccountType.operational().value
-      }
-      expectThrow(() => Operation.manageAccount(opts))
-    })
-
-    it('fails to create manageAccount operation with an invalid source address', () => {
-      let opts = {
-        account: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        source: 'GCEZ',
-        accountType: xdr.AccountType.operational().value
-      }
-      expectThrow(() => Operation.manageAccount(opts))
-    })
-    it('fails to create manageAccount operation with an undefined accountType', () => {
-      let opts = {
-        account: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-        block: true
-      }
-      expectThrow(() => Operation.manageAccount(opts))
-    })
-  })
-
   describe('.setFees', () => {
     it('valid setFees', () => {
       let feeType = xdr.FeeType.paymentFee()

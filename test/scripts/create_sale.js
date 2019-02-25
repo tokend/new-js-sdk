@@ -1,4 +1,4 @@
-import { ASSET_POLICIES, KEY_VALUE_KEYS } from '../../src/const'
+import { KEY_VALUE_KEYS } from '../../src/const'
 import { Asset } from '../helpers/asset'
 import _times from 'lodash/times'
 
@@ -67,13 +67,13 @@ export async function createSale (opts, ownerKp) {
 
   const requestId = await saleHelper.create({
     defaultQuoteAsset,
-    baseAssetForHardCap: maxAmountToBeSold,
+    requiredBaseAssetForHardCap: maxAmountToBeSold,
     baseAsset: opts.baseAsset,
     quoteAssets: quoteAssetCodes.map(asset => ({ price: '1', asset }))
   }, ownerKp)
   log.info(`Created the sale creation request, id: ${requestId}`)
 
-  await requestHelper.approve(requestId, { tasksToRemove })
+  await requestHelper.approve(requestId, { tasksToRemove: tasksToRemove })
   log.info('Approved the sale creation request')
 
   const sale = await saleHelper.mustLoadByBaseAsset(opts.baseAsset)

@@ -5,9 +5,12 @@ import { Keypair } from '../../base/keypair'
 import { makeChangeSignerTransaction } from './change_signers'
 import * as errors from '../../errors'
 
+const HORIZON_VERSION_PREFIX = 'v3'
+
 /**
  * Wallets.
  */
+
 export class Wallets extends ResourceGroupBase {
   /**
    * Get key derivation params.
@@ -55,13 +58,14 @@ export class Wallets extends ResourceGroupBase {
       throw err
     }
 
-    return Wallet.fromEncrypted(
-      walletResponse.data.keychainData,
+    return Wallet.fromEncrypted({
+      keychainData: walletResponse.data.keychainData,
       kdfParams,
-      kdfParams.salt,
+      salt: kdfParams.salt,
       email,
-      password
-    )
+      password,
+      accountId: walletResponse.data.accountId
+    })
   }
 
   /**
@@ -259,6 +263,7 @@ export class Wallets extends ResourceGroupBase {
    * Change password.
    *
    * @param {string} newPassword Desired password.
+   *
    * @return {Wallet} New wallet.
    */
   async changePassword (newPassword) {
@@ -277,7 +282,7 @@ export class Wallets extends ResourceGroupBase {
     )
     let signers = await this._getSigners(this._sdk.wallet.accountId)
     let tx = makeChangeSignerTransaction({
-      newPublicKey: oldWallet.accountId,
+      newPublicKey: newMainWallet.keypair.accountId(),
       signers,
       signingKeypair: oldWallet.keypair,
       soucreAccount: oldWallet.accountId,
@@ -293,7 +298,7 @@ export class Wallets extends ResourceGroupBase {
           id: encryptedNewMainWallet.id,
           attributes: {
             email: oldWallet.email,
-            accountId: encryptedNewMainWallet.accountId,
+            accountId: newMainWallet.keypair.accountId(),
             salt: encryptedNewMainWallet.salt,
             keychainData: encryptedNewMainWallet.keychainData
           },
@@ -338,8 +343,14 @@ export class Wallets extends ResourceGroupBase {
   }
 
   _getSigners (accountId) {
-    return this._sdk.horizon.account.getSigners(accountId)
-      .then(response => response.data.signers)
+    return this._server
+      ._makeCallBuilder()
+      .appendUrlSegment(HORIZON_VERSION_PREFIX)
+      .appendUrlSegment('accounts')
+      .appendAccountId(accountId)
+      .appendUrlSegment('signers')
+      .get()
+      .then(response => response.data)
       .catch(err => {
         if (err instanceof errors.NotFoundError) {
           return []

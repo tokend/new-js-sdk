@@ -4,7 +4,7 @@ import { default as xdr } from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
 
-export class PaymentV2Builder {
+export class PaymentBuilder {
   static prepareAttrs (opts) {
     let attrs = {}
 
@@ -13,11 +13,11 @@ export class PaymentV2Builder {
     }
 
     if (Keypair.isValidPublicKey(opts.destination)) {
-      attrs.destination = new xdr.PaymentOpV2Destination.account(
+      attrs.destination = new xdr.PaymentOpDestination.account(
         Keypair.fromAccountId(opts.destination).xdrAccountId()
       )
     } else if (Keypair.isValidBalanceKey(opts.destination)) {
-      attrs.destination = new xdr.PaymentOpV2Destination.balance(
+      attrs.destination = new xdr.PaymentOpDestination.balance(
         Keypair.fromBalanceId(opts.destination).xdrBalanceId()
       )
     } else {
@@ -33,36 +33,35 @@ export class PaymentV2Builder {
     }
 
     try {
-      PaymentV2Builder.ensureFeeValid(opts.feeData.sourceFee)
+      PaymentBuilder.ensureFeeValid(opts.feeData.sourceFee)
     } catch (e) {
       throw new TypeError('sourceFee.' + e.message)
     }
 
     try {
-      PaymentV2Builder.ensureFeeValid(opts.feeData.sourceFee)
+      PaymentBuilder.ensureFeeValid(opts.feeData.destinationFee)
     } catch (e) {
       throw new TypeError('destination.' + e.message)
     }
-
     let sourceFee = new xdr.Fee({
-      percent: BaseOperation
-        ._toUnsignedXDRAmount(opts.feeData.sourceFee.percent),
-      fixed: BaseOperation
-        ._toUnsignedXDRAmount(opts.feeData.sourceFee.fixed),
+      percent: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.percent),
+      fixed: BaseOperation._toUnsignedXDRAmount(opts.feeData.sourceFee.fixed),
       ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
     })
     let destinationFee = new xdr.Fee({
-      percent: BaseOperation
-        ._toUnsignedXDRAmount(opts.feeData.destinationFee.percent),
-      fixed: BaseOperation
-        ._toUnsignedXDRAmount(opts.feeData.destinationFee.fixed),
+      percent: BaseOperation._toUnsignedXDRAmount(
+        opts.feeData.destinationFee.percent
+      ),
+      fixed: BaseOperation._toUnsignedXDRAmount(
+        opts.feeData.destinationFee.fixed
+      ),
       ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
     })
-    attrs.feeData = new xdr.PaymentFeeDataV2({
+    attrs.feeData = new xdr.PaymentFeeData({
       sourceFee,
       destinationFee,
       sourcePaysForDest: opts.feeData.sourcePaysForDest,
-      ext: new xdr.PaymentFeeDataV2Ext(xdr.LedgerVersion.emptyVersion())
+      ext: new xdr.PaymentFeeDataExt(xdr.LedgerVersion.emptyVersion())
     })
 
     if (!BaseOperation.isValidSubject(opts.subject)) {
@@ -77,17 +76,17 @@ export class PaymentV2Builder {
     attrs.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
     attrs.subject = opts.subject
     attrs.reference = opts.reference
-    attrs.ext = new xdr.PaymentOpV2Ext(xdr.LedgerVersion.emptyVersion())
+    attrs.ext = new xdr.PaymentOpExt(xdr.LedgerVersion.emptyVersion())
 
     return attrs
   }
 
   static ensureFeeValid (fee) {
-    if (!BaseOperation.isValidAmount(fee.fixed)) {
+    if (!BaseOperation.isValidAmount(fee.fixed, true)) {
       throw new TypeError('fixed fee must be of type String and represent a positive number')
     }
 
-    if (!BaseOperation.isValidAmount(fee.percent)) {
+    if (!BaseOperation.isValidAmount(fee.percent, true)) {
       throw new TypeError('fixed fee must be of type String and represent a positive number')
     }
   }
@@ -110,16 +109,16 @@ export class PaymentV2Builder {
    * @param {string} opts.reference
    * @returns {xdr.PaymentOpV2}
    */
-  static paymentV2 (opts) {
-    let attrs = PaymentV2Builder.prepareAttrs(opts)
-    let paymentV2 = new xdr.PaymentOpV2(attrs)
+  static payment (opts) {
+    let attrs = PaymentBuilder.prepareAttrs(opts)
+    let paymentV2 = new xdr.PaymentOp(attrs)
     let opAttrs = {}
-    opAttrs.body = xdr.OperationBody.paymentV2(paymentV2)
+    opAttrs.body = xdr.OperationBody.payment(paymentV2)
     BaseOperation.setSourceAccount(opAttrs, opts)
     return new xdr.Operation(opAttrs)
   }
 
-  static paymentV2ToObject (result, attrs) {
+  static paymentToObject (result, attrs) {
     result.sourceBalanceId = BaseOperation.balanceIdtoString(attrs.sourceBalanceId())
     switch (attrs.destination().switch()) {
       case xdr.PaymentDestinationType.account(): {
@@ -134,24 +133,26 @@ export class PaymentV2Builder {
     result.amount = BaseOperation._fromXDRAmount(attrs.amount())
     result.feeData = {
       sourceFee: {
-        percent: BaseOperation._fromXDRAmount(
-          attrs.feeData().sourceFee().percent()
-        ),
         fixed: BaseOperation._fromXDRAmount(
           attrs.feeData().sourceFee().fixed()
+        ),
+        percent: BaseOperation._fromXDRAmount(
+          attrs.feeData().sourceFee().percent()
         )
       },
       destinationFee: {
-        percent: BaseOperation._fromXDRAmount(
-          attrs.feeData().destinationFee().percent()
-        ),
         fixed: BaseOperation._fromXDRAmount(
           attrs.feeData().destinationFee().fixed()
+        ),
+        percent: BaseOperation._fromXDRAmount(
+          attrs.feeData().destinationFee().percent()
         )
       },
       sourcePaysForDest: attrs.feeData().sourcePaysForDest()
     }
     result.subject = attrs.subject().toString()
     result.reference = attrs.reference().toString()
+
+    return result
   }
 }

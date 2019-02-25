@@ -9,6 +9,9 @@ export { Wallet } from './wallet'
 export { HorizonResponse } from './horizon'
 export { ApiResponse } from './api'
 
+export { ApiCaller, JsonapiResponse } from './api2'
+export { KeyServerCaller } from './api2/key-server-caller'
+
 // Typed errors
 export const errors = {
   ...commonErrors

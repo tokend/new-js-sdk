@@ -1,4 +1,5 @@
 import { toCamelCaseDeep } from './utils/case_converter'
+import { get } from 'lodash'
 
 /**
  * Network error.
@@ -89,7 +90,7 @@ export class ServerError extends ServerErrorBase {
   constructor (originalError, axios) {
     super(originalError, axios)
 
-    const unwrappedError = originalError.response.data.errors[0]
+    const unwrappedError = get(originalError, 'response.data.errors[0]', {})
     this._title = unwrappedError.title
     this._detail = unwrappedError.detail
     this._meta = toCamelCaseDeep(unwrappedError.meta || {})
@@ -114,7 +115,7 @@ export class BadRequestError extends ServerError {
    */
   constructor (originalError, axios) {
     super(originalError, axios)
-    let errors = originalError.response.data.errors
+    let errors = get(originalError, 'response.data.errors', [])
     if (errors.length > 1) {
       this._title = 'Request contains some errors.'
       this._detail = 'Request contains some errors. Check "nestedErrors"'
@@ -131,6 +132,45 @@ export class BadRequestError extends ServerError {
    */
   get nestedErrors () {
     return this._nestedErrors
+  }
+}
+
+/**
+ * "Bad Request" error - transaction is failed.
+ * `error.nestedErrors` may contain per-field errors.
+ *
+ * @export
+ * @class
+ */
+export class TransactionError extends ServerError {
+  /**
+   * Wrap a raw API error response.
+   *
+   * @constructor
+   *
+   * @param {Error} originalError Original error response.
+   * @param {axios} axios Axios instance used for the request.
+   */
+  constructor (originalError, axios) {
+    super(originalError, axios)
+
+    let error = originalError.response.data.errors[0]
+
+    this._title = 'Transaction Failed'
+    this._detail = 'Transaction failed because of some operations. Check "resultCodes"'
+    this._resultCodes = get(error, 'meta.extras.result_codes')
+  }
+
+  includesOpCode (opCode) {
+    return this._resultCodes.operations.includes(opCode)
+  }
+
+  /**
+   * Information about failed operations.
+   */
+
+  get resultCodes () {
+    return this._resultCodes
   }
 }
 

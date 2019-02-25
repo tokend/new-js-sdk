@@ -1,11 +1,12 @@
 import { Helper } from './_helper'
 import { base } from '../../src'
+import { signerHelper } from '../helpers'
 
 export class Account extends Helper {
   /**
    * @param opts
    * @param opts.id
-   * @param opts.accountType
+   * @param opts.roleID
    * @param [opts.accountPolicies]
    * @param [opts.referrer]
    * @param [opts.recoveryKey]
@@ -13,12 +14,12 @@ export class Account extends Helper {
   create (opts) {
     const DEFAULTS = {
       referrer: '',
-      accountPolicies: 0,
-      recoveryKey: base.Keypair.random().accountId()
+      signersData: [signerHelper.getBasicSignerData(opts)]
     }
 
-    const operation = base.Operation.createAccount({
+    const operation = base.CreateAccountBuilder.createAccount({
       destination: opts.id,
+      roleID: opts.roleID,
       ...opts,
       ...DEFAULTS
     })
@@ -31,7 +32,7 @@ export class Account extends Helper {
   }
 
   createSyndicate (id) {
-    return this.create({ id, accountType: base.xdr.AccountType.syndicate().value })
+    return this.create({ id, roleID: '1' })
   }
 
   createNotVerified (id) {

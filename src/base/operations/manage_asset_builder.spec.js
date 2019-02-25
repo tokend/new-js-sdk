@@ -1,6 +1,7 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { ManageAssetBuilder } from './manage_asset_builder'
+import { Keypair } from '../keypair'
 
 describe('ManageAssetBuilder', () => {
   describe('assetCreationRequest', () => {
@@ -11,11 +12,14 @@ describe('ManageAssetBuilder', () => {
         maxIssuanceAmount: '1000.1211',
         policies: 12,
         requestID: '0',
+        trailingDigitsCount: 0,
+        sequenceNumber: 10,
         initialPreissuedAmount: '12.14',
-        details: {
+        creatorDetails: {
           name: 'USD Name'
         },
-        allTasks: 2
+        allTasks: 2,
+        assetType: '1'
       }
       let op = ManageAssetBuilder.assetCreationRequest(opts)
       let xdrOp = op.toXDR('hex')
@@ -25,13 +29,14 @@ describe('ManageAssetBuilder', () => {
       expect(obj.requestID).to.be.equal(opts.requestID)
       expect(obj.requestType).to.be.equal('createAssetCreationRequest')
       expect(obj.code).to.be.equal(opts.code)
-      expect(obj.details.name).to.be.equal(opts.details.name)
+      expect(obj.creatorDetails.name).to.be.equal(opts.creatorDetails.name)
       expect(obj.preissuedAssetSigner).to.be.equal(opts.preissuedAssetSigner)
       expect(obj.maxIssuanceAmount).to.be.equal(opts.maxIssuanceAmount)
       expect(obj.policies).to.be.equal(opts.policies)
       expect(obj.initialPreissuedAmount)
         .to.be.equal(opts.initialPreissuedAmount)
       expect(obj.allTasks).to.be.equal(opts.allTasks)
+      expect(obj.assetType).to.be.equal(opts.assetType)
     })
   })
 
@@ -41,6 +46,10 @@ describe('ManageAssetBuilder', () => {
         code: 'USD',
         policies: 12,
         requestID: '0',
+        sequenceNumber: 10,
+        details: {
+          name: 'USD Name'
+        },
         allTasks: 1
       }
       let op = ManageAssetBuilder.assetUpdateRequest(opts)
@@ -75,7 +84,8 @@ describe('ManageAssetBuilder', () => {
     it('Success', () => {
       let opts = {
         code: 'USD',
-        accountID: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
+        accountID: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
+        keyPair: Keypair.random()
       }
       let op = ManageAssetBuilder.changeAssetPreIssuer(opts)
       let xdrOp = op.toXDR('hex')

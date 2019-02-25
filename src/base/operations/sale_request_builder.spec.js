@@ -9,13 +9,16 @@ describe('SaleRequestBuilder', () => {
     let opt = {
       requestID: '12',
       baseAsset: 'XAAU',
+      saleType: '1',
       defaultQuoteAsset: 'USD',
       startTime: '4123421',
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
-      baseAssetForHardCap: '648251',
-      details: {
+      allTasks: 1,
+      requiredBaseAssetForHardCap: '762354',
+      sequenceNumber: 12,
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -39,10 +42,14 @@ describe('SaleRequestBuilder', () => {
     expect(obj.type).to.be.equal(xdr.OperationType.createSaleRequest().name)
     expect(opt.requestID).to.be.equal(obj.requestID)
     expect(opt.baseAsset).to.be.equal(obj.baseAsset)
+    expect(opt.saleType).to.be.equal(obj.saleType)
     expect(opt.defaultQuoteAsset).to.be.equal(obj.defaultQuoteAsset)
     expect(opt.startTime).to.be.equal(obj.startTime)
     expect(opt.endTime).to.be.equal(obj.endTime)
     expect(opt.softCap).to.be.equal(obj.softCap)
+    expect(opt.hardCap).to.be.equal(obj.hardCap)
+    expect(opt.allTasks).to.be.equal(obj.allTasks)
+    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(JSON.stringify(opt.quoteAssets)).to.be.equal(JSON.stringify(obj.quoteAssets))
     expect(isEqual(opt.details, obj.details)).to.be.true
   })
@@ -55,7 +62,10 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
-      details: {
+      allTasks: 1,
+      requiredBaseAssetForHardCap: '762354',
+      sequenceNumber: 13,
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -71,8 +81,8 @@ describe('SaleRequestBuilder', () => {
           asset: 'BTC'
         }
       ],
-      saleType: true,
-      baseAssetForHardCap: '648251'
+      saleType: '1',
+      saleEnumType: true
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
     let xdrOp = op.toXDR('hex')
@@ -85,9 +95,11 @@ describe('SaleRequestBuilder', () => {
     expect(opt.startTime).to.be.equal(obj.startTime)
     expect(opt.endTime).to.be.equal(obj.endTime)
     expect(opt.softCap).to.be.equal(obj.softCap)
+    expect(opt.hardCap).to.be.equal(obj.hardCap)
+    expect(opt.allTasks).to.be.equal(obj.allTasks)
+    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(opt.quoteAssets).to.be.jsonEqual(obj.quoteAssets)
     expect(isEqual(opt.details, obj.details)).to.be.true
-    expect(opt.baseAssetForHardCap).to.be.equal(obj.baseAssetForHardCap)
   })
   it('Success create basic sale', () => {
     let opt = {
@@ -98,7 +110,7 @@ describe('SaleRequestBuilder', () => {
       endTime: '4123425',
       softCap: '20000.21',
       hardCap: '648251',
-      details: {
+      creatorDetails: {
         short_description: 'short description',
         description: 'Token sale description',
         logo: 'logo',
@@ -114,8 +126,9 @@ describe('SaleRequestBuilder', () => {
           asset: 'BTC'
         }
       ],
-      saleType: false,
-      baseAssetForHardCap: '648251'
+      saleType: '1',
+      saleEnumType: false,
+      requiredBaseAssetForHardCap: '648251'
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
     let xdrOp = op.toXDR('hex')
@@ -128,9 +141,11 @@ describe('SaleRequestBuilder', () => {
     expect(opt.startTime).to.be.equal(obj.startTime)
     expect(opt.endTime).to.be.equal(obj.endTime)
     expect(opt.softCap).to.be.equal(obj.softCap)
+    expect(opt.hardCap).to.be.equal(obj.hardCap)
+    expect(opt.allTasks).to.be.equal(obj.allTasks)
+    expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(JSON.stringify(opt.quoteAssets)).to.be.equal(JSON.stringify(obj.quoteAssets))
     expect(isEqual(opt.details, obj.details)).to.be.true
-    expect(opt.baseAssetForHardCap).to.be.equal(obj.baseAssetForHardCap)
   })
   it('Success cancel sale creation request', () => {
     let opt = {

@@ -14,7 +14,7 @@ import {
  * Creates an account, creates balances for given assets and populates them with
  * given amounts
  *
- * @param {number} accountType
+ * @param {string} roleID
  * @param {object} balances - the key/value object, where code is assetCode and
  * value is amount, for example:
  *  {
@@ -23,22 +23,31 @@ import {
  *    USD: '500.1220010'
  *  }
  */
-export async function createFundedAccount (accountType, balances) {
+export async function createFundedAccount (roleID, balances) {
   const log = logger.new('createFundedAccount')
 
   const accountKp = Keypair.random()
   const accountId = accountKp.accountId()
   await accountHelper.create({
-    accountType,
+    roleID,
     id: accountId
   })
   log.info(`Account created, id: ${accountId}`)
 
+  await fundAccount(accountId, balances)
+  return {
+    accountKp,
+    accountId
+  }
+}
+
+export async function fundAccount (accountId, balances) {
+  const log = logger.new('fundAccount')
   await Promise.all(
     Object
       .keys(balances)
       .map(assetCode => balanceHelper.create(
-        accountKp.accountId(),
+        accountId,
         assetCode
       ))
   )
@@ -69,13 +78,8 @@ export async function createFundedAccount (accountType, balances) {
       })
   )
   log.info(`Account ${accountId} funded`)
-
-  return {
-    accountKp,
-    accountId
-  }
 }
 
 export function createFundedGeneral (balances) {
-  return createFundedAccount(ACCOUNT_TYPES.general, balances)
+  return createFundedAccount('1', balances)
 }

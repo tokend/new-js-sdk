@@ -1,6 +1,6 @@
-// revision: 75f19dc58eaca067e8b1376415b35f3f18d89f45
-// branch:   feature/licensing
-// Automatically generated on 2019-01-28T14:10:53+00:00
+// revision: c066c93e399f28c5a05d69477459bc87bd52fb66
+// branch:   master
+// Automatically generated on 2019-02-25T09:56:10+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -171,6 +171,7 @@ xdr.union("PreIssuanceRequestExt", {
 //   	uint64 amount;
 //   	DecoratedSignature signature;
 //   	string64 reference;
+//       longstring creatorDetails; // details set by requester
 //   
 //   	// reserved for future use
 //       union switch (LedgerVersion v)
@@ -187,6 +188,7 @@ xdr.struct("PreIssuanceRequest", [
   ["amount", xdr.lookup("Uint64")],
   ["signature", xdr.lookup("DecoratedSignature")],
   ["reference", xdr.lookup("String64")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("PreIssuanceRequestExt")],
 ]);
 
@@ -215,7 +217,7 @@ xdr.union("IssuanceRequestExt", {
 //   	AssetCode asset;
 //   	uint64 amount;
 //   	BalanceID receiver;
-//   	longstring externalDetails; // details of the issuance (External system id, etc.)
+//   	longstring creatorDetails; // details of the issuance (External system id, etc.)
 //   	Fee fee; //totalFee to be payed (calculated automatically)
 //   	// reserved for future use
 //       union switch (LedgerVersion v)
@@ -231,7 +233,7 @@ xdr.struct("IssuanceRequest", [
   ["asset", xdr.lookup("AssetCode")],
   ["amount", xdr.lookup("Uint64")],
   ["receiver", xdr.lookup("BalanceId")],
-  ["externalDetails", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["fee", xdr.lookup("Fee")],
   ["ext", xdr.lookup("IssuanceRequestExt")],
 ]);
@@ -287,7 +289,7 @@ xdr.struct("CreateWithdrawalRequestOp", [
 //   
 //   	// codes considered as "failure" for the operation
 //   	INVALID_AMOUNT = -1, // amount is 0
-//   	INVALID_EXTERNAL_DETAILS = -2, // external details size exceeds max allowed
+//   	INVALID_CREATOR_DETAILS = -2, // external details size exceeds max allowed
 //   	BALANCE_NOT_FOUND = -3, // balance not found
 //   	ASSET_IS_NOT_WITHDRAWABLE = -4, // asset is not withdrawable
 //   	CONVERSION_PRICE_IS_NOT_AVAILABLE = -5, // failed to find conversion price - conversion is not allowed
@@ -310,7 +312,7 @@ xdr.struct("CreateWithdrawalRequestOp", [
 xdr.enum("CreateWithdrawalRequestResultCode", {
   success: 0,
   invalidAmount: -1,
-  invalidExternalDetail: -2,
+  invalidCreatorDetail: -2,
   balanceNotFound: -3,
   assetIsNotWithdrawable: -4,
   conversionPriceIsNotAvailable: -5,
@@ -394,6 +396,332 @@ xdr.union("CreateWithdrawalRequestResult", {
 
 // === xdr source ============================================================
 //
+//   enum ManageSignerRuleAction
+//   {
+//       CREATE = 0,
+//       UPDATE = 1,
+//       REMOVE = 2
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageSignerRuleAction", {
+  create: 0,
+  update: 1,
+  remove: 2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateSignerRuleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateSignerRuleData
+//   {
+//       SignerRuleResource resource;
+//       SignerRuleAction action;
+//       bool forbids;
+//       bool isDefault;
+//       bool isReadOnly;
+//       longstring details;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateSignerRuleData", [
+  ["resource", xdr.lookup("SignerRuleResource")],
+  ["action", xdr.lookup("SignerRuleAction")],
+  ["forbids", xdr.bool()],
+  ["isDefault", xdr.bool()],
+  ["isReadOnly", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("CreateSignerRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("UpdateSignerRuleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct UpdateSignerRuleData
+//   {
+//       uint64 ruleID;
+//       SignerRuleResource resource;
+//       SignerRuleAction action;
+//       bool forbids;
+//       bool isDefault;
+//       longstring details;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateSignerRuleData", [
+  ["ruleId", xdr.lookup("Uint64")],
+  ["resource", xdr.lookup("SignerRuleResource")],
+  ["action", xdr.lookup("SignerRuleAction")],
+  ["forbids", xdr.bool()],
+  ["isDefault", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("UpdateSignerRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveSignerRuleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct RemoveSignerRuleData
+//   {
+//       uint64 ruleID;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveSignerRuleData", [
+  ["ruleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("RemoveSignerRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageSignerRuleAction action)
+//       {
+//       case CREATE:
+//           CreateSignerRuleData createData;
+//       case UPDATE:
+//           UpdateSignerRuleData updateData;
+//       case REMOVE:
+//           RemoveSignerRuleData removeData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageSignerRuleOpData", {
+  switchOn: xdr.lookup("ManageSignerRuleAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["update", "updateData"],
+    ["remove", "removeData"],
+  ],
+  arms: {
+    createData: xdr.lookup("CreateSignerRuleData"),
+    updateData: xdr.lookup("UpdateSignerRuleData"),
+    removeData: xdr.lookup("RemoveSignerRuleData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageSignerRuleOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageSignerRuleOp
+//   {
+//       union switch (ManageSignerRuleAction action)
+//       {
+//       case CREATE:
+//           CreateSignerRuleData createData;
+//       case UPDATE:
+//           UpdateSignerRuleData updateData;
+//       case REMOVE:
+//           RemoveSignerRuleData removeData;
+//       } data;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageSignerRuleOp", [
+  ["data", xdr.lookup("ManageSignerRuleOpData")],
+  ["ext", xdr.lookup("ManageSignerRuleOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageSignerRuleResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       NOT_FOUND = -1, // does not exists or owner mismatched
+//       RULE_IS_USED = -2,
+//       INVALID_DETAILS = -3
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageSignerRuleResultCode", {
+  success: 0,
+  notFound: -1,
+  ruleIsUsed: -2,
+  invalidDetail: -3,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//
+// ===========================================================================
+xdr.union("ManageSignerRuleResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//               uint64 ruleID;
+//   
+//               // reserved for future use
+//               union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//               ext;
+//           }
+//
+// ===========================================================================
+xdr.struct("ManageSignerRuleResultSuccess", [
+  ["ruleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("ManageSignerRuleResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union ManageSignerRuleResult switch (ManageSignerRuleResultCode code)
+//   {
+//       case SUCCESS:
+//           struct {
+//               uint64 ruleID;
+//   
+//               // reserved for future use
+//               union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//               ext;
+//           } success;
+//       case RULE_IS_USED:
+//           uint64 roleIDs<>;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageSignerRuleResult", {
+  switchOn: xdr.lookup("ManageSignerRuleResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+    ["ruleIsUsed", "roleIDs"],
+  ],
+  arms: {
+    success: xdr.lookup("ManageSignerRuleResultSuccess"),
+    roleIDs: xdr.varArray(xdr.lookup("Uint64"), 2147483647),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -417,7 +745,7 @@ xdr.union("ContractRequestExt", {
 //   {
 //       AccountID customer;
 //       AccountID escrow;
-//       longstring details;
+//       longstring creatorDetails; // details set by requester
 //   
 //       uint64 startTime;
 //       uint64 endTime;
@@ -435,7 +763,7 @@ xdr.union("ContractRequestExt", {
 xdr.struct("ContractRequest", [
   ["customer", xdr.lookup("AccountId")],
   ["escrow", xdr.lookup("AccountId")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["startTime", xdr.lookup("Uint64")],
   ["endTime", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("ContractRequestExt")],
@@ -482,6 +810,207 @@ xdr.struct("StampEntry", [
   ["licenseHash", xdr.lookup("Hash")],
   ["ext", xdr.lookup("StampEntryExt")],
 ]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("SignerRoleEntryExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct SignerRoleEntry
+//   {
+//       uint64 id;
+//       uint64 ruleIDs<>;
+//   
+//       AccountID ownerID;
+//   
+//       longstring details;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("SignerRoleEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["ruleIDs", xdr.varArray(xdr.lookup("Uint64"), 2147483647)],
+  ["ownerId", xdr.lookup("AccountId")],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("SignerRoleEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateChangeRoleRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateChangeRoleRequestOp
+//   {
+//       uint64 requestID;
+//   
+//       AccountID destinationAccount;
+//       uint64 accountRoleToSet;
+//       longstring creatorDetails;
+//   
+//       uint32* allTasks;
+//   
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateChangeRoleRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["destinationAccount", xdr.lookup("AccountId")],
+  ["accountRoleToSet", xdr.lookup("Uint64")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("CreateChangeRoleRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreateChangeRoleRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       ACC_TO_UPDATE_DOES_NOT_EXIST = -1, // account to update does not exist
+//       REQUEST_ALREADY_EXISTS = -2,
+//   	SAME_ACC_TYPE_TO_SET = -3,
+//   	REQUEST_DOES_NOT_EXIST = -4,
+//   	NOT_ALLOWED_TO_UPDATE_REQUEST = -6, // master account can update request only through review request operation
+//   	INVALID_CHANGE_ROLE_REQUEST_DATA = -7,
+//   	INVALID_CREATOR_DETAILS = -8,
+//   	CHANGE_ROLE_TASKS_NOT_FOUND = -9
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateChangeRoleRequestResultCode", {
+  success: 0,
+  accToUpdateDoesNotExist: -1,
+  requestAlreadyExist: -2,
+  sameAccTypeToSet: -3,
+  requestDoesNotExist: -4,
+  notAllowedToUpdateRequest: -6,
+  invalidChangeRoleRequestDatum: -7,
+  invalidCreatorDetail: -8,
+  changeRoleTasksNotFound: -9,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//
+// ===========================================================================
+xdr.union("CreateChangeRoleRequestResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//   		uint64 requestID;
+//   		bool fulfilled;
+//   		// Reserved for future use
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//   	}
+//
+// ===========================================================================
+xdr.struct("CreateChangeRoleRequestResultSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["ext", xdr.lookup("CreateChangeRoleRequestResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union CreateChangeRoleRequestResult switch (CreateChangeRoleRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       struct {
+//   		uint64 requestID;
+//   		bool fulfilled;
+//   		// Reserved for future use
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//   	} success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateChangeRoleRequestResult", {
+  switchOn: xdr.lookup("CreateChangeRoleRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateChangeRoleRequestResultSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
 
 // === xdr source ============================================================
 //
@@ -547,11 +1076,11 @@ xdr.struct("CreateSaleCreationRequestOp", [
 //   	INVALID_ASSET_PAIR = -9, // one of the assets has invalid code or base asset is equal to quote asset
 //   	REQUEST_OR_SALE_ALREADY_EXISTS = -10,
 //   	INSUFFICIENT_PREISSUED = -11, // amount of pre issued tokens is insufficient for hard cap
-//   	INVALID_DETAILS = -12, // details must be a valid json
+//   	INVALID_CREATOR_DETAILS = -12, // details must be a valid json
 //   	VERSION_IS_NOT_SUPPORTED_YET = -13, // version specified in request is not supported yet
 //       SALE_CREATE_TASKS_NOT_FOUND = -14,
 //       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -15, // can't set allTasks on request update
-//       PENDING_REQUEST_UPDATE_NOT_ALLOWED = -16
+//       AUTO_REVIEW_FAILED = -16 //: due to tasks been 0, we have tried to auto review request, hovewer it failed
 //   };
 //
 // ===========================================================================
@@ -568,11 +1097,11 @@ xdr.enum("CreateSaleCreationRequestResultCode", {
   invalidAssetPair: -9,
   requestOrSaleAlreadyExist: -10,
   insufficientPreissued: -11,
-  invalidDetail: -12,
+  invalidCreatorDetail: -12,
   versionIsNotSupportedYet: -13,
   saleCreateTasksNotFound: -14,
   notAllowedToSetTasksOnUpdate: -15,
-  pendingRequestUpdateNotAllowed: -16,
+  autoReviewFailed: -16,
 });
 
 // === xdr source ============================================================
@@ -619,10 +1148,51 @@ xdr.struct("CreateSaleCreationSuccess", [
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateSaleCreationAutoReviewFailedExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateSaleCreationAutoReviewFailed {
+//   	//: auto review result
+//   	ReviewRequestResult reviewRequestRequest;
+//   	//: reserved for future use
+//   	union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateSaleCreationAutoReviewFailed", [
+  ["reviewRequestRequest", xdr.lookup("ReviewRequestResult")],
+  ["ext", xdr.lookup("CreateSaleCreationAutoReviewFailedExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union CreateSaleCreationRequestResult switch (CreateSaleCreationRequestResultCode code)
 //   {
 //       case SUCCESS:
 //           CreateSaleCreationSuccess success;
+//   	case AUTO_REVIEW_FAILED:
+//   		CreateSaleCreationAutoReviewFailed autoReviewFailed;
 //       default:
 //           void;
 //   };
@@ -633,9 +1203,11 @@ xdr.union("CreateSaleCreationRequestResult", {
   switchName: "code",
   switches: [
     ["success", "success"],
+    ["autoReviewFailed", "autoReviewFailed"],
   ],
   arms: {
     success: xdr.lookup("CreateSaleCreationSuccess"),
+    autoReviewFailed: xdr.lookup("CreateSaleCreationAutoReviewFailed"),
   },
   defaultArm: xdr.void(),
 });
@@ -885,297 +1457,32 @@ xdr.struct("ScpQuorumSet", [
 
 // === xdr source ============================================================
 //
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
+//   enum LedgerVersion {
+//   	EMPTY_VERSION = 0
+//   };
 //
 // ===========================================================================
-xdr.union("AccountRolePermissionEntryExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
+xdr.enum("LedgerVersion", {
+  emptyVersion: 0,
 });
 
 // === xdr source ============================================================
 //
-//   struct AccountRolePermissionEntry
+//   union EmptyExt switch (LedgerVersion v)
 //   {
-//       uint64 permissionID;
-//       uint64 accountRoleID;
-//       OperationType opType;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("AccountRolePermissionEntry", [
-  ["permissionId", xdr.lookup("Uint64")],
-  ["accountRoleId", xdr.lookup("Uint64")],
-  ["opType", xdr.lookup("OperationType")],
-  ["ext", xdr.lookup("AccountRolePermissionEntryExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum ManageTrustAction
-//   {
-//       TRUST_ADD = 0,
-//       TRUST_REMOVE = 1
-//   };
-//
-// ===========================================================================
-xdr.enum("ManageTrustAction", {
-  trustAdd: 0,
-  trustRemove: 1,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   	{
-//   	case EMPTY_VERSION:
-//   		void;
-//   	}
-//
-// ===========================================================================
-xdr.union("TrustDataExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct TrustData {
-//       TrustEntry trust;
-//       ManageTrustAction action;
-//   	// reserved for future use
-//   	union switch (LedgerVersion v)
-//   	{
-//   	case EMPTY_VERSION:
-//   		void;
-//   	}
-//   	ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("TrustData", [
-  ["trust", xdr.lookup("TrustEntry")],
-  ["action", xdr.lookup("ManageTrustAction")],
-  ["ext", xdr.lookup("TrustDataExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("LimitsUpdateRequestDataExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct LimitsUpdateRequestData {
-//       Hash documentHash;
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("LimitsUpdateRequestData", [
-  ["documentHash", xdr.lookup("Hash")],
-  ["ext", xdr.lookup("LimitsUpdateRequestDataExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   	{
-//   	case EMPTY_VERSION:
-//   		void;
-//   	}
-//
-// ===========================================================================
-xdr.union("SetOptionsOpExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct SetOptionsOp
-//   {
-//       // account threshold manipulation
-//       uint32* masterWeight; // weight of the master account
-//       uint32* lowThreshold;
-//       uint32* medThreshold;
-//       uint32* highThreshold;
-//   
-//       // Add, update or remove a signer for the account
-//       // signer is deleted if the weight is 0
-//       Signer* signer;
-//   
-//       TrustData* trustData;
-//   
-//       // Create LimitsUpdateRequest for account
-//       LimitsUpdateRequestData* limitsUpdateRequestData;
-//   
-//   	// reserved for future use
-//   	union switch (LedgerVersion v)
-//   	{
-//   	case EMPTY_VERSION:
-//   		void;
-//   	}
-//   	ext;
-//       
-//   };
-//
-// ===========================================================================
-xdr.struct("SetOptionsOp", [
-  ["masterWeight", xdr.option(xdr.lookup("Uint32"))],
-  ["lowThreshold", xdr.option(xdr.lookup("Uint32"))],
-  ["medThreshold", xdr.option(xdr.lookup("Uint32"))],
-  ["highThreshold", xdr.option(xdr.lookup("Uint32"))],
-  ["signer", xdr.option(xdr.lookup("Signer"))],
-  ["trustData", xdr.option(xdr.lookup("TrustData"))],
-  ["limitsUpdateRequestData", xdr.option(xdr.lookup("LimitsUpdateRequestData"))],
-  ["ext", xdr.lookup("SetOptionsOpExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum SetOptionsResultCode
-//   {
-//       // codes considered as "success" for the operation
-//       SUCCESS = 0,
-//       // codes considered as "failure" for the operation
-//       TOO_MANY_SIGNERS = -1, // max number of signers already reached
-//       THRESHOLD_OUT_OF_RANGE = -2, // bad value for weight/threshold
-//       BAD_SIGNER = -3,             // signer cannot be masterkey
-//       BALANCE_NOT_FOUND = -4,
-//       TRUST_MALFORMED = -5,
-//   	TRUST_TOO_MANY = -6,
-//   	INVALID_SIGNER_VERSION = -7, // if signer version is higher than ledger version
-//   	LIMITS_UPDATE_REQUEST_REFERENCE_DUPLICATION = -8
-//   };
-//
-// ===========================================================================
-xdr.enum("SetOptionsResultCode", {
-  success: 0,
-  tooManySigner: -1,
-  thresholdOutOfRange: -2,
-  badSigner: -3,
-  balanceNotFound: -4,
-  trustMalformed: -5,
-  trustTooMany: -6,
-  invalidSignerVersion: -7,
-  limitsUpdateRequestReferenceDuplication: -8,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("SetOptionsResultSuccessExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 limitsUpdateRequestID;
-//   		// reserved for future use
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	}
-//
-// ===========================================================================
-xdr.struct("SetOptionsResultSuccess", [
-  ["limitsUpdateRequestId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("SetOptionsResultSuccessExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union SetOptionsResult switch (SetOptionsResultCode code)
-//   {
-//   case SUCCESS:
-//       struct {
-//           uint64 limitsUpdateRequestID;
-//   		// reserved for future use
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	} success;
-//   default:
+//   case EMPTY_VERSION:
 //       void;
 //   };
 //
 // ===========================================================================
-xdr.union("SetOptionsResult", {
-  switchOn: xdr.lookup("SetOptionsResultCode"),
-  switchName: "code",
+xdr.union("EmptyExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
   switches: [
-    ["success", "success"],
+    ["emptyVersion", xdr.void()],
   ],
   arms: {
-    success: xdr.lookup("SetOptionsResultSuccess"),
   },
-  defaultArm: xdr.void(),
 });
 
 // === xdr source ============================================================
@@ -1266,117 +1573,74 @@ xdr.union("PublicKey", {
 
 // === xdr source ============================================================
 //
-//   enum LedgerVersion {
-//   	EMPTY_VERSION = 0,
-//   	PASS_EXTERNAL_SYS_ACC_ID_IN_CREATE_ACC = 1,
-//   	DETAILED_LEDGER_CHANGES = 2, // write more all ledger changes to transaction meta
-//   	NEW_SIGNER_TYPES = 3, // use more comprehensive list of signer types
-//   	TYPED_SALE = 4, // sales can have type
-//   	UNIQUE_BALANCE_CREATION = 5, // allows to specify in manage balance that balance should not be created if one for such asset and account exists
-//   	ASSET_PREISSUER_MIGRATION = 6,
-//   	ASSET_PREISSUER_MIGRATED = 7,
-//   	USE_KYC_LEVEL = 8,
-//   	ERROR_ON_NON_ZERO_TASKS_TO_REMOVE_IN_REJECT_KYC = 9,
-//   	ALLOW_ACCOUNT_MANAGER_TO_CHANGE_KYC = 10,
-//   	CHANGE_ASSET_ISSUER_BAD_AUTH_EXTRA_FIXED = 11,
-//   	AUTO_CREATE_COMMISSION_BALANCE_ON_TRANSFER = 12,
-//       ALLOW_REJECT_REQUEST_OF_BLOCKED_REQUESTOR = 13,
-//   	ASSET_UPDATE_CHECK_REFERENCE_EXISTS = 14,
-//   	USE_PAYMENT_V2 = 16,
-//   	ALLOW_SYNDICATE_TO_UPDATE_KYC = 17,
-//   	DO_NOT_BUILD_ACCOUNT_IF_VERSION_EQUALS_OR_GREATER = 18,
-//   	ALLOW_TO_SPECIFY_REQUIRED_BASE_ASSET_AMOUNT_FOR_HARD_CAP = 19,
-//   	KYC_RULES = 20,
-//   	ALLOW_TO_CREATE_SEVERAL_SALES = 21,
-//   	KEY_VALUE_POOL_ENTRY_EXPIRES_AT = 22,
-//   	KEY_VALUE_UPDATE = 23,
-//   	ALLOW_TO_CANCEL_SALE_PARTICIP_WITHOUT_SPECIFING_BALANCE = 24,
-//   	DETAILS_MAX_LENGTH_EXTENDED = 25,
-//   	ALLOW_MASTER_TO_MANAGE_SALE = 26,
-//   	FIX_ASSET_PAIRS_CREATION_IN_SALE_CREATION = 28,
-//   	STATABLE_SALES = 29,
-//   	CREATE_ONLY_STATISTICS_V2 = 30,
-//   	LIMITS_UPDATE_REQUEST_DEPRECATED_DOCUMENT_HASH = 31,
-//   	FIX_PAYMENT_V2_FEE = 32,
-//   	ADD_SALE_ID_REVIEW_REQUEST_RESULT = 33,
-//   	FIX_SET_SALE_STATE_AND_CHECK_SALE_STATE_OPS = 34, // only master allowed to set sale state, max issuance after sale closure = pending + issued
-//   	FIX_UPDATE_MAX_ISSUANCE = 35,
-//   	ALLOW_CLOSE_SALE_WITH_NON_ZERO_BALANCE = 36,
-//   	ALLOW_TO_UPDATE_VOTING_SALES_AS_PROMOTION = 37,
-//   	ALLOW_TO_ISSUE_AFTER_SALE = 38,
-//   	FIX_PAYMENT_V2_SEND_TO_SELF = 39,
-//   	FIX_PAYMENT_V2_DEST_ACCOUNT_NOT_FOUND = 40,
-//   	FIX_CREATE_KYC_REQUEST_AUTO_APPROVE = 41,
-//   	ADD_TASKS_TO_REVIEWABLE_REQUEST = 42,
-//   	USE_ONLY_PAYMENT_V2 = 43,
-//       ADD_REVIEW_INVOICE_REQUEST_PAYMENT_RESPONSE = 44,
-//       ADD_CONTRACT_ID_REVIEW_REQUEST_RESULT = 45,
-//       ALLOW_TO_UPDATE_AND_REJECT_LIMITS_UPDATE_REQUESTS = 46,
-//       ADD_CUSTOMER_DETAILS_TO_CONTRACT = 47,
-//       ADD_CAPITAL_DEPLOYMENT_FEE_TYPE = 48,
-//       ADD_TRANSACTION_FEE = 49,
-//       ADD_DEFAULT_ISSUANCE_TASKS = 50,
-//       EXTEND_REVIEW_ATOMIC_SWAP_REQUEST_RESULT = 51,
-//   	WITHDRAWAL_TASKS = 52,
-//   	ADD_ASSET_BALANCE_PRECISION = 53,
-//       REPLACE_ACCOUNT_TYPES_WITH_POLICIES = 999999 // do not use it yet, there are features to be improved
+//   enum LedgerEntryType
+//   {
+//       ANY = 1,
+//       ACCOUNT = 2,
+//       SIGNER = 3,
+//       FEE = 4,
+//       BALANCE = 5,
+//       PAYMENT_REQUEST = 6,
+//       ASSET = 7,
+//       REFERENCE_ENTRY = 8,
+//       STATISTICS = 9,
+//       TRUST = 10,
+//       ACCOUNT_LIMITS = 11,
+//   	ASSET_PAIR = 12,
+//   	OFFER_ENTRY = 13,
+//   	REVIEWABLE_REQUEST = 15,
+//   	EXTERNAL_SYSTEM_ACCOUNT_ID = 16,
+//   	SALE = 17,
+//   	ACCOUNT_KYC = 18,
+//   	EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY = 19,
+//       KEY_VALUE = 20,
+//       LIMITS_V2 = 22,
+//       STATISTICS_V2 = 23,
+//       PENDING_STATISTICS = 24,
+//       CONTRACT = 25,
+//       ACCOUNT_ROLE = 26,
+//       ACCOUNT_RULE = 27,
+//       ATOMIC_SWAP_BID = 28,
+//       TRANSACTION = 29, // is used for account rule resource
+//       SIGNER_RULE = 30,
+//       SIGNER_ROLE = 31,
+//       STAMP = 32,
+//       LICENSE = 33
 //   };
 //
 // ===========================================================================
-xdr.enum("LedgerVersion", {
-  emptyVersion: 0,
-  passExternalSysAccIdInCreateAcc: 1,
-  detailedLedgerChange: 2,
-  newSignerType: 3,
-  typedSale: 4,
-  uniqueBalanceCreation: 5,
-  assetPreissuerMigration: 6,
-  assetPreissuerMigrated: 7,
-  useKycLevel: 8,
-  errorOnNonZeroTasksToRemoveInRejectKyc: 9,
-  allowAccountManagerToChangeKyc: 10,
-  changeAssetIssuerBadAuthExtraFixed: 11,
-  autoCreateCommissionBalanceOnTransfer: 12,
-  allowRejectRequestOfBlockedRequestor: 13,
-  assetUpdateCheckReferenceExist: 14,
-  usePaymentV2: 16,
-  allowSyndicateToUpdateKyc: 17,
-  doNotBuildAccountIfVersionEqualsOrGreater: 18,
-  allowToSpecifyRequiredBaseAssetAmountForHardCap: 19,
-  kycRule: 20,
-  allowToCreateSeveralSale: 21,
-  keyValuePoolEntryExpiresAt: 22,
-  keyValueUpdate: 23,
-  allowToCancelSaleParticipWithoutSpecifingBalance: 24,
-  detailsMaxLengthExtended: 25,
-  allowMasterToManageSale: 26,
-  fixAssetPairsCreationInSaleCreation: 28,
-  statableSale: 29,
-  createOnlyStatisticsV2: 30,
-  limitsUpdateRequestDeprecatedDocumentHash: 31,
-  fixPaymentV2Fee: 32,
-  addSaleIdReviewRequestResult: 33,
-  fixSetSaleStateAndCheckSaleStateOp: 34,
-  fixUpdateMaxIssuance: 35,
-  allowCloseSaleWithNonZeroBalance: 36,
-  allowToUpdateVotingSalesAsPromotion: 37,
-  allowToIssueAfterSale: 38,
-  fixPaymentV2SendToSelf: 39,
-  fixPaymentV2DestAccountNotFound: 40,
-  fixCreateKycRequestAutoApprove: 41,
-  addTasksToReviewableRequest: 42,
-  useOnlyPaymentV2: 43,
-  addReviewInvoiceRequestPaymentResponse: 44,
-  addContractIdReviewRequestResult: 45,
-  allowToUpdateAndRejectLimitsUpdateRequest: 46,
-  addCustomerDetailsToContract: 47,
-  addCapitalDeploymentFeeType: 48,
-  addTransactionFee: 49,
-  addDefaultIssuanceTask: 50,
-  extendReviewAtomicSwapRequestResult: 51,
-  withdrawalTask: 52,
-  addAssetBalancePrecision: 53,
-  replaceAccountTypesWithPolicy: 999999,
+xdr.enum("LedgerEntryType", {
+  any: 1,
+  account: 2,
+  signer: 3,
+  fee: 4,
+  balance: 5,
+  paymentRequest: 6,
+  asset: 7,
+  referenceEntry: 8,
+  statistic: 9,
+  trust: 10,
+  accountLimit: 11,
+  assetPair: 12,
+  offerEntry: 13,
+  reviewableRequest: 15,
+  externalSystemAccountId: 16,
+  sale: 17,
+  accountKyc: 18,
+  externalSystemAccountIdPoolEntry: 19,
+  keyValue: 20,
+  limitsV2: 22,
+  statisticsV2: 23,
+  pendingStatistic: 24,
+  contract: 25,
+  accountRole: 26,
+  accountRule: 27,
+  atomicSwapBid: 28,
+  transaction: 29,
+  signerRule: 30,
+  signerRole: 31,
+  stamp: 32,
+  license: 33,
 });
 
 // === xdr source ============================================================
@@ -1563,18 +1827,14 @@ xdr.struct("Fee", [
 //
 //   enum OperationType
 //   {
-//       CREATE_ACCOUNT = 0,
-//       PAYMENT = 1,
-//       SET_OPTIONS = 2,
+//       CREATE_ACCOUNT = 1,
 //       CREATE_ISSUANCE_REQUEST = 3,
 //       SET_FEES = 5,
-//   	MANAGE_ACCOUNT = 6,
 //       CREATE_WITHDRAWAL_REQUEST = 7,
 //       MANAGE_BALANCE = 9,
 //       MANAGE_ASSET = 11,
 //       CREATE_PREISSUANCE_REQUEST = 12,
 //       MANAGE_LIMITS = 13,
-//       DIRECT_DEBIT = 14,
 //   	MANAGE_ASSET_PAIR = 15,
 //   	MANAGE_OFFER = 16,
 //       MANAGE_INVOICE_REQUEST = 17,
@@ -1582,8 +1842,8 @@ xdr.struct("Fee", [
 //   	CREATE_SALE_REQUEST = 19,
 //   	CHECK_SALE_STATE = 20,
 //       CREATE_AML_ALERT = 21,
-//       CREATE_KYC_REQUEST = 22,
-//       PAYMENT_V2 = 23,
+//       CREATE_CHANGE_ROLE_REQUEST = 22,
+//       PAYMENT = 23,
 //       MANAGE_EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY = 24,
 //       BIND_EXTERNAL_SYSTEM_ACCOUNT_ID = 25,
 //       MANAGE_SALE = 26,
@@ -1594,28 +1854,27 @@ xdr.struct("Fee", [
 //       CANCEL_SALE_REQUEST = 31,
 //       PAYOUT = 32,
 //       MANAGE_ACCOUNT_ROLE = 33,
-//       MANAGE_ACCOUNT_ROLE_PERMISSION = 34,
+//       MANAGE_ACCOUNT_RULE = 34,
 //       CREATE_ASWAP_BID_REQUEST = 35,
 //       CANCEL_ASWAP_BID = 36,
 //       CREATE_ASWAP_REQUEST = 37,
-//       STAMP = 38,
-//       LICENSE = 39
+//       MANAGE_SIGNER = 38,
+//       MANAGE_SIGNER_ROLE = 39,
+//       MANAGE_SIGNER_RULE = 40,
+//       STAMP = 41,
+//       LICENSE = 42
 //   };
 //
 // ===========================================================================
 xdr.enum("OperationType", {
-  createAccount: 0,
-  payment: 1,
-  setOption: 2,
+  createAccount: 1,
   createIssuanceRequest: 3,
   setFee: 5,
-  manageAccount: 6,
   createWithdrawalRequest: 7,
   manageBalance: 9,
   manageAsset: 11,
   createPreissuanceRequest: 12,
   manageLimit: 13,
-  directDebit: 14,
   manageAssetPair: 15,
   manageOffer: 16,
   manageInvoiceRequest: 17,
@@ -1623,8 +1882,8 @@ xdr.enum("OperationType", {
   createSaleRequest: 19,
   checkSaleState: 20,
   createAmlAlert: 21,
-  createKycRequest: 22,
-  paymentV2: 23,
+  createChangeRoleRequest: 22,
+  payment: 23,
   manageExternalSystemAccountIdPoolEntry: 24,
   bindExternalSystemAccountId: 25,
   manageSale: 26,
@@ -1635,12 +1894,15 @@ xdr.enum("OperationType", {
   cancelSaleRequest: 31,
   payout: 32,
   manageAccountRole: 33,
-  manageAccountRolePermission: 34,
+  manageAccountRule: 34,
   createAswapBidRequest: 35,
   cancelAswapBid: 36,
   createAswapRequest: 37,
-  stamp: 38,
-  license: 39,
+  manageSigner: 38,
+  manageSignerRole: 39,
+  manageSignerRule: 40,
+  stamp: 41,
+  license: 42,
 });
 
 // === xdr source ============================================================
@@ -1856,7 +2118,7 @@ xdr.union("WithdrawalRequestExt", {
 //       uint64 amount; // amount to be withdrawn
 //       uint64 universalAmount; // amount in stats asset
 //   	Fee fee; // expected fee to be paid
-//       longstring externalDetails; // details of the withdrawal (External system id, etc.)
+//       longstring creatorDetails; // details set by requester
 //   
 //   	union switch (LedgerVersion v)
 //       {
@@ -1872,202 +2134,9 @@ xdr.struct("WithdrawalRequest", [
   ["amount", xdr.lookup("Uint64")],
   ["universalAmount", xdr.lookup("Uint64")],
   ["fee", xdr.lookup("Fee")],
-  ["externalDetails", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("WithdrawalRequestExt")],
 ]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("UpdateKycRequestDataExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct UpdateKYCRequestData {
-//       AccountID accountToUpdateKYC;
-//   	AccountType accountTypeToSet;
-//   	uint32 kycLevelToSet;
-//       longstring kycData;
-//   
-//   	// Reserved for future use
-//   	union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("UpdateKycRequestData", [
-  ["accountToUpdateKyc", xdr.lookup("AccountId")],
-  ["accountTypeToSet", xdr.lookup("AccountType")],
-  ["kycLevelToSet", xdr.lookup("Uint32")],
-  ["kycData", xdr.lookup("Longstring")],
-  ["ext", xdr.lookup("UpdateKycRequestDataExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("CreateUpdateKycRequestOpExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct CreateUpdateKYCRequestOp {
-//       uint64 requestID;
-//       UpdateKYCRequestData updateKYCRequestData;
-//   
-//       uint32* allTasks;
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("CreateUpdateKycRequestOp", [
-  ["requestId", xdr.lookup("Uint64")],
-  ["updateKycRequestData", xdr.lookup("UpdateKycRequestData")],
-  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
-  ["ext", xdr.lookup("CreateUpdateKycRequestOpExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum CreateUpdateKYCRequestResultCode
-//   {
-//       // codes considered as "success" for the operation
-//       SUCCESS = 0,
-//   
-//       // codes considered as "failure" for the operation
-//       ACC_TO_UPDATE_DOES_NOT_EXIST = -1, // account to update does not exist
-//       REQUEST_ALREADY_EXISTS = -2,
-//   	SAME_ACC_TYPE_TO_SET = -3,
-//   	REQUEST_DOES_NOT_EXIST = -4,
-//   	PENDING_REQUEST_UPDATE_NOT_ALLOWED = -5,
-//   	NOT_ALLOWED_TO_UPDATE_REQUEST = -6, // master account can update request only through review request operation
-//   	INVALID_UPDATE_KYC_REQUEST_DATA = -7,
-//   	INVALID_KYC_DATA = -8,
-//   	KYC_RULE_NOT_FOUND = -9
-//   };
-//
-// ===========================================================================
-xdr.enum("CreateUpdateKycRequestResultCode", {
-  success: 0,
-  accToUpdateDoesNotExist: -1,
-  requestAlreadyExist: -2,
-  sameAccTypeToSet: -3,
-  requestDoesNotExist: -4,
-  pendingRequestUpdateNotAllowed: -5,
-  notAllowedToUpdateRequest: -6,
-  invalidUpdateKycRequestDatum: -7,
-  invalidKycDatum: -8,
-  kycRuleNotFound: -9,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("CreateUpdateKycRequestResultSuccessExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//   		uint64 requestID;
-//   		bool fulfilled;
-//   		// Reserved for future use
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	}
-//
-// ===========================================================================
-xdr.struct("CreateUpdateKycRequestResultSuccess", [
-  ["requestId", xdr.lookup("Uint64")],
-  ["fulfilled", xdr.bool()],
-  ["ext", xdr.lookup("CreateUpdateKycRequestResultSuccessExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union CreateUpdateKYCRequestResult switch (CreateUpdateKYCRequestResultCode code)
-//   {
-//   case SUCCESS:
-//       struct {
-//   		uint64 requestID;
-//   		bool fulfilled;
-//   		// Reserved for future use
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	} success;
-//   default:
-//       void;
-//   };
-//
-// ===========================================================================
-xdr.union("CreateUpdateKycRequestResult", {
-  switchOn: xdr.lookup("CreateUpdateKycRequestResultCode"),
-  switchName: "code",
-  switches: [
-    ["success", "success"],
-  ],
-  arms: {
-    success: xdr.lookup("CreateUpdateKycRequestResultSuccess"),
-  },
-  defaultArm: xdr.void(),
-});
 
 // === xdr source ============================================================
 //
@@ -2389,6 +2458,57 @@ xdr.union("ManageContractResult", {
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("AccountRuleEntryExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct AccountRuleEntry
+//   {
+//       uint64 id;
+//   
+//       AccountRuleResource resource;
+//       AccountRuleAction action;
+//   
+//       bool forbids;
+//   
+//       longstring details;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("AccountRuleEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["resource", xdr.lookup("AccountRuleResource")],
+  ["action", xdr.lookup("AccountRuleAction")],
+  ["forbids", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("AccountRuleEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   enum AssetPairPolicy
 //   {
 //   	TRADEABLE_SECONDARY_MARKET = 1, // if not set pair can not be traided on secondary market
@@ -2517,7 +2637,8 @@ xdr.struct("CreatePreIssuanceRequestOp", [
 //       INVALID_AMOUNT = -6,             // amount is 0
 //       INVALID_REFERENCE = -7,
 //       INCORRECT_AMOUNT_PRECISION = -8,  // amount does not fit to this asset's precision
-//       PREISSUANCE_TASKS_NOT_FOUND = -9
+//       PREISSUANCE_TASKS_NOT_FOUND = -9,
+//       INVALID_CREATOR_DETAILS = -10
 //   };
 //
 // ===========================================================================
@@ -2532,6 +2653,7 @@ xdr.enum("CreatePreIssuanceRequestResultCode", {
   invalidReference: -7,
   incorrectAmountPrecision: -8,
   preissuanceTasksNotFound: -9,
+  invalidCreatorDetail: -10,
 });
 
 // === xdr source ============================================================
@@ -2695,7 +2817,7 @@ xdr.union("FeeEntryExt", {
 //   	int64 percentFee; // percent of transfer amount to be charged
 //   
 //       AccountID* accountID;
-//       AccountType* accountType;
+//       uint64*    accountRole;
 //       int64 subtype; // for example, different withdrawals — bars or coins
 //   
 //       int64 lowerBound;
@@ -2719,142 +2841,13 @@ xdr.struct("FeeEntry", [
   ["fixedFee", xdr.lookup("Int64")],
   ["percentFee", xdr.lookup("Int64")],
   ["accountId", xdr.option(xdr.lookup("AccountId"))],
-  ["accountType", xdr.option(xdr.lookup("AccountType"))],
+  ["accountRole", xdr.option(xdr.lookup("Uint64"))],
   ["subtype", xdr.lookup("Int64")],
   ["lowerBound", xdr.lookup("Int64")],
   ["upperBound", xdr.lookup("Int64")],
   ["hash", xdr.lookup("Hash")],
   ["ext", xdr.lookup("FeeEntryExt")],
 ]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("ManageAccountOpExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct ManageAccountOp
-//   {
-//       AccountID account; // account to manage
-//       AccountType accountType;
-//       uint32 blockReasonsToAdd;
-//       uint32 blockReasonsToRemove; 
-//   	 // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("ManageAccountOp", [
-  ["account", xdr.lookup("AccountId")],
-  ["accountType", xdr.lookup("AccountType")],
-  ["blockReasonsToAdd", xdr.lookup("Uint32")],
-  ["blockReasonsToRemove", xdr.lookup("Uint32")],
-  ["ext", xdr.lookup("ManageAccountOpExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum ManageAccountResultCode
-//   {
-//       // codes considered as "success" for the operation
-//       SUCCESS = 0, // account was created
-//   
-//       // codes considered as "failure" for the operation
-//       NOT_FOUND = -1,         // account does not exists
-//       MALFORMED = -2,
-//   	NOT_ALLOWED = -3,         // manage account operation is not allowed on this account
-//       TYPE_MISMATCH = -4
-//   };
-//
-// ===========================================================================
-xdr.enum("ManageAccountResultCode", {
-  success: 0,
-  notFound: -1,
-  malformed: -2,
-  notAllowed: -3,
-  typeMismatch: -4,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("ManageAccountSuccessExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct ManageAccountSuccess {
-//   	uint32 blockReasons;
-//    // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("ManageAccountSuccess", [
-  ["blockReasons", xdr.lookup("Uint32")],
-  ["ext", xdr.lookup("ManageAccountSuccessExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union ManageAccountResult switch (ManageAccountResultCode code)
-//   {
-//   case SUCCESS:
-//       ManageAccountSuccess success;
-//   default:
-//       void;
-//   };
-//
-// ===========================================================================
-xdr.union("ManageAccountResult", {
-  switchOn: xdr.lookup("ManageAccountResultCode"),
-  switchName: "code",
-  switches: [
-    ["success", "success"],
-  ],
-  arms: {
-    success: xdr.lookup("ManageAccountSuccess"),
-  },
-  defaultArm: xdr.void(),
-});
 
 // === xdr source ============================================================
 //
@@ -3177,6 +3170,162 @@ xdr.union("ManageInvoiceRequestResult", {
   ],
   arms: {
     success: xdr.lookup("ManageInvoiceRequestResultSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   enum ManageSignerAction
+//   {
+//       CREATE = 0,
+//       UPDATE = 1,
+//       REMOVE = 2
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageSignerAction", {
+  create: 0,
+  update: 1,
+  remove: 2,
+});
+
+// === xdr source ============================================================
+//
+//   struct UpdateSignerData
+//   {
+//       PublicKey publicKey;
+//       uint64 roleID;
+//   
+//       uint32 weight; // threshold for all SignerRules equals 1000
+//       uint32 identity;
+//   
+//       longstring details;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateSignerData", [
+  ["publicKey", xdr.lookup("PublicKey")],
+  ["roleId", xdr.lookup("Uint64")],
+  ["weight", xdr.lookup("Uint32")],
+  ["identity", xdr.lookup("Uint32")],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct RemoveSignerData
+//   {
+//       PublicKey publicKey;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveSignerData", [
+  ["publicKey", xdr.lookup("PublicKey")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageSignerAction action)
+//       {
+//       case CREATE:
+//           UpdateSignerData createData;
+//       case UPDATE:
+//           UpdateSignerData updateData;
+//       case REMOVE:
+//           RemoveSignerData removeData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageSignerOpData", {
+  switchOn: xdr.lookup("ManageSignerAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["update", "updateData"],
+    ["remove", "removeData"],
+  ],
+  arms: {
+    createData: xdr.lookup("UpdateSignerData"),
+    updateData: xdr.lookup("UpdateSignerData"),
+    removeData: xdr.lookup("RemoveSignerData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageSignerOp
+//   {
+//       union switch (ManageSignerAction action)
+//       {
+//       case CREATE:
+//           UpdateSignerData createData;
+//       case UPDATE:
+//           UpdateSignerData updateData;
+//       case REMOVE:
+//           RemoveSignerData removeData;
+//       }
+//       data;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageSignerOp", [
+  ["data", xdr.lookup("ManageSignerOpData")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageSignerResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       SUCCESS = 0, // account was created
+//   
+//       // codes considered as "failure" for the operation
+//       INVALID_DETAILS = -1, // invalid json details
+//       ALREADY_EXISTS = -2, // signer already exist
+//   	NO_SUCH_ROLE = -3,
+//   	INVALID_WEIGHT = -4, // more than 1000
+//   	NOT_FOUND = -5 // there is no signer with such public key
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageSignerResultCode", {
+  success: 0,
+  invalidDetail: -1,
+  alreadyExist: -2,
+  noSuchRole: -3,
+  invalidWeight: -4,
+  notFound: -5,
+});
+
+// === xdr source ============================================================
+//
+//   union ManageSignerResult switch (ManageSignerResultCode code)
+//   {
+//   case SUCCESS:
+//       EmptyExt ext;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageSignerResult", {
+  switchOn: xdr.lookup("ManageSignerResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.void(),
 });
@@ -3655,6 +3804,47 @@ xdr.struct("LedgerKeyAccount", [
 // === xdr source ============================================================
 //
 //   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeySignerExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           PublicKey pubKey;
+//           AccountID accountID;
+//   
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySigner", [
+  ["pubKey", xdr.lookup("PublicKey")],
+  ["accountId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("LedgerKeySignerExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
 //   		{
 //   		case EMPTY_VERSION:
 //   			void;
@@ -3818,43 +4008,6 @@ xdr.struct("LedgerKeyReference", [
 //   		}
 //
 // ===========================================================================
-xdr.union("LedgerKeyAccountTypeLimitsExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           AccountType accountType;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAccountTypeLimits", [
-  ["accountType", xdr.lookup("AccountType")],
-  ["ext", xdr.lookup("LedgerKeyAccountTypeLimitsExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
 xdr.union("LedgerKeyStatsExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
@@ -3881,45 +4034,6 @@ xdr.union("LedgerKeyStatsExt", {
 xdr.struct("LedgerKeyStats", [
   ["accountId", xdr.lookup("AccountId")],
   ["ext", xdr.lookup("LedgerKeyStatsExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyTrustExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           AccountID allowedAccount;
-//           BalanceID balanceToUse;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyTrust", [
-  ["allowedAccount", xdr.lookup("AccountId")],
-  ["balanceToUse", xdr.lookup("BalanceId")],
-  ["ext", xdr.lookup("LedgerKeyTrustExt")],
 ]);
 
 // === xdr source ============================================================
@@ -4443,7 +4557,7 @@ xdr.union("LedgerKeyAccountRoleExt", {
 // === xdr source ============================================================
 //
 //   struct {
-//           uint64 accountRoleID;
+//           uint64 id;
 //           union switch (LedgerVersion v)
 //           {
 //           case EMPTY_VERSION:
@@ -4454,7 +4568,7 @@ xdr.union("LedgerKeyAccountRoleExt", {
 //
 // ===========================================================================
 xdr.struct("LedgerKeyAccountRole", [
-  ["accountRoleId", xdr.lookup("Uint64")],
+  ["id", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("LedgerKeyAccountRoleExt")],
 ]);
 
@@ -4467,7 +4581,7 @@ xdr.struct("LedgerKeyAccountRole", [
 //           }
 //
 // ===========================================================================
-xdr.union("LedgerKeyAccountRolePermissionExt", {
+xdr.union("LedgerKeyAccountRuleExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -4480,7 +4594,7 @@ xdr.union("LedgerKeyAccountRolePermissionExt", {
 // === xdr source ============================================================
 //
 //   struct {
-//           uint64 permissionID;
+//           uint64 id;
 //           union switch (LedgerVersion v)
 //           {
 //           case EMPTY_VERSION:
@@ -4490,9 +4604,83 @@ xdr.union("LedgerKeyAccountRolePermissionExt", {
 //       }
 //
 // ===========================================================================
-xdr.struct("LedgerKeyAccountRolePermission", [
-  ["permissionId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyAccountRolePermissionExt")],
+xdr.struct("LedgerKeyAccountRule", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyAccountRuleExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeySignerRoleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySignerRole", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeySignerRoleExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeySignerRuleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySignerRule", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeySignerRuleExt")],
 ]);
 
 // === xdr source ============================================================
@@ -4585,6 +4773,19 @@ xdr.struct("LedgerKeyLicense", [
 //   		}
 //   		ext;
 //       } account;
+//   case SIGNER:
+//       struct
+//       {
+//           PublicKey pubKey;
+//           AccountID accountID;
+//   
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } signer;
 //   case FEE:
 //       struct {
 //           Hash hash;
@@ -4631,16 +4832,6 @@ xdr.struct("LedgerKeyLicense", [
 //   		}
 //   		ext;
 //       } reference;
-//   case ACCOUNT_TYPE_LIMITS:
-//       struct {
-//           AccountType accountType;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } accountTypeLimits;
 //   case STATISTICS:
 //       struct {
 //           AccountID accountID;
@@ -4651,17 +4842,6 @@ xdr.struct("LedgerKeyLicense", [
 //   		}
 //   		ext;
 //       } stats;
-//   case TRUST:
-//       struct {
-//           AccountID allowedAccount;
-//           BalanceID balanceToUse;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } trust;
 //   case ACCOUNT_LIMITS:
 //       struct {
 //           AccountID accountID;
@@ -4801,7 +4981,7 @@ xdr.struct("LedgerKeyLicense", [
 //       } atomicSwapBid;
 //   case ACCOUNT_ROLE:
 //       struct {
-//           uint64 accountRoleID;
+//           uint64 id;
 //           union switch (LedgerVersion v)
 //           {
 //           case EMPTY_VERSION:
@@ -4809,16 +4989,36 @@ xdr.struct("LedgerKeyLicense", [
 //           }
 //           ext;
 //       } accountRole;
-//   case ACCOUNT_ROLE_PERMISSION:
+//   case ACCOUNT_RULE:
 //       struct {
-//           uint64 permissionID;
+//           uint64 id;
 //           union switch (LedgerVersion v)
 //           {
 //           case EMPTY_VERSION:
 //               void;
 //           }
 //           ext;
-//       } accountRolePermission;
+//       } accountRule;
+//   case SIGNER_ROLE:
+//       struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } signerRole;
+//   case SIGNER_RULE:
+//       struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } signerRule;
 //   case STAMP:
 //       struct {
 //           Hash ledgerHash;
@@ -4847,13 +5047,12 @@ xdr.union("LedgerKey", {
   switchName: "type",
   switches: [
     ["account", "account"],
+    ["signer", "signer"],
     ["fee", "feeState"],
     ["balance", "balance"],
     ["asset", "asset"],
     ["referenceEntry", "reference"],
-    ["accountTypeLimit", "accountTypeLimits"],
     ["statistic", "stats"],
-    ["trust", "trust"],
     ["accountLimit", "accountLimits"],
     ["assetPair", "assetPair"],
     ["offerEntry", "offer"],
@@ -4869,19 +5068,20 @@ xdr.union("LedgerKey", {
     ["contract", "contract"],
     ["atomicSwapBid", "atomicSwapBid"],
     ["accountRole", "accountRole"],
-    ["accountRolePermission", "accountRolePermission"],
+    ["accountRule", "accountRule"],
+    ["signerRole", "signerRole"],
+    ["signerRule", "signerRule"],
     ["stamp", "stamp"],
     ["license", "license"],
   ],
   arms: {
     account: xdr.lookup("LedgerKeyAccount"),
+    signer: xdr.lookup("LedgerKeySigner"),
     feeState: xdr.lookup("LedgerKeyFeeState"),
     balance: xdr.lookup("LedgerKeyBalance"),
     asset: xdr.lookup("LedgerKeyAsset"),
     reference: xdr.lookup("LedgerKeyReference"),
-    accountTypeLimits: xdr.lookup("LedgerKeyAccountTypeLimits"),
     stats: xdr.lookup("LedgerKeyStats"),
-    trust: xdr.lookup("LedgerKeyTrust"),
     accountLimits: xdr.lookup("LedgerKeyAccountLimits"),
     assetPair: xdr.lookup("LedgerKeyAssetPair"),
     offer: xdr.lookup("LedgerKeyOffer"),
@@ -4897,7 +5097,9 @@ xdr.union("LedgerKey", {
     contract: xdr.lookup("LedgerKeyContract"),
     atomicSwapBid: xdr.lookup("LedgerKeyAtomicSwapBid"),
     accountRole: xdr.lookup("LedgerKeyAccountRole"),
-    accountRolePermission: xdr.lookup("LedgerKeyAccountRolePermission"),
+    accountRule: xdr.lookup("LedgerKeyAccountRule"),
+    signerRole: xdr.lookup("LedgerKeySignerRole"),
+    signerRule: xdr.lookup("LedgerKeySignerRule"),
     stamp: xdr.lookup("LedgerKeyStamp"),
     license: xdr.lookup("LedgerKeyLicense"),
   },
@@ -5289,8 +5491,8 @@ xdr.union("LimitsV2EntryExt", {
 //   struct LimitsV2Entry
 //   {
 //       uint64      id;
-//       AccountType *accountType;
-//       AccountID   *accountID;
+//       uint64*     accountRole;
+//       AccountID*  accountID;
 //       StatsOpType statsOpType;
 //       AssetCode   assetCode;
 //       bool        isConvertNeeded;
@@ -5312,7 +5514,7 @@ xdr.union("LimitsV2EntryExt", {
 // ===========================================================================
 xdr.struct("LimitsV2Entry", [
   ["id", xdr.lookup("Uint64")],
-  ["accountType", xdr.option(xdr.lookup("AccountType"))],
+  ["accountRole", xdr.option(xdr.lookup("Uint64"))],
   ["accountId", xdr.option(xdr.lookup("AccountId"))],
   ["statsOpType", xdr.lookup("StatsOpType")],
   ["assetCode", xdr.lookup("AssetCode")],
@@ -5322,6 +5524,62 @@ xdr.struct("LimitsV2Entry", [
   ["monthlyOut", xdr.lookup("Uint64")],
   ["annualOut", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("LimitsV2EntryExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("SignerRuleEntryExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct SignerRuleEntry
+//   {
+//       uint64 id;
+//   
+//       SignerRuleResource resource;
+//       SignerRuleAction action;
+//   
+//       bool forbids;
+//       bool isDefault; // default rules will be in each role
+//   
+//       longstring details;
+//   
+//       AccountID ownerID;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("SignerRuleEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["resource", xdr.lookup("SignerRuleResource")],
+  ["action", xdr.lookup("SignerRuleAction")],
+  ["forbids", xdr.bool()],
+  ["isDefault", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ownerId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("SignerRuleEntryExt")],
 ]);
 
 // === xdr source ============================================================
@@ -5540,6 +5798,7 @@ xdr.union("SaleEntryExt", {
 //   struct SaleEntry
 //   {
 //   	uint64 saleID;
+//   	uint64 saleType;
 //   	AccountID ownerID;
 //       AssetCode baseAsset; // asset for which sale will be performed
 //   	uint64 startTime; // start time of the sale
@@ -5566,6 +5825,7 @@ xdr.union("SaleEntryExt", {
 // ===========================================================================
 xdr.struct("SaleEntry", [
   ["saleId", xdr.lookup("Uint64")],
+  ["saleType", xdr.lookup("Uint64")],
   ["ownerId", xdr.lookup("AccountId")],
   ["baseAsset", xdr.lookup("AssetCode")],
   ["startTime", xdr.lookup("Uint64")],
@@ -5736,8 +5996,6 @@ xdr.union("ManageBalanceResult", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case LIMITS_UPDATE_REQUEST_DEPRECATED_DOCUMENT_HASH:
-//           longstring details;
 //       }
 //
 // ===========================================================================
@@ -5746,32 +6004,29 @@ xdr.union("LimitsUpdateRequestExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["limitsUpdateRequestDeprecatedDocumentHash", "details"],
   ],
   arms: {
-    details: xdr.lookup("Longstring"),
   },
 });
 
 // === xdr source ============================================================
 //
-//   struct LimitsUpdateRequest {
-//       Hash deprecatedDocumentHash;
+//   struct LimitsUpdateRequest
+//   {
+//       longstring creatorDetails; // details set by requester
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case LIMITS_UPDATE_REQUEST_DEPRECATED_DOCUMENT_HASH:
-//           longstring details;
 //       }
 //       ext;
 //   };
 //
 // ===========================================================================
 xdr.struct("LimitsUpdateRequest", [
-  ["deprecatedDocumentHash", xdr.lookup("Hash")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("LimitsUpdateRequestExt")],
 ]);
 
@@ -5835,14 +6090,16 @@ xdr.union("SaleCreationRequestExt", {
 
 // === xdr source ============================================================
 //
-//   struct SaleCreationRequest {
+//   struct SaleCreationRequest
+//   {
+//       uint64 saleType;
 //   	AssetCode baseAsset; // asset for which sale will be performed
 //   	AssetCode defaultQuoteAsset; // asset for soft and hard cap
 //   	uint64 startTime; // start time of the sale
 //   	uint64 endTime; // close time of the sale
 //   	uint64 softCap; // minimum amount of quote asset to be received at which sale will be considered a successful
 //   	uint64 hardCap; // max amount of quote asset to be received
-//   	longstring details; // sale specific details
+//       longstring creatorDetails; // details set by requester
 //       SaleTypeExt saleTypeExt;
 //       uint64 requiredBaseAssetForHardCap;
 //   
@@ -5859,60 +6116,19 @@ xdr.union("SaleCreationRequestExt", {
 //
 // ===========================================================================
 xdr.struct("SaleCreationRequest", [
+  ["saleType", xdr.lookup("Uint64")],
   ["baseAsset", xdr.lookup("AssetCode")],
   ["defaultQuoteAsset", xdr.lookup("AssetCode")],
   ["startTime", xdr.lookup("Uint64")],
   ["endTime", xdr.lookup("Uint64")],
   ["softCap", xdr.lookup("Uint64")],
   ["hardCap", xdr.lookup("Uint64")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["saleTypeExt", xdr.lookup("SaleTypeExt")],
   ["requiredBaseAssetForHardCap", xdr.lookup("Uint64")],
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["quoteAssets", xdr.varArray(xdr.lookup("SaleCreationRequestQuoteAsset"), 100)],
   ["ext", xdr.lookup("SaleCreationRequestExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("AccountTypeLimitsEntryExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct AccountTypeLimitsEntry
-//   {
-//   	AccountType accountType;
-//       Limits limits;
-//   
-//   	// reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("AccountTypeLimitsEntry", [
-  ["accountType", xdr.lookup("AccountType")],
-  ["limits", xdr.lookup("Limits")],
-  ["ext", xdr.lookup("AccountTypeLimitsEntryExt")],
 ]);
 
 // === xdr source ============================================================
@@ -6097,6 +6313,319 @@ xdr.struct("StatisticsEntry", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           ReviewableRequestResource details;
+//   
+//           uint64 tasksToAdd;
+//           uint64 tasksToRemove;
+//           uint64 allTasks;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceReviewableRequest", [
+  ["details", xdr.lookup("ReviewableRequestResource")],
+  ["tasksToAdd", xdr.lookup("Uint64")],
+  ["tasksToRemove", xdr.lookup("Uint64")],
+  ["allTasks", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           AssetCode assetCode;
+//           uint64 assetType;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceAsset", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           uint64 baseAssetType;
+//           uint64 quoteAssetType;
+//   
+//           AssetCode baseAssetCode;
+//           AssetCode quoteAssetCode;
+//   
+//           bool isBuy;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceOffer", [
+  ["baseAssetType", xdr.lookup("Uint64")],
+  ["quoteAssetType", xdr.lookup("Uint64")],
+  ["baseAssetCode", xdr.lookup("AssetCode")],
+  ["quoteAssetCode", xdr.lookup("AssetCode")],
+  ["isBuy", xdr.bool()],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           uint64 saleID;
+//           uint64 saleType;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceSale", [
+  ["saleId", xdr.lookup("Uint64")],
+  ["saleType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           uint64 assetType;
+//           AssetCode assetCode;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceAtomicSwapBid", [
+  ["assetType", xdr.lookup("Uint64")],
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           bool isDefault;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceSignerRule", [
+  ["isDefault", xdr.bool()],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           uint64 roleID;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceSignerRole", [
+  ["roleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           uint64 roleID;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceSigner", [
+  ["roleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           longstring keyPrefix;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceKeyValue", [
+  ["keyPrefix", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union SignerRuleResource switch (LedgerEntryType type)
+//   {
+//   case REVIEWABLE_REQUEST:
+//       struct
+//       {
+//           ReviewableRequestResource details;
+//   
+//           uint64 tasksToAdd;
+//           uint64 tasksToRemove;
+//           uint64 allTasks;
+//   
+//           EmptyExt ext;
+//       } reviewableRequest;
+//   case ASSET:
+//       struct
+//       {
+//           AssetCode assetCode;
+//           uint64 assetType;
+//   
+//           EmptyExt ext;
+//       } asset;
+//   case ANY:
+//       void;
+//   case OFFER_ENTRY:
+//       struct
+//       {
+//           uint64 baseAssetType;
+//           uint64 quoteAssetType;
+//   
+//           AssetCode baseAssetCode;
+//           AssetCode quoteAssetCode;
+//   
+//           bool isBuy;
+//   
+//           EmptyExt ext;
+//       } offer;
+//   case SALE:
+//       struct
+//       {
+//           uint64 saleID;
+//           uint64 saleType;
+//   
+//           EmptyExt ext;
+//       } sale;
+//   case ATOMIC_SWAP_BID:
+//       struct
+//       {
+//           uint64 assetType;
+//           AssetCode assetCode;
+//   
+//           EmptyExt ext;
+//       } atomicSwapBid;
+//   case SIGNER_RULE:
+//       struct
+//       {
+//           bool isDefault;
+//   
+//           EmptyExt ext;
+//       } signerRule;
+//   case SIGNER_ROLE:
+//       struct
+//       {
+//           uint64 roleID;
+//   
+//           EmptyExt ext;
+//       } signerRole;
+//   case SIGNER:
+//       struct
+//       {
+//           uint64 roleID;
+//   
+//           EmptyExt ext;
+//       } signer;
+//   case KEY_VALUE:
+//       struct
+//       {
+//           longstring keyPrefix;
+//   
+//           EmptyExt ext;
+//       } keyValue;
+//   default:
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.union("SignerRuleResource", {
+  switchOn: xdr.lookup("LedgerEntryType"),
+  switchName: "type",
+  switches: [
+    ["reviewableRequest", "reviewableRequest"],
+    ["asset", "asset"],
+    ["any", xdr.void()],
+    ["offerEntry", "offer"],
+    ["sale", "sale"],
+    ["atomicSwapBid", "atomicSwapBid"],
+    ["signerRule", "signerRule"],
+    ["signerRole", "signerRole"],
+    ["signer", "signer"],
+    ["keyValue", "keyValue"],
+  ],
+  arms: {
+    reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
+    asset: xdr.lookup("SignerRuleResourceAsset"),
+    offer: xdr.lookup("SignerRuleResourceOffer"),
+    sale: xdr.lookup("SignerRuleResourceSale"),
+    atomicSwapBid: xdr.lookup("SignerRuleResourceAtomicSwapBid"),
+    signerRule: xdr.lookup("SignerRuleResourceSignerRule"),
+    signerRole: xdr.lookup("SignerRuleResourceSignerRole"),
+    signer: xdr.lookup("SignerRuleResourceSigner"),
+    keyValue: xdr.lookup("SignerRuleResourceKeyValue"),
+    ext: xdr.lookup("EmptyExt"),
+  },
+  defaultArm: xdr.lookup("EmptyExt"),
+});
+
+// === xdr source ============================================================
+//
+//   enum SignerRuleAction
+//   {
+//       ANY = 1,
+//       CREATE = 2,
+//       CREATE_FOR_OTHER = 3,
+//       UPDATE = 4,
+//       MANAGE = 5,
+//       SEND = 6,
+//       REMOVE = 7,
+//       CANCEL = 8,
+//       REVIEW = 9,
+//       RECEIVE_ATOMIC_SWAP = 10,
+//       PARTICIPATE = 11,
+//       BIND = 12,
+//       UPDATE_MAX_ISSUANCE = 13,
+//       CHECK = 14
+//   };
+//
+// ===========================================================================
+xdr.enum("SignerRuleAction", {
+  any: 1,
+  create: 2,
+  createForOther: 3,
+  update: 4,
+  manage: 5,
+  send: 6,
+  remove: 7,
+  cancel: 8,
+  review: 9,
+  receiveAtomicSwap: 10,
+  participate: 11,
+  bind: 12,
+  updateMaxIssuance: 13,
+  check: 14,
+});
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -6118,7 +6647,7 @@ xdr.union("UpdateSaleDetailsRequestExt", {
 //
 //   struct UpdateSaleDetailsRequest {
 //       uint64 saleID; // ID of sale to update details
-//       longstring newDetails;
+//       longstring creatorDetails; // details set by requester
 //   
 //       uint32 sequenceNumber;
 //       // Reserved for future use
@@ -6133,7 +6662,7 @@ xdr.union("UpdateSaleDetailsRequestExt", {
 // ===========================================================================
 xdr.struct("UpdateSaleDetailsRequest", [
   ["saleId", xdr.lookup("Uint64")],
-  ["newDetails", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("UpdateSaleDetailsRequestExt")],
 ]);
@@ -6182,7 +6711,8 @@ xdr.struct("ReferenceEntry", [
 
 // === xdr source ============================================================
 //
-//   union switch (LedgerVersion v) {
+//   union switch (LedgerVersion v)
+//       {
 //       case EMPTY_VERSION:
 //           void;
 //       }
@@ -6200,12 +6730,17 @@ xdr.union("AccountRoleEntryExt", {
 
 // === xdr source ============================================================
 //
-//   struct AccountRoleEntry {
-//       uint64 accountRoleID;
-//       longstring accountRoleName;
+//   struct AccountRoleEntry
+//   {
+//       uint64 id;
+//   
+//       uint64 ruleIDs<>;
+//   
+//       longstring details;
 //   
 //       // reserved for future use
-//       union switch (LedgerVersion v) {
+//       union switch (LedgerVersion v)
+//       {
 //       case EMPTY_VERSION:
 //           void;
 //       }
@@ -6214,8 +6749,9 @@ xdr.union("AccountRoleEntryExt", {
 //
 // ===========================================================================
 xdr.struct("AccountRoleEntry", [
-  ["accountRoleId", xdr.lookup("Uint64")],
-  ["accountRoleName", xdr.lookup("Longstring")],
+  ["id", xdr.lookup("Uint64")],
+  ["ruleIDs", xdr.varArray(xdr.lookup("Uint64"), 2147483647)],
+  ["details", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("AccountRoleEntryExt")],
 ]);
 
@@ -6239,74 +6775,12 @@ xdr.enum("ThresholdIndices", {
 
 // === xdr source ============================================================
 //
-//   enum LedgerEntryType
-//   {
-//       ACCOUNT = 0,
-//       FEE = 2,
-//       BALANCE = 4,
-//       PAYMENT_REQUEST = 5,
-//       ASSET = 6,
-//       REFERENCE_ENTRY = 7,
-//       ACCOUNT_TYPE_LIMITS = 8,
-//       STATISTICS = 9,
-//       TRUST = 10,
-//       ACCOUNT_LIMITS = 11,
-//   	ASSET_PAIR = 12,
-//   	OFFER_ENTRY = 13,
-//   	REVIEWABLE_REQUEST = 15,
-//   	EXTERNAL_SYSTEM_ACCOUNT_ID = 16,
-//   	SALE = 17,
-//   	ACCOUNT_KYC = 18,
-//   	EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY = 19,
-//       KEY_VALUE = 20,
-//       LIMITS_V2 = 22,
-//       STATISTICS_V2 = 23,
-//       PENDING_STATISTICS = 24,
-//       CONTRACT = 25,
-//       ACCOUNT_ROLE = 26,
-//       ACCOUNT_ROLE_PERMISSION = 27,
-//       ATOMIC_SWAP_BID = 28,
-//       STAMP = 29,
-//       LICENSE = 30
-//   };
-//
-// ===========================================================================
-xdr.enum("LedgerEntryType", {
-  account: 0,
-  fee: 2,
-  balance: 4,
-  paymentRequest: 5,
-  asset: 6,
-  referenceEntry: 7,
-  accountTypeLimit: 8,
-  statistic: 9,
-  trust: 10,
-  accountLimit: 11,
-  assetPair: 12,
-  offerEntry: 13,
-  reviewableRequest: 15,
-  externalSystemAccountId: 16,
-  sale: 17,
-  accountKyc: 18,
-  externalSystemAccountIdPoolEntry: 19,
-  keyValue: 20,
-  limitsV2: 22,
-  statisticsV2: 23,
-  pendingStatistic: 24,
-  contract: 25,
-  accountRole: 26,
-  accountRolePermission: 27,
-  atomicSwapBid: 28,
-  stamp: 29,
-  license: 30,
-});
-
-// === xdr source ============================================================
-//
 //   union switch (LedgerEntryType type)
 //       {
 //       case ACCOUNT:
 //           AccountEntry account;
+//       case SIGNER:
+//           SignerEntry signer;
 //       case FEE:
 //           FeeEntry feeState;
 //       case BALANCE:
@@ -6315,12 +6789,8 @@ xdr.enum("LedgerEntryType", {
 //           AssetEntry asset;
 //       case REFERENCE_ENTRY:
 //           ReferenceEntry reference;
-//       case ACCOUNT_TYPE_LIMITS:
-//           AccountTypeLimitsEntry accountTypeLimits;
 //       case STATISTICS:
 //           StatisticsEntry stats;
-//       case TRUST:
-//           TrustEntry trust;
 //       case ACCOUNT_LIMITS:
 //           AccountLimitsEntry accountLimits;
 //   	case ASSET_PAIR: 
@@ -6351,13 +6821,16 @@ xdr.enum("LedgerEntryType", {
 //           AtomicSwapBidEntry atomicSwapBid;
 //       case ACCOUNT_ROLE:
 //           AccountRoleEntry accountRole;
-//       case ACCOUNT_ROLE_PERMISSION:
-//           AccountRolePermissionEntry accountRolePermission;
+//       case ACCOUNT_RULE:
+//           AccountRuleEntry accountRule;
+//       case SIGNER_RULE:
+//           SignerRuleEntry signerRule;
+//       case SIGNER_ROLE:
+//           SignerRoleEntry signerRole;
 //       case LICENSE:
 //           LicenseEntry license;
 //       case STAMP:
-//           StampEntry stamp;
-//       }
+//           StampEntry stamp;}
 //
 // ===========================================================================
 xdr.union("LedgerEntryData", {
@@ -6365,13 +6838,12 @@ xdr.union("LedgerEntryData", {
   switchName: "type",
   switches: [
     ["account", "account"],
+    ["signer", "signer"],
     ["fee", "feeState"],
     ["balance", "balance"],
     ["asset", "asset"],
     ["referenceEntry", "reference"],
-    ["accountTypeLimit", "accountTypeLimits"],
     ["statistic", "stats"],
-    ["trust", "trust"],
     ["accountLimit", "accountLimits"],
     ["assetPair", "assetPair"],
     ["offerEntry", "offer"],
@@ -6387,19 +6859,20 @@ xdr.union("LedgerEntryData", {
     ["contract", "contract"],
     ["atomicSwapBid", "atomicSwapBid"],
     ["accountRole", "accountRole"],
-    ["accountRolePermission", "accountRolePermission"],
+    ["accountRule", "accountRule"],
+    ["signerRule", "signerRule"],
+    ["signerRole", "signerRole"],
     ["license", "license"],
     ["stamp", "stamp"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
+    signer: xdr.lookup("SignerEntry"),
     feeState: xdr.lookup("FeeEntry"),
     balance: xdr.lookup("BalanceEntry"),
     asset: xdr.lookup("AssetEntry"),
     reference: xdr.lookup("ReferenceEntry"),
-    accountTypeLimits: xdr.lookup("AccountTypeLimitsEntry"),
     stats: xdr.lookup("StatisticsEntry"),
-    trust: xdr.lookup("TrustEntry"),
     accountLimits: xdr.lookup("AccountLimitsEntry"),
     assetPair: xdr.lookup("AssetPairEntry"),
     offer: xdr.lookup("OfferEntry"),
@@ -6415,7 +6888,9 @@ xdr.union("LedgerEntryData", {
     contract: xdr.lookup("ContractEntry"),
     atomicSwapBid: xdr.lookup("AtomicSwapBidEntry"),
     accountRole: xdr.lookup("AccountRoleEntry"),
-    accountRolePermission: xdr.lookup("AccountRolePermissionEntry"),
+    accountRule: xdr.lookup("AccountRuleEntry"),
+    signerRule: xdr.lookup("SignerRuleEntry"),
+    signerRole: xdr.lookup("SignerRoleEntry"),
     license: xdr.lookup("LicenseEntry"),
     stamp: xdr.lookup("StampEntry"),
   },
@@ -6450,6 +6925,8 @@ xdr.union("LedgerEntryExt", {
 //       {
 //       case ACCOUNT:
 //           AccountEntry account;
+//       case SIGNER:
+//           SignerEntry signer;
 //       case FEE:
 //           FeeEntry feeState;
 //       case BALANCE:
@@ -6458,12 +6935,8 @@ xdr.union("LedgerEntryExt", {
 //           AssetEntry asset;
 //       case REFERENCE_ENTRY:
 //           ReferenceEntry reference;
-//       case ACCOUNT_TYPE_LIMITS:
-//           AccountTypeLimitsEntry accountTypeLimits;
 //       case STATISTICS:
 //           StatisticsEntry stats;
-//       case TRUST:
-//           TrustEntry trust;
 //       case ACCOUNT_LIMITS:
 //           AccountLimitsEntry accountLimits;
 //   	case ASSET_PAIR: 
@@ -6494,13 +6967,16 @@ xdr.union("LedgerEntryExt", {
 //           AtomicSwapBidEntry atomicSwapBid;
 //       case ACCOUNT_ROLE:
 //           AccountRoleEntry accountRole;
-//       case ACCOUNT_ROLE_PERMISSION:
-//           AccountRolePermissionEntry accountRolePermission;
+//       case ACCOUNT_RULE:
+//           AccountRuleEntry accountRule;
+//       case SIGNER_RULE:
+//           SignerRuleEntry signerRule;
+//       case SIGNER_ROLE:
+//           SignerRoleEntry signerRole;
 //       case LICENSE:
 //           LicenseEntry license;
 //       case STAMP:
-//           StampEntry stamp;
-//       }
+//           StampEntry stamp;}
 //       data;
 //   
 //       // reserved for future use
@@ -6880,6 +7356,336 @@ xdr.struct("ExternalSystemAccountId", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           uint64 type;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCreateSale", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           AssetCode assetCode;
+//           uint64 assetType;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCreateIssuance", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           AssetCode assetCode;
+//           uint64 assetType;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCreateWithdraw", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union ReviewableRequestResource switch (ReviewableRequestType requestType)
+//   {
+//   case CREATE_SALE:
+//       struct
+//       {
+//           uint64 type;
+//   
+//           EmptyExt ext;
+//       } createSale;
+//   case CREATE_ISSUANCE:
+//       struct
+//       {
+//           AssetCode assetCode;
+//           uint64 assetType;
+//   
+//           EmptyExt ext;
+//       } createIssuance;
+//   case CREATE_WITHDRAW:
+//       struct
+//       {
+//           AssetCode assetCode;
+//           uint64 assetType;
+//   
+//           EmptyExt ext;
+//       } createWithdraw;
+//   default:
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.union("ReviewableRequestResource", {
+  switchOn: xdr.lookup("ReviewableRequestType"),
+  switchName: "requestType",
+  switches: [
+    ["createSale", "createSale"],
+    ["createIssuance", "createIssuance"],
+    ["createWithdraw", "createWithdraw"],
+  ],
+  arms: {
+    createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
+    createIssuance: xdr.lookup("ReviewableRequestResourceCreateIssuance"),
+    createWithdraw: xdr.lookup("ReviewableRequestResourceCreateWithdraw"),
+    ext: xdr.lookup("EmptyExt"),
+  },
+  defaultArm: xdr.lookup("EmptyExt"),
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           AssetCode assetCode;
+//           uint64 assetType;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceAsset", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           ReviewableRequestResource details;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceReviewableRequest", [
+  ["details", xdr.lookup("ReviewableRequestResource")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           uint64 baseAssetType;
+//           uint64 quoteAssetType;
+//   
+//           AssetCode baseAssetCode;
+//           AssetCode quoteAssetCode;
+//   
+//           bool isBuy;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceOffer", [
+  ["baseAssetType", xdr.lookup("Uint64")],
+  ["quoteAssetType", xdr.lookup("Uint64")],
+  ["baseAssetCode", xdr.lookup("AssetCode")],
+  ["quoteAssetCode", xdr.lookup("AssetCode")],
+  ["isBuy", xdr.bool()],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           uint64 saleID;
+//           uint64 saleType;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceSale", [
+  ["saleId", xdr.lookup("Uint64")],
+  ["saleType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           uint64 assetType;
+//           AssetCode assetCode;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceAtomicSwapBid", [
+  ["assetType", xdr.lookup("Uint64")],
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           longstring keyPrefix;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceKeyValue", [
+  ["keyPrefix", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union AccountRuleResource switch (LedgerEntryType type)
+//   {
+//   case ASSET:
+//       struct
+//       {
+//           AssetCode assetCode;
+//           uint64 assetType;
+//   
+//           EmptyExt ext;
+//       } asset;
+//   case REVIEWABLE_REQUEST:
+//       struct
+//       {
+//           ReviewableRequestResource details;
+//   
+//           EmptyExt ext;
+//       } reviewableRequest;
+//   case ANY:
+//       void;
+//   case OFFER_ENTRY:
+//       struct
+//       {
+//           uint64 baseAssetType;
+//           uint64 quoteAssetType;
+//   
+//           AssetCode baseAssetCode;
+//           AssetCode quoteAssetCode;
+//   
+//           bool isBuy;
+//   
+//           EmptyExt ext;
+//       } offer;
+//   case SALE:
+//       struct
+//       {
+//           uint64 saleID;
+//           uint64 saleType;
+//   
+//           EmptyExt ext;
+//       } sale;
+//   case ATOMIC_SWAP_BID:
+//       struct
+//       {
+//           uint64 assetType;
+//           AssetCode assetCode;
+//   
+//           EmptyExt ext;
+//       } atomicSwapBid;
+//   case KEY_VALUE:
+//       struct
+//       {
+//           longstring keyPrefix;
+//   
+//           EmptyExt ext;
+//       } keyValue;
+//   default:
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.union("AccountRuleResource", {
+  switchOn: xdr.lookup("LedgerEntryType"),
+  switchName: "type",
+  switches: [
+    ["asset", "asset"],
+    ["reviewableRequest", "reviewableRequest"],
+    ["any", xdr.void()],
+    ["offerEntry", "offer"],
+    ["sale", "sale"],
+    ["atomicSwapBid", "atomicSwapBid"],
+    ["keyValue", "keyValue"],
+  ],
+  arms: {
+    asset: xdr.lookup("AccountRuleResourceAsset"),
+    reviewableRequest: xdr.lookup("AccountRuleResourceReviewableRequest"),
+    offer: xdr.lookup("AccountRuleResourceOffer"),
+    sale: xdr.lookup("AccountRuleResourceSale"),
+    atomicSwapBid: xdr.lookup("AccountRuleResourceAtomicSwapBid"),
+    keyValue: xdr.lookup("AccountRuleResourceKeyValue"),
+    ext: xdr.lookup("EmptyExt"),
+  },
+  defaultArm: xdr.lookup("EmptyExt"),
+});
+
+// === xdr source ============================================================
+//
+//   enum AccountRuleAction
+//   {
+//       ANY = 1,
+//       CREATE = 2,
+//       CREATE_FOR_OTHER = 3,
+//       CREATE_WITH_TASKS = 4,
+//       MANAGE = 5,
+//       SEND = 6,
+//       WITHDRAW = 7,
+//       RECEIVE_ISSUANCE = 8,
+//       RECEIVE_PAYMENT = 9,
+//       RECEIVE_ATOMIC_SWAP = 10,
+//       PARTICIPATE = 11,
+//       BIND = 12,
+//       UPDATE_MAX_ISSUANCE = 13,
+//       CHECK = 14,
+//       CANCEL = 15
+//   };
+//
+// ===========================================================================
+xdr.enum("AccountRuleAction", {
+  any: 1,
+  create: 2,
+  createForOther: 3,
+  createWithTask: 4,
+  manage: 5,
+  send: 6,
+  withdraw: 7,
+  receiveIssuance: 8,
+  receivePayment: 9,
+  receiveAtomicSwap: 10,
+  participate: 11,
+  bind: 12,
+  updateMaxIssuance: 13,
+  check: 14,
+  cancel: 15,
+});
+
+// === xdr source ============================================================
+//
 //   enum ErrorCode
 //   {
 //       MISC = 0, // Unspecific error
@@ -7252,7 +8058,7 @@ xdr.struct("CreateAmlAlertRequestOp", [
 //       // codes considered as "success" for the operation
 //       SUCCESS = 0,
 //       BALANCE_NOT_EXIST = 1, // balance doesn't exist
-//       INVALID_REASON = 2, //invalid reason for request
+//       INVALID_CREATOR_DETAILS = 2, //invalid reason for request
 //       UNDERFUNDED = 3, //when couldn't lock balance
 //       REFERENCE_DUPLICATION = 4, // reference already exists
 //       INVALID_AMOUNT = 5, // amount must be positive
@@ -7267,7 +8073,7 @@ xdr.struct("CreateAmlAlertRequestOp", [
 xdr.enum("CreateAmlAlertRequestResultCode", {
   success: 0,
   balanceNotExist: 1,
-  invalidReason: 2,
+  invalidCreatorDetail: 2,
   underfunded: 3,
   referenceDuplication: 4,
   invalidAmount: 5,
@@ -7343,16 +8149,10 @@ xdr.union("CreateAmlAlertRequestResult", {
 //       {
 //       case CREATE_ACCOUNT:
 //           CreateAccountOp createAccountOp;
-//       case PAYMENT:
-//           PaymentOp paymentOp;
-//       case SET_OPTIONS:
-//           SetOptionsOp setOptionsOp;
 //   	case CREATE_ISSUANCE_REQUEST:
 //   		CreateIssuanceRequestOp createIssuanceRequestOp;
 //       case SET_FEES:
 //           SetFeesOp setFeesOp;
-//   	case MANAGE_ACCOUNT:
-//   		ManageAccountOp manageAccountOp;
 //   	case CREATE_WITHDRAWAL_REQUEST:
 //   		CreateWithdrawalRequestOp createWithdrawalRequestOp;
 //   	case MANAGE_BALANCE:
@@ -7363,8 +8163,6 @@ xdr.union("CreateAmlAlertRequestResult", {
 //           CreatePreIssuanceRequestOp createPreIssuanceRequest;
 //       case MANAGE_LIMITS:
 //           ManageLimitsOp manageLimitsOp;
-//       case DIRECT_DEBIT:
-//           DirectDebitOp directDebitOp;
 //   	case MANAGE_ASSET_PAIR:
 //   		ManageAssetPairOp manageAssetPairOp;
 //   	case MANAGE_OFFER:
@@ -7383,14 +8181,14 @@ xdr.union("CreateAmlAlertRequestResult", {
 //   	    CreateAMLAlertRequestOp createAMLAlertRequestOp;
 //   	case MANAGE_KEY_VALUE:
 //   	    ManageKeyValueOp manageKeyValueOp;
-//   	case CREATE_KYC_REQUEST:
-//   		CreateUpdateKYCRequestOp createUpdateKYCRequestOp;
+//   	case CREATE_CHANGE_ROLE_REQUEST:
+//   		CreateChangeRoleRequestOp createChangeRoleRequestOp;
 //       case MANAGE_EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY:
 //           ManageExternalSystemAccountIdPoolEntryOp manageExternalSystemAccountIdPoolEntryOp;
 //       case BIND_EXTERNAL_SYSTEM_ACCOUNT_ID:
 //           BindExternalSystemAccountIdOp bindExternalSystemAccountIdOp;
-//       case PAYMENT_V2:
-//           PaymentOpV2 paymentOpV2;
+//       case PAYMENT:
+//           PaymentOp paymentOp;
 //       case MANAGE_SALE:
 //           ManageSaleOp manageSaleOp;
 //       case CREATE_MANAGE_LIMITS_REQUEST:
@@ -7409,8 +8207,14 @@ xdr.union("CreateAmlAlertRequestResult", {
 //           CreateASwapRequestOp createASwapRequestOp;
 //       case MANAGE_ACCOUNT_ROLE:
 //           ManageAccountRoleOp manageAccountRoleOp;
-//       case MANAGE_ACCOUNT_ROLE_PERMISSION:
-//           ManageAccountRolePermissionOp manageAccountRolePermissionOp;
+//       case MANAGE_ACCOUNT_RULE:
+//           ManageAccountRuleOp manageAccountRuleOp;
+//       case MANAGE_SIGNER:
+//           ManageSignerOp manageSignerOp;
+//       case MANAGE_SIGNER_ROLE:
+//           ManageSignerRoleOp manageSignerRoleOp;
+//       case MANAGE_SIGNER_RULE:
+//           ManageSignerRuleOp manageSignerRuleOp;
 //       case STAMP:
 //           StampOp stampOp;
 //       case LICENSE:
@@ -7423,17 +8227,13 @@ xdr.union("OperationBody", {
   switchName: "type",
   switches: [
     ["createAccount", "createAccountOp"],
-    ["payment", "paymentOp"],
-    ["setOption", "setOptionsOp"],
     ["createIssuanceRequest", "createIssuanceRequestOp"],
     ["setFee", "setFeesOp"],
-    ["manageAccount", "manageAccountOp"],
     ["createWithdrawalRequest", "createWithdrawalRequestOp"],
     ["manageBalance", "manageBalanceOp"],
     ["manageAsset", "manageAssetOp"],
     ["createPreissuanceRequest", "createPreIssuanceRequest"],
     ["manageLimit", "manageLimitsOp"],
-    ["directDebit", "directDebitOp"],
     ["manageAssetPair", "manageAssetPairOp"],
     ["manageOffer", "manageOfferOp"],
     ["manageInvoiceRequest", "manageInvoiceRequestOp"],
@@ -7443,10 +8243,10 @@ xdr.union("OperationBody", {
     ["payout", "payoutOp"],
     ["createAmlAlert", "createAmlAlertRequestOp"],
     ["manageKeyValue", "manageKeyValueOp"],
-    ["createKycRequest", "createUpdateKycRequestOp"],
+    ["createChangeRoleRequest", "createChangeRoleRequestOp"],
     ["manageExternalSystemAccountIdPoolEntry", "manageExternalSystemAccountIdPoolEntryOp"],
     ["bindExternalSystemAccountId", "bindExternalSystemAccountIdOp"],
-    ["paymentV2", "paymentOpV2"],
+    ["payment", "paymentOp"],
     ["manageSale", "manageSaleOp"],
     ["createManageLimitsRequest", "createManageLimitsRequestOp"],
     ["manageContractRequest", "manageContractRequestOp"],
@@ -7456,23 +8256,22 @@ xdr.union("OperationBody", {
     ["cancelAswapBid", "cancelASwapBidOp"],
     ["createAswapRequest", "createASwapRequestOp"],
     ["manageAccountRole", "manageAccountRoleOp"],
-    ["manageAccountRolePermission", "manageAccountRolePermissionOp"],
+    ["manageAccountRule", "manageAccountRuleOp"],
+    ["manageSigner", "manageSignerOp"],
+    ["manageSignerRole", "manageSignerRoleOp"],
+    ["manageSignerRule", "manageSignerRuleOp"],
     ["stamp", "stampOp"],
     ["license", "licenseOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
-    paymentOp: xdr.lookup("PaymentOp"),
-    setOptionsOp: xdr.lookup("SetOptionsOp"),
     createIssuanceRequestOp: xdr.lookup("CreateIssuanceRequestOp"),
     setFeesOp: xdr.lookup("SetFeesOp"),
-    manageAccountOp: xdr.lookup("ManageAccountOp"),
     createWithdrawalRequestOp: xdr.lookup("CreateWithdrawalRequestOp"),
     manageBalanceOp: xdr.lookup("ManageBalanceOp"),
     manageAssetOp: xdr.lookup("ManageAssetOp"),
     createPreIssuanceRequest: xdr.lookup("CreatePreIssuanceRequestOp"),
     manageLimitsOp: xdr.lookup("ManageLimitsOp"),
-    directDebitOp: xdr.lookup("DirectDebitOp"),
     manageAssetPairOp: xdr.lookup("ManageAssetPairOp"),
     manageOfferOp: xdr.lookup("ManageOfferOp"),
     manageInvoiceRequestOp: xdr.lookup("ManageInvoiceRequestOp"),
@@ -7482,10 +8281,10 @@ xdr.union("OperationBody", {
     payoutOp: xdr.lookup("PayoutOp"),
     createAmlAlertRequestOp: xdr.lookup("CreateAmlAlertRequestOp"),
     manageKeyValueOp: xdr.lookup("ManageKeyValueOp"),
-    createUpdateKycRequestOp: xdr.lookup("CreateUpdateKycRequestOp"),
+    createChangeRoleRequestOp: xdr.lookup("CreateChangeRoleRequestOp"),
     manageExternalSystemAccountIdPoolEntryOp: xdr.lookup("ManageExternalSystemAccountIdPoolEntryOp"),
     bindExternalSystemAccountIdOp: xdr.lookup("BindExternalSystemAccountIdOp"),
-    paymentOpV2: xdr.lookup("PaymentOpV2"),
+    paymentOp: xdr.lookup("PaymentOp"),
     manageSaleOp: xdr.lookup("ManageSaleOp"),
     createManageLimitsRequestOp: xdr.lookup("CreateManageLimitsRequestOp"),
     manageContractRequestOp: xdr.lookup("ManageContractRequestOp"),
@@ -7495,7 +8294,10 @@ xdr.union("OperationBody", {
     cancelASwapBidOp: xdr.lookup("CancelASwapBidOp"),
     createASwapRequestOp: xdr.lookup("CreateASwapRequestOp"),
     manageAccountRoleOp: xdr.lookup("ManageAccountRoleOp"),
-    manageAccountRolePermissionOp: xdr.lookup("ManageAccountRolePermissionOp"),
+    manageAccountRuleOp: xdr.lookup("ManageAccountRuleOp"),
+    manageSignerOp: xdr.lookup("ManageSignerOp"),
+    manageSignerRoleOp: xdr.lookup("ManageSignerRoleOp"),
+    manageSignerRuleOp: xdr.lookup("ManageSignerRuleOp"),
     stampOp: xdr.lookup("StampOp"),
     licenseOp: xdr.lookup("LicenseOp"),
   },
@@ -7514,16 +8316,10 @@ xdr.union("OperationBody", {
 //       {
 //       case CREATE_ACCOUNT:
 //           CreateAccountOp createAccountOp;
-//       case PAYMENT:
-//           PaymentOp paymentOp;
-//       case SET_OPTIONS:
-//           SetOptionsOp setOptionsOp;
 //   	case CREATE_ISSUANCE_REQUEST:
 //   		CreateIssuanceRequestOp createIssuanceRequestOp;
 //       case SET_FEES:
 //           SetFeesOp setFeesOp;
-//   	case MANAGE_ACCOUNT:
-//   		ManageAccountOp manageAccountOp;
 //   	case CREATE_WITHDRAWAL_REQUEST:
 //   		CreateWithdrawalRequestOp createWithdrawalRequestOp;
 //   	case MANAGE_BALANCE:
@@ -7534,8 +8330,6 @@ xdr.union("OperationBody", {
 //           CreatePreIssuanceRequestOp createPreIssuanceRequest;
 //       case MANAGE_LIMITS:
 //           ManageLimitsOp manageLimitsOp;
-//       case DIRECT_DEBIT:
-//           DirectDebitOp directDebitOp;
 //   	case MANAGE_ASSET_PAIR:
 //   		ManageAssetPairOp manageAssetPairOp;
 //   	case MANAGE_OFFER:
@@ -7554,14 +8348,14 @@ xdr.union("OperationBody", {
 //   	    CreateAMLAlertRequestOp createAMLAlertRequestOp;
 //   	case MANAGE_KEY_VALUE:
 //   	    ManageKeyValueOp manageKeyValueOp;
-//   	case CREATE_KYC_REQUEST:
-//   		CreateUpdateKYCRequestOp createUpdateKYCRequestOp;
+//   	case CREATE_CHANGE_ROLE_REQUEST:
+//   		CreateChangeRoleRequestOp createChangeRoleRequestOp;
 //       case MANAGE_EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY:
 //           ManageExternalSystemAccountIdPoolEntryOp manageExternalSystemAccountIdPoolEntryOp;
 //       case BIND_EXTERNAL_SYSTEM_ACCOUNT_ID:
 //           BindExternalSystemAccountIdOp bindExternalSystemAccountIdOp;
-//       case PAYMENT_V2:
-//           PaymentOpV2 paymentOpV2;
+//       case PAYMENT:
+//           PaymentOp paymentOp;
 //       case MANAGE_SALE:
 //           ManageSaleOp manageSaleOp;
 //       case CREATE_MANAGE_LIMITS_REQUEST:
@@ -7580,8 +8374,14 @@ xdr.union("OperationBody", {
 //           CreateASwapRequestOp createASwapRequestOp;
 //       case MANAGE_ACCOUNT_ROLE:
 //           ManageAccountRoleOp manageAccountRoleOp;
-//       case MANAGE_ACCOUNT_ROLE_PERMISSION:
-//           ManageAccountRolePermissionOp manageAccountRolePermissionOp;
+//       case MANAGE_ACCOUNT_RULE:
+//           ManageAccountRuleOp manageAccountRuleOp;
+//       case MANAGE_SIGNER:
+//           ManageSignerOp manageSignerOp;
+//       case MANAGE_SIGNER_ROLE:
+//           ManageSignerRoleOp manageSignerRoleOp;
+//       case MANAGE_SIGNER_RULE:
+//           ManageSignerRuleOp manageSignerRuleOp;
 //       case STAMP:
 //           StampOp stampOp;
 //       case LICENSE:
@@ -7671,8 +8471,6 @@ xdr.struct("TimeBounds", [
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_TRANSACTION_FEE:
-//           uint64 maxTotalFee;
 //       }
 //
 // ===========================================================================
@@ -7681,10 +8479,8 @@ xdr.union("TransactionExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["addTransactionFee", "maxTotalFee"],
   ],
   arms: {
-    maxTotalFee: xdr.lookup("Uint64"),
   },
 });
 
@@ -7709,8 +8505,6 @@ xdr.union("TransactionExt", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_TRANSACTION_FEE:
-//           uint64 maxTotalFee;
 //       }
 //       ext;
 //   };
@@ -7754,7 +8548,9 @@ xdr.struct("TransactionEnvelope", [
 //       opCOUNTERPARTY_WRONG_TYPE = -7,
 //       opBAD_AUTH_EXTRA = -8,
 //       opNO_ROLE_PERMISSION = -9, // not allowed for this role of source account
-//       opLICENSE_VIOLATION = -10 // number of admins is greater than allowed
+//       opNO_ENTRY = -10,
+//       opNOT_SUPPORTED = -11,
+//       opLICENSE_VIOLATION = -12// number of admins is greater than allowed
 //   };
 //
 // ===========================================================================
@@ -7769,8 +8565,33 @@ xdr.enum("OperationResultCode", {
   opCounterpartyWrongType: -7,
   opBadAuthExtra: -8,
   opNoRolePermission: -9,
-  opLicenseViolation: -10,
+  opNoEntry: -10,
+  opNotSupported: -11,
+  opLicenseViolation: -12,
 });
+
+// === xdr source ============================================================
+//
+//   struct AccountRuleRequirement
+//   {
+//   	//: defines resources to which access was denied
+//       AccountRuleResource resource;
+//   	//: defines action which was denied
+//       AccountRuleAction action;
+//   	//: defines account for which requirementes were not met
+//   	AccountID account;
+//   
+//   	//: reserved for future extention
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("AccountRuleRequirement", [
+  ["resource", xdr.lookup("AccountRuleResource")],
+  ["action", xdr.lookup("AccountRuleAction")],
+  ["account", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
 
 // === xdr source ============================================================
 //
@@ -7778,16 +8599,10 @@ xdr.enum("OperationResultCode", {
 //       {
 //       case CREATE_ACCOUNT:
 //           CreateAccountResult createAccountResult;
-//       case PAYMENT:
-//           PaymentResult paymentResult;
-//       case SET_OPTIONS:
-//           SetOptionsResult setOptionsResult;
 //   	case CREATE_ISSUANCE_REQUEST:
 //   		CreateIssuanceRequestResult createIssuanceRequestResult;
 //       case SET_FEES:
 //           SetFeesResult setFeesResult;
-//   	case MANAGE_ACCOUNT:
-//   		ManageAccountResult manageAccountResult;
 //       case CREATE_WITHDRAWAL_REQUEST:
 //   		CreateWithdrawalRequestResult createWithdrawalRequestResult;
 //       case MANAGE_BALANCE:
@@ -7798,8 +8613,6 @@ xdr.enum("OperationResultCode", {
 //           CreatePreIssuanceRequestResult createPreIssuanceRequestResult;
 //       case MANAGE_LIMITS:
 //           ManageLimitsResult manageLimitsResult;
-//       case DIRECT_DEBIT:
-//           DirectDebitResult directDebitResult;
 //   	case MANAGE_ASSET_PAIR:
 //   		ManageAssetPairResult manageAssetPairResult;
 //   	case MANAGE_OFFER:
@@ -7818,14 +8631,14 @@ xdr.enum("OperationResultCode", {
 //   	    CreateAMLAlertRequestResult createAMLAlertRequestResult;
 //   	case MANAGE_KEY_VALUE:
 //   	    ManageKeyValueResult manageKeyValueResult;
-//   	case CREATE_KYC_REQUEST:
-//   	    CreateUpdateKYCRequestResult createUpdateKYCRequestResult;
+//   	case CREATE_CHANGE_ROLE_REQUEST:
+//   	    CreateChangeRoleRequestResult createChangeRoleRequestResult;
 //       case MANAGE_EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY:
 //           ManageExternalSystemAccountIdPoolEntryResult manageExternalSystemAccountIdPoolEntryResult;
 //       case BIND_EXTERNAL_SYSTEM_ACCOUNT_ID:
 //           BindExternalSystemAccountIdResult bindExternalSystemAccountIdResult;
-//       case PAYMENT_V2:
-//           PaymentV2Result paymentV2Result;
+//       case PAYMENT:
+//           PaymentResult paymentResult;
 //       case MANAGE_SALE:
 //           ManageSaleResult manageSaleResult;
 //       case CREATE_MANAGE_LIMITS_REQUEST:
@@ -7844,8 +8657,14 @@ xdr.enum("OperationResultCode", {
 //           CreateASwapRequestResult createASwapRequestResult;
 //       case MANAGE_ACCOUNT_ROLE:
 //           ManageAccountRoleResult manageAccountRoleResult;
-//       case MANAGE_ACCOUNT_ROLE_PERMISSION:
-//           ManageAccountRolePermissionResult manageAccountRolePermissionResult;
+//       case MANAGE_ACCOUNT_RULE:
+//           ManageAccountRuleResult manageAccountRuleResult;
+//       case MANAGE_SIGNER:
+//           ManageSignerResult manageSignerResult;
+//       case MANAGE_SIGNER_ROLE:
+//           ManageSignerRoleResult manageSignerRoleResult;
+//       case MANAGE_SIGNER_RULE:
+//           ManageSignerRuleResult manageSignerRuleResult;
 //       case STAMP:
 //           StampResult stampResult;
 //       case LICENSE:
@@ -7858,17 +8677,13 @@ xdr.union("OperationResultTr", {
   switchName: "type",
   switches: [
     ["createAccount", "createAccountResult"],
-    ["payment", "paymentResult"],
-    ["setOption", "setOptionsResult"],
     ["createIssuanceRequest", "createIssuanceRequestResult"],
     ["setFee", "setFeesResult"],
-    ["manageAccount", "manageAccountResult"],
     ["createWithdrawalRequest", "createWithdrawalRequestResult"],
     ["manageBalance", "manageBalanceResult"],
     ["manageAsset", "manageAssetResult"],
     ["createPreissuanceRequest", "createPreIssuanceRequestResult"],
     ["manageLimit", "manageLimitsResult"],
-    ["directDebit", "directDebitResult"],
     ["manageAssetPair", "manageAssetPairResult"],
     ["manageOffer", "manageOfferResult"],
     ["manageInvoiceRequest", "manageInvoiceRequestResult"],
@@ -7878,10 +8693,10 @@ xdr.union("OperationResultTr", {
     ["payout", "payoutResult"],
     ["createAmlAlert", "createAmlAlertRequestResult"],
     ["manageKeyValue", "manageKeyValueResult"],
-    ["createKycRequest", "createUpdateKycRequestResult"],
+    ["createChangeRoleRequest", "createChangeRoleRequestResult"],
     ["manageExternalSystemAccountIdPoolEntry", "manageExternalSystemAccountIdPoolEntryResult"],
     ["bindExternalSystemAccountId", "bindExternalSystemAccountIdResult"],
-    ["paymentV2", "paymentV2Result"],
+    ["payment", "paymentResult"],
     ["manageSale", "manageSaleResult"],
     ["createManageLimitsRequest", "createManageLimitsRequestResult"],
     ["manageContractRequest", "manageContractRequestResult"],
@@ -7891,23 +8706,22 @@ xdr.union("OperationResultTr", {
     ["cancelAswapBid", "cancelASwapBidResult"],
     ["createAswapRequest", "createASwapRequestResult"],
     ["manageAccountRole", "manageAccountRoleResult"],
-    ["manageAccountRolePermission", "manageAccountRolePermissionResult"],
+    ["manageAccountRule", "manageAccountRuleResult"],
+    ["manageSigner", "manageSignerResult"],
+    ["manageSignerRole", "manageSignerRoleResult"],
+    ["manageSignerRule", "manageSignerRuleResult"],
     ["stamp", "stampResult"],
     ["license", "licenseResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
-    paymentResult: xdr.lookup("PaymentResult"),
-    setOptionsResult: xdr.lookup("SetOptionsResult"),
     createIssuanceRequestResult: xdr.lookup("CreateIssuanceRequestResult"),
     setFeesResult: xdr.lookup("SetFeesResult"),
-    manageAccountResult: xdr.lookup("ManageAccountResult"),
     createWithdrawalRequestResult: xdr.lookup("CreateWithdrawalRequestResult"),
     manageBalanceResult: xdr.lookup("ManageBalanceResult"),
     manageAssetResult: xdr.lookup("ManageAssetResult"),
     createPreIssuanceRequestResult: xdr.lookup("CreatePreIssuanceRequestResult"),
     manageLimitsResult: xdr.lookup("ManageLimitsResult"),
-    directDebitResult: xdr.lookup("DirectDebitResult"),
     manageAssetPairResult: xdr.lookup("ManageAssetPairResult"),
     manageOfferResult: xdr.lookup("ManageOfferResult"),
     manageInvoiceRequestResult: xdr.lookup("ManageInvoiceRequestResult"),
@@ -7917,10 +8731,10 @@ xdr.union("OperationResultTr", {
     payoutResult: xdr.lookup("PayoutResult"),
     createAmlAlertRequestResult: xdr.lookup("CreateAmlAlertRequestResult"),
     manageKeyValueResult: xdr.lookup("ManageKeyValueResult"),
-    createUpdateKycRequestResult: xdr.lookup("CreateUpdateKycRequestResult"),
+    createChangeRoleRequestResult: xdr.lookup("CreateChangeRoleRequestResult"),
     manageExternalSystemAccountIdPoolEntryResult: xdr.lookup("ManageExternalSystemAccountIdPoolEntryResult"),
     bindExternalSystemAccountIdResult: xdr.lookup("BindExternalSystemAccountIdResult"),
-    paymentV2Result: xdr.lookup("PaymentV2Result"),
+    paymentResult: xdr.lookup("PaymentResult"),
     manageSaleResult: xdr.lookup("ManageSaleResult"),
     createManageLimitsRequestResult: xdr.lookup("CreateManageLimitsRequestResult"),
     manageContractRequestResult: xdr.lookup("ManageContractRequestResult"),
@@ -7930,7 +8744,10 @@ xdr.union("OperationResultTr", {
     cancelASwapBidResult: xdr.lookup("CancelASwapBidResult"),
     createASwapRequestResult: xdr.lookup("CreateASwapRequestResult"),
     manageAccountRoleResult: xdr.lookup("ManageAccountRoleResult"),
-    manageAccountRolePermissionResult: xdr.lookup("ManageAccountRolePermissionResult"),
+    manageAccountRuleResult: xdr.lookup("ManageAccountRuleResult"),
+    manageSignerResult: xdr.lookup("ManageSignerResult"),
+    manageSignerRoleResult: xdr.lookup("ManageSignerRoleResult"),
+    manageSignerRuleResult: xdr.lookup("ManageSignerRuleResult"),
     stampResult: xdr.lookup("StampResult"),
     licenseResult: xdr.lookup("LicenseResult"),
   },
@@ -7945,16 +8762,10 @@ xdr.union("OperationResultTr", {
 //       {
 //       case CREATE_ACCOUNT:
 //           CreateAccountResult createAccountResult;
-//       case PAYMENT:
-//           PaymentResult paymentResult;
-//       case SET_OPTIONS:
-//           SetOptionsResult setOptionsResult;
 //   	case CREATE_ISSUANCE_REQUEST:
 //   		CreateIssuanceRequestResult createIssuanceRequestResult;
 //       case SET_FEES:
 //           SetFeesResult setFeesResult;
-//   	case MANAGE_ACCOUNT:
-//   		ManageAccountResult manageAccountResult;
 //       case CREATE_WITHDRAWAL_REQUEST:
 //   		CreateWithdrawalRequestResult createWithdrawalRequestResult;
 //       case MANAGE_BALANCE:
@@ -7965,8 +8776,6 @@ xdr.union("OperationResultTr", {
 //           CreatePreIssuanceRequestResult createPreIssuanceRequestResult;
 //       case MANAGE_LIMITS:
 //           ManageLimitsResult manageLimitsResult;
-//       case DIRECT_DEBIT:
-//           DirectDebitResult directDebitResult;
 //   	case MANAGE_ASSET_PAIR:
 //   		ManageAssetPairResult manageAssetPairResult;
 //   	case MANAGE_OFFER:
@@ -7985,14 +8794,14 @@ xdr.union("OperationResultTr", {
 //   	    CreateAMLAlertRequestResult createAMLAlertRequestResult;
 //   	case MANAGE_KEY_VALUE:
 //   	    ManageKeyValueResult manageKeyValueResult;
-//   	case CREATE_KYC_REQUEST:
-//   	    CreateUpdateKYCRequestResult createUpdateKYCRequestResult;
+//   	case CREATE_CHANGE_ROLE_REQUEST:
+//   	    CreateChangeRoleRequestResult createChangeRoleRequestResult;
 //       case MANAGE_EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY:
 //           ManageExternalSystemAccountIdPoolEntryResult manageExternalSystemAccountIdPoolEntryResult;
 //       case BIND_EXTERNAL_SYSTEM_ACCOUNT_ID:
 //           BindExternalSystemAccountIdResult bindExternalSystemAccountIdResult;
-//       case PAYMENT_V2:
-//           PaymentV2Result paymentV2Result;
+//       case PAYMENT:
+//           PaymentResult paymentResult;
 //       case MANAGE_SALE:
 //           ManageSaleResult manageSaleResult;
 //       case CREATE_MANAGE_LIMITS_REQUEST:
@@ -8011,14 +8820,24 @@ xdr.union("OperationResultTr", {
 //           CreateASwapRequestResult createASwapRequestResult;
 //       case MANAGE_ACCOUNT_ROLE:
 //           ManageAccountRoleResult manageAccountRoleResult;
-//       case MANAGE_ACCOUNT_ROLE_PERMISSION:
-//           ManageAccountRolePermissionResult manageAccountRolePermissionResult;
+//       case MANAGE_ACCOUNT_RULE:
+//           ManageAccountRuleResult manageAccountRuleResult;
+//       case MANAGE_SIGNER:
+//           ManageSignerResult manageSignerResult;
+//       case MANAGE_SIGNER_ROLE:
+//           ManageSignerRoleResult manageSignerRoleResult;
+//       case MANAGE_SIGNER_RULE:
+//           ManageSignerRuleResult manageSignerRuleResult;
 //       case STAMP:
 //           StampResult stampResult;
 //       case LICENSE:
 //           LicenseResult licenseResult;
 //       }
 //       tr;
+//   case opNO_ENTRY:
+//       LedgerEntryType entryType;
+//   case opNO_ROLE_PERMISSION:
+//       AccountRuleRequirement requirement;
 //   default:
 //       void;
 //   };
@@ -8029,9 +8848,13 @@ xdr.union("OperationResult", {
   switchName: "code",
   switches: [
     ["opInner", "tr"],
+    ["opNoEntry", "entryType"],
+    ["opNoRolePermission", "requirement"],
   ],
   arms: {
     tr: xdr.lookup("OperationResultTr"),
+    entryType: xdr.lookup("LedgerEntryType"),
+    requirement: xdr.lookup("AccountRuleRequirement"),
   },
   defaultArm: xdr.void(),
 });
@@ -8051,13 +8874,14 @@ xdr.union("OperationResult", {
 //       txBAD_AUTH = -5,                   // too few valid signatures / wrong network
 //       txNO_ACCOUNT = -6,                 // source account not found
 //       txBAD_AUTH_EXTRA = -7,             // unused signatures attached to transaction
-//       txINTERNAL_ERROR = -8,             // an unknown error occured
+//       txINTERNAL_ERROR = -8,             // an unknown error occurred
 //       txACCOUNT_BLOCKED = -9,            // account is blocked and cannot be source of tx
 //       txDUPLICATION = -10,               // if timing is stored
 //       txINSUFFICIENT_FEE = -11,          // the actual total fee amount is greater than the max total fee amount, provided by the source
 //       txSOURCE_UNDERFUNDED = -12,        // not enough tx fee asset on source balance
 //       txCOMMISSION_LINE_FULL = -13,      // commission tx fee asset balance amount overflow
-//       txFEE_INCORRECT_PRECISION = -14    // fee amount is incompatible with asset precision
+//       txFEE_INCORRECT_PRECISION = -14,   // fee amount is incompatible with asset precision
+//       txNO_ROLE_PERMISSION = -15         // account role has not rule that allows send transaction
 //   };
 //
 // ===========================================================================
@@ -8077,6 +8901,7 @@ xdr.enum("TransactionResultCode", {
   txSourceUnderfunded: -12,
   txCommissionLineFull: -13,
   txFeeIncorrectPrecision: -14,
+  txNoRolePermission: -15,
 });
 
 // === xdr source ============================================================
@@ -8123,53 +8948,13 @@ xdr.struct("OperationFee", [
 
 // === xdr source ============================================================
 //
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("TransactionFeeExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct TransactionFee
-//   {
-//       AssetCode assetCode;
-//       OperationFee operationFees<100>;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("TransactionFee", [
-  ["assetCode", xdr.lookup("AssetCode")],
-  ["operationFees", xdr.varArray(xdr.lookup("OperationFee"), 100)],
-  ["ext", xdr.lookup("TransactionFeeExt")],
-]);
-
-// === xdr source ============================================================
-//
 //   union switch (TransactionResultCode code)
 //       {
 //       case txSUCCESS:
 //       case txFAILED:
 //           OperationResult results<>;
+//       case txNO_ROLE_PERMISSION:
+//           AccountRuleRequirement requirement;
 //       default:
 //           void;
 //       }
@@ -8181,9 +8966,11 @@ xdr.union("TransactionResultResult", {
   switches: [
     ["txSuccess", "results"],
     ["txFailed", "results"],
+    ["txNoRolePermission", "requirement"],
   ],
   arms: {
     results: xdr.varArray(xdr.lookup("OperationResult"), 2147483647),
+    requirement: xdr.lookup("AccountRuleRequirement"),
   },
   defaultArm: xdr.void(),
 });
@@ -8194,8 +8981,6 @@ xdr.union("TransactionResultResult", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_TRANSACTION_FEE:
-//           TransactionFee transactionFee;
 //       }
 //
 // ===========================================================================
@@ -8204,10 +8989,8 @@ xdr.union("TransactionResultExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["addTransactionFee", "transactionFee"],
   ],
   arms: {
-    transactionFee: xdr.lookup("TransactionFee"),
   },
 });
 
@@ -8222,6 +9005,8 @@ xdr.union("TransactionResultExt", {
 //       case txSUCCESS:
 //       case txFAILED:
 //           OperationResult results<>;
+//       case txNO_ROLE_PERMISSION:
+//           AccountRuleRequirement requirement;
 //       default:
 //           void;
 //       }
@@ -8232,8 +9017,6 @@ xdr.union("TransactionResultExt", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_TRANSACTION_FEE:
-//           TransactionFee transactionFee;
 //       }
 //       ext;
 //   };
@@ -8243,59 +9026,6 @@ xdr.struct("TransactionResult", [
   ["feeCharged", xdr.lookup("Int64")],
   ["result", xdr.lookup("TransactionResultResult")],
   ["ext", xdr.lookup("TransactionResultExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("UpdateKycRequestExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct UpdateKYCRequest {
-//   	AccountID accountToUpdateKYC;
-//   	AccountType accountTypeToSet;
-//   	uint32 kycLevel;
-//   	longstring kycData;
-//   
-//   	// Sequence number increases when request is rejected
-//   	uint32 sequenceNumber;
-//   
-//   	// External details vector consists of comments written by KYC data validity checkers
-//   	longstring externalDetails<>;
-//   
-//   	// Reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("UpdateKycRequest", [
-  ["accountToUpdateKyc", xdr.lookup("AccountId")],
-  ["accountTypeToSet", xdr.lookup("AccountType")],
-  ["kycLevel", xdr.lookup("Uint32")],
-  ["kycData", xdr.lookup("Longstring")],
-  ["sequenceNumber", xdr.lookup("Uint32")],
-  ["externalDetails", xdr.varArray(xdr.lookup("Longstring"), 2147483647)],
-  ["ext", xdr.lookup("UpdateKycRequestExt")],
 ]);
 
 // === xdr source ============================================================
@@ -8326,8 +9056,6 @@ xdr.enum("ContractState", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_CUSTOMER_DETAILS_TO_CONTRACT:
-//           longstring customerDetails;
 //       }
 //
 // ===========================================================================
@@ -8336,10 +9064,8 @@ xdr.union("ContractEntryExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["addCustomerDetailsToContract", "customerDetails"],
   ],
   arms: {
-    customerDetails: xdr.lookup("Longstring"),
   },
 });
 
@@ -8359,13 +9085,12 @@ xdr.union("ContractEntryExt", {
 //       longstring initialDetails;
 //   
 //       uint32 state;
+//       longstring customerDetails;
 //   
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_CUSTOMER_DETAILS_TO_CONTRACT:
-//           longstring customerDetails;
 //       }
 //       ext;
 //   };
@@ -8381,6 +9106,7 @@ xdr.struct("ContractEntry", [
   ["invoiceRequestsIDs", xdr.varArray(xdr.lookup("Uint64"), 2147483647)],
   ["initialDetails", xdr.lookup("Longstring")],
   ["state", xdr.lookup("Uint32")],
+  ["customerDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("ContractEntryExt")],
 ]);
 
@@ -8701,44 +9427,46 @@ xdr.struct("ManageAssetOp", [
 //   
 //       // codes considered as "failure" for the operation
 //   	REQUEST_NOT_FOUND = -1,           // failed to find asset request with such id
-//   	ASSET_ALREADY_EXISTS = -3,			   // asset with such code already exist
+//       INVALID_SIGNATURE = -2,           // only asset pre issuer can change asset pre issuer
+//   	ASSET_ALREADY_EXISTS = -3,	      // asset with such code already exist
 //       INVALID_MAX_ISSUANCE_AMOUNT = -4, // max issuance amount is 0
 //   	INVALID_CODE = -5,                // asset code is invalid (empty or contains space)
+//       INVALID_PRE_ISSUER = -6,          // pre issuer is the same as existing
 //   	INVALID_POLICIES = -7,            // asset policies (has flag which does not belong to AssetPolicies enum)
 //   	ASSET_NOT_FOUND = -8,             // asset does not exists
 //   	REQUEST_ALREADY_EXISTS = -9,      // request for creation of unique entry already exists
 //   	STATS_ASSET_ALREADY_EXISTS = -10, // statistics quote asset already exists
 //   	INITIAL_PREISSUED_EXCEEDS_MAX_ISSUANCE = -11, // initial pre issued amount exceeds max issuance amount
-//       INVALID_DETAILS = -12,                        // details must be a valid json
+//       INVALID_CREATOR_DETAILS = -12,                        // details must be a valid json
 //       INVALID_TRAILING_DIGITS_COUNT = -13,          // invalid number of trailing digits
 //       INVALID_PREISSUED_AMOUNT_PRECISION = -14,     // initial pre issued amount does not match precision set by trailing digits count
 //       INVALID_MAX_ISSUANCE_AMOUNT_PRECISION = -15,   // maximum issuance amount does not match precision set by trailing digits count
 //       ASSET_CREATE_TASKS_NOT_FOUND = -16, 
 //       ASSET_UPDATE_TASKS_NOT_FOUND = -17,
-//       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -18,
-//       PENDING_REQUEST_UPDATE_NOT_ALLOWED = -19
+//       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -18
 //   };
 //
 // ===========================================================================
 xdr.enum("ManageAssetResultCode", {
   success: 0,
   requestNotFound: -1,
+  invalidSignature: -2,
   assetAlreadyExist: -3,
   invalidMaxIssuanceAmount: -4,
   invalidCode: -5,
+  invalidPreIssuer: -6,
   invalidPolicy: -7,
   assetNotFound: -8,
   requestAlreadyExist: -9,
   statsAssetAlreadyExist: -10,
   initialPreissuedExceedsMaxIssuance: -11,
-  invalidDetail: -12,
+  invalidCreatorDetail: -12,
   invalidTrailingDigitsCount: -13,
   invalidPreissuedAmountPrecision: -14,
   invalidMaxIssuanceAmountPrecision: -15,
   assetCreateTasksNotFound: -16,
   assetUpdateTasksNotFound: -17,
   notAllowedToSetTasksOnUpdate: -18,
-  pendingRequestUpdateNotAllowed: -19,
 });
 
 // === xdr source ============================================================
@@ -8830,7 +9558,7 @@ xdr.union("ASwapBidCreationRequestExt", {
 //   {
 //       BalanceID baseBalance;
 //       uint64 amount;
-//       longstring details;
+//       longstring creatorDetails; // details set by requester
 //   
 //       ASwapBidQuoteAsset quoteAssets<>;
 //   
@@ -8846,9 +9574,62 @@ xdr.union("ASwapBidCreationRequestExt", {
 xdr.struct("ASwapBidCreationRequest", [
   ["baseBalance", xdr.lookup("BalanceId")],
   ["amount", xdr.lookup("Uint64")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["quoteAssets", xdr.varArray(xdr.lookup("ASwapBidQuoteAsset"), 2147483647)],
   ["ext", xdr.lookup("ASwapBidCreationRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("SignerEntryExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct SignerEntry
+//   {
+//       PublicKey pubKey;
+//       AccountID accountID; // account to which signer had attached
+//   
+//       uint32 weight; // threshold for all SignerRules equals 1000
+//   	uint32 identity;
+//   
+//   	longstring details;
+//   
+//   	uint64 roleID;
+//   
+//   	 // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("SignerEntry", [
+  ["pubKey", xdr.lookup("PublicKey")],
+  ["accountId", xdr.lookup("AccountId")],
+  ["weight", xdr.lookup("Uint32")],
+  ["identity", xdr.lookup("Uint32")],
+  ["details", xdr.lookup("Longstring")],
+  ["roleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("SignerEntryExt")],
 ]);
 
 // === xdr source ============================================================
@@ -8867,10 +9648,29 @@ xdr.enum("ManageLimitsAction", {
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("LimitsCreateDetailsExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
 //   struct LimitsCreateDetails
 //   {
-//       AccountType *accountType;
-//       AccountID   *accountID;
+//       uint64*     accountRole;
+//       AccountID*  accountID;
 //       StatsOpType statsOpType;
 //       AssetCode   assetCode;
 //       bool        isConvertNeeded;
@@ -8879,11 +9679,19 @@ xdr.enum("ManageLimitsAction", {
 //       uint64 weeklyOut;
 //       uint64 monthlyOut;
 //       uint64 annualOut;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
 //   };
 //
 // ===========================================================================
 xdr.struct("LimitsCreateDetails", [
-  ["accountType", xdr.option(xdr.lookup("AccountType"))],
+  ["accountRole", xdr.option(xdr.lookup("Uint64"))],
   ["accountId", xdr.option(xdr.lookup("AccountId"))],
   ["statsOpType", xdr.lookup("StatsOpType")],
   ["assetCode", xdr.lookup("AssetCode")],
@@ -8892,6 +9700,7 @@ xdr.struct("LimitsCreateDetails", [
   ["weeklyOut", xdr.lookup("Uint64")],
   ["monthlyOut", xdr.lookup("Uint64")],
   ["annualOut", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LimitsCreateDetailsExt")],
 ]);
 
 // === xdr source ============================================================
@@ -9098,6 +9907,657 @@ xdr.union("ManageLimitsResult", {
 
 // === xdr source ============================================================
 //
+//   enum ManageAccountRuleAction
+//   {
+//       CREATE = 0,
+//       UPDATE = 1,
+//       REMOVE = 2
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageAccountRuleAction", {
+  create: 0,
+  update: 1,
+  remove: 2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateAccountRuleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateAccountRuleData
+//   {
+//       AccountRuleResource resource;
+//       AccountRuleAction action;
+//       bool forbids;
+//       longstring details;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateAccountRuleData", [
+  ["resource", xdr.lookup("AccountRuleResource")],
+  ["action", xdr.lookup("AccountRuleAction")],
+  ["forbids", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("CreateAccountRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("UpdateAccountRuleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct UpdateAccountRuleData
+//   {
+//       uint64 ruleID;
+//       AccountRuleResource resource;
+//       AccountRuleAction action;
+//       bool forbids;
+//       longstring details;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateAccountRuleData", [
+  ["ruleId", xdr.lookup("Uint64")],
+  ["resource", xdr.lookup("AccountRuleResource")],
+  ["action", xdr.lookup("AccountRuleAction")],
+  ["forbids", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("UpdateAccountRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveAccountRuleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct RemoveAccountRuleData
+//   {
+//       uint64 ruleID;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveAccountRuleData", [
+  ["ruleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("RemoveAccountRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageAccountRuleAction action)
+//       {
+//       case CREATE:
+//           CreateAccountRuleData createData;
+//       case UPDATE:
+//           UpdateAccountRuleData updateData;
+//       case REMOVE:
+//           RemoveAccountRuleData removeData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageAccountRuleOpData", {
+  switchOn: xdr.lookup("ManageAccountRuleAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["update", "updateData"],
+    ["remove", "removeData"],
+  ],
+  arms: {
+    createData: xdr.lookup("CreateAccountRuleData"),
+    updateData: xdr.lookup("UpdateAccountRuleData"),
+    removeData: xdr.lookup("RemoveAccountRuleData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageAccountRuleOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageAccountRuleOp
+//   {
+//       union switch (ManageAccountRuleAction action)
+//       {
+//       case CREATE:
+//           CreateAccountRuleData createData;
+//       case UPDATE:
+//           UpdateAccountRuleData updateData;
+//       case REMOVE:
+//           RemoveAccountRuleData removeData;
+//       } data;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageAccountRuleOp", [
+  ["data", xdr.lookup("ManageAccountRuleOpData")],
+  ["ext", xdr.lookup("ManageAccountRuleOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageAccountRuleResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       NOT_FOUND = -1,
+//       RULE_IS_USED = -2,
+//       INVALID_DETAILS = -3
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageAccountRuleResultCode", {
+  success: 0,
+  notFound: -1,
+  ruleIsUsed: -2,
+  invalidDetail: -3,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//
+// ===========================================================================
+xdr.union("ManageAccountRuleResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//               uint64 ruleID;
+//   
+//               // reserved for future use
+//               union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//               ext;
+//           }
+//
+// ===========================================================================
+xdr.struct("ManageAccountRuleResultSuccess", [
+  ["ruleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("ManageAccountRuleResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union ManageAccountRuleResult switch (ManageAccountRuleResultCode code)
+//   {
+//       case SUCCESS:
+//           struct {
+//               uint64 ruleID;
+//   
+//               // reserved for future use
+//               union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//               ext;
+//           } success;
+//       case RULE_IS_USED:
+//           uint64 roleIDs<>;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageAccountRuleResult", {
+  switchOn: xdr.lookup("ManageAccountRuleResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+    ["ruleIsUsed", "roleIDs"],
+  ],
+  arms: {
+    success: xdr.lookup("ManageAccountRuleResultSuccess"),
+    roleIDs: xdr.varArray(xdr.lookup("Uint64"), 2147483647),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   enum ManageSignerRoleAction
+//   {
+//       CREATE = 0,
+//       UPDATE = 1,
+//       REMOVE = 2
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageSignerRoleAction", {
+  create: 0,
+  update: 1,
+  remove: 2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateSignerRoleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateSignerRoleData
+//   {
+//       uint64 ruleIDs<>;
+//       bool isReadOnly;
+//       longstring details;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateSignerRoleData", [
+  ["ruleIDs", xdr.varArray(xdr.lookup("Uint64"), 2147483647)],
+  ["isReadOnly", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("CreateSignerRoleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("UpdateSignerRoleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct UpdateSignerRoleData
+//   {
+//       uint64 roleID;
+//       uint64 ruleIDs<>;
+//   
+//       longstring details;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateSignerRoleData", [
+  ["roleId", xdr.lookup("Uint64")],
+  ["ruleIDs", xdr.varArray(xdr.lookup("Uint64"), 2147483647)],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("UpdateSignerRoleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveSignerRoleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct RemoveSignerRoleData
+//   {
+//       uint64 roleID;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveSignerRoleData", [
+  ["roleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("RemoveSignerRoleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageSignerRoleAction action)
+//       {
+//       case CREATE:
+//           CreateSignerRoleData createData;
+//       case UPDATE:
+//           UpdateSignerRoleData updateData;
+//       case REMOVE:
+//           RemoveSignerRoleData removeData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageSignerRoleOpData", {
+  switchOn: xdr.lookup("ManageSignerRoleAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["update", "updateData"],
+    ["remove", "removeData"],
+  ],
+  arms: {
+    createData: xdr.lookup("CreateSignerRoleData"),
+    updateData: xdr.lookup("UpdateSignerRoleData"),
+    removeData: xdr.lookup("RemoveSignerRoleData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageSignerRoleOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageSignerRoleOp
+//   {
+//       union switch (ManageSignerRoleAction action)
+//       {
+//       case CREATE:
+//           CreateSignerRoleData createData;
+//       case UPDATE:
+//           UpdateSignerRoleData updateData;
+//       case REMOVE:
+//           RemoveSignerRoleData removeData;
+//       } data;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageSignerRoleOp", [
+  ["data", xdr.lookup("ManageSignerRoleOpData")],
+  ["ext", xdr.lookup("ManageSignerRoleOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageSignerRoleResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       NOT_FOUND = -1, // does not exists or owner mismatched
+//       ROLE_IS_USED = -2,
+//       INVALID_DETAILS = -3,
+//       NO_SUCH_RULE = -4,
+//       RULE_ID_DUPLICATION = -5,
+//       DEFAULT_RULE_ID_DUPLICATION = -6,
+//       TOO_MANY_RULE_IDS = -7
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageSignerRoleResultCode", {
+  success: 0,
+  notFound: -1,
+  roleIsUsed: -2,
+  invalidDetail: -3,
+  noSuchRule: -4,
+  ruleIdDuplication: -5,
+  defaultRuleIdDuplication: -6,
+  tooManyRuleId: -7,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//
+// ===========================================================================
+xdr.union("ManageSignerRoleResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//               uint64 roleID;
+//   
+//               // reserved for future use
+//               union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//               ext;
+//           }
+//
+// ===========================================================================
+xdr.struct("ManageSignerRoleResultSuccess", [
+  ["roleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("ManageSignerRoleResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union ManageSignerRoleResult switch (ManageSignerRoleResultCode code)
+//   {
+//       case SUCCESS:
+//           struct {
+//               uint64 roleID;
+//   
+//               // reserved for future use
+//               union switch (LedgerVersion v)
+//               {
+//               case EMPTY_VERSION:
+//                   void;
+//               }
+//               ext;
+//           } success;
+//       case RULE_ID_DUPLICATION:
+//       case DEFAULT_RULE_ID_DUPLICATION:
+//       case NO_SUCH_RULE:
+//           uint64 ruleID;
+//       case TOO_MANY_RULE_IDS:
+//           uint64 maxRuleIDsCount;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageSignerRoleResult", {
+  switchOn: xdr.lookup("ManageSignerRoleResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+    ["ruleIdDuplication", "ruleId"],
+    ["defaultRuleIdDuplication", "ruleId"],
+    ["noSuchRule", "ruleId"],
+    ["tooManyRuleId", "maxRuleIDsCount"],
+  ],
+  arms: {
+    success: xdr.lookup("ManageSignerRoleResultSuccess"),
+    ruleId: xdr.lookup("Uint64"),
+    maxRuleIDsCount: xdr.lookup("Uint64"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -9167,312 +10627,6 @@ xdr.struct("OfferEntry", [
 
 // === xdr source ============================================================
 //
-//   enum ManageAccountRolePermissionOpAction
-//   {
-//       CREATE = 0,
-//       UPDATE = 1,
-//       REMOVE = 2
-//   };
-//
-// ===========================================================================
-xdr.enum("ManageAccountRolePermissionOpAction", {
-  create: 0,
-  update: 1,
-  remove: 2,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("CreateAccountRolePermissionDataExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct CreateAccountRolePermissionData
-//   {
-//       uint64 roleID;
-//       OperationType opType;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       } ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("CreateAccountRolePermissionData", [
-  ["roleId", xdr.lookup("Uint64")],
-  ["opType", xdr.lookup("OperationType")],
-  ["ext", xdr.lookup("CreateAccountRolePermissionDataExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("UpdateAccountRolePermissionDataExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct UpdateAccountRolePermissionData
-//   {
-//       uint64 permissionID;
-//       uint64 roleID;
-//       OperationType opType;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       } ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("UpdateAccountRolePermissionData", [
-  ["permissionId", xdr.lookup("Uint64")],
-  ["roleId", xdr.lookup("Uint64")],
-  ["opType", xdr.lookup("OperationType")],
-  ["ext", xdr.lookup("UpdateAccountRolePermissionDataExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("RemoveAccountRolePermissionDataExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct RemoveAccountRolePermissionData
-//   {
-//       uint64 permissionID;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       } ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("RemoveAccountRolePermissionData", [
-  ["permissionId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("RemoveAccountRolePermissionDataExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (ManageAccountRolePermissionOpAction action)
-//       {
-//       case CREATE:
-//           CreateAccountRolePermissionData createData;
-//       case UPDATE:
-//           UpdateAccountRolePermissionData updateData;
-//       case REMOVE:
-//           RemoveAccountRolePermissionData removeData;
-//       }
-//
-// ===========================================================================
-xdr.union("ManageAccountRolePermissionOpData", {
-  switchOn: xdr.lookup("ManageAccountRolePermissionOpAction"),
-  switchName: "action",
-  switches: [
-    ["create", "createData"],
-    ["update", "updateData"],
-    ["remove", "removeData"],
-  ],
-  arms: {
-    createData: xdr.lookup("CreateAccountRolePermissionData"),
-    updateData: xdr.lookup("UpdateAccountRolePermissionData"),
-    removeData: xdr.lookup("RemoveAccountRolePermissionData"),
-  },
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("ManageAccountRolePermissionOpExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct ManageAccountRolePermissionOp
-//   {
-//       union switch (ManageAccountRolePermissionOpAction action)
-//       {
-//       case CREATE:
-//           CreateAccountRolePermissionData createData;
-//       case UPDATE:
-//           UpdateAccountRolePermissionData updateData;
-//       case REMOVE:
-//           RemoveAccountRolePermissionData removeData;
-//       } data;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("ManageAccountRolePermissionOp", [
-  ["data", xdr.lookup("ManageAccountRolePermissionOpData")],
-  ["ext", xdr.lookup("ManageAccountRolePermissionOpExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum ManageAccountRolePermissionResultCode
-//   {
-//       // codes considered as "success" for the operation
-//       SUCCESS = 0,
-//   
-//       // codes considered as "failure" for the operation
-//       NOT_FOUND = -1,
-//       PERMISSION_ALREADY_EXISTS = -2
-//   };
-//
-// ===========================================================================
-xdr.enum("ManageAccountRolePermissionResultCode", {
-  success: 0,
-  notFound: -1,
-  permissionAlreadyExist: -2,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//               {
-//               case EMPTY_VERSION:
-//                   void;
-//               }
-//
-// ===========================================================================
-xdr.union("ManageAccountRolePermissionResultSuccessExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//               uint64 permissionID;
-//   
-//               // reserved for future use
-//               union switch (LedgerVersion v)
-//               {
-//               case EMPTY_VERSION:
-//                   void;
-//               }
-//               ext;
-//           }
-//
-// ===========================================================================
-xdr.struct("ManageAccountRolePermissionResultSuccess", [
-  ["permissionId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("ManageAccountRolePermissionResultSuccessExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union ManageAccountRolePermissionResult switch (ManageAccountRolePermissionResultCode code)
-//   {
-//       case SUCCESS:
-//           struct {
-//               uint64 permissionID;
-//   
-//               // reserved for future use
-//               union switch (LedgerVersion v)
-//               {
-//               case EMPTY_VERSION:
-//                   void;
-//               }
-//               ext;
-//           } success;
-//       default:
-//           void;
-//   };
-//
-// ===========================================================================
-xdr.union("ManageAccountRolePermissionResult", {
-  switchOn: xdr.lookup("ManageAccountRolePermissionResultCode"),
-  switchName: "code",
-  switches: [
-    ["success", "success"],
-  ],
-  arms: {
-    success: xdr.lookup("ManageAccountRolePermissionResultSuccess"),
-  },
-  defaultArm: xdr.void(),
-});
-
-// === xdr source ============================================================
-//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -9497,6 +10651,7 @@ xdr.union("ASwapRequestExt", {
 //       uint64 bidID;
 //       uint64 baseAmount;
 //       AssetCode quoteAsset;
+//       longstring creatorDetails; // details set by requester
 //   
 //       union switch (LedgerVersion v)
 //       {
@@ -9510,87 +10665,8 @@ xdr.struct("ASwapRequest", [
   ["bidId", xdr.lookup("Uint64")],
   ["baseAmount", xdr.lookup("Uint64")],
   ["quoteAsset", xdr.lookup("AssetCode")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("ASwapRequestExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("InvoiceReferenceExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct InvoiceReference {
-//       uint64 invoiceID;
-//       bool accept;
-//   	// reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("InvoiceReference", [
-  ["invoiceId", xdr.lookup("Uint64")],
-  ["accept", xdr.bool()],
-  ["ext", xdr.lookup("InvoiceReferenceExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("FeeDataExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct FeeData {
-//       int64 paymentFee;
-//       int64 fixedFee;
-//   	// reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("FeeData", [
-  ["paymentFee", xdr.lookup("Int64")],
-  ["fixedFee", xdr.lookup("Int64")],
-  ["ext", xdr.lookup("FeeDataExt")],
 ]);
 
 // === xdr source ============================================================
@@ -9615,10 +10691,11 @@ xdr.union("PaymentFeeDataExt", {
 // === xdr source ============================================================
 //
 //   struct PaymentFeeData {
-//       FeeData sourceFee;
-//       FeeData destinationFee;
-//       bool sourcePaysForDest;    // if true source account pays fee, else destination
-//   	// reserved for future use
+//       Fee sourceFee;
+//       Fee destinationFee;
+//   
+//       bool sourcePaysForDest; // if true - source account pays fee, else destination
+//   
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -9629,11 +10706,47 @@ xdr.union("PaymentFeeDataExt", {
 //
 // ===========================================================================
 xdr.struct("PaymentFeeData", [
-  ["sourceFee", xdr.lookup("FeeData")],
-  ["destinationFee", xdr.lookup("FeeData")],
+  ["sourceFee", xdr.lookup("Fee")],
+  ["destinationFee", xdr.lookup("Fee")],
   ["sourcePaysForDest", xdr.bool()],
   ["ext", xdr.lookup("PaymentFeeDataExt")],
 ]);
+
+// === xdr source ============================================================
+//
+//   enum PaymentDestinationType {
+//       ACCOUNT = 0,
+//       BALANCE = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("PaymentDestinationType", {
+  account: 0,
+  balance: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (PaymentDestinationType type) {
+//           case ACCOUNT:
+//               AccountID accountID;
+//           case BALANCE:
+//               BalanceID balanceID;
+//       }
+//
+// ===========================================================================
+xdr.union("PaymentOpDestination", {
+  switchOn: xdr.lookup("PaymentDestinationType"),
+  switchName: "type",
+  switches: [
+    ["account", "accountId"],
+    ["balance", "balanceId"],
+  ],
+  arms: {
+    accountId: xdr.lookup("AccountId"),
+    balanceId: xdr.lookup("BalanceId"),
+  },
+});
 
 // === xdr source ============================================================
 //
@@ -9659,17 +10772,22 @@ xdr.union("PaymentOpExt", {
 //   struct PaymentOp
 //   {
 //       BalanceID sourceBalanceID;
-//       BalanceID destinationBalanceID;
-//       int64 amount;          // amount they end up with
+//   
+//       union switch (PaymentDestinationType type) {
+//           case ACCOUNT:
+//               AccountID accountID;
+//           case BALANCE:
+//               BalanceID balanceID;
+//       } destination;
+//   
+//       uint64 amount;
 //   
 //       PaymentFeeData feeData;
 //   
-//       string256 subject;
-//       string64 reference;
-//       
-//       InvoiceReference* invoiceReference;
+//       longstring subject;
+//       longstring reference;
 //   
-//   	// reserved for future use
+//       // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -9681,12 +10799,11 @@ xdr.union("PaymentOpExt", {
 // ===========================================================================
 xdr.struct("PaymentOp", [
   ["sourceBalanceId", xdr.lookup("BalanceId")],
-  ["destinationBalanceId", xdr.lookup("BalanceId")],
-  ["amount", xdr.lookup("Int64")],
+  ["destination", xdr.lookup("PaymentOpDestination")],
+  ["amount", xdr.lookup("Uint64")],
   ["feeData", xdr.lookup("PaymentFeeData")],
-  ["subject", xdr.lookup("String256")],
-  ["reference", xdr.lookup("String64")],
-  ["invoiceReference", xdr.option(xdr.lookup("InvoiceReference"))],
+  ["subject", xdr.lookup("Longstring")],
+  ["reference", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("PaymentOpExt")],
 ]);
 
@@ -9695,27 +10812,24 @@ xdr.struct("PaymentOp", [
 //   enum PaymentResultCode
 //   {
 //       // codes considered as "success" for the operation
-//       SUCCESS = 0, // payment successfuly completed
+//       SUCCESS = 0, // payment successfully completed
 //   
 //       // codes considered as "failure" for the operation
-//       MALFORMED = -1,       // bad input
-//       UNDERFUNDED = -2,     // not enough funds in source account
-//       LINE_FULL = -3,       // destination would go above their limit
-//   	FEE_MISMATCHED = -4,   // fee is not equal to expected fee
-//       BALANCE_NOT_FOUND = -5, // destination balance not found
-//       BALANCE_ACCOUNT_MISMATCHED = -6,
-//       BALANCE_ASSETS_MISMATCHED = -7,
-//   	SRC_BALANCE_NOT_FOUND = -8, // source balance not found
-//       REFERENCE_DUPLICATION = -9,
-//       STATS_OVERFLOW = -10,
-//       LIMITS_EXCEEDED = -11,
-//       NOT_ALLOWED_BY_ASSET_POLICY = -12,
-//       INVOICE_NOT_FOUND = -13,
-//       INVOICE_WRONG_AMOUNT = -14,
-//       INVOICE_BALANCE_MISMATCH = -15,
-//       INVOICE_ACCOUNT_MISMATCH = -16,
-//       INVOICE_ALREADY_PAID = -17,
-//       PAYMENT_V1_NO_LONGER_SUPPORTED = -18
+//       MALFORMED = -1, // bad input
+//       UNDERFUNDED = -2, // not enough funds in source account
+//       LINE_FULL = -3, // destination would go above their limit
+//   	DESTINATION_BALANCE_NOT_FOUND = -4,
+//       BALANCE_ASSETS_MISMATCHED = -5,
+//   	SRC_BALANCE_NOT_FOUND = -6, // source balance not found
+//       REFERENCE_DUPLICATION = -7,
+//       STATS_OVERFLOW = -8,
+//       LIMITS_EXCEEDED = -9,
+//       NOT_ALLOWED_BY_ASSET_POLICY = -10,
+//       INVALID_DESTINATION_FEE = -11,
+//       INSUFFICIENT_FEE_AMOUNT = -12,
+//       PAYMENT_AMOUNT_IS_LESS_THAN_DEST_FEE = -13,
+//       DESTINATION_ACCOUNT_NOT_FOUND = -14,
+//       INCORRECT_AMOUNT_PRECISION = -15
 //   };
 //
 // ===========================================================================
@@ -9724,21 +10838,18 @@ xdr.enum("PaymentResultCode", {
   malformed: -1,
   underfunded: -2,
   lineFull: -3,
-  feeMismatched: -4,
-  balanceNotFound: -5,
-  balanceAccountMismatched: -6,
-  balanceAssetsMismatched: -7,
-  srcBalanceNotFound: -8,
-  referenceDuplication: -9,
-  statsOverflow: -10,
-  limitsExceeded: -11,
-  notAllowedByAssetPolicy: -12,
-  invoiceNotFound: -13,
-  invoiceWrongAmount: -14,
-  invoiceBalanceMismatch: -15,
-  invoiceAccountMismatch: -16,
-  invoiceAlreadyPaid: -17,
-  paymentV1NoLongerSupported: -18,
+  destinationBalanceNotFound: -4,
+  balanceAssetsMismatched: -5,
+  srcBalanceNotFound: -6,
+  referenceDuplication: -7,
+  statsOverflow: -8,
+  limitsExceeded: -9,
+  notAllowedByAssetPolicy: -10,
+  invalidDestinationFee: -11,
+  insufficientFeeAmount: -12,
+  paymentAmountIsLessThanDestFee: -13,
+  destinationAccountNotFound: -14,
+  incorrectAmountPrecision: -15,
 });
 
 // === xdr source ============================================================
@@ -9764,8 +10875,15 @@ xdr.union("PaymentResponseExt", {
 //
 //   struct PaymentResponse {
 //       AccountID destination;
-//       uint64 paymentID;
+//       BalanceID destinationBalanceID;
+//   
 //       AssetCode asset;
+//       uint64 sourceSentUniversal;
+//       uint64 paymentID;
+//   
+//       Fee actualSourcePaymentFee;
+//       Fee actualDestinationPaymentFee;
+//   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
@@ -9778,8 +10896,12 @@ xdr.union("PaymentResponseExt", {
 // ===========================================================================
 xdr.struct("PaymentResponse", [
   ["destination", xdr.lookup("AccountId")],
-  ["paymentId", xdr.lookup("Uint64")],
+  ["destinationBalanceId", xdr.lookup("BalanceId")],
   ["asset", xdr.lookup("AssetCode")],
+  ["sourceSentUniversal", xdr.lookup("Uint64")],
+  ["paymentId", xdr.lookup("Uint64")],
+  ["actualSourcePaymentFee", xdr.lookup("Fee")],
+  ["actualDestinationPaymentFee", xdr.lookup("Fee")],
   ["ext", xdr.lookup("PaymentResponseExt")],
 ]);
 
@@ -9865,7 +10987,7 @@ xdr.struct("CreateIssuanceRequestOp", [
 //   	NOT_AUTHORIZED = -5,
 //   	EXCEEDS_MAX_ISSUANCE_AMOUNT = -6,
 //   	RECEIVER_FULL_LINE = -7,
-//   	INVALID_EXTERNAL_DETAILS = -8, // external details size exceeds max allowed
+//   	INVALID_CREATOR_DETAILS = -8, // external details size exceeds max allowed
 //   	FEE_EXCEEDS_AMOUNT = -9, // fee more than amount to issue
 //       REQUIRES_KYC = -10, // asset requires receiver to have KYC
 //       REQUIRES_VERIFICATION = -11, //asset requires receiver to be verified
@@ -9884,7 +11006,7 @@ xdr.enum("CreateIssuanceRequestResultCode", {
   notAuthorized: -5,
   exceedsMaxIssuanceAmount: -6,
   receiverFullLine: -7,
-  invalidExternalDetail: -8,
+  invalidCreatorDetail: -8,
   feeExceedsAmount: -9,
   requiresKyc: -10,
   requiresVerification: -11,
@@ -10289,8 +11411,6 @@ xdr.union("PayoutResult", {
 //   	{
 //   	case EMPTY_VERSION:
 //   		void;
-//       case ALLOW_TO_UPDATE_AND_REJECT_LIMITS_UPDATE_REQUESTS:
-//           uint64 requestID;
 //   	}
 //
 // ===========================================================================
@@ -10299,10 +11419,8 @@ xdr.union("CreateManageLimitsRequestOpExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["allowToUpdateAndRejectLimitsUpdateRequest", "requestId"],
   ],
   arms: {
-    requestId: xdr.lookup("Uint64"),
   },
 });
 
@@ -10313,13 +11431,14 @@ xdr.union("CreateManageLimitsRequestOpExt", {
 //       LimitsUpdateRequest manageLimitsRequest;
 //   
 //   	uint32* allTasks;
+//       uint64 requestID;
+//   
+//   
 //   	// reserved for future use
 //   	union switch (LedgerVersion v)
 //   	{
 //   	case EMPTY_VERSION:
 //   		void;
-//       case ALLOW_TO_UPDATE_AND_REJECT_LIMITS_UPDATE_REQUESTS:
-//           uint64 requestID;
 //   	}
 //   	ext;
 //   
@@ -10329,6 +11448,7 @@ xdr.union("CreateManageLimitsRequestOpExt", {
 xdr.struct("CreateManageLimitsRequestOp", [
   ["manageLimitsRequest", xdr.lookup("LimitsUpdateRequest")],
   ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["requestId", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("CreateManageLimitsRequestOpExt")],
 ]);
 
@@ -10342,8 +11462,7 @@ xdr.struct("CreateManageLimitsRequestOp", [
 //       // codes considered as "failure" for the operation
 //   	MANAGE_LIMITS_REQUEST_REFERENCE_DUPLICATION = -1,
 //       MANAGE_LIMITS_REQUEST_NOT_FOUND = -2,
-//       INVALID_DETAILS = -3, // details must be valid json
-//       INVALID_MANAGE_LIMITS_REQUEST_VERSION = -4, // a version of the request is higher than ledger version
+//       INVALID_CREATOR_DETAILS = -3, // details must be valid json
 //   	LIMITS_UPDATE_TASKS_NOT_FOUND = -5,
 //       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -6, // can't set allTasks on request update
 //       LIMITS_UPDATE_ZERO_TASKS_NOT_ALLOWED = -7
@@ -10355,8 +11474,7 @@ xdr.enum("CreateManageLimitsRequestResultCode", {
   success: 0,
   manageLimitsRequestReferenceDuplication: -1,
   manageLimitsRequestNotFound: -2,
-  invalidDetail: -3,
-  invalidManageLimitsRequestVersion: -4,
+  invalidCreatorDetail: -3,
   limitsUpdateTasksNotFound: -5,
   notAllowedToSetTasksOnUpdate: -6,
   limitsUpdateZeroTasksNotAllowed: -7,
@@ -10792,7 +11910,8 @@ xdr.union("AmlAlertRequestExt", {
 //   struct AMLAlertRequest {
 //       BalanceID balanceID;
 //       uint64 amount;
-//       longstring reason;
+//       longstring creatorDetails; // details set by requester
+//   
 //   	union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -10805,270 +11924,9 @@ xdr.union("AmlAlertRequestExt", {
 xdr.struct("AmlAlertRequest", [
   ["balanceId", xdr.lookup("BalanceId")],
   ["amount", xdr.lookup("Uint64")],
-  ["reason", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("AmlAlertRequestExt")],
 ]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("PaymentFeeDataV2Ext", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct PaymentFeeDataV2 {
-//       Fee sourceFee;
-//       Fee destinationFee;
-//   
-//       bool sourcePaysForDest; // if true - source account pays fee, else destination
-//   
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("PaymentFeeDataV2", [
-  ["sourceFee", xdr.lookup("Fee")],
-  ["destinationFee", xdr.lookup("Fee")],
-  ["sourcePaysForDest", xdr.bool()],
-  ["ext", xdr.lookup("PaymentFeeDataV2Ext")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum PaymentDestinationType {
-//       ACCOUNT = 0,
-//       BALANCE = 1
-//   };
-//
-// ===========================================================================
-xdr.enum("PaymentDestinationType", {
-  account: 0,
-  balance: 1,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (PaymentDestinationType type) {
-//           case ACCOUNT:
-//               AccountID accountID;
-//           case BALANCE:
-//               BalanceID balanceID;
-//       }
-//
-// ===========================================================================
-xdr.union("PaymentOpV2Destination", {
-  switchOn: xdr.lookup("PaymentDestinationType"),
-  switchName: "type",
-  switches: [
-    ["account", "accountId"],
-    ["balance", "balanceId"],
-  ],
-  arms: {
-    accountId: xdr.lookup("AccountId"),
-    balanceId: xdr.lookup("BalanceId"),
-  },
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("PaymentOpV2Ext", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct PaymentOpV2
-//   {
-//       BalanceID sourceBalanceID;
-//   
-//       union switch (PaymentDestinationType type) {
-//           case ACCOUNT:
-//               AccountID accountID;
-//           case BALANCE:
-//               BalanceID balanceID;
-//       } destination;
-//   
-//       uint64 amount;
-//   
-//       PaymentFeeDataV2 feeData;
-//   
-//       longstring subject;
-//       longstring reference;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("PaymentOpV2", [
-  ["sourceBalanceId", xdr.lookup("BalanceId")],
-  ["destination", xdr.lookup("PaymentOpV2Destination")],
-  ["amount", xdr.lookup("Uint64")],
-  ["feeData", xdr.lookup("PaymentFeeDataV2")],
-  ["subject", xdr.lookup("Longstring")],
-  ["reference", xdr.lookup("Longstring")],
-  ["ext", xdr.lookup("PaymentOpV2Ext")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum PaymentV2ResultCode
-//   {
-//       // codes considered as "success" for the operation
-//       SUCCESS = 0, // payment successfully completed
-//   
-//       // codes considered as "failure" for the operation
-//       MALFORMED = -1, // bad input
-//       UNDERFUNDED = -2, // not enough funds in source account
-//       LINE_FULL = -3, // destination would go above their limit
-//   	DESTINATION_BALANCE_NOT_FOUND = -4,
-//       BALANCE_ASSETS_MISMATCHED = -5,
-//   	SRC_BALANCE_NOT_FOUND = -6, // source balance not found
-//       REFERENCE_DUPLICATION = -7,
-//       STATS_OVERFLOW = -8,
-//       LIMITS_EXCEEDED = -9,
-//       NOT_ALLOWED_BY_ASSET_POLICY = -10,
-//       INVALID_DESTINATION_FEE = -11,
-//       INSUFFICIENT_FEE_AMOUNT = -12,
-//       PAYMENT_AMOUNT_IS_LESS_THAN_DEST_FEE = -13,
-//       DESTINATION_ACCOUNT_NOT_FOUND = -14,
-//       INCORRECT_AMOUNT_PRECISION = -15
-//   
-//        // !!! Add new result code to review invoice op too !!!
-//   };
-//
-// ===========================================================================
-xdr.enum("PaymentV2ResultCode", {
-  success: 0,
-  malformed: -1,
-  underfunded: -2,
-  lineFull: -3,
-  destinationBalanceNotFound: -4,
-  balanceAssetsMismatched: -5,
-  srcBalanceNotFound: -6,
-  referenceDuplication: -7,
-  statsOverflow: -8,
-  limitsExceeded: -9,
-  notAllowedByAssetPolicy: -10,
-  invalidDestinationFee: -11,
-  insufficientFeeAmount: -12,
-  paymentAmountIsLessThanDestFee: -13,
-  destinationAccountNotFound: -14,
-  incorrectAmountPrecision: -15,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("PaymentV2ResponseExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct PaymentV2Response {
-//       AccountID destination;
-//       BalanceID destinationBalanceID;
-//   
-//       AssetCode asset;
-//       uint64 sourceSentUniversal;
-//       uint64 paymentID;
-//   
-//       Fee actualSourcePaymentFee;
-//       Fee actualDestinationPaymentFee;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("PaymentV2Response", [
-  ["destination", xdr.lookup("AccountId")],
-  ["destinationBalanceId", xdr.lookup("BalanceId")],
-  ["asset", xdr.lookup("AssetCode")],
-  ["sourceSentUniversal", xdr.lookup("Uint64")],
-  ["paymentId", xdr.lookup("Uint64")],
-  ["actualSourcePaymentFee", xdr.lookup("Fee")],
-  ["actualDestinationPaymentFee", xdr.lookup("Fee")],
-  ["ext", xdr.lookup("PaymentV2ResponseExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union PaymentV2Result switch (PaymentV2ResultCode code)
-//   {
-//   case SUCCESS:
-//       PaymentV2Response paymentV2Response;
-//   default:
-//       void;
-//   };
-//
-// ===========================================================================
-xdr.union("PaymentV2Result", {
-  switchOn: xdr.lookup("PaymentV2ResultCode"),
-  switchName: "code",
-  switches: [
-    ["success", "paymentV2Response"],
-  ],
-  arms: {
-    paymentV2Response: xdr.lookup("PaymentV2Response"),
-  },
-  defaultArm: xdr.void(),
-});
 
 // === xdr source ============================================================
 //
@@ -11100,7 +11958,7 @@ xdr.union("InvoiceRequestExt", {
 //   
 //       uint64 *contractID;
 //       bool isApproved;
-//       longstring details;
+//       longstring creatorDetails; // details set by requester
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
@@ -11119,7 +11977,7 @@ xdr.struct("InvoiceRequest", [
   ["receiverBalance", xdr.lookup("BalanceId")],
   ["contractId", xdr.option(xdr.lookup("Uint64"))],
   ["isApproved", xdr.bool()],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("InvoiceRequestExt")],
 ]);
 
@@ -11128,39 +11986,41 @@ xdr.struct("InvoiceRequest", [
 //   enum ReviewableRequestType
 //   {
 //   	NONE = 0, // use this request type in ReviewRequestOp extended result if additional info is not required
-//   	ASSET_UPDATE = 1,
-//   	PRE_ISSUANCE_CREATE = 2,
-//   	ISSUANCE_CREATE = 3,
-//   	WITHDRAW = 4,
-//   	SALE = 5,
-//   	LIMITS_UPDATE = 6,
-//       AML_ALERT = 7,
-//   	UPDATE_KYC = 8,
+//   	ANY = 1,
+//   	CREATE_PRE_ISSUANCE = 2,
+//   	CREATE_ISSUANCE = 3,
+//   	CREATE_WITHDRAW = 4,
+//   	CREATE_SALE = 5,
+//   	UPDATE_LIMITS = 6,
+//       CREATE_AML_ALERT = 7,
+//   	CHANGE_ROLE = 8,
 //   	UPDATE_SALE_DETAILS = 9,
-//   	ASSET_CREATE = 10,
-//   	INVOICE = 11,
-//   	CONTRACT = 12,
+//   	CREATE_ASSET = 10,
+//   	CREATE_INVOICE = 11,
+//   	MANAGE_CONTRACT = 12,
+//   	UPDATE_ASSET = 13,
 //   	CREATE_ATOMIC_SWAP_BID = 16,
-//   	ATOMIC_SWAP = 17
+//   	CREATE_ATOMIC_SWAP = 17
 //   };
 //
 // ===========================================================================
 xdr.enum("ReviewableRequestType", {
   none: 0,
-  assetUpdate: 1,
-  preIssuanceCreate: 2,
-  issuanceCreate: 3,
-  withdraw: 4,
-  sale: 5,
-  limitsUpdate: 6,
-  amlAlert: 7,
-  updateKyc: 8,
+  any: 1,
+  createPreIssuance: 2,
+  createIssuance: 3,
+  createWithdraw: 4,
+  createSale: 5,
+  updateLimit: 6,
+  createAmlAlert: 7,
+  changeRole: 8,
   updateSaleDetail: 9,
-  assetCreate: 10,
-  invoice: 11,
-  contract: 12,
+  createAsset: 10,
+  createInvoice: 11,
+  manageContract: 12,
+  updateAsset: 13,
   createAtomicSwapBid: 16,
-  atomicSwap: 17,
+  createAtomicSwap: 17,
 });
 
 // === xdr source ============================================================
@@ -11212,33 +12072,33 @@ xdr.struct("TasksExt", [
 // === xdr source ============================================================
 //
 //   union switch (ReviewableRequestType type) {
-//   		case ASSET_CREATE:
+//   		case CREATE_ASSET:
 //   			AssetCreationRequest assetCreationRequest;
-//   		case ASSET_UPDATE:
+//   		case UPDATE_ASSET:
 //   			AssetUpdateRequest assetUpdateRequest;
-//   		case PRE_ISSUANCE_CREATE:
+//   		case CREATE_PRE_ISSUANCE:
 //   			PreIssuanceRequest preIssuanceRequest;
-//   		case ISSUANCE_CREATE:
+//   		case CREATE_ISSUANCE:
 //   			IssuanceRequest issuanceRequest;
-//   		case WITHDRAW:
+//   		case CREATE_WITHDRAW:
 //   			WithdrawalRequest withdrawalRequest;
-//   		case SALE:
+//   		case CREATE_SALE:
 //   			SaleCreationRequest saleCreationRequest;
-//           case LIMITS_UPDATE:
+//           case UPDATE_LIMITS:
 //               LimitsUpdateRequest limitsUpdateRequest;
-//           case AML_ALERT:
+//           case CREATE_AML_ALERT:
 //               AMLAlertRequest amlAlertRequest;
-//           case UPDATE_KYC:
-//               UpdateKYCRequest updateKYCRequest;
+//           case CHANGE_ROLE:
+//               ChangeRoleRequest changeRoleRequest;
 //           case UPDATE_SALE_DETAILS:
 //               UpdateSaleDetailsRequest updateSaleDetailsRequest;
-//           case INVOICE:
+//           case CREATE_INVOICE:
 //               InvoiceRequest invoiceRequest;
-//           case CONTRACT:
+//           case MANAGE_CONTRACT:
 //               ContractRequest contractRequest;
 //           case CREATE_ATOMIC_SWAP_BID:
 //               ASwapBidCreationRequest aSwapBidCreationRequest;
-//           case ATOMIC_SWAP:
+//           case CREATE_ATOMIC_SWAP:
 //               ASwapRequest aSwapRequest;
 //   	}
 //
@@ -11247,20 +12107,20 @@ xdr.union("ReviewableRequestEntryBody", {
   switchOn: xdr.lookup("ReviewableRequestType"),
   switchName: "type",
   switches: [
-    ["assetCreate", "assetCreationRequest"],
-    ["assetUpdate", "assetUpdateRequest"],
-    ["preIssuanceCreate", "preIssuanceRequest"],
-    ["issuanceCreate", "issuanceRequest"],
-    ["withdraw", "withdrawalRequest"],
-    ["sale", "saleCreationRequest"],
-    ["limitsUpdate", "limitsUpdateRequest"],
-    ["amlAlert", "amlAlertRequest"],
-    ["updateKyc", "updateKycRequest"],
+    ["createAsset", "assetCreationRequest"],
+    ["updateAsset", "assetUpdateRequest"],
+    ["createPreIssuance", "preIssuanceRequest"],
+    ["createIssuance", "issuanceRequest"],
+    ["createWithdraw", "withdrawalRequest"],
+    ["createSale", "saleCreationRequest"],
+    ["updateLimit", "limitsUpdateRequest"],
+    ["createAmlAlert", "amlAlertRequest"],
+    ["changeRole", "changeRoleRequest"],
     ["updateSaleDetail", "updateSaleDetailsRequest"],
-    ["invoice", "invoiceRequest"],
-    ["contract", "contractRequest"],
+    ["createInvoice", "invoiceRequest"],
+    ["manageContract", "contractRequest"],
     ["createAtomicSwapBid", "aSwapBidCreationRequest"],
-    ["atomicSwap", "aSwapRequest"],
+    ["createAtomicSwap", "aSwapRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -11271,7 +12131,7 @@ xdr.union("ReviewableRequestEntryBody", {
     saleCreationRequest: xdr.lookup("SaleCreationRequest"),
     limitsUpdateRequest: xdr.lookup("LimitsUpdateRequest"),
     amlAlertRequest: xdr.lookup("AmlAlertRequest"),
-    updateKycRequest: xdr.lookup("UpdateKycRequest"),
+    changeRoleRequest: xdr.lookup("ChangeRoleRequest"),
     updateSaleDetailsRequest: xdr.lookup("UpdateSaleDetailsRequest"),
     invoiceRequest: xdr.lookup("InvoiceRequest"),
     contractRequest: xdr.lookup("ContractRequest"),
@@ -11311,33 +12171,33 @@ xdr.union("ReviewableRequestEntryExt", {
 //   	int64 createdAt; // when request was created
 //   
 //   	union switch (ReviewableRequestType type) {
-//   		case ASSET_CREATE:
+//   		case CREATE_ASSET:
 //   			AssetCreationRequest assetCreationRequest;
-//   		case ASSET_UPDATE:
+//   		case UPDATE_ASSET:
 //   			AssetUpdateRequest assetUpdateRequest;
-//   		case PRE_ISSUANCE_CREATE:
+//   		case CREATE_PRE_ISSUANCE:
 //   			PreIssuanceRequest preIssuanceRequest;
-//   		case ISSUANCE_CREATE:
+//   		case CREATE_ISSUANCE:
 //   			IssuanceRequest issuanceRequest;
-//   		case WITHDRAW:
+//   		case CREATE_WITHDRAW:
 //   			WithdrawalRequest withdrawalRequest;
-//   		case SALE:
+//   		case CREATE_SALE:
 //   			SaleCreationRequest saleCreationRequest;
-//           case LIMITS_UPDATE:
+//           case UPDATE_LIMITS:
 //               LimitsUpdateRequest limitsUpdateRequest;
-//           case AML_ALERT:
+//           case CREATE_AML_ALERT:
 //               AMLAlertRequest amlAlertRequest;
-//           case UPDATE_KYC:
-//               UpdateKYCRequest updateKYCRequest;
+//           case CHANGE_ROLE:
+//               ChangeRoleRequest changeRoleRequest;
 //           case UPDATE_SALE_DETAILS:
 //               UpdateSaleDetailsRequest updateSaleDetailsRequest;
-//           case INVOICE:
+//           case CREATE_INVOICE:
 //               InvoiceRequest invoiceRequest;
-//           case CONTRACT:
+//           case MANAGE_CONTRACT:
 //               ContractRequest contractRequest;
 //           case CREATE_ATOMIC_SWAP_BID:
 //               ASwapBidCreationRequest aSwapBidCreationRequest;
-//           case ATOMIC_SWAP:
+//           case CREATE_ATOMIC_SWAP:
 //               ASwapRequest aSwapRequest;
 //   	} body;
 //   
@@ -11472,168 +12332,6 @@ xdr.struct("StatisticsV2Entry", [
 
 // === xdr source ============================================================
 //
-//   enum SignerType
-//   {
-//   	READER = 1,                  // can only read data from API and Horizon
-//   	NOT_VERIFIED_ACC_MANAGER = 2,// can manage not verified account and block/unblock general
-//   	GENERAL_ACC_MANAGER = 4,     // allowed to create account, block/unblock, change limits for particular general account
-//   	DIRECT_DEBIT_OPERATOR = 8, // allowed to perform direct debit operation
-//   	ASSET_MANAGER = 16, // allowed to create assets/asset pairs and update policies, set fees
-//   	ASSET_RATE_MANAGER = 32, // allowed to set physical asset price
-//   	BALANCE_MANAGER = 64, // allowed to create balances, spend assets from balances
-//   	ISSUANCE_MANAGER = 128, // allowed to make preissuance request
-//   	INVOICE_MANAGER = 256, // allowed to create payment requests to other accounts
-//   	ATOMIC_SWAP_MANAGER = 512, // allowed to work with atomic swaps
-//   	LIMITS_MANAGER = 1024, // allowed to change limits
-//   	ACCOUNT_MANAGER = 2048, // allowed to add/delete signers and trust
-//   	COMMISSION_BALANCE_MANAGER  = 4096,// allowed to spend from commission balances
-//   	OPERATIONAL_BALANCE_MANAGER = 8192, // allowed to spend from operational balances
-//   	EVENTS_CHECKER = 16384, // allow to check and trigger events
-//   	EXCHANGE_ACC_MANAGER = 32768, // can manage exchange account
-//   	SYNDICATE_ACC_MANAGER = 65536, // can manage syndicate account
-//   	USER_ASSET_MANAGER = 131072, // can review sale, asset creation/update requests
-//   	USER_ISSUANCE_MANAGER = 262144, // can review pre-issuance/issuance requests
-//   	WITHDRAW_MANAGER = 524288, // can review withdraw requests
-//   	FEES_MANAGER = 1048576, // can set fee
-//   	TX_SENDER = 2097152, // can send tx
-//   	AML_ALERT_MANAGER = 4194304, // can manage AML alert request
-//   	AML_ALERT_REVIEWER = 8388608, // can review aml alert requests
-//   	KYC_ACC_MANAGER = 16777216, // can manage kyc
-//   	KYC_SUPER_ADMIN = 33554432,
-//   	EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_MANAGER = 67108864,
-//       KEY_VALUE_MANAGER = 134217728, // can manage keyValue
-//       SUPER_ISSUANCE_MANAGER = 268435456,
-//       CONTRACT_MANAGER = 536870912,
-//       ACCOUNT_ROLE_PERMISSION_MANAGER = 1073741824 // can manage account role permissions
-//   };
-//
-// ===========================================================================
-xdr.enum("SignerType", {
-  reader: 1,
-  notVerifiedAccManager: 2,
-  generalAccManager: 4,
-  directDebitOperator: 8,
-  assetManager: 16,
-  assetRateManager: 32,
-  balanceManager: 64,
-  issuanceManager: 128,
-  invoiceManager: 256,
-  atomicSwapManager: 512,
-  limitsManager: 1024,
-  accountManager: 2048,
-  commissionBalanceManager: 4096,
-  operationalBalanceManager: 8192,
-  eventsChecker: 16384,
-  exchangeAccManager: 32768,
-  syndicateAccManager: 65536,
-  userAssetManager: 131072,
-  userIssuanceManager: 262144,
-  withdrawManager: 524288,
-  feesManager: 1048576,
-  txSender: 2097152,
-  amlAlertManager: 4194304,
-  amlAlertReviewer: 8388608,
-  kycAccManager: 16777216,
-  kycSuperAdmin: 33554432,
-  externalSystemAccountIdPoolManager: 67108864,
-  keyValueManager: 134217728,
-  superIssuanceManager: 268435456,
-  contractManager: 536870912,
-  accountRolePermissionManager: 1073741824,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("SignerExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct Signer
-//   {
-//       AccountID pubKey;
-//       uint32 weight; // really only need 1byte
-//   	uint32 signerType;
-//   	uint32 identity;
-//   	string256 name;
-//   
-//   	 // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("Signer", [
-  ["pubKey", xdr.lookup("AccountId")],
-  ["weight", xdr.lookup("Uint32")],
-  ["signerType", xdr.lookup("Uint32")],
-  ["identity", xdr.lookup("Uint32")],
-  ["name", xdr.lookup("String256")],
-  ["ext", xdr.lookup("SignerExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("TrustEntryExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct TrustEntry
-//   {
-//       AccountID allowedAccount;
-//       BalanceID balanceToUse;
-//   
-//   	 // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("TrustEntry", [
-  ["allowedAccount", xdr.lookup("AccountId")],
-  ["balanceToUse", xdr.lookup("BalanceId")],
-  ["ext", xdr.lookup("TrustEntryExt")],
-]);
-
-// === xdr source ============================================================
-//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -11656,18 +12354,17 @@ xdr.union("LimitsExt", {
 //   struct Limits
 //   {
 //       int64 dailyOut;
-//   	int64 weeklyOut;
-//   	int64 monthlyOut;
+//       int64 weeklyOut;
+//       int64 monthlyOut;
 //       int64 annualOut;
 //   
-//   	 // reserved for future use
+//       // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
 //       }
 //       ext;
-//       
 //   };
 //
 // ===========================================================================
@@ -11681,120 +12378,10 @@ xdr.struct("Limits", [
 
 // === xdr source ============================================================
 //
-//   enum AccountPolicies
-//   {
-//   	NO_PERMISSIONS = 0,
-//   	ALLOW_TO_CREATE_USER_VIA_API = 1
-//   };
-//
-// ===========================================================================
-xdr.enum("AccountPolicies", {
-  noPermission: 0,
-  allowToCreateUserViaApi: 1,
-});
-
-// === xdr source ============================================================
-//
-//   enum AccountType
-//   {
-//   	OPERATIONAL = 1,       // operational account of the system 
-//   	GENERAL = 2,           // general account can perform payments, setoptions, be source account for tx, etc.
-//   	COMMISSION = 3,        // commission account
-//   	MASTER = 4,            // master account
-//       NOT_VERIFIED = 5,
-//   	SYNDICATE = 6, // can create asset
-//   	EXCHANGE = 7,
-//   	ACCREDITED_INVESTOR = 8,
-//   	INSTITUTIONAL_INVESTOR = 9,
-//   	VERIFIED = 10
-//   };
-//
-// ===========================================================================
-xdr.enum("AccountType", {
-  operational: 1,
-  general: 2,
-  commission: 3,
-  master: 4,
-  notVerified: 5,
-  syndicate: 6,
-  exchange: 7,
-  accreditedInvestor: 8,
-  institutionalInvestor: 9,
-  verified: 10,
-});
-
-// === xdr source ============================================================
-//
-//   enum BlockReasons
-//   {
-//   	RECOVERY_REQUEST = 1,
-//   	KYC_UPDATE = 2,
-//   	SUSPICIOUS_BEHAVIOR = 4,
-//   	TOO_MANY_KYC_UPDATE_REQUESTS = 8,
-//   	WITHDRAWAL = 16
-//   };
-//
-// ===========================================================================
-xdr.enum("BlockReasons", {
-  recoveryRequest: 1,
-  kycUpdate: 2,
-  suspiciousBehavior: 4,
-  tooManyKycUpdateRequest: 8,
-  withdrawal: 16,
-});
-
-// === xdr source ============================================================
-//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       }
-//
-// ===========================================================================
-xdr.union("AccountEntryExtendedExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct AccountEntryExtended
-//   {
-//       uint32 kycLevel;
-//       uint64* accountRole;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("AccountEntryExtended", [
-  ["kycLevel", xdr.lookup("Uint32")],
-  ["accountRole", xdr.option(xdr.lookup("Uint64"))],
-  ["ext", xdr.lookup("AccountEntryExtendedExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       case USE_KYC_LEVEL:
-//           uint32 kycLevel;
-//       case REPLACE_ACCOUNT_TYPES_WITH_POLICIES:
-//           AccountEntryExtended accountEntryExt;
 //       }
 //
 // ===========================================================================
@@ -11803,12 +12390,8 @@ xdr.union("AccountEntryExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["useKycLevel", "kycLevel"],
-    ["replaceAccountTypesWithPolicy", "accountEntryExt"],
   ],
   arms: {
-    kycLevel: xdr.lookup("Uint32"),
-    accountEntryExt: xdr.lookup("AccountEntryExtended"),
   },
 });
 
@@ -11817,36 +12400,21 @@ xdr.union("AccountEntryExt", {
 //   struct AccountEntry
 //   {
 //       AccountID accountID;      // master public key for this account
-//       AccountID recoveryID;
 //   
-//   	// sequenctial ID - unique identifier of the account, used by ingesting applications to 
-//   	// identify account, while keeping size of index small 
+//       // Referral marketing
+//       AccountID* referrer; // parent account
+//   
+//       // sequenctial ID - unique identifier of the account, used by ingesting applications to
+//       // identify account, while keeping size of index small
 //       uint64 sequentialID;
 //   
-//       // fields used for signatures
-//       // thresholds stores unsigned bytes: [weight of master|low|medium|high]
-//       Thresholds thresholds;
-//   
-//       Signer signers<>; // possible signers for this account
-//       Limits* limits;
-//   
-//   	uint32 blockReasons;
-//       AccountType accountType; // type of the account
-//       
-//       // Referral marketing
-//       AccountID* referrer;     // parent account
-//   
-//   	int32 policies;
+//   	uint64 roleID;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case USE_KYC_LEVEL:
-//           uint32 kycLevel;
-//       case REPLACE_ACCOUNT_TYPES_WITH_POLICIES:
-//           AccountEntryExtended accountEntryExt;
 //       }
 //       ext;
 //   };
@@ -11854,15 +12422,9 @@ xdr.union("AccountEntryExt", {
 // ===========================================================================
 xdr.struct("AccountEntry", [
   ["accountId", xdr.lookup("AccountId")],
-  ["recoveryId", xdr.lookup("AccountId")],
-  ["sequentialId", xdr.lookup("Uint64")],
-  ["thresholds", xdr.lookup("Thresholds")],
-  ["signers", xdr.varArray(xdr.lookup("Signer"), 2147483647)],
-  ["limits", xdr.option(xdr.lookup("Limits"))],
-  ["blockReasons", xdr.lookup("Uint32")],
-  ["accountType", xdr.lookup("AccountType")],
   ["referrer", xdr.option(xdr.lookup("AccountId"))],
-  ["policies", xdr.lookup("Int32")],
+  ["sequentialId", xdr.lookup("Uint64")],
+  ["roleId", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("AccountEntryExt")],
 ]);
 
@@ -12146,44 +12708,6 @@ xdr.struct("AmlAlertDetails", [
 //       }
 //
 // ===========================================================================
-xdr.union("UpdateKycDetailsExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct UpdateKYCDetails {
-//       string externalDetails<>;
-//       // Reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("UpdateKycDetails", [
-  ["externalDetails", xdr.string()],
-  ["ext", xdr.lookup("UpdateKycDetailsExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
 xdr.union("ContractDetailsExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
@@ -12236,7 +12760,7 @@ xdr.union("BillPayDetailsExt", {
 // === xdr source ============================================================
 //
 //   struct BillPayDetails {
-//       PaymentOpV2 paymentDetails;
+//       PaymentOp paymentDetails;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
@@ -12249,7 +12773,7 @@ xdr.union("BillPayDetailsExt", {
 //
 // ===========================================================================
 xdr.struct("BillPayDetails", [
-  ["paymentDetails", xdr.lookup("PaymentOpV2")],
+  ["paymentDetails", xdr.lookup("PaymentOp")],
   ["ext", xdr.lookup("BillPayDetailsExt")],
 ]);
 
@@ -12435,13 +12959,13 @@ xdr.struct("ASwapExtended", [
 // === xdr source ============================================================
 //
 //   union switch(ReviewableRequestType requestType) {
-//       case SALE:
+//       case CREATE_SALE:
 //           SaleExtended saleExtended;
 //       case NONE:
 //           void;
 //   	case CREATE_ATOMIC_SWAP_BID:
 //           ASwapBidExtended aSwapBidExtended;
-//       case ATOMIC_SWAP:
+//       case CREATE_ATOMIC_SWAP:
 //           ASwapExtended aSwapExtended;
 //       }
 //
@@ -12450,10 +12974,10 @@ xdr.union("ExtendedResultTypeExt", {
   switchOn: xdr.lookup("ReviewableRequestType"),
   switchName: "requestType",
   switches: [
-    ["sale", "saleExtended"],
+    ["createSale", "saleExtended"],
     ["none", xdr.void()],
     ["createAtomicSwapBid", "aSwapBidExtended"],
-    ["atomicSwap", "aSwapExtended"],
+    ["createAtomicSwap", "aSwapExtended"],
   ],
   arms: {
     saleExtended: xdr.lookup("SaleExtended"),
@@ -12487,13 +13011,13 @@ xdr.union("ExtendedResultExt", {
 //       bool fulfilled;
 //   
 //       union switch(ReviewableRequestType requestType) {
-//       case SALE:
+//       case CREATE_SALE:
 //           SaleExtended saleExtended;
 //       case NONE:
 //           void;
 //   	case CREATE_ATOMIC_SWAP_BID:
 //           ASwapBidExtended aSwapBidExtended;
-//       case ATOMIC_SWAP:
+//       case CREATE_ATOMIC_SWAP:
 //           ASwapExtended aSwapExtended;
 //       } typeExt;
 //   
@@ -12516,17 +13040,15 @@ xdr.struct("ExtendedResult", [
 // === xdr source ============================================================
 //
 //   union switch(ReviewableRequestType requestType) {
-//   	case WITHDRAW:
+//   	case CREATE_WITHDRAW:
 //   		WithdrawalDetails withdrawal;
-//       case LIMITS_UPDATE:
+//       case UPDATE_LIMITS:
 //           LimitsUpdateDetails limitsUpdate;
-//       case AML_ALERT:
+//       case CREATE_AML_ALERT:
 //           AMLAlertDetails amlAlertDetails;
-//       case UPDATE_KYC:
-//           UpdateKYCDetails updateKYC;
-//       case INVOICE:
+//       case CREATE_INVOICE:
 //           BillPayDetails billPay;
-//       case CONTRACT:
+//       case MANAGE_CONTRACT:
 //           ContractDetails contract;
 //   	default:
 //   		void;
@@ -12537,18 +13059,16 @@ xdr.union("ReviewRequestOpRequestDetails", {
   switchOn: xdr.lookup("ReviewableRequestType"),
   switchName: "requestType",
   switches: [
-    ["withdraw", "withdrawal"],
-    ["limitsUpdate", "limitsUpdate"],
-    ["amlAlert", "amlAlertDetails"],
-    ["updateKyc", "updateKyc"],
-    ["invoice", "billPay"],
-    ["contract", "contract"],
+    ["createWithdraw", "withdrawal"],
+    ["updateLimit", "limitsUpdate"],
+    ["createAmlAlert", "amlAlertDetails"],
+    ["createInvoice", "billPay"],
+    ["manageContract", "contract"],
   ],
   arms: {
     withdrawal: xdr.lookup("WithdrawalDetails"),
     limitsUpdate: xdr.lookup("LimitsUpdateDetails"),
     amlAlertDetails: xdr.lookup("AmlAlertDetails"),
-    updateKyc: xdr.lookup("UpdateKycDetails"),
     billPay: xdr.lookup("BillPayDetails"),
     contract: xdr.lookup("ContractDetails"),
   },
@@ -12581,17 +13101,15 @@ xdr.union("ReviewRequestOpExt", {
 //   	uint64 requestID;
 //   	Hash requestHash;
 //   	union switch(ReviewableRequestType requestType) {
-//   	case WITHDRAW:
+//   	case CREATE_WITHDRAW:
 //   		WithdrawalDetails withdrawal;
-//       case LIMITS_UPDATE:
+//       case UPDATE_LIMITS:
 //           LimitsUpdateDetails limitsUpdate;
-//       case AML_ALERT:
+//       case CREATE_AML_ALERT:
 //           AMLAlertDetails amlAlertDetails;
-//       case UPDATE_KYC:
-//           UpdateKYCDetails updateKYC;
-//       case INVOICE:
+//       case CREATE_INVOICE:
 //           BillPayDetails billPay;
-//       case CONTRACT:
+//       case MANAGE_CONTRACT:
 //           ContractDetails contract;
 //   	default:
 //   		void;
@@ -12924,7 +13442,8 @@ xdr.struct("ManageKeyValueSuccess", [
 //       {
 //           SUCCESS = 0,
 //           NOT_FOUND = -1,
-//           INVALID_TYPE = -2
+//           INVALID_TYPE = -2,
+//           ZERO_VALUE_NOT_ALLOWED = -3
 //       };
 //
 // ===========================================================================
@@ -12932,6 +13451,7 @@ xdr.enum("ManageKeyValueResultCode", {
   success: 0,
   notFound: -1,
   invalidType: -2,
+  zeroValueNotAllowed: -3,
 });
 
 // === xdr source ============================================================
@@ -13007,16 +13527,18 @@ xdr.struct("LicenseEntry", [
 
 // === xdr source ============================================================
 //
-//   enum ManageAccountRoleOpAction
+//   enum ManageAccountRoleAction
 //   {
 //       CREATE = 0,
-//       REMOVE = 1
+//       UPDATE = 1,
+//       REMOVE = 2
 //   };
 //
 // ===========================================================================
-xdr.enum("ManageAccountRoleOpAction", {
+xdr.enum("ManageAccountRoleAction", {
   create: 0,
-  remove: 1,
+  update: 1,
+  remove: 2,
 });
 
 // === xdr source ============================================================
@@ -13042,7 +13564,8 @@ xdr.union("CreateAccountRoleDataExt", {
 //
 //   struct CreateAccountRoleData
 //   {
-//       longstring name;
+//       longstring details;
+//       uint64 ruleIDs<>;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
@@ -13054,8 +13577,52 @@ xdr.union("CreateAccountRoleDataExt", {
 //
 // ===========================================================================
 xdr.struct("CreateAccountRoleData", [
-  ["name", xdr.lookup("Longstring")],
+  ["details", xdr.lookup("Longstring")],
+  ["ruleIDs", xdr.varArray(xdr.lookup("Uint64"), 2147483647)],
   ["ext", xdr.lookup("CreateAccountRoleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("UpdateAccountRoleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct UpdateAccountRoleData
+//   {
+//       uint64 roleID;
+//       longstring details;
+//       uint64 ruleIDs<>;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateAccountRoleData", [
+  ["roleId", xdr.lookup("Uint64")],
+  ["details", xdr.lookup("Longstring")],
+  ["ruleIDs", xdr.varArray(xdr.lookup("Uint64"), 2147483647)],
+  ["ext", xdr.lookup("UpdateAccountRoleDataExt")],
 ]);
 
 // === xdr source ============================================================
@@ -13081,7 +13648,7 @@ xdr.union("RemoveAccountRoleDataExt", {
 //
 //   struct RemoveAccountRoleData
 //   {
-//       uint64 accountRoleID;
+//       uint64 roleID;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
@@ -13093,30 +13660,34 @@ xdr.union("RemoveAccountRoleDataExt", {
 //
 // ===========================================================================
 xdr.struct("RemoveAccountRoleData", [
-  ["accountRoleId", xdr.lookup("Uint64")],
+  ["roleId", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("RemoveAccountRoleDataExt")],
 ]);
 
 // === xdr source ============================================================
 //
-//   union switch (ManageAccountRoleOpAction action)
+//   union switch (ManageAccountRoleAction action)
 //       {
 //       case CREATE:
 //           CreateAccountRoleData createData;
+//       case UPDATE:
+//           UpdateAccountRoleData updateData;
 //       case REMOVE:
 //           RemoveAccountRoleData removeData;
 //       }
 //
 // ===========================================================================
 xdr.union("ManageAccountRoleOpData", {
-  switchOn: xdr.lookup("ManageAccountRoleOpAction"),
+  switchOn: xdr.lookup("ManageAccountRoleAction"),
   switchName: "action",
   switches: [
     ["create", "createData"],
+    ["update", "updateData"],
     ["remove", "removeData"],
   ],
   arms: {
     createData: xdr.lookup("CreateAccountRoleData"),
+    updateData: xdr.lookup("UpdateAccountRoleData"),
     removeData: xdr.lookup("RemoveAccountRoleData"),
   },
 });
@@ -13144,10 +13715,12 @@ xdr.union("ManageAccountRoleOpExt", {
 //
 //   struct ManageAccountRoleOp
 //   {
-//       union switch (ManageAccountRoleOpAction action)
+//       union switch (ManageAccountRoleAction action)
 //       {
 //       case CREATE:
 //           CreateAccountRoleData createData;
+//       case UPDATE:
+//           UpdateAccountRoleData updateData;
 //       case REMOVE:
 //           RemoveAccountRoleData removeData;
 //       } data;
@@ -13175,13 +13748,21 @@ xdr.struct("ManageAccountRoleOp", [
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
-//       NOT_FOUND = -1
+//       NOT_FOUND = -1,
+//       ROLE_IS_USED = -2,
+//       INVALID_DETAILS = -3,
+//       NO_SUCH_RULE = -4,
+//       RULE_ID_DUPLICATION = -5
 //   };
 //
 // ===========================================================================
 xdr.enum("ManageAccountRoleResultCode", {
   success: 0,
   notFound: -1,
+  roleIsUsed: -2,
+  invalidDetail: -3,
+  noSuchRule: -4,
+  ruleIdDuplication: -5,
 });
 
 // === xdr source ============================================================
@@ -13206,7 +13787,7 @@ xdr.union("ManageAccountRoleResultSuccessExt", {
 // === xdr source ============================================================
 //
 //   struct {
-//               uint64 accountRoleID;
+//               uint64 roleID;
 //   
 //               // reserved for future use
 //               union switch (LedgerVersion v)
@@ -13219,7 +13800,7 @@ xdr.union("ManageAccountRoleResultSuccessExt", {
 //
 // ===========================================================================
 xdr.struct("ManageAccountRoleResultSuccess", [
-  ["accountRoleId", xdr.lookup("Uint64")],
+  ["roleId", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("ManageAccountRoleResultSuccessExt")],
 ]);
 
@@ -13229,7 +13810,7 @@ xdr.struct("ManageAccountRoleResultSuccess", [
 //   {
 //       case SUCCESS:
 //           struct {
-//               uint64 accountRoleID;
+//               uint64 roleID;
 //   
 //               // reserved for future use
 //               union switch (LedgerVersion v)
@@ -13239,6 +13820,9 @@ xdr.struct("ManageAccountRoleResultSuccess", [
 //               }
 //               ext;
 //           } success;
+//       case RULE_ID_DUPLICATION:
+//       case NO_SUCH_RULE:
+//           uint64 ruleID;
 //       default:
 //           void;
 //   };
@@ -13249,9 +13833,12 @@ xdr.union("ManageAccountRoleResult", {
   switchName: "code",
   switches: [
     ["success", "success"],
+    ["ruleIdDuplication", "ruleId"],
+    ["noSuchRule", "ruleId"],
   ],
   arms: {
     success: xdr.lookup("ManageAccountRoleResultSuccess"),
+    ruleId: xdr.lookup("Uint64"),
   },
   defaultArm: xdr.void(),
 });
@@ -14283,7 +14870,7 @@ xdr.union("UpdateSaleDetailsDataExt", {
 //
 //   struct UpdateSaleDetailsData {
 //       uint64 requestID; // if requestID is 0 - create request, else - update
-//       longstring newDetails;
+//       longstring creatorDetails;
 //   
 //       uint32* allTasks;
 //   
@@ -14298,7 +14885,7 @@ xdr.union("UpdateSaleDetailsDataExt", {
 // ===========================================================================
 xdr.struct("UpdateSaleDetailsData", [
   ["requestId", xdr.lookup("Uint64")],
-  ["newDetails", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["allTasks", xdr.option(xdr.lookup("Uint32"))],
   ["ext", xdr.lookup("UpdateSaleDetailsDataExt")],
 ]);
@@ -14381,26 +14968,22 @@ xdr.struct("ManageSaleOp", [
 //       SALE_NOT_FOUND = -1, // sale not found
 //   
 //       // errors related to action "CREATE_UPDATE_DETAILS_REQUEST"
-//       INVALID_NEW_DETAILS = -2, // newDetails field is invalid JSON
+//       INVALID_CREATOR_DETAILS = -2, // newDetails field is invalid JSON
 //       UPDATE_DETAILS_REQUEST_ALREADY_EXISTS = -3,
 //       UPDATE_DETAILS_REQUEST_NOT_FOUND = -4,
-//       INVALID_UPDATE_DETAILS_REQUEST_DATA = -5, // not allowed to set allTasks on request update
-//       SALE_UPDATE_DETAILS_TASKS_NOT_FOUND = -6, // it's not allowed to set state for non master account
-//       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -7,
-//       PENDING_REQUEST_UPDATE_NOT_ALLOWED = -8
+//       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -5, // not allowed to set allTasks on request update
+//       SALE_UPDATE_DETAILS_TASKS_NOT_FOUND = -6 // it's not allowed to set state for non master account
 //   };
 //
 // ===========================================================================
 xdr.enum("ManageSaleResultCode", {
   success: 0,
   saleNotFound: -1,
-  invalidNewDetail: -2,
+  invalidCreatorDetail: -2,
   updateDetailsRequestAlreadyExist: -3,
   updateDetailsRequestNotFound: -4,
-  invalidUpdateDetailsRequestDatum: -5,
+  notAllowedToSetTasksOnUpdate: -5,
   saleUpdateDetailsTasksNotFound: -6,
-  notAllowedToSetTasksOnUpdate: -7,
-  pendingRequestUpdateNotAllowed: -8,
 });
 
 // === xdr source ============================================================
@@ -14561,7 +15144,9 @@ xdr.struct("SetFeesOp", [
 //   		FEE_ASSET_NOT_FOUND = -14,
 //   		ASSET_PAIR_NOT_FOUND = -15, // cannot create cross asset fee entry without existing asset pair
 //   		INVALID_ASSET_PAIR_PRICE = -16,
-//   		INVALID_FEE_HASH = -17
+//   		INVALID_FEE_HASH = -17,
+//   		//: Fixed fee amount must fit asset precision
+//   		INVALID_AMOUNT_PRECISION = -18
 //       };
 //
 // ===========================================================================
@@ -14584,6 +15169,7 @@ xdr.enum("SetFeesResultCode", {
   assetPairNotFound: -15,
   invalidAssetPairPrice: -16,
   invalidFeeHash: -17,
+  invalidAmountPrecision: -18,
 });
 
 // === xdr source ============================================================
@@ -14662,160 +15248,13 @@ xdr.union("SetFeesResult", {
 //       }
 //
 // ===========================================================================
-xdr.union("DirectDebitOpExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct DirectDebitOp
-//   {
-//       AccountID from;
-//       PaymentOp paymentOp;
-//   	 // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("DirectDebitOp", [
-  ["from", xdr.lookup("AccountId")],
-  ["paymentOp", xdr.lookup("PaymentOp")],
-  ["ext", xdr.lookup("DirectDebitOpExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   enum DirectDebitResultCode
-//   {
-//       // codes considered as "success" for the operation
-//       SUCCESS = 0, // payment successfuly completed
-//   
-//       // codes considered as "failure" for the operation
-//       MALFORMED = -1,       // bad input
-//       UNDERFUNDED = -2,     // not enough funds in source account
-//       LINE_FULL = -3,       // destination would go above their limit
-//   	FEE_MISMATCHED = -4,   // fee is not equal to expected fee
-//       BALANCE_NOT_FOUND = -5, // destination balance not found
-//       BALANCE_ACCOUNT_MISMATCHED = -6,
-//       BALANCE_ASSETS_MISMATCHED = -7,
-//   	SRC_BALANCE_NOT_FOUND = -8, // source balance not found
-//       REFERENCE_DUPLICATION = -9,
-//       STATS_OVERFLOW = -10,
-//       LIMITS_EXCEEDED = -11,
-//       NOT_ALLOWED_BY_ASSET_POLICY = -12,
-//       NO_TRUST = -13
-//   };
-//
-// ===========================================================================
-xdr.enum("DirectDebitResultCode", {
-  success: 0,
-  malformed: -1,
-  underfunded: -2,
-  lineFull: -3,
-  feeMismatched: -4,
-  balanceNotFound: -5,
-  balanceAccountMismatched: -6,
-  balanceAssetsMismatched: -7,
-  srcBalanceNotFound: -8,
-  referenceDuplication: -9,
-  statsOverflow: -10,
-  limitsExceeded: -11,
-  notAllowedByAssetPolicy: -12,
-  noTrust: -13,
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("DirectDebitSuccessExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct DirectDebitSuccess {
-//   	PaymentResponse paymentResponse;
-//   	// reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("DirectDebitSuccess", [
-  ["paymentResponse", xdr.lookup("PaymentResponse")],
-  ["ext", xdr.lookup("DirectDebitSuccessExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union DirectDebitResult switch (DirectDebitResultCode code)
-//   {
-//   case SUCCESS:
-//       DirectDebitSuccess success;
-//   default:
-//       void;
-//   };
-//
-// ===========================================================================
-xdr.union("DirectDebitResult", {
-  switchOn: xdr.lookup("DirectDebitResultCode"),
-  switchName: "code",
-  switches: [
-    ["success", "success"],
-  ],
-  arms: {
-    success: xdr.lookup("DirectDebitSuccess"),
-  },
-  defaultArm: xdr.void(),
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       case ADD_ASSET_BALANCE_PRECISION:
-//           uint32 trailingDigitsCount;
-//       }
-//
-// ===========================================================================
 xdr.union("AssetCreationRequestExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["addAssetBalancePrecision", "trailingDigitsCount"],
   ],
   arms: {
-    trailingDigitsCount: xdr.lookup("Uint32"),
   },
 });
 
@@ -14828,17 +15267,17 @@ xdr.union("AssetCreationRequestExt", {
 //   	uint64 maxIssuanceAmount;
 //   	uint64 initialPreissuedAmount;
 //       uint32 policies;
-//       longstring details;
+//       longstring creatorDetails; // details set by requester
+//       uint64 type;
 //   
 //   	uint32 sequenceNumber;
+//       uint32 trailingDigitsCount;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_ASSET_BALANCE_PRECISION:
-//           uint32 trailingDigitsCount;
 //       }
 //       ext;
 //   };
@@ -14850,8 +15289,10 @@ xdr.struct("AssetCreationRequest", [
   ["maxIssuanceAmount", xdr.lookup("Uint64")],
   ["initialPreissuedAmount", xdr.lookup("Uint64")],
   ["policies", xdr.lookup("Uint32")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["type", xdr.lookup("Uint64")],
   ["sequenceNumber", xdr.lookup("Uint32")],
+  ["trailingDigitsCount", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("AssetCreationRequestExt")],
 ]);
 
@@ -14878,7 +15319,7 @@ xdr.union("AssetUpdateRequestExt", {
 //
 //   struct AssetUpdateRequest {
 //   	AssetCode code;
-//   	longstring details;
+//       longstring creatorDetails; // details set by requester
 //   	uint32 policies;
 //   
 //   	uint32 sequenceNumber;
@@ -14894,7 +15335,7 @@ xdr.union("AssetUpdateRequestExt", {
 // ===========================================================================
 xdr.struct("AssetUpdateRequest", [
   ["code", xdr.lookup("AssetCode")],
-  ["details", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
   ["policies", xdr.lookup("Uint32")],
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("AssetUpdateRequestExt")],
@@ -14921,9 +15362,12 @@ xdr.union("AssetChangePreissuedSignerExt", {
 
 // === xdr source ============================================================
 //
-//   struct AssetChangePreissuedSigner {
+//   struct AssetChangePreissuedSigner
+//   {
 //   	AssetCode code;
 //   	AccountID accountID;
+//   	DecoratedSignature signature;
+//   
 //   	// reserved for future use
 //       union switch (LedgerVersion v)
 //       {
@@ -14937,6 +15381,7 @@ xdr.union("AssetChangePreissuedSignerExt", {
 xdr.struct("AssetChangePreissuedSigner", [
   ["code", xdr.lookup("AssetCode")],
   ["accountId", xdr.lookup("AccountId")],
+  ["signature", xdr.lookup("DecoratedSignature")],
   ["ext", xdr.lookup("AssetChangePreissuedSignerExt")],
 ]);
 
@@ -14949,61 +15394,13 @@ xdr.struct("AssetChangePreissuedSigner", [
 //       }
 //
 // ===========================================================================
-xdr.union("CreateAccountOpExtendedExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct CreateAccountOpExtended
-//   {
-//       uint64* roleID;
-//   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
-//   };
-//
-// ===========================================================================
-xdr.struct("CreateAccountOpExtended", [
-  ["roleId", xdr.option(xdr.lookup("Uint64"))],
-  ["ext", xdr.lookup("CreateAccountOpExtendedExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       case PASS_EXTERNAL_SYS_ACC_ID_IN_CREATE_ACC:
-//           ExternalSystemAccountID externalSystemIDs<>;
-//       case REPLACE_ACCOUNT_TYPES_WITH_POLICIES:
-//           CreateAccountOpExtended opExt;
-//       }
-//
-// ===========================================================================
 xdr.union("CreateAccountOpExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["passExternalSysAccIdInCreateAcc", "externalSystemIDs"],
-    ["replaceAccountTypesWithPolicy", "opExt"],
   ],
   arms: {
-    externalSystemIDs: xdr.varArray(xdr.lookup("ExternalSystemAccountId"), 2147483647),
-    opExt: xdr.lookup("CreateAccountOpExtended"),
   },
 });
 
@@ -15012,20 +15409,16 @@ xdr.union("CreateAccountOpExt", {
 //   struct CreateAccountOp
 //   {
 //       AccountID destination; // account to create
-//       AccountID recoveryKey; // recovery signer's public key
-//       AccountID* referrer;     // parent account
-//   	AccountType accountType;
-//   	uint32 policies;
+//       AccountID* referrer;
+//   	uint64 roleID;
+//   
+//   	UpdateSignerData signersData<>;
 //   
 //   	 // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case PASS_EXTERNAL_SYS_ACC_ID_IN_CREATE_ACC:
-//           ExternalSystemAccountID externalSystemIDs<>;
-//       case REPLACE_ACCOUNT_TYPES_WITH_POLICIES:
-//           CreateAccountOpExtended opExt;
 //       }
 //       ext;
 //   };
@@ -15033,10 +15426,9 @@ xdr.union("CreateAccountOpExt", {
 // ===========================================================================
 xdr.struct("CreateAccountOp", [
   ["destination", xdr.lookup("AccountId")],
-  ["recoveryKey", xdr.lookup("AccountId")],
   ["referrer", xdr.option(xdr.lookup("AccountId"))],
-  ["accountType", xdr.lookup("AccountType")],
-  ["policies", xdr.lookup("Uint32")],
+  ["roleId", xdr.lookup("Uint64")],
+  ["signersData", xdr.varArray(xdr.lookup("UpdateSignerData"), 2147483647)],
   ["ext", xdr.lookup("CreateAccountOpExt")],
 ]);
 
@@ -15048,25 +15440,23 @@ xdr.struct("CreateAccountOp", [
 //       SUCCESS = 0, // account was created
 //   
 //       // codes considered as "failure" for the operation
-//       MALFORMED = -1,       // invalid destination
-//   	ACCOUNT_TYPE_MISMATCHED = -2, // account already exist and change of account type is not allowed
-//   	TYPE_NOT_ALLOWED = -3, // master or commission account types are not allowed
-//       NAME_DUPLICATION = -4,
-//       REFERRER_NOT_FOUND = -5,
-//   	INVALID_ACCOUNT_VERSION = -6, // if account version is higher than ledger version
-//   	NOT_VERIFIED_CANNOT_HAVE_POLICIES = -7
+//       INVALID_DESTINATION = -1, // source cannot be destination
+//       ALREADY_EXISTS = -2, // account already exist
+//       INVALID_WEIGHT = -3, // sum of weight with different identity must be more or equal threshold
+//   	NO_SUCH_ROLE = -4,
+//   	INVALID_SIGNER_DATA = -5,
+//   	NO_SIGNER_DATA = -6 // empty signer data array not allowed
 //   };
 //
 // ===========================================================================
 xdr.enum("CreateAccountResultCode", {
   success: 0,
-  malformed: -1,
-  accountTypeMismatched: -2,
-  typeNotAllowed: -3,
-  nameDuplication: -4,
-  referrerNotFound: -5,
-  invalidAccountVersion: -6,
-  notVerifiedCannotHavePolicy: -7,
+  invalidDestination: -1,
+  alreadyExist: -2,
+  invalidWeight: -3,
+  noSuchRole: -4,
+  invalidSignerDatum: -5,
+  noSignerDatum: -6,
 });
 
 // === xdr source ============================================================
@@ -15092,6 +15482,8 @@ xdr.union("CreateAccountSuccessExt", {
 //
 //   struct CreateAccountSuccess
 //   {
+//       uint64 sequentialID;
+//   
 //   	 // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
@@ -15103,6 +15495,7 @@ xdr.union("CreateAccountSuccessExt", {
 //
 // ===========================================================================
 xdr.struct("CreateAccountSuccess", [
+  ["sequentialId", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("CreateAccountSuccessExt")],
 ]);
 
@@ -15112,6 +15505,8 @@ xdr.struct("CreateAccountSuccess", [
 //   {
 //   case SUCCESS:
 //       CreateAccountSuccess success;
+//   case INVALID_SIGNER_DATA:
+//       ManageSignerResultCode createSignerErrorCode;
 //   default:
 //       void;
 //   };
@@ -15122,12 +15517,63 @@ xdr.union("CreateAccountResult", {
   switchName: "code",
   switches: [
     ["success", "success"],
+    ["invalidSignerDatum", "createSignerErrorCode"],
   ],
   arms: {
     success: xdr.lookup("CreateAccountSuccess"),
+    createSignerErrorCode: xdr.lookup("ManageSignerResultCode"),
   },
   defaultArm: xdr.void(),
 });
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ChangeRoleRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ChangeRoleRequest
+//   {
+//   	AccountID destinationAccount;
+//   	uint64 accountRoleToSet;
+//   
+//   	// Sequence number increases when request is rejected
+//   	uint32 sequenceNumber;
+//   
+//       longstring creatorDetails; // details set by requester
+//   
+//       // Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ChangeRoleRequest", [
+  ["destinationAccount", xdr.lookup("AccountId")],
+  ["accountRoleToSet", xdr.lookup("Uint64")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("ChangeRoleRequestExt")],
+]);
 
 // === xdr source ============================================================
 //
@@ -15178,11 +15624,9 @@ xdr.struct("AccountLimitsEntry", [
 //   	BASE_ASSET = 2,
 //   	STATS_QUOTE_ASSET = 4,
 //   	WITHDRAWABLE = 8,
-//   	REQUIRES_KYC = 16,
-//   	ISSUANCE_MANUAL_REVIEW_REQUIRED = 32,
-//   	REQUIRES_VERIFICATION = 64,
-//   	CAN_BE_BASE_IN_ATOMIC_SWAP = 128,
-//   	CAN_BE_QUOTE_IN_ATOMIC_SWAP = 256
+//   	ISSUANCE_MANUAL_REVIEW_REQUIRED = 16,
+//   	CAN_BE_BASE_IN_ATOMIC_SWAP = 32,
+//   	CAN_BE_QUOTE_IN_ATOMIC_SWAP = 64
 //   };
 //
 // ===========================================================================
@@ -15191,11 +15635,9 @@ xdr.enum("AssetPolicy", {
   baseAsset: 2,
   statsQuoteAsset: 4,
   withdrawable: 8,
-  requiresKyc: 16,
-  issuanceManualReviewRequired: 32,
-  requiresVerification: 64,
-  canBeBaseInAtomicSwap: 128,
-  canBeQuoteInAtomicSwap: 256,
+  issuanceManualReviewRequired: 16,
+  canBeBaseInAtomicSwap: 32,
+  canBeQuoteInAtomicSwap: 64,
 });
 
 // === xdr source ============================================================
@@ -15204,8 +15646,6 @@ xdr.enum("AssetPolicy", {
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_ASSET_BALANCE_PRECISION:
-//           uint32 trailingDigitsCount;
 //       }
 //
 // ===========================================================================
@@ -15214,10 +15654,8 @@ xdr.union("AssetEntryExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
-    ["addAssetBalancePrecision", "trailingDigitsCount"],
   ],
   arms: {
-    trailingDigitsCount: xdr.lookup("Uint32"),
   },
 });
 
@@ -15234,14 +15672,14 @@ xdr.union("AssetEntryExt", {
 //   	uint64 issued; // number of issued tokens
 //   	uint64 pendingIssuance; // number of tokens locked for entries like token sale. lockedIssuance + issued can not be > maxIssuanceAmount
 //       uint32 policies;
+//       uint64 type; // use instead policies that limit usage, use in account rules
+//       uint32 trailingDigitsCount;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
-//       case ADD_ASSET_BALANCE_PRECISION:
-//           uint32 trailingDigitsCount;
 //       }
 //       ext;
 //   };
@@ -15257,6 +15695,8 @@ xdr.struct("AssetEntry", [
   ["issued", xdr.lookup("Uint64")],
   ["pendingIssuance", xdr.lookup("Uint64")],
   ["policies", xdr.lookup("Uint32")],
+  ["type", xdr.lookup("Uint64")],
+  ["trailingDigitsCount", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("AssetEntryExt")],
 ]);
 

@@ -16,18 +16,18 @@ describe('Transaction', () => {
     }
     let input = new TransactionBuilder(source, { timebounds })
       .addOperation(Operation.payment({
-        amount,
+        amount: amount,
         subject: 'test',
         sourceBalanceId,
         destinationBalanceId,
         feeData: {
           sourceFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           destinationFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           sourcePaysForDest: true
         }
@@ -37,6 +37,8 @@ describe('Transaction', () => {
       .build()
       .toEnvelope()
       .toXDR('base64')
+
+    console.log(input.toString())
 
     let transaction = new Transaction(input)
     let operation = transaction.operations[0]
@@ -67,12 +69,12 @@ describe('Transaction', () => {
         destinationBalanceId,
         feeData: {
           sourceFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           destinationFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           sourcePaysForDest: true
         }
@@ -99,18 +101,18 @@ describe('Transaction', () => {
 
     let input = new TransactionBuilder(source, { fee: 0, timebounds })
       .addOperation(Operation.payment({
-        amount,
+        amount: amount,
         subject: 'test',
         sourceBalanceId,
         destinationBalanceId,
         feeData: {
           sourceFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           destinationFee: {
-            paymentFee: '0',
-            fixedFee: '10'
+            percent: '0',
+            fixed: '10'
           },
           sourcePaysForDest: true
         }

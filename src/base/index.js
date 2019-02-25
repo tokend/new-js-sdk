@@ -1,4 +1,3 @@
-
 import { default as xdr } from './generated/xdr_generated'
 
 export { xdr }
@@ -13,6 +12,7 @@ export { Operation, AuthRequiredFlag, AuthRevocableFlag, AuthImmutableFlag } fro
 export { Memo } from './memo'
 export { Network, Networks } from './network'
 export { ManageAssetBuilder } from './operations/manage_asset_builder'
+export { CreateManageLimitsRequestBuilder } from './operations/create_manage_limits_request_builder'
 export { ReviewRequestBuilder } from './operations/review_request_builder'
 export { PreIssuanceRequestOpBuilder } from './operations/pre_issuance_request_op_builder'
 export { CreateIssuanceRequestBuilder } from './operations/create_issuance_request_builder'
@@ -20,13 +20,18 @@ export { CreateWithdrawRequestBuilder } from './operations/create_withdraw_reque
 export { SaleRequestBuilder } from './operations/sale_request_builder'
 export { ManageOfferBuilder } from './operations/manage_offer_builder'
 export { ManageSaleBuilder } from './operations/manage_sale_builder'
-export { SetOptionsBuilder } from './operations/set_options_builder'
+export { CreateAccountBuilder } from './operations/create_account_builder'
+export { ManageSignerBuilder } from './operations/manage_signer_builder'
 export { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
-export { CreateUpdateKYCRequestBuilder } from './operations/create_update_kyc_request_builder'
+export { CreateChangeRoleRequestBuilder } from './operations/create_change_role_request_builder'
 export { CreateReferenceBuilder } from './operations/create_reference_builder'
 export { ManageLimitsBuilder } from './operations/manage_limits_builder'
 export { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
-export { PaymentV2Builder } from './operations/payment_v2_builder'
+export { PaymentBuilder } from './operations/payment_builder'
+export { BindExternalSystemAccountIdBuilder } from './operations/bind_external_system_account_id_builder'
+export { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
+export { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
+export { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
 export { StampBuilder } from './operations/stamp'
 export { LicenseBuilder } from './operations/license_operation'
 

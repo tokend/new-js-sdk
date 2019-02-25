@@ -1,4 +1,4 @@
-import { PaymentV2Builder } from './payment_v2_builder'
+import { PaymentBuilder } from './payment_builder'
 import { Operation } from '../operation'
 import { Keypair } from '../keypair'
 import { xdr } from '../index'
@@ -10,7 +10,7 @@ describe('PaymentV2 op', function () {
   let amount = '100'
 
   it('PaymentV2 for balance success', function () {
-    let op = PaymentV2Builder.paymentV2({
+    let op = PaymentBuilder.payment({
       sourceBalanceId: sourceBalanceId,
       destination: destinationBalanceId,
       amount: amount,
@@ -31,7 +31,7 @@ describe('PaymentV2 op', function () {
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
-    expect(obj.type).to.be.equal('paymentV2')
+    expect(obj.type).to.be.equal('payment')
     expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
     expect(obj.destination).to.be.equal(destinationBalanceId)
     expect(obj.amount).to.be.equal(amount)
@@ -44,7 +44,7 @@ describe('PaymentV2 op', function () {
     expect(obj.reference).to.be.equal('ref')
   })
   it('PaymentV2 for account success', function () {
-    let op = PaymentV2Builder.paymentV2({
+    let op = PaymentBuilder.payment({
       sourceBalanceId: sourceBalanceId,
       destination: destinationAccountId,
       amount: amount,
@@ -65,8 +65,7 @@ describe('PaymentV2 op', function () {
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
-
-    expect(obj.type).to.be.equal('paymentV2')
+    expect(obj.type).to.be.equal('payment')
     expect(obj.sourceBalanceId).to.be.equal(sourceBalanceId)
     expect(obj.destination).to.be.equal(destinationAccountId)
     expect(obj.amount).to.be.equal(amount)

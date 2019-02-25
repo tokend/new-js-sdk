@@ -10,6 +10,7 @@ export class PreIssuanceRequest {
      * @param {string} opts.amount - amount to be preissued
      * @param {string} opts.reference - reference of the request
      * @param {string} opts.asset - asset to be pre issued
+     * @param {string} opts.creatorDetails - details set by request creator
      * @param {KeyPair} opts.keyPair - signer of the pre issued asset request
      * @returns {xdr.PreIssuanceRequest}
      */
@@ -29,6 +30,10 @@ export class PreIssuanceRequest {
       throw new TypeError('opts.keyPair is invalid')
     }
 
+    if (isUndefined(opts.creatorDetails)) {
+      throw new TypeError('opts.creatorDetails is invalid')
+    }
+
     opts.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
     let signature = opts.keyPair.signDecorated(this._getSignatureData(opts))
     return new xdr.PreIssuanceRequest({
@@ -36,6 +41,7 @@ export class PreIssuanceRequest {
       amount: opts.amount,
       asset: opts.asset,
       signature: signature,
+      creatorDetails: JSON.stringify(opts.creatorDetails),
       ext: new xdr.PreIssuanceRequestExt(xdr.LedgerVersion.emptyVersion())
     })
   }
@@ -55,6 +61,7 @@ export class PreIssuanceRequest {
     attributes.reference = xdr.reference().toString()
     attributes.asset = xdr.asset().toString()
     attributes.signature = xdr.signature()
+    attributes.creatorDetails = JSON.parse(xdr.creatorDetails().toString())
     return attributes
   }
 

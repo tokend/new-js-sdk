@@ -26,19 +26,17 @@ describe('TransactionBuilder', () => {
       transaction = new TransactionBuilder(source, transactionOptions)
         .addOperation(Operation.payment({
           amount: amount,
-          fixedFee: '0',
-          paymentFee: '0',
           subject: 'test',
           sourceBalanceId,
           destinationBalanceId,
           feeData: {
             sourceFee: {
-              paymentFee: '0',
-              fixedFee: '10'
+              percent: '0',
+              fixed: '10'
             },
             destinationFee: {
-              paymentFee: '0',
-              fixedFee: '10'
+              percent: '0',
+              fixed: '10'
             },
             sourcePaysForDest: true
           }
@@ -87,38 +85,34 @@ describe('TransactionBuilder', () => {
       transaction = new TransactionBuilder(source, transactionOptions)
         .addOperation(Operation.payment({
           amount: amount1,
-          fixedFee: '0',
-          paymentFee: '0',
           subject: 'test',
           sourceBalanceId,
           destinationBalanceId: destinationBalanceId1,
           feeData: {
             sourceFee: {
-              paymentFee: '0',
-              fixedFee: '10'
+              percent: '0',
+              fixed: '10'
             },
             destinationFee: {
-              paymentFee: '0',
-              fixedFee: '10'
+              percent: '0',
+              fixed: '10'
             },
             sourcePaysForDest: true
           }
         }))
         .addOperation(Operation.payment({
           amount: amount2,
-          fixedFee: '0',
-          paymentFee: '0',
           subject: 'test',
           sourceBalanceId,
           destinationBalanceId: destinationBalanceId2,
           feeData: {
             sourceFee: {
-              paymentFee: '0',
-              fixedFee: '10'
+              percent: '0',
+              fixed: '10'
             },
             destinationFee: {
-              paymentFee: '0',
-              fixedFee: '10'
+              percent: '0',
+              fixed: '10'
             },
             sourcePaysForDest: true
           }
@@ -152,19 +146,17 @@ describe('TransactionBuilder', () => {
       let transaction = new TransactionBuilder(source, { timebounds })
         .addOperation(Operation.payment({
           amount: '1000',
-          fixedFee: '0',
-          paymentFee: '0',
           subject: 'test',
           sourceBalanceId,
           destinationBalanceId,
           feeData: {
             sourceFee: {
-              paymentFee: '0',
-              fixedFee: '10'
+              percent: '0',
+              fixed: '10'
             },
             destinationFee: {
-              paymentFee: '0',
-              fixedFee: '10'
+              percent: '0',
+              fixed: '10'
             },
             sourcePaysForDest: true
           }
