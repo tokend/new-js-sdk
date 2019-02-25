@@ -25,6 +25,8 @@ import { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_
 import { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
 import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
+import { StampBuilder } from './operations/stamp'
+import { LicenseBuilder } from './operations/license_operation'
 
 export class Operation extends BaseOperation {
   /**
@@ -431,6 +433,12 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.createAswapRequest():
         CreateAtomicSwapRequestBuilder.createASwapRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.stamp():
+        StampBuilder.stampToObject(result, attrs)
+        break
+      case xdr.OperationType.license():
+        LicenseBuilder.licenseToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

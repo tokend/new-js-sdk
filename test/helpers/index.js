@@ -15,6 +15,8 @@ import { Request } from './request'
 import { Sale } from './sale'
 import { Withdraw } from './withdraw'
 import { Payment } from './payment'
+import { StampHelper } from './stamp'
+import { LicenseHelper } from './license'
 
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
@@ -43,3 +45,5 @@ export const offerHelper = new Offer(DEFAULTS)
 export const paymentHelper = new Payment(DEFAULTS)
 export const withdrawHelper = new Withdraw(DEFAULTS)
 export const amlAlertHelper = new AmlAlert(DEFAULTS)
+export const stampHelper = new StampHelper(DEFAULTS)
+export const licenseHelper = new LicenseHelper(DEFAULTS)
