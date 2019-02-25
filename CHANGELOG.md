@@ -9,8 +9,10 @@ for further information about branching and tagging conventions.
 
 ## [Unreleased]
 
-### Changed
+### Removed
+- All tasks from createSaleCreationRequest
 
+### Changed
 - xdr revision
 
 ### Fixed
