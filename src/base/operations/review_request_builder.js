@@ -97,6 +97,8 @@ export class ReviewRequestBuilder {
       ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
     })
 
+    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
+
     return attrs
   }
 
@@ -185,9 +187,9 @@ export class ReviewRequestBuilder {
     rawLimitsV2Entry.id = UnsignedHyper.fromString(opts.newLimits.id)
 
     if (!isUndefined(opts.newLimits.accountID) &&
-        !isUndefined(opts.newLimits.accountType)) {
+        !isUndefined(opts.newLimits.accountRole)) {
       throw new Error(
-        'opts.newLimits.accountID and opts.newLimits.accountType cannot be set for same limits'
+        'opts.newLimits.accountID and opts.newLimits.accountRole cannot be set for same limits'
       )
     }
 
@@ -200,9 +202,9 @@ export class ReviewRequestBuilder {
       ).xdrAccountId()
     }
 
-    if (!isUndefined(opts.newLimits.accountType)) {
-      rawLimitsV2Entry.accountType = BaseOperation
-        ._accountTypeFromNumber(opts.newLimits.accountType)
+    if (!isUndefined(opts.newLimits.accountRole)) {
+      rawLimitsV2Entry.accountRole = BaseOperation
+        ._accountTypeFromNumber(opts.newLimits.accountRole)
     }
 
     if (isUndefined(opts.newLimits.statsOpType)) {
@@ -242,7 +244,9 @@ export class ReviewRequestBuilder {
       .updateLimit(
         new xdr.LimitsUpdateDetails({
           newLimitsV2: new xdr.LimitsV2Entry(rawLimitsV2Entry),
-          ext: new xdr.LimitsUpdateDetailsExt(xdr.LedgerVersion.emptyVersion())
+          ext: new xdr.LimitsUpdateDetailsExt(xdr.LedgerVersion.emptyVersion()),
+          tasksToAdd: opts.reviewDetails.tasksToAdd,
+          tasksToRemove: opts.reviewDetails.tasksToRemove
         })
       )
 
@@ -326,9 +330,9 @@ export class ReviewRequestBuilder {
             .accountIdtoAddress(newLimitsV2.accountId())
         }
 
-        if (newLimitsV2.accountType()) {
-          result.limitsUpdate.newLimits.accountType = newLimitsV2
-            .accountType().value
+        if (newLimitsV2.accountRole()) {
+          result.limitsUpdate.newLimits.accountRole = newLimitsV2
+            .accountRole().value
         }
 
         break

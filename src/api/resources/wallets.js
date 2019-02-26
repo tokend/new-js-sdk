@@ -6,6 +6,7 @@ import { makeChangeSignerTransaction } from './change_signers'
 import * as errors from '../../errors'
 
 const HORIZON_VERSION_PREFIX = 'v3'
+const DEFAULT_SIGNER_ROLE_KEY = 'signer_role:default'
 
 /**
  * Wallets.
@@ -105,10 +106,10 @@ export class Wallets extends ResourceGroupBase {
           type: 'wallet',
           id: encryptedMainWallet.id,
           attributes: {
-            accountId: encryptedMainWallet.accountId,
-            keychainData: encryptedMainWallet.keychainData,
             email,
-            salt: encryptedMainWallet.salt
+            salt: encryptedMainWallet.salt,
+            accountId: encryptedMainWallet.accountId,
+            keychainData: encryptedMainWallet.keychainData
           },
           relationships: {
             kdf: {
@@ -120,26 +121,37 @@ export class Wallets extends ResourceGroupBase {
             recovery: {
               data: {
                 type: 'recovery',
-                id: encryptedRecoveryWallet.id,
-                attributes: {
-                  accountId: encryptedRecoveryWallet.accountId,
-                  keychainData: encryptedRecoveryWallet.keychainData,
-                  salt: encryptedRecoveryWallet.salt
-                }
+                id: encryptedRecoveryWallet.id
               }
             },
             factor: {
               data: {
                 type: 'password',
-                attributes: {
-                  accountId: secondFactorWallet.accountId,
-                  keychainData: encryptedSecondFactorWallet.keychainData,
-                  salt: encryptedSecondFactorWallet.salt
-                }
+                id: encryptedMainWallet.id
               }
             }
           }
-        }
+        },
+        included: [
+          {
+            type: 'password',
+            id: encryptedMainWallet.id,
+            attributes: {
+              accountId: secondFactorWallet.accountId,
+              keychainData: encryptedSecondFactorWallet.keychainData,
+              salt: encryptedSecondFactorWallet.salt
+            }
+          },
+          {
+            type: 'recovery',
+            id: encryptedRecoveryWallet.id,
+            attributes: {
+              accountId: encryptedRecoveryWallet.accountId,
+              keychainData: encryptedRecoveryWallet.keychainData,
+              salt: encryptedRecoveryWallet.salt
+            }
+          }
+        ]
       })
 
     return {
@@ -206,13 +218,17 @@ export class Wallets extends ResourceGroupBase {
       kdfParams,
       newPassword
     )
+
     let accountId = await this._getAccountIdByRecoveryId(recoveryWallet.id)
     let signers = await this._getSigners(accountId)
+    let signerRoleId = await this._getDefaultSignerRole()
+
     let tx = makeChangeSignerTransaction({
       newPublicKey: newMainWallet.accountId,
       signers,
       signingKeypair: recoveryWallet.keypair,
-      soucreAccount: accountId
+      soucreAccount: accountId,
+      signerRoleId
     })
 
     await this._makeWalletsCallBuilder()
@@ -231,9 +247,8 @@ export class Wallets extends ResourceGroupBase {
           relationships: {
             transaction: {
               data: {
-                attributes: {
-                  envelope: tx
-                }
+                type: 'transaction',
+                id: '1'
               }
             },
             kdf: {
@@ -245,15 +260,29 @@ export class Wallets extends ResourceGroupBase {
             factor: {
               data: {
                 type: 'password',
-                attributes: {
-                  accountId: encryptedSecondFactorWallet.accountId,
-                  keychainData: encryptedSecondFactorWallet.keychainData,
-                  salt: encryptedSecondFactorWallet.salt
-                }
+                id: encryptedNewMainWallet.id
               }
             }
           }
-        }
+        },
+        included: [
+          {
+            type: 'transaction',
+            id: '1',
+            attributes: {
+              envelope: tx
+            }
+          },
+          {
+            id: encryptedNewMainWallet.id,
+            type: 'password',
+            attributes: {
+              accountId: encryptedSecondFactorWallet.accountId,
+              keychainData: encryptedSecondFactorWallet.keychainData,
+              salt: encryptedSecondFactorWallet.salt
+            }
+          }
+        ]
       })
 
     return newMainWallet
@@ -280,13 +309,17 @@ export class Wallets extends ResourceGroupBase {
       kdfParams,
       newPassword
     )
+
     let signers = await this._getSigners(this._sdk.wallet.accountId)
+    let signerRoleId = await this._getDefaultSignerRole()
+
     let tx = makeChangeSignerTransaction({
       newPublicKey: newMainWallet.keypair.accountId(),
       signers,
       signingKeypair: oldWallet.keypair,
       soucreAccount: oldWallet.accountId,
-      signerToReplace: oldWallet.keypair.accountId()
+      signerToReplace: oldWallet.keypair.accountId(),
+      signerRoleId
     })
 
     await this._makeWalletsCallBuilder()
@@ -305,9 +338,8 @@ export class Wallets extends ResourceGroupBase {
           relationships: {
             transaction: {
               data: {
-                attributes: {
-                  envelope: tx
-                }
+                type: 'transaction',
+                id: '1'
               }
             },
             kdf: {
@@ -319,15 +351,29 @@ export class Wallets extends ResourceGroupBase {
             factor: {
               data: {
                 type: 'password',
-                attributes: {
-                  accountId: encryptedSecondFactorWallet.accountId,
-                  keychainData: encryptedSecondFactorWallet.keychainData,
-                  salt: encryptedSecondFactorWallet.salt
-                }
+                id: encryptedNewMainWallet.id
               }
             }
           }
-        }
+        },
+        included: [
+          {
+            type: 'transaction',
+            id: '1',
+            attributes: {
+              envelope: tx
+            }
+          },
+          {
+            type: 'password',
+            id: encryptedNewMainWallet.id,
+            attributes: {
+              accountId: encryptedSecondFactorWallet.accountId,
+              keychainData: encryptedSecondFactorWallet.keychainData,
+              salt: encryptedSecondFactorWallet.salt
+            }
+          }
+        ]
       })
 
     return newMainWallet
@@ -342,29 +388,39 @@ export class Wallets extends ResourceGroupBase {
       .appendUrlSegment('wallets')
   }
 
-  _getSigners (accountId) {
-    return this._server
-      ._makeCallBuilder()
-      .appendUrlSegment(HORIZON_VERSION_PREFIX)
-      .appendUrlSegment('accounts')
-      .appendAccountId(accountId)
-      .appendUrlSegment('signers')
-      .get()
-      .then(response => response.data)
-      .catch(err => {
-        if (err instanceof errors.NotFoundError) {
-          return []
-        }
+  async _getSigners (accountId) {
+    try {
+      const { data: signers } = await this._server
+        ._makeCallBuilder()
+        .appendUrlSegment(`${HORIZON_VERSION_PREFIX}/accounts`)
+        .appendAccountId(accountId)
+        .appendUrlSegment('signers')
+        .get()
 
-        return Promise.reject(err)
-      })
+      return signers
+    } catch (err) {
+      if (err instanceof errors.NotFoundError) {
+        return []
+      }
+    }
   }
 
   async _getAccountIdByRecoveryId (recoveryWalletId) {
-    let wallet = await this._makeWalletsCallBuilder()
+    const { data: wallet } = await this._makeWalletsCallBuilder()
       .appendUrlSegment(recoveryWalletId)
       .get({})
 
-    return wallet.data.accountId
+    return wallet.accountId
+  }
+
+  async _getDefaultSignerRole () {
+    const { data } =
+      await this._sdk.horizon.keyValue.get(DEFAULT_SIGNER_ROLE_KEY)
+
+    return String(data.uint32Value)
+  }
+
+  _submitOperation (operation) {
+    return this._sdk.horizon.transactions.submitOperations(operation)
   }
 }

@@ -1,6 +1,7 @@
 import Jsona from 'jsona'
 import { camelCase, isString } from 'lodash'
 import { toCamelCaseDeep } from '../../utils/case_converter'
+import uri from 'urijs'
 
 export function parseJsonapiResponse (response) {
   return new JsonapiResponse(response)
@@ -77,7 +78,11 @@ export class JsonapiResponse {
       const methodName = camelCase('fetch_' + key)
       const link = isString(value) ? value : value.href
 
-      this[methodName] = _ => api.getWithSignature(link)
+      const url = uri(link)
+      const path = url.path()
+      const query = url.search(true)
+
+      this[methodName] = _ => api.getWithSignature(path, query)
     }
   }
 

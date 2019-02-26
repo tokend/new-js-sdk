@@ -37,7 +37,7 @@ function getRequestUrl (config) {
     fullUrl = fullUrl.addQuery(config.params)
   }
 
-  return fullUrl.toString()
+  return decodeURI(fullUrl.toString())
 }
 
 function getRequestDigest (url, config, headersToSign) {

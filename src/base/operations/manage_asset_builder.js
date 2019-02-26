@@ -74,10 +74,6 @@ export class ManageAssetBuilder {
       xdr.LedgerVersion.emptyVersion()
     )
 
-    if (isUndefined(opts.allTasks)) {
-      opts.allTasks = 0
-    }
-
     let r = xdr.ManageAssetOpRequest.createAssetCreationRequest()
     r.set('createAssetCreationRequest', new xdr.ManageAssetOpCreateAssetCreationRequest({
       createAsset: new xdr.AssetCreationRequest(attrs),

@@ -84,9 +84,9 @@ export class Blobs extends ResourceGroupBase {
 
   _makeCallBuilder (accountId) {
     return this._server._makeCallBuilder()
-      .withSignature()
-      .appendUrlSegment('users')
+      .appendUrlSegment('accounts')
       .appendAccountId(accountId)
       .appendUrlSegment('blobs')
+      .withSignature()
   }
 }

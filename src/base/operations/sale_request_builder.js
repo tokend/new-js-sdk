@@ -25,7 +25,6 @@ export class SaleRequestBuilder {
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
      * @param {number} opts.saleEnumType - Sale type
-     * @param {string} opts.baseAssetForHardCap - specifies the amount of base asset required for hard cap
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CreateSaleCreationRequestOp}
      */
