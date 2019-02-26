@@ -8,6 +8,12 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
+### Added
+- `ReviewRequestOpExt` attribute to the `ReviewRequestBuilder._prepareArgs` method
+
+### Fixed
+- Using account role instead of account type in `ReviewRequestBuilder.reviewLimitsUpdateRequest` method
+
 ### Removed
 - All tasks from createSaleCreationRequest
 
