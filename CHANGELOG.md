@@ -11,10 +11,12 @@ for further information about branching and tagging conventions.
 ### Removed
 - All tasks from createSaleCreationRequest
 
-## [1.0.0-x.16] - 2019-02-23
-
+## [1.0.0-x.17] - 2019-02-23
 ### Fixed
-- setting 0 create_asset_tasks when no value provided
+- Setting 0 create_asset_tasks when no value provided
+
+## [1.0.0-x.16] - 2019-02-23
+### Fixed
 - `blobs` resource now work with `/account/:id/blobs` endpoint instead of `/users/:id/blobs`
 - `documents` resource now work with `/account/:id/documents` endpoint instead of `/users/:id/documents`
 - `api.wallets.create` and `api.wallets.recovery` now work with `/v3` horizon endpoints
@@ -177,7 +179,8 @@ for further information about branching and tagging conventions.
 ### Fixed
 - Change password method
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.16...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.17...HEAD
+[1.0.0-x.17]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.16...1.0.0-x.17
 [1.0.0-x.16]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.15...1.0.0-x.16
 [1.0.0-x.15]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.14...1.0.0-x.15
 [1.0.0-x.14]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.13...1.0.0-x.14
