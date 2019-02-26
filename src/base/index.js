@@ -32,6 +32,8 @@ export { BindExternalSystemAccountIdBuilder } from './operations/bind_external_s
 export { CreateAtomicSwapBidCreationRequestBuilder } from './operations/create_atomic_swap_bid_creation_request_builder'
 export { CreateAtomicSwapRequestBuilder } from './operations/create_atomic_swap_request_builder'
 export { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
+export { StampBuilder } from './operations/stamp'
+export { LicenseBuilder } from './operations/license_operation'
 
 export * from './strkey'
 

@@ -82,3 +82,20 @@ export const getRequestIdFromResultXdr = (resultXdr, resultType) => base
   .success()
   .requestId()
   .toString()
+
+export const getSuccessResultFromXDR = (resultXdr, resultType) => base
+  .xdr
+  .TransactionResult
+  .fromXDR(Buffer.from(resultXdr, 'base64'))
+  .result()
+  .results()[0]
+  .tr()[resultType]()
+  .success()
+
+export const getOpResultFromXDR = (resultXdr, resultType) => base
+  .xdr
+  .TransactionResult
+  .fromXDR(Buffer.from(resultXdr, 'base64'))
+  .result()
+  .results()[0]
+  .tr()[resultType]()

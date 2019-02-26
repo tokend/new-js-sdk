@@ -11,6 +11,13 @@ for further information about branching and tagging conventions.
 ### Removed
 - All tasks from createSaleCreationRequest
 
+### Changed
+- xdr revision
+
+### Fixed
+- accountRole field enveloping in setFees operation
+- do not throw error if cannot parse errors in BadRequestError
+
 ## [1.0.0-x.17] - 2019-02-23
 ### Fixed
 - Setting 0 create_asset_tasks when no value provided
