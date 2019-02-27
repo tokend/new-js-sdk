@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.0.0-x.19] - 2019-02-27
+### Changed
+- Disable `withCredentials`
+
 ## [1.0.0-x.18] - 2019-02-26
 ### Added
 - `ReviewRequestOpExt` attribute to the `ReviewRequestBuilder._prepareArgs` method
@@ -192,7 +196,8 @@ for further information about branching and tagging conventions.
 ### Fixed
 - Change password method
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.18...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.19...HEAD
+[1.0.0-x.19]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.18...1.0.0-x.19
 [1.0.0-x.18]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.17...1.0.0-x.18
 [1.0.0-x.17]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.16...1.0.0-x.17
 [1.0.0-x.16]: https://github.com/tokend/new-js-sdk/compare/1.0.0-x.15...1.0.0-x.16
