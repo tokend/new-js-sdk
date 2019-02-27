@@ -109,6 +109,7 @@ export class KeyServerCaller {
 
     config.headers = config.headers || {}
     config.headers['Content-Type'] = CONTENT_TYPE.applicationJson
+    config.withCredentials = false
 
     return config
   }
