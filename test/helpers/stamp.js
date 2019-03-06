@@ -1,5 +1,5 @@
 import { base } from '../../src'
-import { getResultFromXDR, Helper } from './_helper'
+import { getSuccessResultFromXDR, Helper } from './_helper'
 import { accountHelper } from './index'
 
 export class StampHelper extends Helper {
@@ -12,7 +12,6 @@ export class StampHelper extends Helper {
 
     const { resultXdr } = await this.submit(operation, accountHelper.masterKp)
 
-    const result = await getResultFromXDR(resultXdr, 'stampResult')
-    return result
+    return getSuccessResultFromXDR(resultXdr, 'stampResult')
   }
 }

@@ -9,8 +9,6 @@ export class LicenseHelper extends Helper {
       .LicenseBuilder
       .buildAndSign(opts, keys)
     const { resultXdr } = await this.submit(operation, accountHelper.masterKp)
-    const res = getOpResultFromXDR(resultXdr, 'licenseResult')
-    console.log(res)
-    return res
+    return getOpResultFromXDR(resultXdr, 'licenseResult')
   }
 }

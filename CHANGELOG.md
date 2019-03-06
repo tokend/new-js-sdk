@@ -10,6 +10,9 @@ for further information about branching and tagging conventions.
 ## [Unreleased]
 ### Fixed
 - Use deserialize cache stub when creating a `Jsona` instance
+- integration tests
+### Added
+- error codes for set fee op and op related to limits
 
 ## [1.3.0] - 2019-03-01
 

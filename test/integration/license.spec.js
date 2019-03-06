@@ -19,7 +19,7 @@ describe('License', () => {
       adminCount: "3",
       dueDate: "1648480000",
     }
-    let licenseResult = await fullLicenseSubmit(opts, wiredKPs, accountHelper.masterId)
+    await fullLicenseSubmit(opts, wiredKPs, accountHelper.masterId)
   })
 
 })
