@@ -91,7 +91,9 @@ export class JsonapiResponse {
       return
     }
 
-    const formatter = new Jsona()
+    const formatter = new Jsona({
+      DeserializeCache: DeserializeCacheStub
+    })
     const parsed = formatter.deserialize(response.data)
 
     this._data = toCamelCaseDeep(parsed)
@@ -103,5 +105,36 @@ export class JsonapiResponse {
     } else {
       this._links = {}
     }
+  }
+}
+
+// A stub class implementing Jsona IDeserealizeCache interface.
+//
+// The purpose of using this stub is disabling caching when resolving
+// response relationships. It prevents root data to be recursively
+// included into resolved relationship structure.
+//
+// Example of JSON file:
+// {
+//   "data": {
+//     "id": "foo",
+//     "type": "bar",
+//     "relationships": {
+//       "fizz": {
+//         "id": "foo",
+//         "type": "bar"
+//       }
+//     }
+//   }
+// }
+class DeserializeCacheStub {
+  getCachedModel (data) {
+    return null
+  }
+
+  handleModel (model, data) {}
+
+  createCacheKey (data) {
+    return ''
   }
 }
