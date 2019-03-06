@@ -1,4 +1,5 @@
 import Jsona from 'jsona'
+import { DeserializeCacheStub } from './deserialize-cache-stub'
 import { camelCase, isString } from 'lodash'
 import { toCamelCaseDeep } from '../../utils/case_converter'
 import uri from 'urijs'
@@ -91,7 +92,9 @@ export class JsonapiResponse {
       return
     }
 
-    const formatter = new Jsona()
+    const formatter = new Jsona({
+      DeserializeCache: DeserializeCacheStub
+    })
     const parsed = formatter.deserialize(response.data)
 
     this._data = toCamelCaseDeep(parsed)
