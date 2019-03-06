@@ -1,5 +1,4 @@
 import Jsona from 'jsona'
-import { DeserializeCacheStub } from './deserialize-cache-stub'
 import { camelCase, isString } from 'lodash'
 import { toCamelCaseDeep } from '../../utils/case_converter'
 import uri from 'urijs'
@@ -106,5 +105,36 @@ export class JsonapiResponse {
     } else {
       this._links = {}
     }
+  }
+}
+
+// A stub class implementing Jsona IDeserealizeCache interface.
+//
+// The purpose of using this stub is disabling caching when resolving
+// response relationships. It prevents root data to be recursively
+// included into resolved relationship structure.
+//
+// Example of JSON file:
+// {
+//   "data": {
+//     "id": "foo",
+//     "type": "bar",
+//     "relationships": {
+//       "fizz": {
+//         "id": "foo",
+//         "type": "bar"
+//       }
+//     }
+//   }
+// }
+class DeserializeCacheStub {
+  getCachedModel (data) {
+    return null
+  }
+
+  handleModel (model, data) {}
+
+  createCacheKey (data) {
+    return ''
   }
 }
