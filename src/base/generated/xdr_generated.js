@@ -1,6 +1,6 @@
-// revision: 5ab49bc8cec07ea2e05436d4734467d8b7e38aa3
-// branch:   fix/set_fee_account_existing
-// Automatically generated on 2019-03-06T16:24:20+00:00
+// revision: 686d9339f263983dbcc54231da39563a1b6c5b8c
+// branch:   master
+// Automatically generated on 2019-03-08T14:17:53+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -5153,12 +5153,12 @@ xdr.struct("ManageLimitsOp", [
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
-//       //: (reserved for future use) Invalid input
-//       MALFORMED = -1,
+//       //: There is no account with passed ID
+//       ACCOUNT_NOT_FOUND = -1,
 //       //: Limits entry is not found
 //       NOT_FOUND = -2,
-//       //: (reserved for future use) Limits entry already exists
-//       ALREADY_EXISTS = -3,
+//       //: There is no role with passed ID
+//       ROLE_NOT_FOUND = -3,
 //       //: Limits cannot be created for account ID and account role simultaneously
 //       CANNOT_CREATE_FOR_ACC_ID_AND_ACC_TYPE = -4, // FIXME ACC_ROLE ?
 //       //: Limits entry is invalid (e.g. weeklyOut is less than dailyOut)
@@ -5168,9 +5168,9 @@ xdr.struct("ManageLimitsOp", [
 // ===========================================================================
 xdr.enum("ManageLimitsResultCode", {
   success: 0,
-  malformed: -1,
+  accountNotFound: -1,
   notFound: -2,
-  alreadyExist: -3,
+  roleNotFound: -3,
   cannotCreateForAccIdAndAccType: -4,
   invalidLimit: -5,
 });
@@ -15945,6 +15945,10 @@ xdr.struct("ReviewRequestOp", [
 //       CANNOT_CREATE_FOR_ACC_ID_AND_ACC_TYPE = 1300,
 //       //: Trying to set invalid limits, i.e. with dayly limit greater than weekly limit
 //       INVALID_LIMITS = 1310,
+//       //: There is no account with passed ID for limits update request
+//       ACCOUNT_NOT_FOUND = -1311,
+//       //: There is no role with passed ID for limits update request
+//       ROLE_NOT_FOUND = -1312,
 //   
 //       //: Deprecated: Contract requests
 //       CONTRACT_DETAILS_TOO_LONG = -1400, // customer details reached length limit
@@ -16012,6 +16016,8 @@ xdr.enum("ReviewRequestResultCode", {
   destinationAccountNotFound: -1260,
   cannotCreateForAccIdAndAccType: 1300,
   invalidLimit: 1310,
+  accountNotFound: -1311,
+  roleNotFound: -1312,
   contractDetailsTooLong: -1400,
   baseAssetCannotBeSwapped: -1500,
   quoteAssetCannotBeSwapped: -1501,
