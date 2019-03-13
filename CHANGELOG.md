@@ -8,6 +8,9 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
+### Added
+- New "bravo" blob type
+
 ### Fixed
 - Use deserialize cache stub when creating a `Jsona` instance
 
