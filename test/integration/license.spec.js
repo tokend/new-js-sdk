@@ -12,7 +12,7 @@ const config = Object.freeze({
   ]
 })
 
-describe('License', () => {
+describe.skip('License', () => {
   it('Submit valid license', async () => {
     const wiredKPs = [Keypair.fromSecret(config.WIREDSEEDS[0]), Keypair.fromSecret(config.WIREDSEEDS[1])]
     let opts = {
