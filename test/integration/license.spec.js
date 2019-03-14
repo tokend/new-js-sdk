@@ -12,6 +12,7 @@ const config = Object.freeze({
   ]
 })
 
+// we don't have secret keys for licensing
 describe.skip('License', () => {
   it('Submit valid license', async () => {
     const wiredKPs = [Keypair.fromSecret(config.WIREDSEEDS[0]), Keypair.fromSecret(config.WIREDSEEDS[1])]
