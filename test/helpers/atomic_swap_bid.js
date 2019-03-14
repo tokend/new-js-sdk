@@ -2,32 +2,20 @@ import { CancelAtomicSwapBidBuilder, CreateAtomicSwapBidCreationRequestBuilder }
 import { Running } from './_running'
 import { getRequestIdFromResultXdr, Helper } from './_helper'
 import { base } from '../../src'
-import moment from 'moment'
 
 export class AtomicSwapBid extends Helper {
   /**
    * @param opts
-   * @param opts.baseAsset
+   * @param opts.balanceID
+   * @param opts.amount
    * @param opts.quoteAssets
-   * @param opts.defaultQuoteAsset
-   * @param opts.quoteAssets
-   * @param [opts.requiredBaseAssetForHardCap]
-   * @param [opts.startTime]
-   * @param [opts.endTime]
-   * @param [opts.softCap]
-   * @param [opts.hardCap]
-   * @param [opts.details]
-   * @param [opts.saleType]
    * @param {Keypair} ownerKp
    *
    * @returns {string} the ID of the request
    */
   async create (opts, ownerKp = this.masterKp) {
     const DEFAULTS = {
-      startTime: '' + moment().format('X'),
-      endTime: '' + moment().add(1, 'day').format('X'),
-      softCap: '10000.000000',
-      hardCap: '50000.000000',
+      amount: '10.000000',
       allTasks: 1,
       creatorDetails: {
         name: opts.baseAsset + 'sale',
@@ -38,8 +26,6 @@ export class AtomicSwapBid extends Helper {
           type: 'image/png'
         }
       },
-      saleType: '1',
-      saleEnumType: SALE_TYPES.fixedPrice
     }
 
     const operation = base.CreateAtomicSwapBidCreationRequestBuilder
@@ -50,7 +36,7 @@ export class AtomicSwapBid extends Helper {
 
     const response = await this.submit(operation, ownerKp)
 
-    return getRequestIdFromResultXdr(response.resultXdr, 'createSaleCreationRequestResult')
+    return getRequestIdFromResultXdr(response.resultXdr, 'createASwapBidCreationRequestResult')
   }
 
   checkSaleState (id) {

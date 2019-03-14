@@ -19,7 +19,8 @@ describe('Create ASwapBidCreation request', function () {
           price: '21.12',
           asset: 'BTC'
         }
-      ]
+      ],
+      allTasks: '1'
     }
     let op = CreateAtomicSwapBidCreationRequestBuilder.createASwapBidCreationRequest(opts)
     let xdrOp = op.toXDR('hex')
@@ -28,6 +29,7 @@ describe('Create ASwapBidCreation request', function () {
     expect(obj.type).to.be.equal(xdr.OperationType.createAswapBidRequest().name)
     expect(obj.balanceID).to.be.equal(opts.balanceID)
     expect(obj.amount).to.be.equal(opts.amount)
+    expect(obj.allTasks).to.be.equal(opts.allTasks)
     expect(isEqual(obj.creatorDetails, opts.creatorDetails)).to.be.true
     expect(isEqual(obj.quoteAssets, opts.quoteAssets)).to.be.true
   })

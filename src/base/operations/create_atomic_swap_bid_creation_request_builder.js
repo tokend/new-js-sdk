@@ -11,11 +11,11 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
      * @param {string} opts.balanceID - balance from which specified amount
      * will be used in atomic swap
      * @param {string} opts.amount - amount which will used in swap (will be locked)
-     * @param {string} opts.fee - fee for atomic swap bid
      * @param {object} opts.creatorDetails - details about atomic swap bid
      * @param {array} opts.quoteAssets - accepted assets
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
+     * @param {string} [opts.allTasks] - tasks which will be used instead of tasks from key value
      * @param {string} [opts.source] - The source account for the operation.
      * Defaults to the transaction's source account.
      *
@@ -62,10 +62,16 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
     rawRequest.ext = new xdr.ASwapBidCreationRequestExt(
       xdr.LedgerVersion.emptyVersion())
 
+    let tasks
+    if (!isUndefined(opts.allTasks)) {
+      tasks = BaseOperation._checkUnsignedIntValue('opts.allTasks', opts.allTasks)
+    }
+
     let opAttributes = {}
     opAttributes.body = new xdr.OperationBody.createAswapBidRequest(
       new xdr.CreateASwapBidCreationRequestOp({
         request: new xdr.ASwapBidCreationRequest(rawRequest),
+        allTasks: tasks,
         ext: new xdr.CreateASwapBidCreationRequestOpExt(
           xdr.LedgerVersion.emptyVersion())
       }))
@@ -80,6 +86,11 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
     result.amount = BaseOperation._fromXDRAmount(
       attrs.request().amount())
     result.creatorDetails = JSON.parse(attrs.request().creatorDetails())
+
+    if (!isUndefined(attrs.allTasks())){
+      result.allTasks = attrs.allTasks().toString()
+    }
+
     result.quoteAssets = []
     let rawQuoteAssets = attrs.request().quoteAssets()
     for (let i = 0; i < rawQuoteAssets.length; i++) {

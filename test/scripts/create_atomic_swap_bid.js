@@ -2,15 +2,16 @@ import { KEY_VALUE_KEYS } from '../../src/const'
 import { Asset } from '../helpers/asset'
 import _times from 'lodash/times'
 
-import {
-  createAndApproveAsset,
-  createStatsQuoteAsset
-} from './create_asset'
+import { createAndApproveAsset } from './create_asset'
+
+import { ensureAndGetBalanceId } from './create_sale_offer'
+
+import { fundAccount } from './create_account'
+
 import {
   sdk,
-  assetPairHelper,
   requestHelper,
-  atomicSwapHelper,
+  atomicSwapBidHelper,
 } from '../helpers'
 
 import { logger } from '../logger'
@@ -22,8 +23,10 @@ import { getKvEntryWithFallback } from './get_task_from_kv'
  * @param {string} opts.baseAsset
  * @param {Keypair} ownerKp
  */
-export async function createSale (opts, ownerKp) {
-  const log = logger.new('createSale')
+export async function createAtomicSwapBid (opts, ownerKp) {
+  const log = logger.new('createAtomicSwapBid')
+
+  await fundAccount(ownerKp.accountId(), { [opts.baseAsset]: '10' }, ownerKp)
 
   const quoteAssetCodes = _times(3, _ => Asset.randomCode())
   await Promise.all(
@@ -33,48 +36,22 @@ export async function createSale (opts, ownerKp) {
   )
   log.info(`Created the quote assets, codes: ${quoteAssetCodes}`)
 
-  const statsQuoteAsset = await createStatsQuoteAsset()
-  await Promise.all(
-    quoteAssetCodes.map(code => assetPairHelper.create({
-      base: statsQuoteAsset.code,
-      quote: code
-    }))
-  )
-  log.info('Paired quote assets with stats quote asset')
-
-  const defaultQuoteAsset = Asset.randomCode('USD')
-  await createAndApproveAsset({
-    code: defaultQuoteAsset
-  })
-  log.info('Created sale\'s default quote asset')
-
-  await Promise.all(
-    quoteAssetCodes.map(code => assetPairHelper.create({
-      base: defaultQuoteAsset,
-      quote: code
-    }))
-  )
-  log.info('Paired quote assets with default quote asset')
-
-  const { data: baseAssetData } = await sdk.horizon.assets.get(opts.baseAsset)
-  const maxAmountToBeSold = baseAssetData.maxIssuanceAmount
-  log.info('Defined max amount to be sold: ' + maxAmountToBeSold)
-
   const tasksToRemove = await getKvEntryWithFallback(
-    KEY_VALUE_KEYS.saleCreateTasks, 1
+    KEY_VALUE_KEYS.atomicSwapBidTasks, 1
   )
-  log.info('tasks to remove for sale_create requesr defined, value: ' + tasksToRemove)
+  log.info('tasks to remove for atomic swap bid request defined, value: ' + tasksToRemove)
 
-  const requestId = await saleHelper.create({
-    defaultQuoteAsset,
-    requiredBaseAssetForHardCap: maxAmountToBeSold,
-    baseAsset: opts.baseAsset,
+  const balanceID = ensureAndGetBalanceId(ownerKp.accountId(), opts.baseAsset)
+
+  const requestId = await atomicSwapBidHelper.create({
+    balanceID: balanceID,
+    amount: '10',
     quoteAssets: quoteAssetCodes.map(asset => ({ price: '1', asset }))
   }, ownerKp)
-  log.info(`Created the sale creation request, id: ${requestId}`)
+  log.info(`Created the atomic swap bid creation request, id: ${requestId}`)
 
   await requestHelper.approve(requestId, { tasksToRemove: tasksToRemove })
-  log.info('Approved the sale creation request')
+  log.info('Approved the atomic swap bid creation request')
 
   const sale = await saleHelper.mustLoadByBaseAsset(opts.baseAsset)
   return {

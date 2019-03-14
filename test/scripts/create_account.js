@@ -41,7 +41,7 @@ export async function createFundedAccount (roleID, balances) {
   }
 }
 
-export async function fundAccount (accountId, balances) {
+export async function fundAccount (accountId, balances, assetOwnerKp = this.masterKp) {
   const log = logger.new('fundAccount')
   await Promise.all(
     Object
@@ -74,7 +74,7 @@ export async function fundAccount (accountId, balances) {
           balanceId: balance.balanceId,
           amount,
           asset
-        })
+        }, assetOwnerKp)
       })
   )
   log.info(`Account ${accountId} funded`)
