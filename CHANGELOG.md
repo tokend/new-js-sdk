@@ -14,7 +14,7 @@ for further information about branching and tagging conventions.
 ### Added
 - error codes for set fee op and op related to limits https://github.com/tokend/xdr/pull/43/files
 ### Changed
-- xdr version 3.0.2-x.0
+- xdr version 3.0.1-x.0
 
 ## [1.3.0] - 2019-03-01
 
