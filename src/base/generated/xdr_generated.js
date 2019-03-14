@@ -1,6 +1,6 @@
-// revision: 686d9339f263983dbcc54231da39563a1b6c5b8c
-// branch:   master
-// Automatically generated on 2019-03-08T14:17:53+00:00
+// revision: 0d9e8188bf9ac548aafb9ae7b324bcc3415b2537
+// branch:   feature/atomic_swap_returning
+// Automatically generated on 2019-03-14T11:16:04+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1147,7 +1147,11 @@ xdr.struct("CreateASwapRequestOp", [
 //       ATOMIC_SWAP_TASKS_NOT_FOUND = -6,
 //       NOT_ALLOWED_BY_ASSET_POLICY = -7,
 //       BID_IS_CANCELLED = -8,
-//       CANNOT_CREATE_ASWAP_REQUEST_FOR_OWN_BID = -9
+//       CANNOT_CREATE_ASWAP_REQUEST_FOR_OWN_BID = -9,
+//       //: 0 value is received from key value entry by `atomic_swap_tasks` key
+//       ATOMIC_SWAP_ZERO_TASKS_NOT_ALLOWED = -10,
+//       //: Base amount precision and asset precision set in the system are mismatched
+//       INCORRECT_PRECISION = -11
 //   };
 //
 // ===========================================================================
@@ -1162,6 +1166,8 @@ xdr.enum("CreateASwapRequestResultCode", {
   notAllowedByAssetPolicy: -7,
   bidIsCancelled: -8,
   cannotCreateAswapRequestForOwnBid: -9,
+  atomicSwapZeroTasksNotAllowed: -10,
+  incorrectPrecision: -11,
 });
 
 // === xdr source ============================================================
@@ -1189,6 +1195,7 @@ xdr.union("CreateASwapRequestSuccessExt", {
 //   {
 //       uint64 requestID;
 //       AccountID bidOwnerID;
+//       uint64 quoteAmount;
 //   
 //       union switch (LedgerVersion v)
 //       {
@@ -1201,6 +1208,7 @@ xdr.union("CreateASwapRequestSuccessExt", {
 xdr.struct("CreateASwapRequestSuccess", [
   ["requestId", xdr.lookup("Uint64")],
   ["bidOwnerId", xdr.lookup("AccountId")],
+  ["quoteAmount", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("CreateASwapRequestSuccessExt")],
 ]);
 
@@ -1907,6 +1915,8 @@ xdr.union("CancelASwapBidResultSuccessExt", {
 //
 //   struct CancelASwapBidResultSuccess
 //   {
+//       uint64 lockedAmount;
+//   
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -1916,6 +1926,7 @@ xdr.union("CancelASwapBidResultSuccessExt", {
 //
 // ===========================================================================
 xdr.struct("CancelASwapBidResultSuccess", [
+  ["lockedAmount", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("CancelASwapBidResultSuccessExt")],
 ]);
 
@@ -8153,6 +8164,26 @@ xdr.struct("ReviewableRequestResourceCreateWithdraw", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: code of asset
+//           AssetCode assetCode;
+//           //: type of asset
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCreateAtomicSwapBid", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union ReviewableRequestResource switch (ReviewableRequestType requestType)
 //   {
 //   case CREATE_SALE:
@@ -8189,6 +8220,18 @@ xdr.struct("ReviewableRequestResourceCreateWithdraw", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } createWithdraw;
+//   case CREATE_ATOMIC_SWAP_BID:
+//       //: is used to restrict the usage of a reviewable request with create_atomic_swap_bid type
+//       struct
+//       {
+//           //: code of asset
+//           AssetCode assetCode;
+//           //: type of asset
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } createAtomicSwapBid;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -8202,11 +8245,13 @@ xdr.union("ReviewableRequestResource", {
     ["createSale", "createSale"],
     ["createIssuance", "createIssuance"],
     ["createWithdraw", "createWithdraw"],
+    ["createAtomicSwapBid", "createAtomicSwapBid"],
   ],
   arms: {
     createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
     createIssuance: xdr.lookup("ReviewableRequestResourceCreateIssuance"),
     createWithdraw: xdr.lookup("ReviewableRequestResourceCreateWithdraw"),
+    createAtomicSwapBid: xdr.lookup("ReviewableRequestResourceCreateAtomicSwapBid"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -11071,6 +11116,7 @@ xdr.union("CreateASwapBidCreationRequestOpExt", {
 //   {
 //       ASwapBidCreationRequest request;
 //   
+//       uint32* allTasks;
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -11082,6 +11128,7 @@ xdr.union("CreateASwapBidCreationRequestOpExt", {
 // ===========================================================================
 xdr.struct("CreateASwapBidCreationRequestOp", [
   ["request", xdr.lookup("ASwapBidCreationRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
   ["ext", xdr.lookup("CreateASwapBidCreationRequestOpExt")],
 ]);
 
@@ -11105,7 +11152,10 @@ xdr.struct("CreateASwapBidCreationRequestOp", [
 //       ASSETS_ARE_EQUAL = -10, // base and quote assets are the same
 //       BASE_BALANCE_UNDERFUNDED = -11,
 //       INVALID_QUOTE_ASSET = -12, // one of the quote assets is invalid
-//       NOT_ALLOWED_BY_ASSET_POLICY = -13
+//       NOT_ALLOWED_BY_ASSET_POLICY = -13,
+//       //: There is no key-value entry by `atomic_swap_bid_tasks` key in the system;
+//       //: configuration does not allow create atomic swap bids
+//       ATOMIC_SWAP_BID_TASKS_NOT_FOUND = -14
 //   };
 //
 // ===========================================================================
@@ -11124,6 +11174,7 @@ xdr.enum("CreateASwapBidCreationRequestResultCode", {
   baseBalanceUnderfunded: -11,
   invalidQuoteAsset: -12,
   notAllowedByAssetPolicy: -13,
+  atomicSwapBidTasksNotFound: -14,
 });
 
 // === xdr source ============================================================
@@ -11151,6 +11202,7 @@ xdr.union("CreateASwapBidCreationRequestSuccessExt", {
 //   {
 //       uint64 requestID;
 //       bool fulfilled;
+//       AssetCode baseAsset;
 //   
 //       union switch (LedgerVersion v)
 //       {
@@ -11163,6 +11215,7 @@ xdr.union("CreateASwapBidCreationRequestSuccessExt", {
 xdr.struct("CreateASwapBidCreationRequestSuccess", [
   ["requestId", xdr.lookup("Uint64")],
   ["fulfilled", xdr.bool()],
+  ["baseAsset", xdr.lookup("AssetCode")],
   ["ext", xdr.lookup("CreateASwapBidCreationRequestSuccessExt")],
 ]);
 
