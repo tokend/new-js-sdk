@@ -11,7 +11,7 @@ import { fundAccount } from './create_account'
 import {
   sdk,
   requestHelper,
-  atomicSwapBidHelper,
+  atomicSwapBidHelper, balanceHelper,
 } from '../helpers'
 
 import { logger } from '../logger'
@@ -28,10 +28,11 @@ export async function createAtomicSwapBid (opts, ownerKp) {
 
   await fundAccount(ownerKp.accountId(), { [opts.baseAsset]: '10' }, ownerKp)
 
-  const quoteAssetCodes = _times(3, _ => Asset.randomCode())
+  const quoteAssetCodes = _times(2, _ => Asset.randomCode())
   await Promise.all(
     quoteAssetCodes.map(quoteAssetCode => createAndApproveAsset({
-      code: quoteAssetCode
+      code: quoteAssetCode,
+      policies: 64
     }))
   )
   log.info(`Created the quote assets, codes: ${quoteAssetCodes}`)
@@ -41,10 +42,11 @@ export async function createAtomicSwapBid (opts, ownerKp) {
   )
   log.info('tasks to remove for atomic swap bid request defined, value: ' + tasksToRemove)
 
-  const balanceID = ensureAndGetBalanceId(ownerKp.accountId(), opts.baseAsset)
+  const balanceID = await balanceHelper.mustLoad(ownerKp.accountId(), opts.baseAsset)
+  log.info(`Got to balance with id ${balanceID.balanceId}`)
 
   const requestId = await atomicSwapBidHelper.create({
-    balanceID: balanceID,
+    balanceID: balanceID.balanceId,
     amount: '10',
     quoteAssets: quoteAssetCodes.map(asset => ({ price: '1', asset }))
   }, ownerKp)
@@ -53,9 +55,9 @@ export async function createAtomicSwapBid (opts, ownerKp) {
   await requestHelper.approve(requestId, { tasksToRemove: tasksToRemove })
   log.info('Approved the atomic swap bid creation request')
 
-  const sale = await saleHelper.mustLoadByBaseAsset(opts.baseAsset)
+  const bid = await atomicSwapBidHelper.mustLoadByBaseAsset(opts.baseAsset)
   return {
-    sale,
+    bid,
     ownerKp,
     ownerId: ownerKp.accountId()
   }

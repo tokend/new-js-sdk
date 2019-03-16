@@ -1,6 +1,7 @@
 import { Operation } from '../operation'
 import { CreateAtomicSwapRequestBuilder } from './create_atomic_swap_request_builder'
 import { default as xdr } from '../generated/xdr_generated'
+import { isEqual } from 'lodash'
 
 describe('Create ASwapBidCreation request', function () {
   it('Success', function () {
@@ -8,7 +9,7 @@ describe('Create ASwapBidCreation request', function () {
       baseAmount: '911',
       bidID: '69',
       quoteAsset: 'ETH',
-      creatorDetails: ''
+      creatorDetails: { data: 'new atomic swap' }
     }
     let op = CreateAtomicSwapRequestBuilder.createASwapRequest(opts)
     let xdrOp = op.toXDR('hex')
@@ -18,5 +19,6 @@ describe('Create ASwapBidCreation request', function () {
     expect(obj.baseAmount).to.be.equal(opts.baseAmount)
     expect(obj.bidID).to.be.equal(opts.bidID)
     expect(obj.quoteAsset).to.be.equal(opts.quoteAsset)
+    expect(isEqual(opts.creatorDetails, obj.creatorDetails)).to.be.true
   })
 })

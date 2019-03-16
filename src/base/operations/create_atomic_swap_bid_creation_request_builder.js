@@ -29,7 +29,8 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
     rawRequest.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
 
     if (!Keypair.isValidBalanceKey(opts.balanceID)) {
-      throw new Error('opts.balanceID is invalid')
+      console.log(opts.balanceID + 'kek')
+      throw new Error('opts.balanceID is invalid ' + opts.balanceID)
     }
     rawRequest.baseBalance = Keypair.fromBalanceId(opts.balanceID)
       .xdrBalanceId()

@@ -11,7 +11,7 @@ export class CreateAtomicSwapRequestBuilder {
      * @param {string} opts.bidID - id of bid for which request will be created.
      * @param {string} opts.baseAmount - amount which will be bought
      * @param {string} opts.quoteAsset - accepted assets
-     * @param {string} opts.creatorDetails - request details set by creator
+     * @param {object} opts.creatorDetails - request details set by creator
      * @param {string} [opts.source] - The source account for the operation.
      * Defaults to the transaction's source account.
      *
@@ -34,7 +34,7 @@ export class CreateAtomicSwapRequestBuilder {
     }
 
     rawRequest.quoteAsset = opts.quoteAsset
-    rawRequest.creatorDetails = opts.creatorDetails
+    rawRequest.creatorDetails = JSON.stringify(opts.creatorDetails)
     rawRequest.bidId = UnsignedHyper.fromString(opts.bidID)
     rawRequest.ext = new xdr.ASwapRequestExt(
       xdr.LedgerVersion.emptyVersion())
@@ -56,6 +56,6 @@ export class CreateAtomicSwapRequestBuilder {
     result.baseAmount = BaseOperation._fromXDRAmount(
       attrs.request().baseAmount())
     result.quoteAsset = attrs.request().quoteAsset().toString()
-    result.creatorDetails = attrs.request().creatorDetails().toString()
+    result.creatorDetails = JSON.parse(attrs.request().creatorDetails().toString())
   }
 }

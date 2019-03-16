@@ -18,6 +18,7 @@ import { Payment } from './payment'
 import { StampHelper } from './stamp'
 import { LicenseHelper } from './license'
 import { AtomicSwapBid } from './atomic_swap_bid'
+import { AtomicSwap } from './atomic_swap'
 
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
@@ -49,3 +50,4 @@ export const amlAlertHelper = new AmlAlert(DEFAULTS)
 export const stampHelper = new StampHelper(DEFAULTS)
 export const licenseHelper = new LicenseHelper(DEFAULTS)
 export const atomicSwapBidHelper = new AtomicSwapBid(DEFAULTS)
+export const atomicSwapHelper = new AtomicSwap(DEFAULTS)

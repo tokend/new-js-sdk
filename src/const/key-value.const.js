@@ -6,5 +6,6 @@ export const KEY_VALUE_KEYS = Object.freeze({
   withdrawalTasks: 'withdrawal_tasks',
   amlAlertTasks: 'aml_alert_tasks',
   atomicSwapBidTasks: 'atomic_swap_bid_tasks',
+  atomicSwapTasks: 'atomic_swap_tasks',
   paymentCreateTasks: 'payment_create_tasks:*'
 })

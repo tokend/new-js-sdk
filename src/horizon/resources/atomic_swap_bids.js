@@ -11,11 +11,10 @@ export class AtomicSwapBid extends ResourceGroupBase {
   /**
    * This endpoint represents atomic swap bids filters them by owner id and base asset
    *
-   * @param {string} owner Owner id
-   * @param {string} baseAsset Base asset code
-   * @return {HorizonResponse}
+   * @param [query] - request query
+   * @return {Promise}
    */
-  getPage (query) {
+  getPage (query = {}) {
     return this._makeCallBuilder()
       .get(query)
   }
@@ -24,17 +23,17 @@ export class AtomicSwapBid extends ResourceGroupBase {
    * Provides information on a single atomic swap bid.
    *
    * @param {string} id Bid id
-   * @return {HorizonResponse}
+   * @return {Promise}
    */
   get (id) {
     return this._makeCallBuilder()
-      .appendUrlSegment([id])
+      .appendUrlSegment(id)
       .get()
   }
 
   _makeCallBuilder () {
     return this._server._makeCallBuilder()
-      .appendUrlSegment(['atomic_swap_bids'])
+      .appendUrlSegment('atomic_swap_bids')
   }
 
   _makeCallBuilderWithSignature () {
