@@ -18,6 +18,5 @@ export async function fullLicenseSubmit (opts, keys, source) {
     ledgerHash: stampResult.ledgerHash(),
     prevLicenseHash: stampResult.licenseHash()
   }
-  const licenseResult = await licenseHelper.create(licenseOpts, keys)
-  return licenseResult
+  return licenseHelper.create(licenseOpts, keys)
 }

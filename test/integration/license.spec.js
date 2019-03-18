@@ -12,14 +12,15 @@ const config = Object.freeze({
   ]
 })
 
-describe('License', () => {
+// we don't have secret keys for licensing
+describe.skip('License', () => {
   it('Submit valid license', async () => {
     const wiredKPs = [Keypair.fromSecret(config.WIREDSEEDS[0]), Keypair.fromSecret(config.WIREDSEEDS[1])]
     let opts = {
       adminCount: "3",
       dueDate: "1648480000",
     }
-    let licenseResult = await fullLicenseSubmit(opts, wiredKPs, accountHelper.masterId)
+    await fullLicenseSubmit(opts, wiredKPs, accountHelper.masterId)
   })
 
 })
