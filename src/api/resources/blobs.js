@@ -5,14 +5,16 @@ const types = Object.freeze({
   assetDescription: 'asset_description',
   fundOverview: 'fund_overview',
   fundUpdate: 'fund_update',
-  navUpdate: 'nav_update'
+  navUpdate: 'nav_update',
+  bravo: 'bravo'
 })
 
 const typesToFalgs = Object.freeze({
   [types.assetDescription]: 1,
   [types.fundOverview]: 2,
   [types.fundUpdate]: 4,
-  [types.navUpdate]: 8
+  [types.navUpdate]: 8,
+  [types.bravo]: 64
 })
 
 /**
