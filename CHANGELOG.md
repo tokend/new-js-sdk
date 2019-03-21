@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.3.1-x.2] - 2019-03-21
 ### Added
 - New "bravo" blob type
 
@@ -24,6 +24,7 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.3.1-x.1...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.3.1-x.2...HEAD
+[1.3.1-x.2]: https://github.com/tokend/new-js-sdk/compare/1.3.1-x.1...1.3.1-x.2
 [1.3.1-x.1]: https://github.com/tokend/new-js-sdk/compare/1.3.0...1.3.1-x.1
 [1.3.0]: https://github.com/tokend/new-js-sdk/releases/tag/1.3.0
