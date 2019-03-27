@@ -1,10 +1,11 @@
 import { ManageCreatePollRequestBuilder, ManagePollBuilder, Keypair } from '../../src/base'
 import { Running } from './_running'
-import { getRequestIdFromResultXdr, getSuccessResultFromXDR, Helper } from './_helper'
+import { getSuccessResultFromXDR, Helper } from './_helper'
 import { ApiCaller } from '../../src/api2/api-caller'
 import { Wallet } from '../../src/wallet'
 import * as config from '../config'
 import moment from 'moment'
+import { isEmpty } from 'lodash'
 
 export class Poll extends Helper {
   /**
@@ -23,8 +24,8 @@ export class Poll extends Helper {
    */
   async create (opts, ownerKp = this.masterKp) {
     const DEFAULTS = {
-      startTime: '' + moment().add(10, 's').format('X'),
-      endTime: '' + moment().add(1, 'day').format('X'),
+      startTime: '' + moment().add(5, 's').format('X'),
+      endTime: '' + moment().add(10, 's').format('X'),
       allTasks: 1,
       creatorDetails: {
         name: 'poll',
@@ -67,10 +68,10 @@ export class Poll extends Helper {
 
     const opts = { pollID: id }
 
-    return this.submit(ManagePollBuilder.closePoll(
+    return this.submit(ManagePollBuilder.closePoll({
       ...DEFAULTS,
       ...opts
-    ), resultProviderKp)
+    }), resultProviderKp)
   }
 
   mustLoadById (id) {

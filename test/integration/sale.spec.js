@@ -3,7 +3,7 @@ import { closeSale } from '../scripts/close_sale'
 import { createAssetFromScratch } from '../scripts/create_asset'
 import { createSale } from '../scripts/create_sale'
 
-describe.skip('Sale', () => {
+describe('Sale', () => {
   it('should create the fixed price sale and close it by reaching the hard cap', async () => {
     const { assetCode, ownerKp } = await createAssetFromScratch()
     let { sale } = await createSale({ baseAsset: assetCode }, ownerKp)

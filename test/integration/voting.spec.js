@@ -17,10 +17,10 @@ describe('Voting', () => {
     await accountHelper.createSyndicate(resultProviderKp.accountId())
     log.info(`Created the result provider account, id: ${resultProviderKp.accountId()}`)
 
-    let { poll } = await createPoll(ownerKp, resultProviderKp)
+    let poll = await createPoll(ownerKp, resultProviderKp)
 
     poll = await closePoll(poll.id, resultProviderKp)
 
-    expect(poll.state.value).to.equal(1)
+    expect(poll.pollState.value).to.equal(1)
   })
 })

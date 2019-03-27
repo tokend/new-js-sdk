@@ -13,18 +13,20 @@ import { Keypair } from '../../src/base'
 export async function closePoll (pollID, resultProviderKp) {
   const log = logger.new('createVotes')
 
-  let poll = pollHelper.mustLoadById(pollID)
+  let poll = await pollHelper.mustLoadById(pollID)
 
   log.info('number of choices ' + poll.numberOfChoices)
 
-  for (let i = 1; i <= poll.numberOfChoices; i++) {
-    const voter = Keypair.random()
-    accountHelper.createSyndicate(voter.accountId())
-    log.info(`Created the account, id: ${voter.accountId()}`)
-    voteHelper.create({ pollID: pollID, choice: i }, voter)
-  }
+  await Promise.all([ async function () {
+    for (let i = 1; i <= poll.numberOfChoices; i++) {
+      const voter = Keypair.random()
+      accountHelper.createSyndicate(voter.accountId())
+      log.info(`Created the account, id: ${voter.accountId()}`)
+      voteHelper.create({ pollID: pollID, choice: i }, voter)
+    }
+  }])
 
-  pollHelper.close(pollID)
+  await pollHelper.close(pollID, resultProviderKp)
 
   return pollHelper.mustLoadById(pollID)
 }
