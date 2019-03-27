@@ -27,6 +27,8 @@ import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 import { StampBuilder } from './operations/stamp'
 import { LicenseBuilder } from './operations/license_operation'
+import { ManageCreatePollRequestBuilder } from './operations/manage_create_poll_request_builder'
+import { ManageVoteBuilder } from './operations/manage_vote_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -439,6 +441,12 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.license():
         LicenseBuilder.licenseToObject(result, attrs)
+        break
+      case xdr.OperationType.manageCreatePollRequest():
+        ManageCreatePollRequestBuilder.manageCreatePollRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.manageVote():
+        ManageVoteBuilder.manageVoteToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

@@ -1,6 +1,6 @@
-// revision: 4cf2da11b80f514ce1bed0dce240a714f9e5e33c
-// branch:   master
-// Automatically generated on 2019-03-14T13:39:33+00:00
+// revision: 7b923f2fae8815386d899563f66b0bc6b459d3ff
+// branch:   feature/voting
+// Automatically generated on 2019-03-26T13:39:17+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -53,6 +53,76 @@ xdr.struct("PendingStatisticsEntry", [
   ["requestId", xdr.lookup("Uint64")],
   ["amount", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("PendingStatisticsEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum PollType
+//   {
+//       SINGLE_CHOICE = 0
+//   };
+//
+// ===========================================================================
+xdr.enum("PollType", {
+  singleChoice: 0,
+});
+
+// === xdr source ============================================================
+//
+//   union PollData switch (PollType type)
+//   {
+//   case SINGLE_CHOICE:
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.union("PollData", {
+  switchOn: xdr.lookup("PollType"),
+  switchName: "type",
+  switches: [
+    ["singleChoice", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct PollEntry
+//   {
+//       uint64 id;
+//       uint64 permissionType;
+//   
+//       uint64 numberOfChoices;
+//       PollData data;
+//   
+//       uint64 startTime;
+//       uint64 endTime;
+//   
+//       AccountID ownerID;
+//       AccountID resultProviderID;
+//   
+//       bool voteConfirmationRequired;
+//   
+//       longstring details;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("PollEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint64")],
+  ["numberOfChoices", xdr.lookup("Uint64")],
+  ["data", xdr.lookup("PollData")],
+  ["startTime", xdr.lookup("Uint64")],
+  ["endTime", xdr.lookup("Uint64")],
+  ["ownerId", xdr.lookup("AccountId")],
+  ["resultProviderId", xdr.lookup("AccountId")],
+  ["voteConfirmationRequired", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -225,6 +295,12 @@ xdr.struct("StampEntry", [
 //           StampOp stampOp;
 //       case LICENSE:
 //           LicenseOp licenseOp;
+//       case MANAGE_CREATE_POLL_REQUEST:
+//           ManageCreatePollRequestOp manageCreatePollRequestOp;
+//       case MANAGE_POLL:
+//           ManagePollOp managePollOp;
+//       case MANAGE_VOTE:
+//           ManageVoteOp manageVoteOp;
 //       }
 //
 // ===========================================================================
@@ -268,6 +344,9 @@ xdr.union("OperationBody", {
     ["manageSignerRule", "manageSignerRuleOp"],
     ["stamp", "stampOp"],
     ["license", "licenseOp"],
+    ["manageCreatePollRequest", "manageCreatePollRequestOp"],
+    ["managePoll", "managePollOp"],
+    ["manageVote", "manageVoteOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -306,6 +385,9 @@ xdr.union("OperationBody", {
     manageSignerRuleOp: xdr.lookup("ManageSignerRuleOp"),
     stampOp: xdr.lookup("StampOp"),
     licenseOp: xdr.lookup("LicenseOp"),
+    manageCreatePollRequestOp: xdr.lookup("ManageCreatePollRequestOp"),
+    managePollOp: xdr.lookup("ManagePollOp"),
+    manageVoteOp: xdr.lookup("ManageVoteOp"),
   },
 });
 
@@ -392,6 +474,12 @@ xdr.union("OperationBody", {
 //           StampOp stampOp;
 //       case LICENSE:
 //           LicenseOp licenseOp;
+//       case MANAGE_CREATE_POLL_REQUEST:
+//           ManageCreatePollRequestOp manageCreatePollRequestOp;
+//       case MANAGE_POLL:
+//           ManagePollOp managePollOp;
+//       case MANAGE_VOTE:
+//           ManageVoteOp manageVoteOp;
 //       }
 //       body;
 //   };
@@ -685,6 +773,12 @@ xdr.struct("AccountRuleRequirement", [
 //           StampResult stampResult;
 //       case LICENSE:
 //           LicenseResult licenseResult;
+//       case MANAGE_POLL:
+//           ManagePollResult managePollResult;
+//       case MANAGE_CREATE_POLL_REQUEST:
+//           ManageCreatePollRequestResult manageCreatePollRequestResult;
+//       case MANAGE_VOTE:
+//           ManageVoteResult manageVoteResult;
 //       }
 //
 // ===========================================================================
@@ -728,6 +822,9 @@ xdr.union("OperationResultTr", {
     ["manageSignerRule", "manageSignerRuleResult"],
     ["stamp", "stampResult"],
     ["license", "licenseResult"],
+    ["managePoll", "managePollResult"],
+    ["manageCreatePollRequest", "manageCreatePollRequestResult"],
+    ["manageVote", "manageVoteResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -766,6 +863,9 @@ xdr.union("OperationResultTr", {
     manageSignerRuleResult: xdr.lookup("ManageSignerRuleResult"),
     stampResult: xdr.lookup("StampResult"),
     licenseResult: xdr.lookup("LicenseResult"),
+    managePollResult: xdr.lookup("ManagePollResult"),
+    manageCreatePollRequestResult: xdr.lookup("ManageCreatePollRequestResult"),
+    manageVoteResult: xdr.lookup("ManageVoteResult"),
   },
 });
 
@@ -848,6 +948,12 @@ xdr.union("OperationResultTr", {
 //           StampResult stampResult;
 //       case LICENSE:
 //           LicenseResult licenseResult;
+//       case MANAGE_POLL:
+//           ManagePollResult managePollResult;
+//       case MANAGE_CREATE_POLL_REQUEST:
+//           ManageCreatePollRequestResult manageCreatePollRequestResult;
+//       case MANAGE_VOTE:
+//           ManageVoteResult manageVoteResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -3890,6 +3996,48 @@ xdr.struct("SignerRuleResourceKeyValue", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourcePoll", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceVote", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union SignerRuleResource switch (LedgerEntryType type)
 //   {
 //   case REVIEWABLE_REQUEST:
@@ -3990,6 +4138,30 @@ xdr.struct("SignerRuleResourceKeyValue", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } keyValue;
+//   case POLL:
+//       struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } poll;
+//   case VOTE:
+//       struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } vote;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -4010,6 +4182,8 @@ xdr.union("SignerRuleResource", {
     ["signerRole", "signerRole"],
     ["signer", "signer"],
     ["keyValue", "keyValue"],
+    ["poll", "poll"],
+    ["vote", "vote"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -4021,6 +4195,8 @@ xdr.union("SignerRuleResource", {
     signerRole: xdr.lookup("SignerRuleResourceSignerRole"),
     signer: xdr.lookup("SignerRuleResourceSigner"),
     keyValue: xdr.lookup("SignerRuleResourceKeyValue"),
+    poll: xdr.lookup("SignerRuleResourcePoll"),
+    vote: xdr.lookup("SignerRuleResourceVote"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -4043,7 +4219,8 @@ xdr.union("SignerRuleResource", {
 //       PARTICIPATE = 11,
 //       BIND = 12,
 //       UPDATE_MAX_ISSUANCE = 13,
-//       CHECK = 14
+//       CHECK = 14,
+//       CLOSE = 15
 //   };
 //
 // ===========================================================================
@@ -4062,6 +4239,7 @@ xdr.enum("SignerRuleAction", {
   bind: 12,
   updateMaxIssuance: 13,
   check: 14,
+  close: 15,
 });
 
 // === xdr source ============================================================
@@ -4111,6 +4289,241 @@ xdr.struct("LicenseEntry", [
   ["signatures", xdr.varArray(xdr.lookup("DecoratedSignature"), 2147483647)],
   ["ext", xdr.lookup("LicenseEntryExt")],
 ]);
+
+// === xdr source ============================================================
+//
+//   enum ManagePollAction
+//   {
+//       CLOSE = 0
+//   //    UPDATE_END_TIME = 1,
+//   //    REMOVE = 2,
+//   };
+//
+// ===========================================================================
+xdr.enum("ManagePollAction", {
+  close: 0,
+});
+
+// === xdr source ============================================================
+//
+//   enum PollResult
+//   {
+//       PASSED = 0,
+//       FAILED = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("PollResult", {
+  passed: 0,
+  failed: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ClosePollDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ClosePollData
+//   {
+//       //: result of voting
+//       PollResult result;
+//   
+//       //: Arbitrary stringified json object with details about the result
+//       longstring details;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ClosePollData", [
+  ["result", xdr.lookup("PollResult")],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("ClosePollDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("UpdatePollEndTimeDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct UpdatePollEndTimeData
+//   {
+//       uint64 newEndTime;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdatePollEndTimeData", [
+  ["newEndTime", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("UpdatePollEndTimeDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManagePollAction action)
+//       {
+//       case CLOSE:
+//           ClosePollData closePollData;
+//   //    case UPDATE_END_TIME:
+//   //        UpdatePollEndTimeData updateTimeData;
+//   //    case REMOVE:
+//   //        EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.union("ManagePollOpData", {
+  switchOn: xdr.lookup("ManagePollAction"),
+  switchName: "action",
+  switches: [
+    ["close", "closePollData"],
+  ],
+  arms: {
+    closePollData: xdr.lookup("ClosePollData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManagePollOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManagePollOp
+//   {
+//       //: ID of poll to manage
+//       uint64 pollID;
+//   
+//       union switch (ManagePollAction action)
+//       {
+//       case CLOSE:
+//           ClosePollData closePollData;
+//   //    case UPDATE_END_TIME:
+//   //        UpdatePollEndTimeData updateTimeData;
+//   //    case REMOVE:
+//   //        EmptyExt ext;
+//       }
+//       data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManagePollOp", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["data", xdr.lookup("ManagePollOpData")],
+  ["ext", xdr.lookup("ManagePollOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManagePollResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       NOT_FOUND = -1, // not found contract request, when try to remove
+//       POLL_NOT_READY = -2,
+//       NOT_AUTHORIZED_TO_CLOSE_POLL = -3
+//   
+//   };
+//
+// ===========================================================================
+xdr.enum("ManagePollResultCode", {
+  success: 0,
+  notFound: -1,
+  pollNotReady: -2,
+  notAuthorizedToClosePoll: -3,
+});
+
+// === xdr source ============================================================
+//
+//   union ManagePollResult switch (ManagePollResultCode code)
+//   {
+//   case SUCCESS:
+//       EmptyExt ext;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManagePollResult", {
+  switchOn: xdr.lookup("ManagePollResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
+  },
+  defaultArm: xdr.void(),
+});
 
 // === xdr source ============================================================
 //
@@ -5445,6 +5858,10 @@ xdr.enum("ThresholdIndices", {
 //           LicenseEntry license;
 //       case STAMP:
 //           StampEntry stamp;
+//       case POLL:
+//           PollEntry poll;
+//       case VOTE:
+//           VoteEntry vote;
 //       }
 //
 // ===========================================================================
@@ -5479,6 +5896,8 @@ xdr.union("LedgerEntryData", {
     ["signerRole", "signerRole"],
     ["license", "license"],
     ["stamp", "stamp"],
+    ["poll", "poll"],
+    ["vote", "vote"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
@@ -5508,6 +5927,8 @@ xdr.union("LedgerEntryData", {
     signerRole: xdr.lookup("SignerRoleEntry"),
     license: xdr.lookup("LicenseEntry"),
     stamp: xdr.lookup("StampEntry"),
+    poll: xdr.lookup("PollEntry"),
+    vote: xdr.lookup("VoteEntry"),
   },
 });
 
@@ -5592,6 +6013,10 @@ xdr.union("LedgerEntryExt", {
 //           LicenseEntry license;
 //       case STAMP:
 //           StampEntry stamp;
+//       case POLL:
+//           PollEntry poll;
+//       case VOTE:
+//           VoteEntry vote;
 //       }
 //       data;
 //   
@@ -7355,6 +7780,7 @@ xdr.struct("UpdateSaleDetailsRequest", [
 //   	CREATE_INVOICE = 11,
 //   	MANAGE_CONTRACT = 12,
 //   	UPDATE_ASSET = 13,
+//   	CREATE_POLL = 14,
 //   	CREATE_ATOMIC_SWAP_BID = 16,
 //   	CREATE_ATOMIC_SWAP = 17
 //   };
@@ -7375,6 +7801,7 @@ xdr.enum("ReviewableRequestType", {
   createInvoice: 11,
   manageContract: 12,
   updateAsset: 13,
+  createPoll: 14,
   createAtomicSwapBid: 16,
   createAtomicSwap: 17,
 });
@@ -7456,6 +7883,8 @@ xdr.struct("TasksExt", [
 //               ASwapBidCreationRequest aSwapBidCreationRequest;
 //           case CREATE_ATOMIC_SWAP:
 //               ASwapRequest aSwapRequest;
+//           case CREATE_POLL:
+//               CreatePollRequest createPollRequest;
 //   	}
 //
 // ===========================================================================
@@ -7477,6 +7906,7 @@ xdr.union("ReviewableRequestEntryBody", {
     ["manageContract", "contractRequest"],
     ["createAtomicSwapBid", "aSwapBidCreationRequest"],
     ["createAtomicSwap", "aSwapRequest"],
+    ["createPoll", "createPollRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -7493,6 +7923,7 @@ xdr.union("ReviewableRequestEntryBody", {
     contractRequest: xdr.lookup("ContractRequest"),
     aSwapBidCreationRequest: xdr.lookup("ASwapBidCreationRequest"),
     aSwapRequest: xdr.lookup("ASwapRequest"),
+    createPollRequest: xdr.lookup("CreatePollRequest"),
   },
 });
 
@@ -7555,6 +7986,8 @@ xdr.union("ReviewableRequestEntryExt", {
 //               ASwapBidCreationRequest aSwapBidCreationRequest;
 //           case CREATE_ATOMIC_SWAP:
 //               ASwapRequest aSwapRequest;
+//           case CREATE_POLL:
+//               CreatePollRequest createPollRequest;
 //   	} body;
 //   
 //   	TasksExt tasks;
@@ -8153,6 +8586,23 @@ xdr.struct("ReviewableRequestResourceCreateWithdraw", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCreatePoll", [
+  ["permissionType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union ReviewableRequestResource switch (ReviewableRequestType requestType)
 //   {
 //   case CREATE_SALE:
@@ -8189,6 +8639,16 @@ xdr.struct("ReviewableRequestResourceCreateWithdraw", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } createWithdraw;
+//   case CREATE_POLL:
+//       //: is used to restrict the creating of a `CREATE_POLL` reviewable request type
+//       struct
+//       {
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } createPoll;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -8202,11 +8662,13 @@ xdr.union("ReviewableRequestResource", {
     ["createSale", "createSale"],
     ["createIssuance", "createIssuance"],
     ["createWithdraw", "createWithdraw"],
+    ["createPoll", "createPoll"],
   ],
   arms: {
     createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
     createIssuance: xdr.lookup("ReviewableRequestResourceCreateIssuance"),
     createWithdraw: xdr.lookup("ReviewableRequestResourceCreateWithdraw"),
+    createPoll: xdr.lookup("ReviewableRequestResourceCreatePoll"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -8331,6 +8793,48 @@ xdr.struct("AccountRuleResourceKeyValue", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourcePoll", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceVote", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
 //   case ASSET:
@@ -8401,6 +8905,30 @@ xdr.struct("AccountRuleResourceKeyValue", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } keyValue;
+//   case POLL:
+//       struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } poll;
+//   case VOTE:
+//       struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint64 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } vote;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -8418,6 +8946,8 @@ xdr.union("AccountRuleResource", {
     ["sale", "sale"],
     ["atomicSwapBid", "atomicSwapBid"],
     ["keyValue", "keyValue"],
+    ["poll", "poll"],
+    ["vote", "vote"],
   ],
   arms: {
     asset: xdr.lookup("AccountRuleResourceAsset"),
@@ -8426,6 +8956,8 @@ xdr.union("AccountRuleResource", {
     sale: xdr.lookup("AccountRuleResourceSale"),
     atomicSwapBid: xdr.lookup("AccountRuleResourceAtomicSwapBid"),
     keyValue: xdr.lookup("AccountRuleResourceKeyValue"),
+    poll: xdr.lookup("AccountRuleResourcePoll"),
+    vote: xdr.lookup("AccountRuleResourceVote"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -8449,7 +8981,9 @@ xdr.union("AccountRuleResource", {
 //       BIND = 12,
 //       UPDATE_MAX_ISSUANCE = 13,
 //       CHECK = 14,
-//       CANCEL = 15
+//       CANCEL = 15,
+//       CLOSE = 16,
+//       REMOVE = 17
 //   };
 //
 // ===========================================================================
@@ -8469,6 +9003,8 @@ xdr.enum("AccountRuleAction", {
   updateMaxIssuance: 13,
   check: 14,
   cancel: 15,
+  close: 16,
+  remove: 17,
 });
 
 // === xdr source ============================================================
@@ -10444,6 +10980,351 @@ xdr.struct("StatisticsEntry", [
 
 // === xdr source ============================================================
 //
+//   enum ManageCreatePollRequestAction
+//   {
+//       CREATE = 0,
+//       CANCEL = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageCreatePollRequestAction", {
+  create: 0,
+  cancel: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreatePollRequestDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreatePollRequestData
+//   {
+//       //: Body of `CREATE_POLL` request
+//       CreatePollRequest request;
+//   
+//       //: Bit mask that will be used instead of the value from key-value entry by
+//       //: `create_poll_tasks:<permissionType>` key
+//       uint32* allTasks;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePollRequestData", [
+  ["request", xdr.lookup("CreatePollRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("CreatePollRequestDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelPollRequestDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CancelPollRequestData
+//   {
+//       uint64 requestID;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelPollRequestData", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelPollRequestDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageCreatePollRequestAction action)
+//       {
+//       case CREATE:
+//           CreatePollRequestData createData;
+//       case CANCEL:
+//           CancelPollRequestData cancelData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestOpData", {
+  switchOn: xdr.lookup("ManageCreatePollRequestAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["cancel", "cancelData"],
+  ],
+  arms: {
+    createData: xdr.lookup("CreatePollRequestData"),
+    cancelData: xdr.lookup("CancelPollRequestData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageCreatePollRequestOp
+//   {
+//       //: data is used to pass one of `ManageCreatePollRequestAction` with required params
+//       union switch (ManageCreatePollRequestAction action)
+//       {
+//       case CREATE:
+//           CreatePollRequestData createData;
+//       case CANCEL:
+//           CancelPollRequestData cancelData;
+//       }
+//       data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageCreatePollRequestOp", [
+  ["data", xdr.lookup("ManageCreatePollRequestOpData")],
+  ["ext", xdr.lookup("ManageCreatePollRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageCreatePollRequestResultCode
+//   {
+//       //: `CREATE_POLL` request has either been successfully created
+//       //: or auto approved
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: Passed details have invalid json structure
+//       INVALID_CREATOR_DETAILS = -1,
+//       //: There is no `CREATE_POLL` request with such id
+//       NOT_FOUND = -2,
+//       INVALID_DATES = -3,
+//       INVALID_START_TIME = -4,
+//       INVALID_END_TIME = -5,
+//       //: There is no key-value entry by `create_poll_tasks:<permissionType>` key in the system;
+//       //: configuration does not allow to create `CREATE_POLL` request with such `permissionType`
+//       CREATE_POLL_TASKS_NOT_FOUND = -6,
+//       RESULT_PROVIDER_NOT_FOUND = -7
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageCreatePollRequestResultCode", {
+  success: 0,
+  invalidCreatorDetail: -1,
+  notFound: -2,
+  invalidDate: -3,
+  invalidStartTime: -4,
+  invalidEndTime: -5,
+  createPollTasksNotFound: -6,
+  resultProviderNotFound: -7,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreatePollRequestResponseExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreatePollRequestResponse
+//   {
+//       //: ID of a created request
+//       uint64 requestID;
+//   
+//       //: Indicates whether or not the `CREATE_POLL` request was auto approved and fulfilled
+//       //: True means that poll was successfully created
+//       bool fulfilled;
+//   
+//       //: reserved for the future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePollRequestResponse", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["ext", xdr.lookup("CreatePollRequestResponseExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageCreatePollRequestAction action)
+//       {
+//       case CREATE:
+//           CreatePollRequestResponse response;
+//       case CANCEL:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestSuccessResultDetails", {
+  switchOn: xdr.lookup("ManageCreatePollRequestAction"),
+  switchName: "action",
+  switches: [
+    ["create", "response"],
+    ["cancel", xdr.void()],
+  ],
+  arms: {
+    response: xdr.lookup("CreatePollRequestResponse"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestSuccessResultExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageCreatePollRequestSuccessResult
+//   {
+//       //: `details` id used to pass useful fields
+//       union switch (ManageCreatePollRequestAction action)
+//       {
+//       case CREATE:
+//           CreatePollRequestResponse response;
+//       case CANCEL:
+//           void;
+//       } details;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageCreatePollRequestSuccessResult", [
+  ["details", xdr.lookup("ManageCreatePollRequestSuccessResultDetails")],
+  ["ext", xdr.lookup("ManageCreatePollRequestSuccessResultExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union ManageCreatePollRequestResult switch (ManageCreatePollRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       ManageCreatePollRequestSuccessResult success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestResult", {
+  switchOn: xdr.lookup("ManageCreatePollRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("ManageCreatePollRequestSuccessResult"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -10879,6 +11760,235 @@ xdr.union("StampResult", {
   ],
   arms: {
     success: xdr.lookup("StampSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   enum ManageVoteAction
+//   {
+//       CREATE = 0,
+//       REMOVE = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageVoteAction", {
+  create: 0,
+  remove: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateVoteDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateVoteData
+//   {
+//       //: ID of poll to vote in
+//       uint64 pollID;
+//   
+//       //: `data` is used to pass choice with functional type of poll
+//       VoteData data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateVoteData", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["data", xdr.lookup("VoteData")],
+  ["ext", xdr.lookup("CreateVoteDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveVoteDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct RemoveVoteData
+//   {
+//       //: ID of poll
+//       uint64 pollID;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveVoteData", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("RemoveVoteDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageVoteAction action)
+//       {
+//       case CREATE:
+//           CreateVoteData createData;
+//       case REMOVE:
+//           RemoveVoteData removeData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageVoteOpData", {
+  switchOn: xdr.lookup("ManageVoteAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["remove", "removeData"],
+  ],
+  arms: {
+    createData: xdr.lookup("CreateVoteData"),
+    removeData: xdr.lookup("RemoveVoteData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageVoteOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageVoteOp
+//   {
+//       //: `data` is used to pass `ManageVoteAction` with needed params
+//       union switch (ManageVoteAction action)
+//       {
+//       case CREATE:
+//           CreateVoteData createData;
+//       case REMOVE:
+//           RemoveVoteData removeData;
+//       }
+//       data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageVoteOp", [
+  ["data", xdr.lookup("ManageVoteOpData")],
+  ["ext", xdr.lookup("ManageVoteOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageVoteResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Specified action in `data` of ManageVoteOp was successfully executed
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //:
+//       INVALID_VOTE = -1, // vote option is invalid
+//       //: There is no with such id
+//       POLL_NOT_FOUND = -2, // poll not found
+//       //: Not allowed to create (send) two votes for one poll
+//       VOTE_EXISTS = -3,
+//       //: Not allowed to create (send) vote with functional type that is different from the poll functional type
+//       POLL_TYPE_MISMATCHED = -4,
+//       //: Not allowed to vote in poll which not started yet
+//       POLL_NOT_STARTED = -5,
+//       //: Not allowed to vote in poll which already was ended
+//       POLL_ENDED = -6,
+//       //: There is no vote from source account in such poll
+//       VOTE_NOT_FOUND = -7 // vote to remove  not found
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageVoteResultCode", {
+  success: 0,
+  invalidVote: -1,
+  pollNotFound: -2,
+  voteExist: -3,
+  pollTypeMismatched: -4,
+  pollNotStarted: -5,
+  pollEnded: -6,
+  voteNotFound: -7,
+});
+
+// === xdr source ============================================================
+//
+//   union ManageVoteResult switch (ManageVoteResultCode code)
+//   {
+//   case SUCCESS:
+//       EmptyExt ext;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageVoteResult", {
+  switchOn: xdr.lookup("ManageVoteResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.void(),
 });
@@ -12372,6 +13482,36 @@ xdr.struct("LedgerKeyLicense", [
 
 // === xdr source ============================================================
 //
+//   struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyPoll", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 pollID;
+//           AccountID voterID;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyVote", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["voterId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union LedgerKey switch (LedgerEntryType type)
 //   {
 //   case ACCOUNT:
@@ -12651,6 +13791,19 @@ xdr.struct("LedgerKeyLicense", [
 //               void;
 //           } ext;
 //       } license;
+//   case POLL:
+//       struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       } poll;
+//   case VOTE:
+//       struct {
+//           uint64 pollID;
+//           AccountID voterID;
+//   
+//           EmptyExt ext;
+//       } vote;
 //   };
 //
 // ===========================================================================
@@ -12685,6 +13838,8 @@ xdr.union("LedgerKey", {
     ["signerRule", "signerRule"],
     ["stamp", "stamp"],
     ["license", "license"],
+    ["poll", "poll"],
+    ["vote", "vote"],
   ],
   arms: {
     account: xdr.lookup("LedgerKeyAccount"),
@@ -12714,6 +13869,8 @@ xdr.union("LedgerKey", {
     signerRule: xdr.lookup("LedgerKeySignerRule"),
     stamp: xdr.lookup("LedgerKeyStamp"),
     license: xdr.lookup("LedgerKeyLicense"),
+    poll: xdr.lookup("LedgerKeyPoll"),
+    vote: xdr.lookup("LedgerKeyVote"),
   },
 });
 
@@ -13794,6 +14951,63 @@ xdr.struct("IssuanceRequest", [
   ["creatorDetails", xdr.lookup("Longstring")],
   ["fee", xdr.lookup("Fee")],
   ["ext", xdr.lookup("IssuanceRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct SingleChoiceVote
+//   {
+//       uint64 choice;
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("SingleChoiceVote", [
+  ["choice", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union VoteData switch (PollType pollType)
+//   {
+//   case SINGLE_CHOICE:
+//       SingleChoiceVote single;
+//   //case MULTIPLE_CHOICE:
+//   //    MultipleChoiceVote multiple;
+//   };
+//
+// ===========================================================================
+xdr.union("VoteData", {
+  switchOn: xdr.lookup("PollType"),
+  switchName: "pollType",
+  switches: [
+    ["singleChoice", "single"],
+  ],
+  arms: {
+    single: xdr.lookup("SingleChoiceVote"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct VoteEntry
+//   {
+//       uint64 pollID;
+//   
+//       AccountID voterID;
+//   
+//       VoteData data;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("VoteEntry", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["voterId", xdr.lookup("AccountId")],
+  ["data", xdr.lookup("VoteData")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -14928,7 +16142,9 @@ xdr.union("PublicKey", {
 //       SIGNER_RULE = 30,
 //       SIGNER_ROLE = 31,
 //       STAMP = 32,
-//       LICENSE = 33
+//       LICENSE = 33,
+//       POLL = 34,
+//       VOTE = 35
 //   };
 //
 // ===========================================================================
@@ -14964,6 +16180,8 @@ xdr.enum("LedgerEntryType", {
   signerRole: 31,
   stamp: 32,
   license: 33,
+  poll: 34,
+  vote: 35,
 });
 
 // === xdr source ============================================================
@@ -15187,7 +16405,10 @@ xdr.struct("Fee", [
 //       MANAGE_SIGNER_ROLE = 39,
 //       MANAGE_SIGNER_RULE = 40,
 //       STAMP = 41,
-//       LICENSE = 42
+//       LICENSE = 42,
+//       MANAGE_CREATE_POLL_REQUEST = 43,
+//       MANAGE_POLL = 44,
+//       MANAGE_VOTE = 45
 //   };
 //
 // ===========================================================================
@@ -15228,6 +16449,9 @@ xdr.enum("OperationType", {
   manageSignerRule: 40,
   stamp: 41,
   license: 42,
+  manageCreatePollRequest: 43,
+  managePoll: 44,
+  manageVote: 45,
 });
 
 // === xdr source ============================================================
@@ -15590,6 +16814,47 @@ xdr.struct("ASwapBidExtended", [
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreatePollExtendedExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreatePollExtended
+//   {
+//       //: ID of the newly created poll
+//       uint64 pollID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePollExtended", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CreatePollExtendedExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
 //               void;
 //       }
 //
@@ -15664,6 +16929,8 @@ xdr.struct("ASwapExtended", [
 //           ASwapBidExtended aSwapBidExtended;
 //       case CREATE_ATOMIC_SWAP:
 //           ASwapExtended aSwapExtended;
+//       case CREATE_POLL:
+//           CreatePollExtended createPoll;
 //       }
 //
 // ===========================================================================
@@ -15675,11 +16942,13 @@ xdr.union("ExtendedResultTypeExt", {
     ["none", xdr.void()],
     ["createAtomicSwapBid", "aSwapBidExtended"],
     ["createAtomicSwap", "aSwapExtended"],
+    ["createPoll", "createPoll"],
   ],
   arms: {
     saleExtended: xdr.lookup("SaleExtended"),
     aSwapBidExtended: xdr.lookup("ASwapBidExtended"),
     aSwapExtended: xdr.lookup("ASwapExtended"),
+    createPoll: xdr.lookup("CreatePollExtended"),
   },
 });
 
@@ -15717,6 +16986,8 @@ xdr.union("ExtendedResultExt", {
 //           ASwapBidExtended aSwapBidExtended;
 //       case CREATE_ATOMIC_SWAP:
 //           ASwapExtended aSwapExtended;
+//       case CREATE_POLL:
+//           CreatePollExtended createPoll;
 //       } typeExt;
 //   
 //       //: Reserved for future use
@@ -16048,6 +17319,75 @@ xdr.union("ReviewRequestResult", {
   },
   defaultArm: xdr.void(),
 });
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreatePollRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreatePollRequest
+//   {
+//       //: is used to restrict using of poll through rules
+//       uint64 permissionType;
+//   
+//       //: Count of allowed choices
+//       uint64 numberOfChoices;
+//   
+//       //: Specification of poll
+//       PollData data;
+//   
+//       //: Arbitrary stringified json object with details about the poll
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: The date from which voting in the poll will be allowed
+//       uint64 startTime;
+//   
+//       //: The date until which voting in the poll will be allowed
+//       uint64 endTime;
+//   
+//       //: ID of account which is responsible for poll result submitting
+//       AccountID resultProviderID;
+//   
+//       //: True means that signature of `resultProvider` is required to participate in poll voting
+//       bool voteConfirmationRequired;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePollRequest", [
+  ["permissionType", xdr.lookup("Uint64")],
+  ["numberOfChoices", xdr.lookup("Uint64")],
+  ["data", xdr.lookup("PollData")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["startTime", xdr.lookup("Uint64")],
+  ["endTime", xdr.lookup("Uint64")],
+  ["resultProviderId", xdr.lookup("AccountId")],
+  ["voteConfirmationRequired", xdr.bool()],
+  ["ext", xdr.lookup("CreatePollRequestExt")],
+]);
 
 // === xdr source ============================================================
 //
