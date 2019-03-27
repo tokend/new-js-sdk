@@ -1,6 +1,6 @@
 import { createAndPopulateOrderBook } from '../scripts/populate_order_book'
 
-describe('Offers', () => {
+describe.skip('Offers', () => {
   it('should create few offers', async () => {
     await createAndPopulateOrderBook()
   })

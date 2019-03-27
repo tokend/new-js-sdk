@@ -9,7 +9,7 @@ export class ManageVoteBuilder {
    * Create new signer for source account.
    * @param {object} opts
    * @param {string} opts.pollID - ID of poll to voting in
-   * @param {string} opts.pollType - functional type of poll
+   * @param {number} opts.pollType - functional type of poll
    * @param {string} opts.choice - choice
    * @param {string} [opts.source] - The source account. Defaults to the transaction's source account.
    * @returns {xdr.ManageVoteOp}
