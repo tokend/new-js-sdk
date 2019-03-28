@@ -91,11 +91,21 @@ export class Poll extends Helper {
 
   mustLoadClosed (id) {
     return Running.untilGotReturnValue(async () => {
-      const { data: sale } = await this.sdk.horizon.sales.get(id)
-      if (sale.state.value !== SALE_STATES.closed) {
+      let api = ApiCaller.getInstance(config.api_url)
+      api._wallet = new Wallet(
+        'qqq123@mail.com',
+        Keypair.random(),
+        Keypair.random().accountId(),
+        'anyRandomStringWeDoNotCareNow'
+      )
+
+      const { data } = await api.get('/v3/polls/' + id)
+      // 2 means poll closed
+      if (data.pollState.value !== 2) {
         return undefined
       }
-      return sale
+
+      return data
     })
   }
 

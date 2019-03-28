@@ -20,7 +20,7 @@ describe('Voting', () => {
     let poll = await createPoll(ownerKp, resultProviderKp)
 
     poll = await closePoll(poll.id, resultProviderKp)
-
-    expect(poll.pollState.value).to.equal(1)
+    // 2 means poll closed
+    expect(poll.pollState.value).to.equal(2)
   })
 })

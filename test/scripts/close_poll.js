@@ -28,5 +28,5 @@ export async function closePoll (pollID, resultProviderKp) {
 
   await pollHelper.close(pollID, resultProviderKp)
 
-  return pollHelper.mustLoadById(pollID)
+  return pollHelper.mustLoadClosed(pollID)
 }
