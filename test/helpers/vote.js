@@ -10,13 +10,7 @@ export class Vote extends Helper {
   /**
    * @param opts
    * @param {string} opts.pollID - is used to restrict using of poll through rules (uint64)
-   * @param {string} opts.resultProviderID - AccountID of keypair which will sign create vote operation to send vote to poll, also on;y resultProvider can perform close poll operation
-   * @param {string} opts.numberOfChoices - Number of possible choices (uint64)
-   * @param {number} opts.pollType - functional type of poll
-   * @param [opts.startTime]
-   * @param [opts.endTime]
-   * @param [opts.details]
-   * @param {boolean} [opts.voteConfirmationRequired] - True means that signature of `resultProvider` is required to participate in poll voting
+   * @param {string} opts.choice - functional type of poll
    * @param {Keypair} ownerKp
    *
    * @returns {string} the ID of the request

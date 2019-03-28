@@ -25,7 +25,7 @@ export class Poll extends Helper {
   async create (opts, ownerKp = this.masterKp) {
     const DEFAULTS = {
       startTime: '' + moment().add(5, 's').format('X'),
-      endTime: '' + moment().add(10, 's').format('X'),
+      endTime: '' + moment().add(30, 's').format('X'),
       allTasks: 1,
       creatorDetails: {
         name: 'poll',

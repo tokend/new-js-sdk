@@ -17,16 +17,20 @@ export async function closePoll (pollID, resultProviderKp) {
 
   log.info('number of choices ' + poll.numberOfChoices)
 
-  await Promise.all([ async function () {
-    for (let i = 1; i <= poll.numberOfChoices; i++) {
-      const voter = Keypair.random()
-      accountHelper.createSyndicate(voter.accountId())
-      log.info(`Created the account, id: ${voter.accountId()}`)
-      voteHelper.create({ pollID: pollID, choice: i }, voter)
-    }
-  }])
+  for (let i = 1; i <= poll.numberOfChoices - 1; i++) {
+    const voter = Keypair.random()
+    await accountHelper.createSyndicate(voter.accountId())
+    log.info(`Created the account, id: ${voter.accountId()}`)
+    voteHelper.create({ pollID: pollID, choice: i.toString() }, voter)
+  }
+
+  const voter = Keypair.random()
+  await accountHelper.createSyndicate(voter.accountId())
+  log.info(`Created the account, id: ${voter.accountId()}`)
+  await voteHelper.create({ pollID: pollID, choice: poll.numberOfChoices.toString() }, voter)
 
   await pollHelper.close(pollID, resultProviderKp)
+  log.info(`Poll closed, id: ${pollID}`)
 
   return pollHelper.mustLoadClosed(pollID)
 }
