@@ -1,6 +1,6 @@
-// revision: 7b923f2fae8815386d899563f66b0bc6b459d3ff
+// revision: 4bc0bedffb3c54925ae675b7f5bf3cde30e7f313
 // branch:   feature/voting
-// Automatically generated on 2019-03-26T13:39:17+00:00
+// Automatically generated on 2019-03-28T11:33:08+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -4453,6 +4453,7 @@ xdr.union("ManagePollOpExt", {
 //       //: ID of poll to manage
 //       uint64 pollID;
 //   
+//       //: data is used to pass one of `ManagePollAction` with required params
 //       union switch (ManagePollAction action)
 //       {
 //       case CLOSE:
@@ -4484,14 +4485,16 @@ xdr.struct("ManagePollOp", [
 //
 //   enum ManagePollResultCode
 //   {
-//       // codes considered as "success" for the operation
+//       //: Specified action in `data` of ManagePollOp was successfully executed
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
-//       NOT_FOUND = -1, // not found contract request, when try to remove
+//       //: There is no poll with such id
+//       NOT_FOUND = -1,
+//       //: Not allowed to close poll which
 //       POLL_NOT_READY = -2,
+//       //: Only result provider is allowed to close poll
 //       NOT_AUTHORIZED_TO_CLOSE_POLL = -3
-//   
 //   };
 //
 // ===========================================================================
@@ -11061,6 +11064,7 @@ xdr.union("CancelPollRequestDataExt", {
 //
 //   struct CancelPollRequestData
 //   {
+//       //: ID of `CREATE_POLL` request to remove
 //       uint64 requestID;
 //   
 //       //: reserved for future use
@@ -11163,13 +11167,15 @@ xdr.struct("ManageCreatePollRequestOp", [
 //       INVALID_CREATOR_DETAILS = -1,
 //       //: There is no `CREATE_POLL` request with such id
 //       NOT_FOUND = -2,
+//       //: Not allowed to create poll which has `endTime` not later than `startTime`
 //       INVALID_DATES = -3,
+//       //: Not allowed to create poll which `startTime` early that currentTime
 //       INVALID_START_TIME = -4,
-//       INVALID_END_TIME = -5,
+//       //: There is no account which such id
+//       RESULT_PROVIDER_NOT_FOUND = -5,
 //       //: There is no key-value entry by `create_poll_tasks:<permissionType>` key in the system;
 //       //: configuration does not allow to create `CREATE_POLL` request with such `permissionType`
-//       CREATE_POLL_TASKS_NOT_FOUND = -6,
-//       RESULT_PROVIDER_NOT_FOUND = -7
+//       CREATE_POLL_TASKS_NOT_FOUND = -6
 //   };
 //
 // ===========================================================================
@@ -11179,9 +11185,8 @@ xdr.enum("ManageCreatePollRequestResultCode", {
   notFound: -2,
   invalidDate: -3,
   invalidStartTime: -4,
-  invalidEndTime: -5,
+  resultProviderNotFound: -5,
   createPollTasksNotFound: -6,
-  resultProviderNotFound: -7,
 });
 
 // === xdr source ============================================================
@@ -11942,8 +11947,8 @@ xdr.struct("ManageVoteOp", [
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
-//       //:
-//       INVALID_VOTE = -1, // vote option is invalid
+//       //: There is no vote from source account in such poll
+//       VOTE_NOT_FOUND = -1, // vote to remove  not found
 //       //: There is no with such id
 //       POLL_NOT_FOUND = -2, // poll not found
 //       //: Not allowed to create (send) two votes for one poll
@@ -11953,21 +11958,18 @@ xdr.struct("ManageVoteOp", [
 //       //: Not allowed to vote in poll which not started yet
 //       POLL_NOT_STARTED = -5,
 //       //: Not allowed to vote in poll which already was ended
-//       POLL_ENDED = -6,
-//       //: There is no vote from source account in such poll
-//       VOTE_NOT_FOUND = -7 // vote to remove  not found
+//       POLL_ENDED = -6
 //   };
 //
 // ===========================================================================
 xdr.enum("ManageVoteResultCode", {
   success: 0,
-  invalidVote: -1,
+  voteNotFound: -1,
   pollNotFound: -2,
   voteExist: -3,
   pollTypeMismatched: -4,
   pollNotStarted: -5,
   pollEnded: -6,
-  voteNotFound: -7,
 });
 
 // === xdr source ============================================================
