@@ -5,14 +5,13 @@ import { ApiCaller } from '../../src/api2/api-caller'
 import { Wallet } from '../../src/wallet'
 import * as config from '../config'
 import moment from 'moment'
-import { isEmpty } from 'lodash'
 
 export class Poll extends Helper {
   /**
    * @param opts
-   * @param {string} opts.permissionType - is used to restrict using of poll through rules (uint64)
+   * @param {number} opts.permissionType - is used to restrict using of poll through rules (uint64)
    * @param {string} opts.resultProviderID - AccountID of keypair which will sign create vote operation to send vote to poll, also on;y resultProvider can perform close poll operation
-   * @param {string} opts.numberOfChoices - Number of possible choices (uint64)
+   * @param {number} opts.numberOfChoices - Number of possible choices (uint64)
    * @param {number} opts.pollType - functional type of poll
    * @param [opts.startTime]
    * @param [opts.endTime]
@@ -37,7 +36,7 @@ export class Poll extends Helper {
         }
       },
       pollType: 0,
-      permissionType: '1',
+      permissionType: 1,
       voteConfirmationRequired: false
     }
 

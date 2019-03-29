@@ -22,9 +22,9 @@ export async function createPoll (ownerKp, resultProviderKp) {
 
   const requestId = await pollHelper.create({
     resultProviderID: resultProviderKp.accountId(),
-    permissionType: '1',
+    permissionType: 1,
     pollType: 0,
-    numberOfChoices: '3'
+    numberOfChoices: 3
   }, ownerKp)
   log.info(`Created the create poll request, id: ${requestId}`)
 

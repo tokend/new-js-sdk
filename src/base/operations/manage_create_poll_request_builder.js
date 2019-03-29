@@ -9,10 +9,10 @@ export class ManageCreatePollRequestBuilder {
    * Creates operation to create create poll request
    * @param {object} opts
    *
-   * @param {string} opts.permissionType - is used to restrict using of poll through rules (uint64)
+   * @param {number} opts.permissionType - is used to restrict using of poll through rules (uint64)
    * @param {boolean} opts.voteConfirmationRequired - True means that signature of `resultProvider` is required to participate in poll voting
    * @param {string} opts.resultProviderID - AccountID of keypair which will sign create vote operation to send vote to poll, also on;y resultProvider can perform close poll operation
-   * @param {string} opts.numberOfChoices - Number of possible choices (uint64)
+   * @param {number} opts.numberOfChoices - Number of possible choices (uint64)
    * @param {number} opts.pollType - functional type of poll
    * @param {string} opts.startTime - Date from which voting in the poll will be allowed
    * @param {string} opts.endTime - The date until which voting in the poll will be allowed
@@ -30,17 +30,17 @@ export class ManageCreatePollRequestBuilder {
     let attrs = { voteConfirmationRequired: opts.voteConfirmationRequired }
     attrs.resultProviderId = Keypair.fromAccountId(opts.resultProviderID).xdrAccountId()
 
-    if (!BaseOperation.isValidString(opts.permissionType)) {
-      throw new Error('opts.permissionType is invalid')
+    if (Number.isNaN(opts.permissionType)) {
+      throw new Error('opts.permissionType is NaN')
     }
 
-    attrs.permissionType = UnsignedHyper.fromString(opts.permissionType)
+    attrs.permissionType = opts.permissionType
 
-    if (!BaseOperation.isValidString(opts.numberOfChoices)) {
-      throw new Error('opts.numberOfChoices is invalid')
+    if (Number.isNaN(opts.numberOfChoices)) {
+      throw new Error('opts.numberOfChoices is NaN')
     }
 
-    attrs.numberOfChoices = UnsignedHyper.fromString(opts.numberOfChoices)
+    attrs.numberOfChoices = opts.numberOfChoices
 
     if (Number.isNaN(opts.pollType)) {
       throw new Error('opts.pollType is NaN')
@@ -121,7 +121,7 @@ export class ManageCreatePollRequestBuilder {
       case xdr.ManageCreatePollRequestAction.create():
       {
         let request = attrs.data().createData().request()
-        result.permissionType = request.permissionType().toString()
+        result.permissionType = request.permissionType()
         result.resultProviderID = BaseOperation.accountIdtoAddress(request.resultProviderId())
         result.voteConfirmationRequired = request.voteConfirmationRequired()
         result.pollType = request.data()._switch.value
@@ -131,7 +131,7 @@ export class ManageCreatePollRequestBuilder {
           default:
             throw new Error('Unexpected poll type ' + request.data().type().value)
         }
-        result.numberOfChoices = request.numberOfChoices().toString()
+        result.numberOfChoices = request.numberOfChoices()
         result.creatorDetails = JSON.parse(request.creatorDetails())
         result.startTime = request.startTime().toString()
         result.endTime = request.endTime().toString()

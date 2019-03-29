@@ -8,7 +8,7 @@ describe('ManageVoteBuilder', () => {
     let opt = {
       pollType: 0,
       pollID: '4123421',
-      choice: '1'
+      choice: 1
     }
     let op = ManageVoteBuilder.createVote(opt)
     let xdrOp = op.toXDR('hex')

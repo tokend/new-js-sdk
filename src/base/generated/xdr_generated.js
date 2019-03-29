@@ -1,6 +1,6 @@
-// revision: a3019ca28f13ab7b42edf3cad831b682a1e66f2c
+// revision: 8c9dd26712f8cd8f2c70ecaa6db8f68f55bd073a
 // branch:   feature/voting
-// Automatically generated on 2019-03-28T15:29:59+00:00
+// Automatically generated on 2019-03-29T11:30:29+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -92,9 +92,9 @@ xdr.union("PollData", {
 //   struct PollEntry
 //   {
 //       uint64 id;
-//       uint64 permissionType;
+//       uint32 permissionType;
 //   
-//       uint64 numberOfChoices;
+//       uint32 numberOfChoices;
 //       PollData data;
 //   
 //       uint64 startTime;
@@ -113,8 +113,8 @@ xdr.union("PollData", {
 // ===========================================================================
 xdr.struct("PollEntry", [
   ["id", xdr.lookup("Uint64")],
-  ["permissionType", xdr.lookup("Uint64")],
-  ["numberOfChoices", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
+  ["numberOfChoices", xdr.lookup("Uint32")],
   ["data", xdr.lookup("PollData")],
   ["startTime", xdr.lookup("Uint64")],
   ["endTime", xdr.lookup("Uint64")],
@@ -4002,7 +4002,7 @@ xdr.struct("SignerRuleResourceKeyValue", [
 //           uint64 pollID;
 //   
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -4011,7 +4011,7 @@ xdr.struct("SignerRuleResourceKeyValue", [
 // ===========================================================================
 xdr.struct("SignerRuleResourcePoll", [
   ["pollId", xdr.lookup("Uint64")],
-  ["permissionType", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -4023,7 +4023,7 @@ xdr.struct("SignerRuleResourcePoll", [
 //           uint64 pollID;
 //   
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -4032,7 +4032,7 @@ xdr.struct("SignerRuleResourcePoll", [
 // ===========================================================================
 xdr.struct("SignerRuleResourceVote", [
   ["pollId", xdr.lookup("Uint64")],
-  ["permissionType", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -4145,7 +4145,7 @@ xdr.struct("SignerRuleResourceVote", [
 //           uint64 pollID;
 //   
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -4157,7 +4157,7 @@ xdr.struct("SignerRuleResourceVote", [
 //           uint64 pollID;
 //   
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -8802,7 +8802,7 @@ xdr.struct("AccountRuleResourceKeyValue", [
 //           uint64 pollID;
 //   
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -8811,7 +8811,7 @@ xdr.struct("AccountRuleResourceKeyValue", [
 // ===========================================================================
 xdr.struct("AccountRuleResourcePoll", [
   ["pollId", xdr.lookup("Uint64")],
-  ["permissionType", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -8823,7 +8823,7 @@ xdr.struct("AccountRuleResourcePoll", [
 //           uint64 pollID;
 //   
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -8832,7 +8832,7 @@ xdr.struct("AccountRuleResourcePoll", [
 // ===========================================================================
 xdr.struct("AccountRuleResourceVote", [
   ["pollId", xdr.lookup("Uint64")],
-  ["permissionType", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -8915,7 +8915,7 @@ xdr.struct("AccountRuleResourceVote", [
 //           uint64 pollID;
 //   
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -8927,7 +8927,7 @@ xdr.struct("AccountRuleResourceVote", [
 //           uint64 pollID;
 //   
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -11169,13 +11169,15 @@ xdr.struct("ManageCreatePollRequestOp", [
 //       NOT_FOUND = -2,
 //       //: Not allowed to create poll which has `endTime` not later than `startTime`
 //       INVALID_DATES = -3,
-//       //: Not allowed to create poll which `startTime` early that currentTime
-//       INVALID_START_TIME = -4,
+//       //: Not allowed to create poll which `endTime` early than currentTime
+//       INVALID_END_TIME = -4,
 //       //: There is no account which such id
 //       RESULT_PROVIDER_NOT_FOUND = -5,
 //       //: There is no key-value entry by `create_poll_tasks:<permissionType>` key in the system;
 //       //: configuration does not allow to create `CREATE_POLL` request with such `permissionType`
-//       CREATE_POLL_TASKS_NOT_FOUND = -6
+//       CREATE_POLL_TASKS_NOT_FOUND = -6,
+//       //: Not allowed to create poll with zero number of choices
+//       INVALID_NUMBER_OF_CHOICES = -7
 //   };
 //
 // ===========================================================================
@@ -11184,9 +11186,10 @@ xdr.enum("ManageCreatePollRequestResultCode", {
   invalidCreatorDetail: -1,
   notFound: -2,
   invalidDate: -3,
-  invalidStartTime: -4,
+  invalidEndTime: -4,
   resultProviderNotFound: -5,
   createPollTasksNotFound: -6,
+  invalidNumberOfChoice: -7,
 });
 
 // === xdr source ============================================================
@@ -14959,13 +14962,13 @@ xdr.struct("IssuanceRequest", [
 //
 //   struct SingleChoiceVote
 //   {
-//       uint64 choice;
+//       uint32 choice;
 //       EmptyExt ext;
 //   };
 //
 // ===========================================================================
 xdr.struct("SingleChoiceVote", [
-  ["choice", xdr.lookup("Uint64")],
+  ["choice", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -17346,10 +17349,10 @@ xdr.union("CreatePollRequestExt", {
 //   struct CreatePollRequest
 //   {
 //       //: is used to restrict using of poll through rules
-//       uint64 permissionType;
+//       uint32 permissionType;
 //   
-//       //: Count of allowed choices
-//       uint64 numberOfChoices;
+//       //: Number of allowed choices
+//       uint32 numberOfChoices;
 //   
 //       //: Specification of poll
 //       PollData data;
@@ -17380,8 +17383,8 @@ xdr.union("CreatePollRequestExt", {
 //
 // ===========================================================================
 xdr.struct("CreatePollRequest", [
-  ["permissionType", xdr.lookup("Uint64")],
-  ["numberOfChoices", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
+  ["numberOfChoices", xdr.lookup("Uint32")],
   ["data", xdr.lookup("PollData")],
   ["creatorDetails", xdr.lookup("Longstring")],
   ["startTime", xdr.lookup("Uint64")],

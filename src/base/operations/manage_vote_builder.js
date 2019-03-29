@@ -10,7 +10,7 @@ export class ManageVoteBuilder {
    * @param {object} opts
    * @param {string} opts.pollID - ID of poll to voting in
    * @param {number} opts.pollType - functional type of poll
-   * @param {string} opts.choice - choice
+   * @param {number} opts.choice - choice
    * @param {string} [opts.source] - The source account. Defaults to the transaction's source account.
    * @returns {xdr.ManageVoteOp}
    */
@@ -19,8 +19,8 @@ export class ManageVoteBuilder {
       throw new Error('opts.pollID is undefined')
     }
 
-    if (isUndefined(opts.choice)) {
-      throw new Error('opts.choice is undefined')
+    if (Number.isNaN(opts.choice)) {
+      throw new Error('opts.choice is NaN')
     }
 
     let attrs = {
@@ -31,7 +31,7 @@ export class ManageVoteBuilder {
     switch (opts.pollType) {
       case xdr.PollType.singleChoice().value:
         attrs.data = new xdr.VoteData.singleChoice(new xdr.SingleChoiceVote({
-          choice: UnsignedHyper.fromString(opts.choice),
+          choice: opts.choice,
           ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
         }))
         break

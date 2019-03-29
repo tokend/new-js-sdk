@@ -7,11 +7,11 @@ describe('ManageCreatePollRequestBuilder', () => {
   it('Create', () => {
     let opt = {
       resultProviderID: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
-      permissionType: '1',
+      permissionType: 1,
       pollType: 0,
       startTime: '4123421',
       endTime: '4123425',
-      numberOfChoices: '762354',
+      numberOfChoices: 762354,
       voteConfirmationRequired: true,
       creatorDetails: {
         short_description: 'short description',

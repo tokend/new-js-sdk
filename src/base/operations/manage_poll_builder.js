@@ -19,7 +19,7 @@ export class ManagePollBuilder {
       throw new Error('opts.result is NaN ' + opts.result)
     }
 
-    if (!xdr.PollResult._byValue.has(opts.result)){
+    if (!xdr.PollResult._byValue.has(opts.result)) {
       throw new Error('opts.result is invalid ' + opts.result)
     }
 

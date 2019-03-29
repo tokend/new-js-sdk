@@ -21,13 +21,13 @@ export async function closePoll (pollID, resultProviderKp) {
     const voter = Keypair.random()
     await accountHelper.createSyndicate(voter.accountId())
     log.info(`Created the account, id: ${voter.accountId()}`)
-    voteHelper.create({ pollID: pollID, choice: i.toString() }, voter)
+    voteHelper.create({ pollID: pollID, choice: i }, voter)
   }
 
   const voter = Keypair.random()
   await accountHelper.createSyndicate(voter.accountId())
   log.info(`Created the account, id: ${voter.accountId()}`)
-  await voteHelper.create({ pollID: pollID, choice: poll.numberOfChoices.toString() }, voter)
+  await voteHelper.create({ pollID: pollID, choice: poll.numberOfChoices }, voter)
 
   await pollHelper.close(pollID, resultProviderKp)
   log.info(`Poll closed, id: ${pollID}`)
