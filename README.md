@@ -37,6 +37,10 @@ All notable changes to this project will be documented in [this file](./changelo
 
 Check out our [Development Guide](https://tokend.github.io/new-js-sdk/#development-guide).
 
+## Known issues
+You have to add @babel/runtime-corejs2@^7.2.0 into your project due to a
+bug in one of SDK’s dependencies.
+
 ## License
 
 tokend-js-sdk is licensed under an [Apache-2.0 license](./LICENSE).
