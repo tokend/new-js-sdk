@@ -1,6 +1,6 @@
-// revision: 8c9dd26712f8cd8f2c70ecaa6db8f68f55bd073a
-// branch:   feature/voting
-// Automatically generated on 2019-03-29T11:30:29+00:00
+// revision: 38ee12f585dbf5f239c6c2dc96bcb7ddb9b897ea
+// branch:   master
+// Automatically generated on 2019-03-30T13:04:57+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -8592,7 +8592,7 @@ xdr.struct("ReviewableRequestResourceCreateWithdraw", [
 //   struct
 //       {
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -8600,7 +8600,7 @@ xdr.struct("ReviewableRequestResourceCreateWithdraw", [
 //
 // ===========================================================================
 xdr.struct("ReviewableRequestResourceCreatePoll", [
-  ["permissionType", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -8647,7 +8647,7 @@ xdr.struct("ReviewableRequestResourceCreatePoll", [
 //       struct
 //       {
 //           //: permission type of poll
-//           uint64 permissionType;
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
@@ -11952,7 +11952,7 @@ xdr.struct("ManageVoteOp", [
 //       // codes considered as "failure" for the operation
 //       //: There is no vote from source account in such poll
 //       VOTE_NOT_FOUND = -1, // vote to remove  not found
-//       //: There is no with such id
+//       //: There is no poll with such id
 //       POLL_NOT_FOUND = -2, // poll not found
 //       //: Not allowed to create (send) two votes for one poll
 //       VOTE_EXISTS = -3,
