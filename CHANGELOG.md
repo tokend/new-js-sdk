@@ -17,6 +17,7 @@ for further information about branching and tagging conventions.
 
 ### Updated
 - XDR revision according to https://github.com/tokend/xdr/pull/50
+- XDR version 3.1.0
 
 ## [1.3.1-x.2] - 2019-03-21
 ### Added
