@@ -1,5 +1,4 @@
 import { default as xdr } from '../generated/xdr_generated'
-import { Keypair } from '../keypair'
 import isUndefined from 'lodash/isUndefined'
 import { UnsignedHyper } from 'js-xdr'
 import { BaseOperation } from './base_operation'
@@ -9,35 +8,32 @@ export class ManageVoteBuilder {
    * Create new signer for source account.
    * @param {object} opts
    * @param {string} opts.pollID - ID of poll to voting in
-   * @param {number} opts.pollType - functional type of poll
    * @param {number} opts.choice - choice
    * @param {string} [opts.source] - The source account. Defaults to the transaction's source account.
    * @returns {xdr.ManageVoteOp}
    */
-  static createVote (opts) {
-    if (isUndefined(opts.pollID)) {
-      throw new Error('opts.pollID is undefined')
-    }
-
+  static createSingleChoiceVote (opts) {
     if (Number.isNaN(opts.choice)) {
       throw new Error('opts.choice is NaN')
     }
 
-    let attrs = {
-      pollId: UnsignedHyper.fromString(opts.pollID),
-      ext: new xdr.CreateVoteDataExt(xdr.LedgerVersion.emptyVersion())
+    let attrs = {}
+
+    attrs.data = new xdr.VoteData.singleChoice(new xdr.SingleChoiceVote({
+      choice: opts.choice,
+      ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
+    }))
+
+    return this._createVote(opts, attrs)
+  }
+
+  static _createVote (opts, attrs) {
+    if (isUndefined(opts.pollID)) {
+      throw new Error('opts.pollID is undefined')
     }
 
-    switch (opts.pollType) {
-      case xdr.PollType.singleChoice().value:
-        attrs.data = new xdr.VoteData.singleChoice(new xdr.SingleChoiceVote({
-          choice: opts.choice,
-          ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
-        }))
-        break
-      default:
-        throw new Error('current opts.pollType is not supported ' + opts.pollType)
-    }
+    attrs.pollId = UnsignedHyper.fromString(opts.pollID)
+    attrs.ext = new xdr.CreateVoteDataExt(xdr.LedgerVersion.emptyVersion())
 
     return this._manageVote(opts, new xdr.ManageVoteOpData.create(
       new xdr.CreateVoteData(attrs)))

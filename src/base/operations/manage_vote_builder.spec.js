@@ -10,7 +10,7 @@ describe('ManageVoteBuilder', () => {
       pollID: '4123421',
       choice: 1
     }
-    let op = ManageVoteBuilder.createVote(opt)
+    let op = ManageVoteBuilder.createSingleChoiceVote(opt)
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)

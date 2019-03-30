@@ -10,13 +10,13 @@ export class Vote extends Helper {
    *
    * @returns {string} the ID of the request
    */
-  async create (opts, ownerKp = this.masterKp) {
+  async createSingle (opts, ownerKp = this.masterKp) {
     const DEFAULTS = {
       pollType: 0,
       choice: 1
     }
 
-    const operation = ManageVoteBuilder.createVote({
+    const operation = ManageVoteBuilder.createSingleChoiceVote({
       ...DEFAULTS,
       ...opts
     })
