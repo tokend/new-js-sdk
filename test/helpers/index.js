@@ -17,6 +17,8 @@ import { Withdraw } from './withdraw'
 import { Payment } from './payment'
 import { StampHelper } from './stamp'
 import { LicenseHelper } from './license'
+import { Poll } from './poll'
+import { Vote } from './vote'
 
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
@@ -47,3 +49,5 @@ export const withdrawHelper = new Withdraw(DEFAULTS)
 export const amlAlertHelper = new AmlAlert(DEFAULTS)
 export const stampHelper = new StampHelper(DEFAULTS)
 export const licenseHelper = new LicenseHelper(DEFAULTS)
+export const pollHelper = new Poll(DEFAULTS)
+export const voteHelper = new Vote(DEFAULTS)
