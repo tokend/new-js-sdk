@@ -19,7 +19,7 @@ export class ManageCreatePollRequestBuilder {
    * @param {number} opts.numberOfChoices - Number of possible choices (uint64)
    * @param {number} opts.pollType - functional type of poll
    * @param {string} opts.startTime - Unix timestamp of voting start date
-   * @param {string} opts.endTime - The date until which voting in the poll will be allowed
+   * @param {string} opts.endTime - Unix timestamp of voting end date
    * @param {object} opts.creatorDetails - Additional details about poll
    * @param {number} [opts.allTasks] - tasks for the request
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
