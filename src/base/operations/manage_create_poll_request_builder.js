@@ -11,11 +11,15 @@ export class ManageCreatePollRequestBuilder {
    *
    * @param {number} opts.permissionType - is used to restrict using of poll through rules (uint64)
    * @param {boolean} opts.voteConfirmationRequired - True means that signature of `resultProvider` is required to participate in poll voting
-   * @param {string} opts.resultProviderID - AccountID of keypair which will sign create vote operation to send vote to poll, also on;y resultProvider can perform close poll operation
+   * @param {string} opts.resultProviderID
+   * AccountID of a keypair to be used as a result provider. Result providers are:
+   * 1. Perform close poll operation
+   * 2. Sign created vote operations (see `voteConfirmationRequired` param)
+   *
    * @param {number} opts.numberOfChoices - Number of possible choices (uint64)
    * @param {number} opts.pollType - functional type of poll
-   * @param {string} opts.startTime - Date from which voting in the poll will be allowed
-   * @param {string} opts.endTime - The date until which voting in the poll will be allowed
+   * @param {string} opts.startTime - Unix timestamp of voting start date
+   * @param {string} opts.endTime - Unix timestamp of voting end date
    * @param {object} opts.creatorDetails - Additional details about poll
    * @param {number} [opts.allTasks] - tasks for the request
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
