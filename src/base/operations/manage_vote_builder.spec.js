@@ -1,4 +1,3 @@
-import { isEqual } from 'lodash'
 import { default as xdr } from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { ManageVoteBuilder } from './manage_vote_builder'

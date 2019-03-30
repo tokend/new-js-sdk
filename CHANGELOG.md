@@ -7,36 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## Unreleased
-
+## [1.4.0-rc.0] - 2019-03-30
 ### Added
-- Manage Create Poll Request Op Builder
-- Manage poll op builder
-- Manage vote op builder
-- integration test for voting
+- Voting:
+  - ManageCreatePollRequestBuilder
+  - ManagePollBuilder
+  - ManageVoteBuilder
+  - Integration tests for voting
 
-### Updated
-- XDR revision according to https://github.com/tokend/xdr/pull/50
-- XDR version 3.1.0
+### Changed
+- Use XDR version 3.1.0
 
 ## [1.3.1-x.2] - 2019-03-21
 ### Added
 - New "bravo" blob type
 
 ## [1.3.1-x.1] - 2019-03-14
-### Fixed
-- Use deserialize cache stub when creating a `Jsona` instance
-- Integration tests
-
 ### Added
 - Error codes for set fee op and op related to limits https://github.com/tokend/xdr/pull/43/files
 
 ### Changed
 - Use XDR version 3.0.1-x.0
 
+### Fixed
+- Use deserialize cache stub when creating a `Jsona` instance
+- Integration tests
+
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.3.1-x.2...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.4.0-rc.0...HEAD
+[1.4.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.3.1-x.2...1.4.0-rc.0
 [1.3.1-x.2]: https://github.com/tokend/new-js-sdk/compare/1.3.1-x.1...1.3.1-x.2
 [1.3.1-x.1]: https://github.com/tokend/new-js-sdk/compare/1.3.0...1.3.1-x.1
 [1.3.0]: https://github.com/tokend/new-js-sdk/releases/tag/1.3.0
