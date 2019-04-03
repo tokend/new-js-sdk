@@ -1,6 +1,6 @@
-// revision: 38ee12f585dbf5f239c6c2dc96bcb7ddb9b897ea
+// revision: 91680467ba4dcc7e1f66a1e33b760283407b212a
 // branch:   master
-// Automatically generated on 2019-03-30T13:04:57+00:00
+// Automatically generated on 2019-04-03T10:51:51+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -11222,6 +11222,9 @@ xdr.union("CreatePollRequestResponseExt", {
 //       //: True means that poll was successfully created
 //       bool fulfilled;
 //   
+//       //: ID of created poll if request was fulfilled
+//       uint64* pollID;
+//   
 //       //: reserved for the future use
 //       union switch (LedgerVersion v)
 //       {
@@ -11235,6 +11238,7 @@ xdr.union("CreatePollRequestResponseExt", {
 xdr.struct("CreatePollRequestResponse", [
   ["requestId", xdr.lookup("Uint64")],
   ["fulfilled", xdr.bool()],
+  ["pollId", xdr.option(xdr.lookup("Uint64"))],
   ["ext", xdr.lookup("CreatePollRequestResponseExt")],
 ]);
 
