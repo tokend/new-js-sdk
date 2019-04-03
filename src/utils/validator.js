@@ -1,3 +1,4 @@
+// TODO: do not make class, break to functions
 export class Validator {
   validateUint64 ({ value, fieldName = '' }) {
     if (!Number.isInteger(value)) {
