@@ -1,6 +1,6 @@
 {
   "name": "@tokend/js-sdk",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "js-sdk is a client-side SDK for TokenD asset tokenization platform.",
   "main": "lib/index.js",
   "scripts": {
@@ -39,14 +39,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/tokend/new-js-sdk.git"
+    "url": "git+https://github.com/tokend/new-js-sdk.git"
   },
   "author": "Distributed Lab <contact@distributedlab.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://gitlab.com/tokend/new-js-sdk.git/issues"
+    "url": "https://github.com/tokend/new-js-sdk/issues"
   },
-  "homepage": "https://gitlab.com/tokend/new-js-sdk",
+  "homepage": "https://github.com/tokend/new-js-sdk",
   "devDependencies": {
     "@babel/cli": "7.1.2",
     "@babel/core": "7.1.2",
