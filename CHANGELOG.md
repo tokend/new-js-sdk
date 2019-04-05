@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.4.2] - 2019-04-05
 ### Fixed
 - Add missing `referrerId` arg to `wallets.create()`
 
@@ -47,7 +47,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.4.1...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.4.2...HEAD
+[1.4.2]: https://github.com/tokend/new-js-sdk/compare/1.4.1...1.4.2
 [1.4.1]: https://github.com/tokend/new-js-sdk/compare/1.4.0...1.4.1
 [1.4.0]: https://github.com/tokend/new-js-sdk/compare/1.4.0-rc.0...1.4.0
 [1.4.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.3.1-x.2...1.4.0-rc.0
