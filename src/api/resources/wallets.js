@@ -75,10 +75,11 @@ export class Wallets extends ResourceGroupBase {
    * @param {string} email User's email.
    * @param {string} password User's password.
    * @param {Keypair} recoveryKeypair the keypair to later recover the account
+   * @param {string} [referrerId] public key of the referrer
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
-  async create (email, password, recoveryKeypair) {
+  async create (email, password, recoveryKeypair, referrerId = '') {
     let kdfResponse = await this.getKdfParams()
     let kdfParams = kdfResponse.data
 
@@ -128,6 +129,11 @@ export class Wallets extends ResourceGroupBase {
               data: {
                 type: 'password',
                 id: encryptedMainWallet.id
+              }
+            },
+            referrer: {
+              data: {
+                id: referrerId
               }
             }
           }

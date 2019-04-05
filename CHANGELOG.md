@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+### Fixed
+- Add missing `referrerId` arg to `wallets.create()`
+
 ## [1.4.1] - 2019-04-04
 ### Fixed
 - Repository link in package.json
