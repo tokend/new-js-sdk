@@ -170,7 +170,15 @@ export class TransactionError extends ServerError {
    */
 
   get resultCodes () {
-    return this._resultCodes
+    return this._resultCodes.operations.reduce((resultCodes, item, index) => {
+      if (item !== 'tx_success') {
+        resultCodes.push({
+          errorCode: item,
+          message: this._resultCodes.messages[index]
+        })
+      }
+      return resultCodes
+    }, [])
   }
 }
 
