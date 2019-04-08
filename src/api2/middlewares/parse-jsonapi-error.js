@@ -19,17 +19,20 @@ const STATUS_CODES = {
 export function parseJsonapiError (error, axiosInstance) {
   const status = get(error, 'response.status')
   const data = get(error, 'response.data')
+  let errCode = get(data, 'errors[0].code')
 
   switch (status) {
     case STATUS_CODES.badRequest:
-      error = new errors.BadRequestError(error, axiosInstance)
+      if (errCode === 'transaction_failed') {
+        error = new errors.TransactionError(error, axiosInstance)
+      } else {
+        error = new errors.BadRequestError(error, axiosInstance)
+      }
       break
     case STATUS_CODES.unauthorized:
       error = new errors.NotAllowedError(error, axiosInstance)
       break
     case STATUS_CODES.forbidden:
-      let errCode = get(data, 'errors[0].code')
-
       if (errCode === 'tfa_required') {
         error = new errors.TFARequiredError(error, axiosInstance)
       } else if (errCode === 'verification_required') {
