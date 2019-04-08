@@ -9,7 +9,7 @@ for further information about branching and tagging conventions.
 
 ## [Unreleased]
 ### Added
-- Added errorResults getter in TransactionError, it return array of object(error code and error message)
+- Added `errorResults` getter for `TransactionError` to simplify deriving operation error codes and messages
 
 ## [1.4.2] - 2019-04-05
 ### Fixed
