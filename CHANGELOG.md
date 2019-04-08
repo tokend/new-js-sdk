@@ -8,8 +8,8 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
-### Fixed
-- Fixed resultCodes getter in TransactionError
+### Added
+- Added errorResults getter in TransactionError, it return array of object(error code and error message)
 
 ## [1.4.2] - 2019-04-05
 ### Fixed
