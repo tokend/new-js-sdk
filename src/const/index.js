@@ -22,3 +22,4 @@ export {
 export { MIMES } from './mimes.const'
 export { SALE_STATES } from './sale-states'
 export { KEY_VALUE_KEYS } from './key-value.const'
+export { BLOB_TYPES } from './blob-types.const'
