@@ -101,6 +101,31 @@ export class Wallets extends ResourceGroupBase {
       recoveryKeypair
     )
 
+    let relationships = {
+      kdf: {
+        data: {
+          type: kdfParams.resourceType,
+          id: kdfParams.id
+        }
+      },
+      recovery: {
+        data: {
+          type: 'recovery',
+          id: encryptedRecoveryWallet.id
+        }
+      },
+      factor: {
+        data: {
+          type: 'password',
+          id: encryptedMainWallet.id
+        }
+      }
+    }
+
+    if (referrerId !== '') {
+      relationships.referrer.data.id = referrerId
+    }
+
     const response = await this._makeWalletsCallBuilder()
       .post({
         data: {
@@ -112,31 +137,7 @@ export class Wallets extends ResourceGroupBase {
             accountId: encryptedMainWallet.accountId,
             keychainData: encryptedMainWallet.keychainData
           },
-          relationships: {
-            kdf: {
-              data: {
-                type: kdfParams.resourceType,
-                id: kdfParams.id
-              }
-            },
-            recovery: {
-              data: {
-                type: 'recovery',
-                id: encryptedRecoveryWallet.id
-              }
-            },
-            factor: {
-              data: {
-                type: 'password',
-                id: encryptedMainWallet.id
-              }
-            },
-            referrer: {
-              data: {
-                id: referrerId
-              }
-            }
-          }
+          relationships: relationships
         },
         included: [
           {
