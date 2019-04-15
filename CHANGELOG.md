@@ -9,7 +9,7 @@ for further information about branching and tagging conventions.
 
 ## [Unreleased]
 ### Fixed
-- Param `refferId` in create wallet POST request
+- Param `referrerId` in create wallet POST request
 
 ## [1.4.3] - 2019-04-08
 ### Added
