@@ -131,11 +131,16 @@ export class Wallets extends ResourceGroupBase {
                 id: encryptedMainWallet.id
               }
             },
-            referrer: {
-              data: {
-                id: referrerId
+            ...(referrerId
+              ? {
+                referrer: {
+                  data: {
+                    id: referrerId
+                  }
+                }
               }
-            }
+              : {}
+            )
           }
         },
         included: [
