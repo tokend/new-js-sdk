@@ -11,6 +11,10 @@ for further information about branching and tagging conventions.
 ### Added
 - `BLOB_TYPES` constant
 
+## [1.4.4] - 2019-04-15
+### Fixed
+- Param `referrerId` in create wallet POST request
+
 ## [1.4.3] - 2019-04-08
 ### Added
 - Added `errorResults` getter for `TransactionError` to simplify deriving operation error codes and messages
@@ -55,7 +59,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.4.3...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.4.4...HEAD
+[1.4.4]: https://github.com/tokend/new-js-sdk/compare/1.4.3...1.4.4
 [1.4.3]: https://github.com/tokend/new-js-sdk/compare/1.4.2...1.4.3
 [1.4.2]: https://github.com/tokend/new-js-sdk/compare/1.4.1...1.4.2
 [1.4.1]: https://github.com/tokend/new-js-sdk/compare/1.4.0...1.4.1
