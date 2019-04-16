@@ -9,7 +9,7 @@ for further information about branching and tagging conventions.
 
 ## [Unreleased]
 ### Added
-- blob types constant
+- `BLOB_TYPES` constant
 
 ## [1.4.3] - 2019-04-08
 ### Added
