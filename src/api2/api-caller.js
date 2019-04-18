@@ -55,7 +55,7 @@ export class ApiCaller {
 
   static async getInstanceWithPassphrase (baseURL) {
     const caller = this.getInstance(baseURL)
-    const { data: networkDetails } = await caller.getRawResponse('/')
+    const { data: networkDetails } = await caller.getRaw('/')
 
     caller._networkDetails = networkDetails
     caller.usePassphrase(networkDetails.networkPassphrase)
@@ -76,10 +76,10 @@ export class ApiCaller {
     })
   }
 
-  getRawResponse (endpoint, query) {
+  getRaw (endpoint, query) {
     return this._call({
       method: methods.GET,
-      needRawResponse: true,
+      needRaw: true,
       endpoint,
       query
     })
@@ -190,7 +190,7 @@ export class ApiCaller {
    * @param {object} opts.query - request query params. See {@link parseQuery} for details
    * @param {string} opts.method - the http method of request
    * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
-   * @param {bool} opts.needRawResponse - defines if raw response should be returned, `false` by default
+   * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
    *
    * @private
    */
@@ -227,9 +227,7 @@ export class ApiCaller {
       throw middlewares.parseJsonapiError(e)
     }
 
-    if (opts.needRawResponse) {
-      response = toCamelCaseDeep(response)
-    } else {
+    if (!opts.needRaw) {
       response = middlewares.parseJsonapiResponse(response)
 
       if (!isEmpty(response.links)) {
@@ -239,6 +237,8 @@ export class ApiCaller {
           response.makeLinkCallers(this)
         }
       }
+    } else {
+      response = toCamelCaseDeep(response)
     }
 
     return response

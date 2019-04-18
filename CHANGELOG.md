@@ -10,7 +10,7 @@ for further information about branching and tagging conventions.
 ## [Unreleased]
 ### Added
 - `BLOB_TYPES` constant
-- `getRawResponse` method & `networkDetails` getter to API caller
+- `getRaw` method & `networkDetails` getter to API caller
 
 ## [1.4.4] - 2019-04-15
 ### Fixed
