@@ -102,6 +102,25 @@ export class KeyServerCaller {
     return this._axios(config)
   }
 
+  delete (urlSegment) {
+    this._appendUrlSegment(urlSegment)
+    let config = this._getRequestConfig({
+      method: 'delete',
+      url: this._getUrl()
+    }, false)
+    return this._axios(config)
+  }
+
+  deleteWithSignature (urlSegment, wallet) {
+    this._appendUrlSegment(urlSegment)
+    this.addWallet(wallet)
+    let config = this._getRequestConfig({
+      method: 'delete',
+      url: this._getUrl()
+    }, true)
+    return this._axios(config)
+  }
+
   _getRequestConfig (config, needSign = false) {
     if (this._wallet) {
       this._signRequestLegacy(config)
