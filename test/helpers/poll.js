@@ -4,7 +4,7 @@ import { getSuccessResultFromXDR, Helper } from './_helper'
 import { ApiCaller } from '../../src/api2/api-caller'
 import { Wallet } from '../../src/wallet'
 import * as config from '../config'
-import moment, { now } from 'moment'
+import moment from 'moment'
 
 export class Poll extends Helper {
   /**

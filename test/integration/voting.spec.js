@@ -1,13 +1,10 @@
 import { closePoll } from '../scripts/close_poll'
 import { createPoll } from '../scripts/create_poll'
-import { createVotes } from '../scripts/close_poll'
 import { Keypair } from '../../src/base'
 import { accountHelper } from '../helpers'
 import { logger } from '../logger'
 import { cancelPoll } from '../scripts/cancel_poll'
-import moment from '../helpers/poll'
 import { updatePollEndTime } from '../scripts/update_poll_end_time'
-import { Running } from '../helpers/_running'
 
 describe('Voting', () => {
   it('should create poll and close it', async () => {
