@@ -4,7 +4,7 @@ import { getSuccessResultFromXDR, Helper } from './_helper'
 import { ApiCaller } from '../../src/api2/api-caller'
 import { Wallet } from '../../src/wallet'
 import * as config from '../config'
-import moment from 'moment'
+import moment, { now } from 'moment'
 
 export class Poll extends Helper {
   /**
@@ -73,6 +73,25 @@ export class Poll extends Helper {
     }), resultProviderKp)
   }
 
+  cancel (id) {
+    const opts = { pollID: id }
+
+    return this.submit(ManagePollBuilder.cancelPoll({
+      ...opts
+    }))
+  }
+
+  updateEndTime (id, newEndTime) {
+    const opts = {
+      pollID: id,
+      newEndTime: newEndTime
+    }
+
+    return this.submit(ManagePollBuilder.updatePollEndTime({
+      ...opts
+    }))
+  }
+
   mustLoadById (id) {
     return Running.untilFound(async () => {
       let api = ApiCaller.getInstance(config.api_url)
@@ -101,6 +120,46 @@ export class Poll extends Helper {
       const { data } = await api.get('/v3/polls/' + id)
       // 2 means poll closed
       if (data.pollState.value !== 2) {
+        return undefined
+      }
+
+      return data
+    })
+  }
+
+  mustLoadEnded (id) {
+    return Running.untilGotReturnValue(async () => {
+      let api = ApiCaller.getInstance(config.api_url)
+      api._wallet = new Wallet(
+        'qqq123@mail.com',
+        Keypair.random(),
+        Keypair.random().accountId(),
+        'anyRandomStringWeDoNotCareNow'
+      )
+
+      const { data } = await api.get('/v3/polls/' + id)
+      let date = new Date(data.endTime)
+      if (date.getTime() > new Date().getTime()) {
+        return undefined
+      }
+
+      return data
+    })
+  }
+
+  mustLoadCancelled (id) {
+    return Running.untilGotReturnValue(async () => {
+      let api = ApiCaller.getInstance(config.api_url)
+      api._wallet = new Wallet(
+        'qqq123@mail.com',
+        Keypair.random(),
+        Keypair.random().accountId(),
+        'anyRandomStringWeDoNotCareNow'
+      )
+
+      const { data } = await api.get('/v3/polls/' + id)
+      // 4 means poll cancelled
+      if (data.pollState.value !== 4) {
         return undefined
       }
 

@@ -4,5 +4,5 @@
   "allow_http": true,
   "network_passphrase": "TokenD Developer Network",
   "log_level": "trace",
-  "retry_delay_ms": 1500
+  "retry_delay_ms": 3000
 }
