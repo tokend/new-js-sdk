@@ -9,9 +9,9 @@ for further information about branching and tagging conventions.
 
 ## Unreleased
 ###Added
-* Builders for `ClosePollOp`, `UpdatePollEndTime`
-* Unit tests for for `ClosePollOp`, `UpdatePollEndTime`
-* Integration tests for `ClosePollOp`, `UpdatePollEndTime`
+* Builders for `CancelPollOp`, `UpdatePollEndTime`
+* Unit tests for for `CancelPollOp`, `UpdatePollEndTime`
+* Integration tests for `CancelPollOp`, `UpdatePollEndTime`
 
 ## [1.5.0-rc.1] - 2019-04-19
 ### Added
