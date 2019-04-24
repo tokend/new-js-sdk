@@ -52,6 +52,9 @@ export class ManagePollBuilder {
    * @returns {xdr.ManagePollOp}
    */
   static updatePollEndTime (opts) {
+    if (isUndefined(opts.newEndTime)) {
+      throw new Error('opts.newEndTime is undefined')
+    }
     let endTime = UnsignedHyper.fromString(opts.newEndTime)
 
     let attrs = {
@@ -91,7 +94,8 @@ export class ManagePollBuilder {
       case xdr.ManagePollAction.cancel():
         break
       case xdr.ManagePollAction.updateEndTime():
-        result.newEndTime = attrs.data().updateTimeData().newEndTime
+        let updateEndTimeData = attrs.data().updateTimeData()
+        result.newEndTime = updateEndTimeData.newEndTime().toString()
         break
       default:
         throw new Error('Unexpected manage poll action')

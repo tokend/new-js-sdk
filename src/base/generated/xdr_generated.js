@@ -1,6 +1,6 @@
-// revision: 8e34047141bd8de3510e312ac74fe9f8eccaccb5
+// revision: 4791728601df87aea5ac51f30ef128f9cc5f60e2
 // branch:   feature/poll_update_cancel
-// Automatically generated on 2019-04-19T15:21:51+00:00
+// Automatically generated on 2019-04-24T12:56:47+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -7245,7 +7245,8 @@ xdr.union("SignerRuleResource", {
 //       BIND = 12,
 //       UPDATE_MAX_ISSUANCE = 13,
 //       CHECK = 14,
-//       CLOSE = 15
+//       CLOSE = 15,
+//       UPDATE_END_TIME = 16
 //   };
 //
 // ===========================================================================
@@ -7265,6 +7266,7 @@ xdr.enum("SignerRuleAction", {
   updateMaxIssuance: 13,
   check: 14,
   close: 15,
+  updateEndTime: 16,
 });
 
 // === xdr source ============================================================
@@ -8823,7 +8825,8 @@ xdr.union("AccountRuleResource", {
 //       CHECK = 14,
 //       CANCEL = 15,
 //       CLOSE = 16,
-//       REMOVE = 17
+//       REMOVE = 17,
+//       UPDATE_END_TIME = 18
 //   };
 //
 // ===========================================================================
@@ -8845,6 +8848,7 @@ xdr.enum("AccountRuleAction", {
   cancel: 15,
   close: 16,
   remove: 17,
+  updateEndTime: 18,
 });
 
 // === xdr source ============================================================
@@ -15171,7 +15175,11 @@ xdr.struct("ManagePollOp", [
 //       //: Only result provider is allowed to close poll
 //       NOT_AUTHORIZED_TO_CLOSE_POLL = -3,
 //       //: End time is in the past
-//       INVALID_END_TIME = -4
+//       INVALID_END_TIME = -4,
+//       //:Only poll owner and admin can cancel poll
+//       NOT_AUTHORIZED_TO_CANCEL_POLL = -5,
+//       //:Only poll owner can update end time
+//       NOT_AUTHORIZED_TO_UPDATE_POLL_END_TIME = -6
 //   };
 //
 // ===========================================================================
@@ -15181,6 +15189,8 @@ xdr.enum("ManagePollResultCode", {
   pollNotReady: -2,
   notAuthorizedToClosePoll: -3,
   invalidEndTime: -4,
+  notAuthorizedToCancelPoll: -5,
+  notAuthorizedToUpdatePollEndTime: -6,
 });
 
 // === xdr source ============================================================
