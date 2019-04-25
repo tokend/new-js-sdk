@@ -133,7 +133,7 @@ export class ApiCaller {
     return this._call({
       method: methods.DELETE,
       needSign,
-      endpoint,
+      endpoint
     })
   }
 

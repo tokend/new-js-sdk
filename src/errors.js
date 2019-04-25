@@ -162,7 +162,9 @@ export class TransactionError extends ServerError {
   }
 
   includesOpCode (opCode) {
-    return this._resultCodes.operations.includes(opCode)
+    return this._resultCodes.operations
+      ? this._resultCodes.operations.includes(opCode)
+      : this._resultCodes.transaction === opCode
   }
 
   /**
@@ -170,15 +172,22 @@ export class TransactionError extends ServerError {
    */
 
   get errorResults () {
-    return this._resultCodes.operations.reduce((resultCodes, item, index) => {
-      if (item !== 'tx_success') {
-        resultCodes.push({
-          errorCode: item,
-          message: this._resultCodes.messages[index]
-        })
-      }
-      return resultCodes
-    }, [])
+    if (this._resultCodes.operations) {
+      return this._resultCodes.operations.reduce((resultCodes, item, index) => {
+        if (item !== 'tx_success') {
+          resultCodes.push({
+            errorCode: item,
+            message: this._resultCodes.messages[index]
+          })
+        }
+        return resultCodes
+      }, [])
+    } else {
+      return [{
+        errorCode: this._resultCodes.transaction,
+        message: ''
+      }]
+    }
   }
 
   /**

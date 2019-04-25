@@ -11,6 +11,9 @@ for further information about branching and tagging conventions.
 ### Added
 - `DELETE` method for ApiCaller
 
+### Fixed
+- Parsing transaction errors without operation details
+
 ## [1.5.0] - 2019-04-19
 
 ## [1.5.0-rc.1] - 2019-04-19
