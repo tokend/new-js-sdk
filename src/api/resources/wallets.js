@@ -184,7 +184,12 @@ export class Wallets extends ResourceGroupBase {
     return this._makeWalletsCallBuilder()
       .appendUrlSegment(jsonPayload.meta.wallet_id)
       .appendUrlSegment('verification')
-      .put({ data: { attributes: { token: jsonPayload.meta.token } } })
+      .put({
+        data: {
+          type: 'wallet_verification',
+          attributes: { token: jsonPayload.meta.token }
+        }
+      })
   }
 
   /**

@@ -13,6 +13,7 @@ for further information about branching and tagging conventions.
 
 ### Fixed
 - Parsing transaction errors without operation details
+- Wallet verification request payload
 
 ## [1.5.0] - 2019-04-19
 
