@@ -390,17 +390,6 @@ export class WalletsManager {
   }
 
   /**
-   * Create a TOTP factor.
-   *
-   */
-  createTotpFactor () {
-    const endpoint = `/wallets/${this._apiCaller.wallet.id}/factors`
-    return this._apiCaller.postWithSignature(endpoint, {
-      data: { type: 'totp' }
-    })
-  }
-
-  /**
    * Verify password factor and retry the failed request.
    *
    * @param {TFAError} tfaError TFA error instance.
