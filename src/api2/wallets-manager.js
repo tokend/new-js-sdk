@@ -1,7 +1,7 @@
 import _set from 'lodash/set'
 
-import { Wallet } from '../../wallet'
-import { Keypair } from '../../base/keypair'
+import { Wallet } from '../wallet'
+import { Keypair } from '../base/keypair'
 
 import { makeChangeSignerTransaction } from './middlewares/change-signers'
 
@@ -21,6 +21,16 @@ export class WalletsManager {
    */
   constructor (apiCaller) {
     this._apiCaller = apiCaller
+  }
+
+  /**
+   * Get key derivation params.
+   *
+   * @param {string} [email] User's email.
+   * @param {boolean} [isRecovery=false] If true, get params for the recovery wallet.
+   */
+  getKdfParams (email, isRecovery = false) {
+    return this._apiCaller.get('/kdf', { email, isRecovery })
   }
 
   /**
@@ -75,7 +85,7 @@ export class WalletsManager {
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
   async create (email, password, recoveryKeypair, referrerId = '') {
-    const { data: kdfParams } = await this.getKdfParams()
+    const { data: kdfParams } = await this.getKdfParams('')
 
     const mainWallet = Wallet.generate(email)
     const encryptedMainWallet = mainWallet.encrypt(kdfParams, password)
@@ -102,13 +112,13 @@ export class WalletsManager {
         attributes: {
           email,
           salt: encryptedMainWallet.salt,
-          accountId: encryptedMainWallet.accountId,
-          keychainData: encryptedMainWallet.keychainData
+          account_id: encryptedMainWallet.accountId,
+          keychain_data: encryptedMainWallet.keychainData
         },
         relationships: {
           kdf: {
             data: {
-              type: kdfParams.resourceType,
+              type: kdfParams.type,
               id: kdfParams.id
             }
           },
@@ -139,8 +149,8 @@ export class WalletsManager {
           type: 'password',
           id: encryptedMainWallet.id,
           attributes: {
-            accountId: secondFactorWallet.accountId,
-            keychainData: encryptedSecondFactorWallet.keychainData,
+            account_id: secondFactorWallet.accountId,
+            keychain_data: encryptedSecondFactorWallet.keychainData,
             salt: encryptedSecondFactorWallet.salt
           }
         },
@@ -148,8 +158,8 @@ export class WalletsManager {
           type: 'recovery',
           id: encryptedRecoveryWallet.id,
           attributes: {
-            accountId: encryptedRecoveryWallet.accountId,
-            keychainData: encryptedRecoveryWallet.keychainData,
+            account_id: encryptedRecoveryWallet.accountId,
+            keychain_data: encryptedRecoveryWallet.keychainData,
             salt: encryptedRecoveryWallet.salt
           }
         }
@@ -245,9 +255,9 @@ export class WalletsManager {
           id: encryptedNewMainWallet.id,
           attributes: {
             email,
-            accountId: encryptedNewMainWallet.accountId,
+            account_id: encryptedNewMainWallet.accountId,
             salt: encryptedNewMainWallet.salt,
-            keychainData: encryptedNewMainWallet.keychainData
+            keychain_data: encryptedNewMainWallet.keychainData
           },
           relationships: {
             transaction: {
@@ -258,7 +268,7 @@ export class WalletsManager {
             },
             kdf: {
               data: {
-                type: kdfParams.resourceType,
+                type: kdfParams.type,
                 id: kdfParams.id
               }
             },
@@ -280,8 +290,8 @@ export class WalletsManager {
             id: encryptedNewMainWallet.id,
             type: 'password',
             attributes: {
-              accountId: encryptedSecondFactorWallet.accountId,
-              keychainData: encryptedSecondFactorWallet.keychainData,
+              account_id: encryptedSecondFactorWallet.accountId,
+              keychain_data: encryptedSecondFactorWallet.keychainData,
               salt: encryptedSecondFactorWallet.salt
             }
           }
@@ -333,9 +343,9 @@ export class WalletsManager {
         id: encryptedNewMainWallet.id,
         attributes: {
           email: oldWallet.email,
-          accountId: newMainWallet.keypair.accountId(),
+          account_id: newMainWallet.keypair.accountId(),
           salt: encryptedNewMainWallet.salt,
-          keychainData: encryptedNewMainWallet.keychainData
+          keychain_data: encryptedNewMainWallet.keychainData
         },
         relationships: {
           transaction: {
@@ -346,7 +356,7 @@ export class WalletsManager {
           },
           kdf: {
             data: {
-              type: kdfParams.resourceType,
+              type: kdfParams.type,
               id: kdfParams.id
             }
           },
@@ -368,8 +378,8 @@ export class WalletsManager {
           type: 'password',
           id: encryptedNewMainWallet.id,
           attributes: {
-            accountId: encryptedSecondFactorWallet.accountId,
-            keychainData: encryptedSecondFactorWallet.keychainData,
+            account_id: encryptedSecondFactorWallet.accountId,
+            keychain_data: encryptedSecondFactorWallet.keychainData,
             salt: encryptedSecondFactorWallet.salt
           }
         }
@@ -377,6 +387,17 @@ export class WalletsManager {
     })
 
     return newMainWallet
+  }
+
+  /**
+   * Create a TOTP factor.
+   *
+   */
+  createTotpFactor () {
+    const endpoint = `/wallets/${this._apiCaller.wallet.id}/factors`
+    return this._apiCaller.postWithSignature(endpoint, {
+      data: { type: 'totp' }
+    })
   }
 
   /**
@@ -388,11 +409,24 @@ export class WalletsManager {
    * @return {JsonapiResponse} Response of the retried request.
    */
   async verifyPasswordFactorAndRetry (tfaError, password) {
+    await this.verifyPasswordFactor(tfaError, password)
+    return tfaError.retryRequest()
+  }
+
+  /**
+   * Verify password factor.
+   *
+   * @param {TFAError} tfaError TFA error instance.
+   * @param {string} password User's password.
+   *
+   * @return {JsonapiResponse} Response of the retried request.
+   */
+  async verifyPasswordFactor (tfaError, password) {
     const meta = tfaError.meta
     const email = this._apiCaller.wallet.email
     const accountId = this._apiCaller.wallet.accountId
 
-    const kdfParams = await this._getKdfParams(email)
+    const { data: kdfParams } = await this.getKdfParams(email)
     const factorWallet = Wallet.fromEncrypted({
       keychainData: meta.keychainData,
       kdfParams,
@@ -414,8 +448,6 @@ export class WalletsManager {
         }
       }
     })
-
-    return tfaError.retryRequest()
   }
 
   /**
@@ -452,16 +484,6 @@ export class WalletsManager {
     })
   }
 
-  /**
-   * Get key derivation params.
-   *
-   * @param {string} [email] User's email.
-   * @param {boolean} [isRecovery=false] If true, get params for the recovery wallet.
-   */
-  _getKdfParams (email, isRecovery = false) {
-    return this._apiCaller.get('/kdf', { email, isRecovery })
-  }
-
   async _getSigners (accountId) {
     try {
       const endpoint = `/v3/accounts/${accountId}/signers`
@@ -484,7 +506,7 @@ export class WalletsManager {
 
   async _getDefaultSignerRole () {
     const endpoint = `/v3/key_values/${DEFAULT_SIGNER_ROLE_KEY}`
-    const { data } = this._apiCaller.get(endpoint)
+    const { data } = await this._apiCaller.get(endpoint)
 
     return String(data.value.u32)
   }
