@@ -35,7 +35,7 @@ Every user has a [keypair](./Keypair.html) that is used to authorize requests an
 ### Installation
 
 ```bash
-npm install -S tokend-sdk
+npm install -S @tokend/js-sdk
 ```
 
 #### Webpack
@@ -69,7 +69,7 @@ The package also ships prebuilt minified scripts for browsers in the `/dist` fol
 To get started create a TokenD SDK instance:
 
 ```js
-import { TokenD } from 'tokend-sdk'
+import { TokenD } from '@tokend/js-sdk'
 
 let sdk = await TokenD.create('https://<tokend-backend-url>')
 ```
@@ -268,7 +268,7 @@ let recoveredWallet = await sdk.api.wallets.recovery(
 Some actions may require 2FA. Following snipet allows utilizes [interceptors](#interceptors) to handle and retry failed requests:
 
 ```js
-import { errors } from 'tokend-sdk'
+import { errors } from '@tokend/js-sdk'
 
 sdk.api.useResponseInterceptor(
   config => config,
@@ -300,7 +300,7 @@ Blockhain transactions must have:
 ### Building and signing
 
 ```js
-import { base } from 'tokend-sdk'
+import { base } from '@tokend/js-sdk'
 
 let tx = new base.TransactionBuilder(sdk.wallet.accountId)
   .addOperation(base.Operation.payment(paymentParamsObject))
@@ -323,7 +323,7 @@ form. You can convert this XDR to JSON using the `.fromXDR()` method.
 An example of re-writing the txHandler from above to print the XDR fields as JSON:
 
 ```js
-import { base } from 'tokend-sdk'
+import { base } from '@tokend/js-sdk'
 
 let envelope = response.data.envelopeXdr
 console.log(base.xdr.TransactionEnvelope.fromXDR(envelope, 'base64'))
@@ -439,7 +439,7 @@ To start doing it on your own, follow next steps:
 1. First of all, import the SDK in your project and initiate it. You will need several modules described here:
 
 ```js
-    import { TokenD } from 'tokend-sdk'
+    import { TokenD } from '@tokend/js-sdk'
 
     const sdk = await TokenD.create('https://<tokend-backend-url>')
     const base = sdk.base // the module for crafting transactions
@@ -508,7 +508,7 @@ Now you've got all the necessary data for uploading your token logotype. You can
       maxIssuanceAmount: '100000', //  Max amount can be issued of that asset
       policies: 0, // Asset policies
       initialPreissuedAmount: '100000', // Amount of pre issued tokens available after creation of the asset
-      details: {
+      creatorDetails: {
            name: 'My first token'
            logo: {
                key: key // the key you've derived before
