@@ -68,6 +68,10 @@ export class ApiCaller {
     return this._networkDetails
   }
 
+  get wallet () {
+    return this._wallet
+  }
+
   get (endpoint, query, needSign = false) {
     return this._call({
       method: methods.GET,
