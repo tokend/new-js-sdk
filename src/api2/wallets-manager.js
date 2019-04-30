@@ -5,9 +5,7 @@ import { Keypair } from '../base/keypair'
 
 import { SignersManager } from './signers-manager'
 
-import { NotFoundError, VerificationRequiredError } from '../errors'
-
-const DEFAULT_SIGNER_ROLE_KEY = 'signer_role:default'
+import { VerificationRequiredError } from '../errors'
 
 /**
  * Wallets manager.
@@ -21,6 +19,7 @@ export class WalletsManager {
    */
   constructor (apiCaller) {
     this._apiCaller = apiCaller
+    this._signersManager = new SignersManager(apiCaller)
   }
 
   /**
@@ -225,15 +224,10 @@ export class WalletsManager {
     )
 
     const accountId = await this._getAccountIdByRecoveryId(recoveryWallet.id)
-    const signers = await this._getSigners(accountId)
-    const signerRoleId = await this._getDefaultSignerRole()
-
-    const tx = SignersManager.makeChangeSignerTransaction({
+    const tx = this._signersManager.createChangeSignerTransaction({
       newPublicKey: newMainWallet.accountId,
-      signers,
       signingKeypair: recoveryWallet.keypair,
-      sourceAccount: accountId,
-      signerRoleId
+      sourceAccount: accountId
     })
 
     const oldWallet = this._apiCaller.wallet
@@ -317,16 +311,11 @@ export class WalletsManager {
       kdfParams, newPassword
     )
 
-    const signers = await this._getSigners(this._apiCaller.wallet.accountId)
-    const signerRoleId = await this._getDefaultSignerRole()
-
     const tx = SignersManager.makeChangeSignerTransaction({
       newPublicKey: newMainWallet.keypair.accountId(),
-      signers,
       signingKeypair: oldWallet.keypair,
       sourceAccount: oldWallet.accountId,
-      signerToReplace: oldWallet.keypair.accountId(),
-      signerRoleId
+      signerToReplace: oldWallet.keypair.accountId()
     })
 
     const endpoint = `/wallets/${oldWallet.id}`
@@ -382,114 +371,10 @@ export class WalletsManager {
     return newMainWallet
   }
 
-  /**
-   * Verify password factor and retry the failed request.
-   *
-   * @param {TFARequiredError} tfaError TFA error instance.
-   * @param {string} password User's password.
-   *
-   * @return {JsonapiResponse} Response of the retried request.
-   */
-  async verifyPasswordFactorAndRetry (tfaError, password) {
-    await this.verifyPasswordFactor(tfaError, password)
-    return tfaError.retryRequest()
-  }
-
-  /**
-   * Verify password factor.
-   *
-   * @param {TFARequiredError} tfaError TFA error instance.
-   * @param {string} password User's password.
-   *
-   * @return {JsonapiResponse} Response of the retried request.
-   */
-  async verifyPasswordFactor (tfaError, password) {
-    const meta = tfaError.meta
-    const email = this._apiCaller.wallet.email
-    const accountId = this._apiCaller.wallet.accountId
-
-    const { data: kdfParams } = await this.getKdfParams(email)
-    const factorWallet = Wallet.fromEncrypted({
-      keychainData: meta.keychainData,
-      kdfParams,
-      salt: meta.salt,
-      email,
-      password,
-      accountId
-    })
-
-    const otp = factorWallet.keypair.sign(meta.token).toString('base64')
-
-    const walletId = this._apiCaller.wallet.id
-    const endpoint = `/wallets/${walletId}/factors/${meta.factorId}/verification`
-    await this._apiCaller.put(endpoint, {
-      data: {
-        attributes: {
-          token: meta.token,
-          otp
-        }
-      }
-    })
-  }
-
-  /**
-   * Verify TOTP factor and retry the failed request.
-   *
-   * @param {TFARequiredError} tfaError TFA error instance.
-   * @param {string} otp One time password from a TOTP app.
-   *
-   * @return {JsonapiResponse} Response of the retried request.
-   */
-  async verifyTotpFactorAndRetry (tfaError, otp) {
-    await this.verifyTotpFactor(tfaError, otp)
-    return tfaError.retryRequest()
-  }
-
-  /**
-   * Verify TOTP factor.
-   *
-   * @param {TFARequiredError} tfaError TFA error instance.
-   * @param {string} otp One time password from a TOTP app.
-   */
-  verifyTotpFactor (tfaError, otp) {
-    const walletId = tfaError.meta.walletId
-    const factorId = tfaError.meta.factorId
-
-    const endpoint = `/wallets/${walletId}/factors/${factorId}/verification`
-    return this._apiCaller.put(endpoint, {
-      data: {
-        attributes: {
-          token: tfaError.meta.token,
-          otp
-        }
-      }
-    })
-  }
-
-  async _getSigners (accountId) {
-    try {
-      const endpoint = `/v3/accounts/${accountId}/signers`
-      const { data: signers } = await this._apiCaller.get(endpoint)
-
-      return signers
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        return []
-      }
-    }
-  }
-
   async _getAccountIdByRecoveryId (recoveryWalletId) {
     const endpoint = `/wallets/${recoveryWalletId}`
     const { data: wallet } = await this._apiCaller.get(endpoint)
 
     return wallet.accountId
-  }
-
-  async _getDefaultSignerRole () {
-    const endpoint = `/v3/key_values/${DEFAULT_SIGNER_ROLE_KEY}`
-    const { data } = await this._apiCaller.get(endpoint)
-
-    return String(data.value.u32)
   }
 }
