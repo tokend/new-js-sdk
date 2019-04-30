@@ -7,29 +7,29 @@ const DEFAULT_SIGNER_WEIGHT = 1000
 
 export function makeChangeSignerTransaction ({
   newPublicKey,
-  soucreAccount,
+  sourceAccount,
   signers,
   signerToReplace,
   signingKeypair,
   signerRoleId
 }) {
   let operations = []
-  operations.push(addSignerOp(newPublicKey, signerRoleId))
+  operations.push(createSignerOp(newPublicKey, signerRoleId))
 
-  let nonRecoverySigners = getNonRecoverySigners(signers)
+  const nonRecoverySigners = getNonRecoverySigners(signers)
 
   if (nonRecoverySigners.length) {
     const removeSignerOps = signerToReplace
       ? removeMasterAndCurrentSignerOps(
         nonRecoverySigners,
-        soucreAccount,
+        sourceAccount,
         signerToReplace
       )
-      : removeAllSignersOps(nonRecoverySigners, soucreAccount)
+      : removeAllSignersOps(nonRecoverySigners)
     operations.push(...removeSignerOps)
   }
 
-  const tx = new TransactionBuilder(soucreAccount)
+  const tx = new TransactionBuilder(sourceAccount)
   tx.operations = operations
   const txEnv = tx.build()
   txEnv.sign(signingKeypair)
@@ -37,10 +37,25 @@ export function makeChangeSignerTransaction ({
   return txEnv.toEnvelope().toXDR().toString('base64')
 }
 
-function removeMasterAndCurrentSignerOps (signers, soucreAccount, publicKey) {
+function createSignerOp (newAccountId, roleId) {
+  return ManageSignerBuilder.createSigner({
+    publicKey: newAccountId,
+    weight: DEFAULT_SIGNER_WEIGHT,
+    identity: DEFAULT_SIGNER_IDENTITY,
+    roleID: roleId,
+    details: {}
+  })
+}
+
+function getNonRecoverySigners (signers) {
+  return signers
+    .filter(signer => signer.identity !== RECOVERY_SIGNER_IDENTITY)
+}
+
+function removeMasterAndCurrentSignerOps (signers, sourceAccount, publicKey) {
   return signers
     .filter(signer => {
-      return signer.id === soucreAccount ||
+      return signer.id === sourceAccount ||
         signer.id === publicKey
     })
     .map(signer => removeSignerOp(signer))
@@ -53,19 +68,5 @@ function removeAllSignersOps (signers) {
 function removeSignerOp (signer) {
   return ManageSignerBuilder.deleteSigner({
     publicKey: signer.id
-  })
-}
-
-function getNonRecoverySigners (signers) {
-  return signers.filter(signer => signer.identity !== RECOVERY_SIGNER_IDENTITY)
-}
-
-function addSignerOp (newAccountId, roleId) {
-  return ManageSignerBuilder.createSigner({
-    publicKey: newAccountId,
-    weight: DEFAULT_SIGNER_WEIGHT,
-    identity: DEFAULT_SIGNER_IDENTITY,
-    roleID: roleId,
-    details: {}
   })
 }

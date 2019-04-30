@@ -239,7 +239,7 @@ export class WalletsManager {
       newPublicKey: newMainWallet.accountId,
       signers,
       signingKeypair: recoveryWallet.keypair,
-      soucreAccount: accountId,
+      sourceAccount: accountId,
       signerRoleId
     })
 
@@ -331,7 +331,7 @@ export class WalletsManager {
       newPublicKey: newMainWallet.keypair.accountId(),
       signers,
       signingKeypair: oldWallet.keypair,
-      soucreAccount: oldWallet.accountId,
+      sourceAccount: oldWallet.accountId,
       signerToReplace: oldWallet.keypair.accountId(),
       signerRoleId
     })
