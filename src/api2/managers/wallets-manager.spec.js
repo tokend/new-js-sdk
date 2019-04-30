@@ -186,5 +186,87 @@ describe('Wallets manager', () => {
           )
       })
     })
+
+    describe('recovery', () => {
+      const mockedWallet = new Wallet(
+        'foo@bar.com',
+        'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
+        'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+        'some-wallet-id'
+      )
+
+      beforeEach(() => {
+        walletsManagerInstance._apiCaller.useWallet(mockedWallet)
+      })
+
+      it('creates and returns new wallet using recovery seed', async () => {
+        sandbox.stub(Wallet, 'generate').returns(mockedWallet)
+        sandbox.stub(walletsManagerInstance, '_getAccountIdByRecoveryId')
+          .resolves('SOME_ACCOUNT_ID')
+
+        sandbox.stub(
+          walletsManagerInstance._signersManager,
+          'createChangeSignerTransaction'
+        ).resolves('SOME_TX_ENVELOPE')
+        sandbox.stub(walletsManagerInstance._apiCaller, 'putWithSignature')
+          .resolves()
+
+        const result = await walletsManagerInstance.recovery(
+          'foo@bar.com',
+          'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
+          'qwe123'
+        )
+
+        expect(Wallet.generate).to.have.been.calledWithExactly('foo@bar.com')
+        expect(walletsManagerInstance._getAccountIdByRecoveryId)
+          .to.have.been.calledOnce
+        expect(walletsManagerInstance._signersManager
+          .createChangeSignerTransaction
+        ).to.have.been.calledOnce
+        expect(walletsManagerInstance._apiCaller.putWithSignature)
+          .to.have.been.calledOnce
+
+        expect(result.email).to.equal('foo@bar.com')
+        expect(result.accountId).to.equal('GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S')
+      })
+    })
+
+    describe('changePassword', () => {
+      const mockedWallet = new Wallet(
+        'foo@bar.com',
+        'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
+        'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+        'some-wallet-id'
+      )
+
+      beforeEach(() => {
+        walletsManagerInstance._apiCaller.useWallet(mockedWallet)
+      })
+
+      it('creates and returns new wallet using provided password', async () => {
+        sandbox.stub(Wallet, 'generate').returns(mockedWallet)
+        sandbox.stub(
+          walletsManagerInstance._signersManager,
+          'createChangeSignerTransaction'
+        ).resolves('SOME_TX_ENVELOPE')
+        sandbox.stub(walletsManagerInstance._apiCaller, 'putWithSignature')
+          .resolves()
+
+        const result = await walletsManagerInstance.changePassword('qwe123')
+
+        expect(Wallet.generate).to.have.been.calledWithExactly(
+          'foo@bar.com',
+          'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
+        )
+        expect(walletsManagerInstance._signersManager
+          .createChangeSignerTransaction
+        ).to.have.been.calledOnce
+        expect(walletsManagerInstance._apiCaller.putWithSignature)
+          .to.have.been.calledOnce
+
+        expect(result.email).to.equal('foo@bar.com')
+        expect(result.accountId).to.equal('GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S')
+      })
+    })
   })
 })
