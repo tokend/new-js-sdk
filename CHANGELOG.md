@@ -9,8 +9,15 @@ for further information about branching and tagging conventions.
 
 ## [Unreleased]
 #### Added
-- `WalletsManager` class for encapsulating actions with wallets,
-  factors, and change signers operations
+- New managers classes for encapsulating actions with wallets,
+  factors, and change signers operations:
+  - `WalletsManager`
+  - `FactorsManager`
+  - `SignersManager`
+
+#### Changed
+- Now using default axios instance in `ServerErrorBase` constructor
+  if there are no passed one
 
 ## [1.6.0-x.0] - 2019-04-26
 ### Added
