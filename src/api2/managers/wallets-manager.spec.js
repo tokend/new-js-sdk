@@ -42,7 +42,7 @@ describe('Wallets manager', () => {
 
         expect(walletsManagerInstance._apiCaller.get)
           .to.have.been.calledOnceWithExactly(
-            '/kdf', { email: 'foo@bar.com', isRecovery: true }
+            '/kdf', { email: 'foo@bar.com', is_recovery: true }
           )
         expect(result).to.deep.equal({
           data: {

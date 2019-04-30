@@ -31,7 +31,10 @@ export class WalletsManager {
    * @return {Promise.<JsonapiResponse>} KDF params.
    */
   getKdfParams (email, isRecovery = false) {
-    return this._apiCaller.get('/kdf', { email, isRecovery })
+    return this._apiCaller.get('/kdf', {
+      email,
+      is_recovery: isRecovery
+    })
   }
 
   /**
