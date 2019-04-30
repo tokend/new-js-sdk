@@ -13,7 +13,8 @@ const methods = Object.freeze({
   PATCH: 'PATCH',
   POST: 'POST',
   PUT: 'PUT',
-  GET: 'GET'
+  GET: 'GET',
+  DELETE: 'DELETE'
 })
 
 /**
@@ -126,6 +127,18 @@ export class ApiCaller {
 
   putWithSignature (endpoint, data) {
     return this.put(endpoint, data, true)
+  }
+
+  delete (endpoint, needSign = false) {
+    return this._call({
+      method: methods.DELETE,
+      needSign,
+      endpoint
+    })
+  }
+
+  deleteWithSignature (endpoint, data) {
+    return this.delete(endpoint, data, true)
   }
 
   /**

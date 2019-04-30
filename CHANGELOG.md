@@ -13,6 +13,16 @@ for further information about branching and tagging conventions.
 * Unit tests for for `CancelPollOp`, `UpdatePollEndTime`
 * Integration tests for `CancelPollOp`, `UpdatePollEndTime`
 
+## [1.6.0-x.0] - 2019-04-26
+### Added
+- `DELETE` method for ApiCaller
+
+### Fixed
+- Parsing transaction errors without operation details
+- Wallet verification request payload
+
+## [1.5.0] - 2019-04-19
+
 ## [1.5.0-rc.1] - 2019-04-19
 ### Added
 - `getRaw` method & `networkDetails` getter to API caller
@@ -69,7 +79,9 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.5.0-rc.1...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.6.0-x.0...HEAD
+[1.6.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.5.0...1.6.0-x.0
+[1.5.0]: https://github.com/tokend/new-js-sdk/compare/1.5.0-rc.1...1.5.0
 [1.5.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.5.0-rc.0...1.5.0-rc.1
 [1.5.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.4.4...1.5.0-rc.0
 [1.4.4]: https://github.com/tokend/new-js-sdk/compare/1.4.3...1.4.4

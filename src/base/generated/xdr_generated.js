@@ -1,6 +1,6 @@
-// revision: 4791728601df87aea5ac51f30ef128f9cc5f60e2
+// revision: d29f88b246ed9040ab1d7b072a435108ae496701
 // branch:   feature/poll_update_cancel
-// Automatically generated on 2019-04-24T12:56:47+00:00
+// Automatically generated on 2019-04-30T08:54:34+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -6345,7 +6345,7 @@ xdr.struct("SaleEntry", [
 //   {
 //       //: Create new balance
 //       CREATE = 0,
-//       //: Delete existing balance by ID
+//       //: Delete existing balance by ID. Is reserved and not implemented yet.
 //       DELETE_BALANCE = 1,
 //       //: Ensures that the balance will not be created if the balance of the provided asset exists and is attached to the provided account
 //       CREATE_UNIQUE = 2
@@ -6381,7 +6381,7 @@ xdr.union("ManageBalanceOpExt", {
 //
 //   struct ManageBalanceOp
 //   {
-//       //: Defines a ManageBalanceAction to be performed
+//       //: Defines a ManageBalanceAction to be performed. `DELETE_BALANCE` is reserved and not implemented yet.
 //       ManageBalanceAction action;
 //       //: Defines an account whose balance will be managed
 //       AccountID destination;
@@ -15176,10 +15176,8 @@ xdr.struct("ManagePollOp", [
 //       NOT_AUTHORIZED_TO_CLOSE_POLL = -3,
 //       //: End time is in the past
 //       INVALID_END_TIME = -4,
-//       //:Only poll owner and admin can cancel poll
-//       NOT_AUTHORIZED_TO_CANCEL_POLL = -5,
-//       //:Only poll owner can update end time
-//       NOT_AUTHORIZED_TO_UPDATE_POLL_END_TIME = -6
+//       //: Only poll owner and admin are allowed to cancel poll and update end time
+//       NOT_AUTHORIZED = -5
 //   };
 //
 // ===========================================================================
@@ -15189,8 +15187,7 @@ xdr.enum("ManagePollResultCode", {
   pollNotReady: -2,
   notAuthorizedToClosePoll: -3,
   invalidEndTime: -4,
-  notAuthorizedToCancelPoll: -5,
-  notAuthorizedToUpdatePollEndTime: -6,
+  notAuthorized: -5,
 });
 
 // === xdr source ============================================================
