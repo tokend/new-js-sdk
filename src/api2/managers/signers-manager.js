@@ -1,7 +1,7 @@
-import { TransactionBuilder } from '../base/transaction_builder'
-import { ManageSignerBuilder } from '../base/operations/manage_signer_builder'
+import { TransactionBuilder } from '../../base/transaction_builder'
+import { ManageSignerBuilder } from '../../base/operations/manage_signer_builder'
 
-import { NotFoundError } from '../errors'
+import { NotFoundError } from '../../errors'
 
 const RECOVERY_SIGNER_IDENTITY = 1
 const DEFAULT_SIGNER_IDENTITY = 0
@@ -103,19 +103,19 @@ export class SignersManager {
     return String(data.value.u32)
   }
 
-  static _getRemoveMasterAndCurrentSignerOps (signers, masterId, signerId) {
+  _getRemoveMasterAndCurrentSignerOps (signers, masterId, signerId) {
     return signers
       .filter(signer => {
         return signer.id === masterId || signer.id === signerId
       })
-      .map(signer => this._removeSignerOp(signer))
+      .map(signer => this._getRemoveSignerOp(signer))
   }
 
-  static _getRemoveAllSignersOps (signers) {
+  _getRemoveAllSignersOps (signers) {
     return signers.map(signer => this._getRemoveSignerOp(signer))
   }
 
-  static _getRemoveSignerOp (signer) {
+  _getRemoveSignerOp (signer) {
     return ManageSignerBuilder.deleteSigner({
       publicKey: signer.id
     })

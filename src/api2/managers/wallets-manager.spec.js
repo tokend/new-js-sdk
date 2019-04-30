@@ -1,10 +1,10 @@
 import sinon from 'sinon'
 
 import { WalletsManager } from './wallets-manager'
-import { ApiCaller } from './api-caller'
+import { ApiCaller } from '../api-caller'
 
-import { Wallet } from '../wallet'
-import { Keypair } from '../base'
+import { Wallet } from '../../wallet'
+import { Keypair } from '../../base'
 
 describe('Wallets manager', () => {
   let sandbox

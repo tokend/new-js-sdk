@@ -241,7 +241,7 @@ export class ApiCaller {
     try {
       response = await this._axios(config)
     } catch (e) {
-      throw middlewares.parseJsonapiError(e, this._axios)
+      throw middlewares.parseJsonapiError(e)
     }
 
     if (!opts.needRaw) {

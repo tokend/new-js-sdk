@@ -1,11 +1,11 @@
 import _set from 'lodash/set'
 
-import { Wallet } from '../wallet'
-import { Keypair } from '../base/keypair'
+import { Wallet } from '../../wallet'
+import { Keypair } from '../../base/keypair'
 
 import { SignersManager } from './signers-manager'
 
-import { VerificationRequiredError } from '../errors'
+import { VerificationRequiredError } from '../../errors'
 
 /**
  * Wallets manager.
@@ -224,7 +224,7 @@ export class WalletsManager {
     )
 
     const accountId = await this._getAccountIdByRecoveryId(recoveryWallet.id)
-    const tx = this._signersManager.createChangeSignerTransaction({
+    const tx = await this._signersManager.createChangeSignerTransaction({
       newPublicKey: newMainWallet.accountId,
       signingKeypair: recoveryWallet.keypair,
       sourceAccount: accountId
@@ -311,7 +311,7 @@ export class WalletsManager {
       kdfParams, newPassword
     )
 
-    const tx = SignersManager.makeChangeSignerTransaction({
+    const tx = await this._signersManager.createChangeSignerTransaction({
       newPublicKey: newMainWallet.keypair.accountId(),
       signingKeypair: oldWallet.keypair,
       sourceAccount: oldWallet.accountId,

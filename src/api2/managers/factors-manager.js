@@ -1,4 +1,6 @@
-import { Wallet } from '../wallet'
+import { Wallet } from '../../wallet'
+
+import middlewares from '../middlewares'
 
 /**
  * Factors manager.
@@ -24,7 +26,7 @@ export class FactorsManager {
    */
   async verifyPasswordFactorAndRetry (tfaError, password) {
     await this.verifyPasswordFactor(tfaError, password)
-    return tfaError.retryRequest()
+    return this._retryFailedRequest(tfaError)
   }
 
   /**
@@ -40,7 +42,7 @@ export class FactorsManager {
     const email = this._apiCaller.wallet.email
     const accountId = this._apiCaller.wallet.accountId
 
-    const { data: kdfParams } = await this.getKdfParams(email)
+    const { data: kdfParams } = await this._getKdfParams(email)
     const factorWallet = Wallet.fromEncrypted({
       keychainData: meta.keychainData,
       kdfParams,
@@ -74,7 +76,7 @@ export class FactorsManager {
    */
   async verifyTotpFactorAndRetry (tfaError, otp) {
     await this.verifyTotpFactor(tfaError, otp)
-    return tfaError.retryRequest()
+    return this._retryFailedRequest(tfaError)
   }
 
   /**
@@ -96,5 +98,21 @@ export class FactorsManager {
         }
       }
     })
+  }
+
+  async _retryFailedRequest (error) {
+    let response
+    try {
+      response = await error.retryRequest()
+    } catch (e) {
+      throw middlewares.parseJsonapiError(e)
+    }
+
+    response = middlewares.parseJsonapiResponse(response)
+    return response
+  }
+
+  _getKdfParams (email) {
+    return this._apiCaller.get('/kdf', { email })
   }
 }

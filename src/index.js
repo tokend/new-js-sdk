@@ -9,7 +9,12 @@ export { Wallet } from './wallet'
 export { HorizonResponse } from './horizon'
 export { ApiResponse } from './api'
 
-export { ApiCaller, WalletsManager, JsonapiResponse } from './api2'
+export {
+  ApiCaller,
+  WalletsManager,
+  FactorsManager,
+  JsonapiResponse
+} from './api2'
 export { KeyServerCaller } from './api2/key-server-caller'
 
 // Typed errors
