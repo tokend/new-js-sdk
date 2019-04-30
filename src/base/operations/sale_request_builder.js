@@ -2,6 +2,7 @@ import { default as xdr } from '../generated/xdr_generated'
 import isUndefined from 'lodash/isUndefined'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
+import { Keypair } from '../keypair'
 
 export class SaleRequestBuilder {
   /**
@@ -25,6 +26,9 @@ export class SaleRequestBuilder {
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
      * @param {number} opts.saleEnumType - Sale type
+     * @param {array} [opts.saleRules] - rules for sale participation
+     * @param {string} [opts.saleRules.accountID] - ID of account for which rule will be applied
+     * @param {boolean} opts.saleRules.forbids - Means rule is restrictive or not
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CreateSaleCreationRequestOp}
      */
@@ -194,7 +198,36 @@ export class SaleRequestBuilder {
         )
       }))
     }
+
+    if (!isUndefined(opts.saleRules)) {
+      this._addSaleRule(attrs, opts)
+    }
+
     return new xdr.SaleCreationRequest(attrs)
+  }
+
+  static _addSaleRule (attrs, opts) {
+    let saleRules = []
+    let saleRulesSet = new Set()
+    for (const rule of opts.saleRules) {
+      if (saleRulesSet.has(rule.accountID)) {
+        throw new Error('opts.saleRules has duplicated rules')
+      }
+      saleRulesSet.add(rule.accountID)
+
+      let accountID
+      if (!isUndefined(rule.accountID)) {
+        accountID = Keypair.fromAccountId(rule.accountID).xdrPublicKey()
+      }
+
+      saleRules.push(new xdr.CreateAccountSaleRuleData({
+        accountId: accountID,
+        forbids: rule.forbids,
+        ext: new xdr.CreateAccountSaleRuleDataExt(xdr.LedgerVersion.emptyVersion())
+      }))
+    }
+
+    attrs.ext = new xdr.SaleCreationRequestExt.addSaleWhitelist(saleRules)
   }
 
   static validateDetail (creatorDetails) {
@@ -241,6 +274,29 @@ export class SaleRequestBuilder {
         asset: request.quoteAssets()[i].quoteAsset().toString()
       })
     }
+
+    switch (request.ext().switch()) {
+      case xdr.LedgerVersion.emptyVersion():
+        break
+      case xdr.LedgerVersion.addSaleWhitelist():
+        result.saleRules = []
+        let rules = request.ext().saleRules()
+        for (const rule of rules) {
+          let accountID
+
+          if (!isUndefined(rule.accountId())) {
+            accountID = BaseOperation.accountIdtoAddress(rule.accountId())
+          }
+
+          result.saleRules.push({
+            accountID: accountID,
+            forbids: rule.forbids()
+          })
+        }
+        break
+      default:
+        throw new Error('Unexpected create sale request ext type')
+    }
   }
 
   static cancelSaleCreationRequestToObject (result, attrs) {
@@ -250,7 +306,7 @@ export class SaleRequestBuilder {
   /**
      * Creates operation to check sale state
      * @param {object} opts
-     * @param {string} saleID - id of the sale to check
+     * @param {string} opts.saleID - id of the sale to check
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CheckSaleStateOp}
      */

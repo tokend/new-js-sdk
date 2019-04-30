@@ -30,6 +30,7 @@ import { LicenseBuilder } from './operations/license_operation'
 import { ManageCreatePollRequestBuilder } from './operations/manage_create_poll_request_builder'
 import { ManageVoteBuilder } from './operations/manage_vote_builder'
 import { ManagePollBuilder } from './operations/manage_poll_builder'
+import { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -451,6 +452,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.managePoll():
         ManagePollBuilder.managePollToObject(result, attrs)
+        break
+      case xdr.OperationType.manageAccountSpecificRule():
+        ManageAccountSpecificRuleBuilder.manageAccountSpecificRuleToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

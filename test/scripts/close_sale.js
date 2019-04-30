@@ -3,7 +3,7 @@ import { createSaleOffer } from './create_sale_offer'
 import { saleHelper } from '../helpers'
 import { logger } from '../logger'
 
-export async function closeSale (saleId) {
+export async function closeSale (saleId, ownerKp) {
   const log = logger.new('closeSale')
 
   let sale = await saleHelper.mustLoadById(saleId)
@@ -16,15 +16,28 @@ export async function closeSale (saleId) {
   })
   log.info(`Investor created and funded`)
 
-  await createSaleOffer({
-    saleId: sale.id,
-    amount: amountToCloseSale,
-    quoteAsset: assetToInvestIn.asset
-  }, accountKp)
-  log.info(`Invested is sale #${sale.id}, now the hard cap should be reached`)
+  const ruleID = await saleHelper.createSaleRule({
+    saleID: sale.id, accountID: accountKp.accountId()
+  }, ownerKp)
+  log.info(`Sale rule successfully created with id #${ruleID}`)
 
-  await saleHelper.checkSaleState(sale.id)
-  log.info(`Checked sale state, looking for results`)
+  try {
+    await createSaleOffer({
+      saleId: sale.id,
+      amount: amountToCloseSale,
+      quoteAsset: assetToInvestIn.asset
+    }, accountKp)
+    log.info(`Invested is sale #${sale.id}, now the hard cap should be reached`)
+  } catch (e) {
+    log.error(e)
+  }
+
+  try {
+    await saleHelper.checkSaleState(sale.id)
+    log.info(`Checked sale state, looking for results`)
+  } catch (e) {
+    log.error(e)
+  }
 
   return saleHelper.mustLoadClosed(saleId)
 }

@@ -5,7 +5,7 @@ import { Keypair } from '../../src/base'
 import { accountHelper } from '../helpers'
 import { logger } from '../logger'
 
-describe('Voting', () => {
+describe.skip('Voting', () => {
   it('should create poll and close it', async () => {
     const log = logger.new('voting')
 
