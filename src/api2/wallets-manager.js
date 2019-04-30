@@ -3,7 +3,7 @@ import _set from 'lodash/set'
 import { Wallet } from '../wallet'
 import { Keypair } from '../base/keypair'
 
-import { makeChangeSignerTransaction } from './middlewares/change-signers'
+import { SignersManager } from './signers-manager'
 
 import { NotFoundError, VerificationRequiredError } from '../errors'
 
@@ -228,7 +228,7 @@ export class WalletsManager {
     const signers = await this._getSigners(accountId)
     const signerRoleId = await this._getDefaultSignerRole()
 
-    const tx = makeChangeSignerTransaction({
+    const tx = SignersManager.makeChangeSignerTransaction({
       newPublicKey: newMainWallet.accountId,
       signers,
       signingKeypair: recoveryWallet.keypair,
@@ -320,7 +320,7 @@ export class WalletsManager {
     const signers = await this._getSigners(this._apiCaller.wallet.accountId)
     const signerRoleId = await this._getDefaultSignerRole()
 
-    const tx = makeChangeSignerTransaction({
+    const tx = SignersManager.makeChangeSignerTransaction({
       newPublicKey: newMainWallet.keypair.accountId(),
       signers,
       signingKeypair: oldWallet.keypair,
