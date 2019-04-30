@@ -28,6 +28,8 @@ export class WalletsManager {
    *
    * @param {string} [email] User's email.
    * @param {boolean} [isRecovery=false] If true, get params for the recovery wallet.
+   *
+   * @return {Promise.<JsonapiResponse>} KDF params.
    */
   getKdfParams (email, isRecovery = false) {
     return this._apiCaller.get('/kdf', { email, isRecovery })
@@ -92,8 +94,7 @@ export class WalletsManager {
 
     const secondFactorWallet = Wallet.generate(email)
     const encryptedSecondFactorWallet = secondFactorWallet.encrypt(
-      kdfParams,
-      password
+      kdfParams, password
     )
 
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
@@ -384,7 +385,7 @@ export class WalletsManager {
   /**
    * Verify password factor and retry the failed request.
    *
-   * @param {TFAError} tfaError TFA error instance.
+   * @param {TFARequiredError} tfaError TFA error instance.
    * @param {string} password User's password.
    *
    * @return {JsonapiResponse} Response of the retried request.
@@ -397,7 +398,7 @@ export class WalletsManager {
   /**
    * Verify password factor.
    *
-   * @param {TFAError} tfaError TFA error instance.
+   * @param {TFARequiredError} tfaError TFA error instance.
    * @param {string} password User's password.
    *
    * @return {JsonapiResponse} Response of the retried request.
@@ -434,7 +435,7 @@ export class WalletsManager {
   /**
    * Verify TOTP factor and retry the failed request.
    *
-   * @param {TFAError} tfaError TFA error instance.
+   * @param {TFARequiredError} tfaError TFA error instance.
    * @param {string} otp One time password from a TOTP app.
    *
    * @return {JsonapiResponse} Response of the retried request.
@@ -447,7 +448,7 @@ export class WalletsManager {
   /**
    * Verify TOTP factor.
    *
-   * @param {TFAError} tfaError TFA error instance.
+   * @param {TFARequiredError} tfaError TFA error instance.
    * @param {string} otp One time password from a TOTP app.
    */
   verifyTotpFactor (tfaError, otp) {
