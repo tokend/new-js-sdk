@@ -35,13 +35,13 @@ export class ServerErrorBase extends Error {
    * Wrap a raw axios error.
    *
    * @param {object} originalError Raw axios response.
-   * @param {axios} axios Axios instance used for request.
+   * @param {axios} axiosInstance Axios instance used for request.
    */
-  constructor (originalError) {
+  constructor (originalError, axiosInstance) {
     super(originalError.message)
 
     this.originalError = originalError
-    this._axios = axios.create()
+    this._axios = axiosInstance || axios.create()
   }
 
   /**

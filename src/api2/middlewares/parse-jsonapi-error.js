@@ -16,7 +16,7 @@ const STATUS_CODES = {
  * @param axiosInstance - the instance of axios to be able to retry the request
  * @returns {Promise<never>}
  */
-export function parseJsonapiError (error) {
+export function parseJsonapiError (error, axiosInstance) {
   const status = get(error, 'response.status')
   const data = get(error, 'response.data')
   let errCode = get(data, 'errors[0].code')
@@ -24,34 +24,34 @@ export function parseJsonapiError (error) {
   switch (status) {
     case STATUS_CODES.badRequest:
       if (errCode === 'transaction_failed') {
-        error = new errors.TransactionError(error)
+        error = new errors.TransactionError(error, axiosInstance)
       } else {
-        error = new errors.BadRequestError(error)
+        error = new errors.BadRequestError(error, axiosInstance)
       }
       break
     case STATUS_CODES.unauthorized:
-      error = new errors.NotAllowedError(error)
+      error = new errors.NotAllowedError(error, axiosInstance)
       break
     case STATUS_CODES.forbidden:
       if (errCode === 'tfa_required') {
-        error = new errors.TFARequiredError(error)
+        error = new errors.TFARequiredError(error, axiosInstance)
       } else if (errCode === 'verification_required') {
-        error = new errors.VerificationRequiredError(error)
+        error = new errors.VerificationRequiredError(error, axiosInstance)
       } else {
-        error = new errors.ForbiddenRequestError(error)
+        error = new errors.ForbiddenRequestError(error, axiosInstance)
       }
       break
     case STATUS_CODES.notFound:
-      error = new errors.NotFoundError(error)
+      error = new errors.NotFoundError(error, axiosInstance)
       break
     case STATUS_CODES.conflict:
-      error = new errors.ConflictError(error)
+      error = new errors.ConflictError(error, axiosInstance)
       break
     case STATUS_CODES.internalError:
-      error = new errors.InternalServerError(error)
+      error = new errors.InternalServerError(error, axiosInstance)
       break
     default:
-      error = new errors.ServerError(error)
+      error = new errors.ServerError(error, axiosInstance)
   }
 
   return error
