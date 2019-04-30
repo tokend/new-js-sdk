@@ -1,6 +1,9 @@
-import { SignersManager } from './change-signers'
-import { Keypair } from '../../base'
+import sinon from 'sinon'
 
+import { SignersManager } from './signers-manager'
+import { ApiCaller } from '../api-caller'
+
+import { Keypair } from '../../base'
 import { default as xdr } from '../../base/generated/xdr_generated'
 import { Operation } from '../../base/operation'
 
@@ -14,40 +17,48 @@ function parseTransactionEnvelope (envelope) {
 }
 
 describe('Signers manager', () => {
-  describe('makeChangeSignerTransaction', () => {
-    const sourceAccount = 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
-    const signingKeypair = Keypair.fromSecret('SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3')
-    const newPublicKey = 'GABMN37HVQYAX4YCUMSKCCEJNFV4YOMNZOZDUMNEW5FAX5QESM7QO63Q'
+  let sandbox
+  let signersManagerInstance
 
-    const signerRoleId = '1'
-    const signers = [
-      {
-        id: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-        identity: 0
-      },
-      {
-        id: 'GAJIMZYYBBU7XPXDLR2HUI6KIIV5LMUNJ2WOHY2FQ2Y5MCTDPMLOFLDY',
-        identity: 0
-      },
-      {
-        id: 'GBEHGGVNR6I4J3KV4WP5VONSGALNXJIXI3QHLLGXYVSVBEETR3YHFYDF',
-        identity: 0
-      },
-      {
-        id: 'GD2BSUAJPCN3UKRI64IJI53BJ22NKSVQ7OB6CM2D6OLAZU7U44GC23A7',
-        identity: 1
-      }
-    ]
+  beforeEach(() => {
+    sandbox = sinon.createSandbox()
+    signersManagerInstance = new SignersManager(
+      ApiCaller.getInstance('https://api.test.com')
+    )
+  })
 
-    it('should create a transaction, that changes master signer and removes signer to replace', () => {
-      const result = SignersManager.makeChangeSignerTransaction({
-        signers,
-        signerToReplace: 'GAJIMZYYBBU7XPXDLR2HUI6KIIV5LMUNJ2WOHY2FQ2Y5MCTDPMLOFLDY',
-        newPublicKey,
-        sourceAccount,
-        signingKeypair,
-        signerRoleId
-      })
+  describe('createChangeSignerTransaction', () => {
+    beforeEach(() => {
+      sandbox.stub(signersManagerInstance, '_getSigners').resolves([
+        {
+          id: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+          identity: 0
+        },
+        {
+          id: 'GAJIMZYYBBU7XPXDLR2HUI6KIIV5LMUNJ2WOHY2FQ2Y5MCTDPMLOFLDY',
+          identity: 0
+        },
+        {
+          id: 'GBEHGGVNR6I4J3KV4WP5VONSGALNXJIXI3QHLLGXYVSVBEETR3YHFYDF',
+          identity: 0
+        },
+        {
+          id: 'GD2BSUAJPCN3UKRI64IJI53BJ22NKSVQ7OB6CM2D6OLAZU7U44GC23A7',
+          identity: 1
+        }
+      ])
+      sandbox.stub(signersManagerInstance, '_getDefaultSignerRole')
+        .resolves('1')
+    })
+
+    it('should create a transaction, that changes master signer and removes signer to replace', async () => {
+      const result = await signersManagerInstance
+        .createChangeSignerTransaction({
+          sourceAccount: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+          newPublicKey: 'GABMN37HVQYAX4YCUMSKCCEJNFV4YOMNZOZDUMNEW5FAX5QESM7QO63Q',
+          signingKeypair: Keypair.fromSecret('SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3'),
+          signerToReplace: 'GAJIMZYYBBU7XPXDLR2HUI6KIIV5LMUNJ2WOHY2FQ2Y5MCTDPMLOFLDY'
+        })
 
       expect(parseTransactionEnvelope(result))
         .to.deep.equal([
@@ -70,14 +81,13 @@ describe('Signers manager', () => {
         ])
     })
 
-    it('should create a transaction, that changes master signer and removes all the signers', () => {
-      const result = SignersManager.makeChangeSignerTransaction({
-        signers,
-        newPublicKey,
-        sourceAccount,
-        signingKeypair,
-        signerRoleId
-      })
+    it('should create a transaction, that changes master signer and removes all the signers', async () => {
+      const result = await signersManagerInstance
+        .createChangeSignerTransaction({
+          sourceAccount: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+          newPublicKey: 'GABMN37HVQYAX4YCUMSKCCEJNFV4YOMNZOZDUMNEW5FAX5QESM7QO63Q',
+          signingKeypair: Keypair.fromSecret('SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3')
+        })
 
       expect(parseTransactionEnvelope(result))
         .to.deep.equal([
