@@ -22,6 +22,17 @@ export class SignersManager {
     this._apiCaller = apiCaller
   }
 
+  /**
+   * Creates change signers transaction envelope
+   *
+   * @param {object} opts
+   * @param {string} opts.newPublicKey New master signer ID of account
+   * @param {string} opts.sourceAccount Transaction source account ID.
+   * @param {string} [opts.signerToReplace] Specified signer ID to change.
+   * @param {Keypair} opts.signingKeypair Keypair for signing transaction.
+   *
+   * @return {Promise.<string>} Base64-encoded transaction envelope
+   */
   async createChangeSignerTransaction ({
     newPublicKey,
     sourceAccount,

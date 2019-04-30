@@ -22,7 +22,7 @@ export class FactorsManager {
    * @param {TFARequiredError} tfaError TFA error instance.
    * @param {string} password User's password.
    *
-   * @return {JsonapiResponse} Response of the retried request.
+   * @return {Promise.<JsonapiResponse>} Response of the retried request.
    */
   async verifyPasswordFactorAndRetry (tfaError, password) {
     await this.verifyPasswordFactor(tfaError, password)
@@ -35,7 +35,7 @@ export class FactorsManager {
    * @param {TFARequiredError} tfaError TFA error instance.
    * @param {string} password User's password.
    *
-   * @return {JsonapiResponse} Response of the retried request.
+   * @return {Promise.<JsonapiResponse>} Response of verification request.
    */
   async verifyPasswordFactor (tfaError, password) {
     const meta = tfaError.meta
@@ -56,7 +56,7 @@ export class FactorsManager {
 
     const walletId = this._apiCaller.wallet.id
     const endpoint = `/wallets/${walletId}/factors/${meta.factorId}/verification`
-    await this._apiCaller.put(endpoint, {
+    return this._apiCaller.put(endpoint, {
       data: {
         attributes: {
           token: meta.token,
@@ -72,7 +72,7 @@ export class FactorsManager {
    * @param {TFARequiredError} tfaError TFA error instance.
    * @param {string} otp One time password from a TOTP app.
    *
-   * @return {JsonapiResponse} Response of the retried request.
+   * @return {Promise.<JsonapiResponse>} Response of the retried request.
    */
   async verifyTotpFactorAndRetry (tfaError, otp) {
     await this.verifyTotpFactor(tfaError, otp)
@@ -84,6 +84,8 @@ export class FactorsManager {
    *
    * @param {TFARequiredError} tfaError TFA error instance.
    * @param {string} otp One time password from a TOTP app.
+   *
+   * @return {Promise.<JsonapiResponse>} Response of verification request.
    */
   verifyTotpFactor (tfaError, otp) {
     const walletId = tfaError.meta.walletId
@@ -100,6 +102,13 @@ export class FactorsManager {
     })
   }
 
+  /**
+   * Performs failed request and parses response/error.
+   *
+   * @param {TFARequiredError} error TFA error instance.
+   *
+   * @return {Promise.<JsonapiResponse>} Response of retried request.
+   */
   async _retryFailedRequest (error) {
     let response
     try {
@@ -112,6 +121,13 @@ export class FactorsManager {
     return response
   }
 
+  /**
+   * Performs failed request and parses response/error.
+   *
+   * @param {string} email Email for getting KDF params.
+   *
+   * @return {Promise.<JsonapiResponse>} KDF request response.
+   */
   _getKdfParams (email) {
     return this._apiCaller.get('/kdf', { email })
   }

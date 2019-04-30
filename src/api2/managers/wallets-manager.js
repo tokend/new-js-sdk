@@ -173,6 +173,8 @@ export class WalletsManager {
    * Verify email.
    *
    * @param {string} payload Base64 encoded payload from the email link.
+   *
+   * @return {Promise.<JsonapiResponse>} Wallet verification request response.
    */
   verifyEmail (payload) {
     const decodedPayload = Buffer.from(payload, 'base64').toString('utf8')
@@ -191,6 +193,8 @@ export class WalletsManager {
    * Re-send verification email.
    *
    * @param {string} [walletId] ID of the wallet to resend email for.
+   *
+   * @return {Promise.<JsonapiResponse>} Verification request response.
    */
   resendEmail (walletId) {
     const verificationWalletId = walletId || this._apiCaller.wallet.id
@@ -206,7 +210,7 @@ export class WalletsManager {
    * @param {string} recoverySeed User's recovery seed.
    * @param {string} newPassword Desired password.
    *
-   * @return {Wallet} New wallet.
+   * @return {Promise.<Wallet>} New wallet.
    */
   async recovery (email, recoverySeed, newPassword) {
     const { data: kdfParams } = await this.getKdfParams(email, true)
@@ -293,7 +297,7 @@ export class WalletsManager {
    *
    * @param {string} newPassword Desired password.
    *
-   * @return {Wallet} New wallet.
+   * @return {Promise.<Wallet>} New wallet.
    */
   async changePassword (newPassword) {
     const oldWallet = this._apiCaller.wallet
@@ -368,6 +372,13 @@ export class WalletsManager {
     return newMainWallet
   }
 
+  /**
+   * Get user account ID by provided recovery wallet ID.
+   *
+   * @param {string} recoveryWalletId ID of recovery wallet.
+   *
+   * @return {Promise.<string>} User's account ID.
+   */
   async _getAccountIdByRecoveryId (recoveryWalletId) {
     const endpoint = `/wallets/${recoveryWalletId}`
     const { data: wallet } = await this._apiCaller.get(endpoint)
