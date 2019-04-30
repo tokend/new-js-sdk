@@ -233,63 +233,57 @@ export class WalletsManager {
       sourceAccount: accountId
     })
 
-    const oldWallet = this._apiCaller.wallet
     this._apiCaller.useWallet(recoveryWallet)
 
     const endpoint = `/wallets/${recoveryWallet.id}`
-
-    try {
-      await this._apiCaller.putWithSignature(endpoint, {
-        data: {
-          type: 'wallet',
-          id: encryptedNewMainWallet.id,
-          attributes: {
-            email,
-            account_id: encryptedNewMainWallet.accountId,
-            salt: encryptedNewMainWallet.salt,
-            keychain_data: encryptedNewMainWallet.keychainData
-          },
-          relationships: {
-            transaction: {
-              data: {
-                type: 'transaction',
-                id: '1'
-              }
-            },
-            kdf: {
-              data: {
-                type: kdfParams.type,
-                id: kdfParams.id
-              }
-            },
-            factor: {
-              data: {
-                type: 'password',
-                id: encryptedNewMainWallet.id
-              }
-            }
-          }
+    await this._apiCaller.putWithSignature(endpoint, {
+      data: {
+        type: 'wallet',
+        id: encryptedNewMainWallet.id,
+        attributes: {
+          email,
+          account_id: encryptedNewMainWallet.accountId,
+          salt: encryptedNewMainWallet.salt,
+          keychain_data: encryptedNewMainWallet.keychainData
         },
-        included: [
-          {
-            type: 'transaction',
-            id: '1',
-            attributes: { envelope: tx }
+        relationships: {
+          transaction: {
+            data: {
+              type: 'transaction',
+              id: '1'
+            }
           },
-          {
-            id: encryptedNewMainWallet.id,
-            type: 'password',
-            attributes: {
-              account_id: encryptedSecondFactorWallet.accountId,
-              keychain_data: encryptedSecondFactorWallet.keychainData,
-              salt: encryptedSecondFactorWallet.salt
+          kdf: {
+            data: {
+              type: kdfParams.type,
+              id: kdfParams.id
+            }
+          },
+          factor: {
+            data: {
+              type: 'password',
+              id: encryptedNewMainWallet.id
             }
           }
-        ]
-      })
-    } finally {
-      this._apiCaller.useWallet(oldWallet)
-    }
+        }
+      },
+      included: [
+        {
+          type: 'transaction',
+          id: '1',
+          attributes: { envelope: tx }
+        },
+        {
+          id: encryptedNewMainWallet.id,
+          type: 'password',
+          attributes: {
+            account_id: encryptedSecondFactorWallet.accountId,
+            keychain_data: encryptedSecondFactorWallet.keychainData,
+            salt: encryptedSecondFactorWallet.salt
+          }
+        }
+      ]
+    })
 
     return newMainWallet
   }
