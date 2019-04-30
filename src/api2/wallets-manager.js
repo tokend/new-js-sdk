@@ -96,14 +96,14 @@ export class WalletsManager {
       password
     )
 
-    if (!recoveryKeypair) {
-      recoveryKeypair = Keypair.random()
-    }
-
+    const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
     const encryptedRecoveryWallet = mainWallet.encryptRecoveryData(
-      kdfParams,
-      recoveryKeypair
+      kdfParams, walletRecoveryKeypair
     )
+
+    const accountRefferer = referrerId
+      ? { referrer: { data: { id: referrerId } } }
+      : {}
 
     const response = await this._apiCaller.post('/wallets', {
       data: {
@@ -134,14 +134,7 @@ export class WalletsManager {
               id: encryptedMainWallet.id
             }
           },
-          ...(referrerId
-            ? {
-              referrer: {
-                data: { id: referrerId }
-              }
-            }
-            : {}
-          )
+          ...accountRefferer
         }
       },
       included: [
@@ -169,7 +162,7 @@ export class WalletsManager {
     return {
       wallet: mainWallet,
       response: response,
-      recoverySeed: recoveryKeypair.secret()
+      recoverySeed: walletRecoveryKeypair.secret()
     }
   }
 
@@ -227,8 +220,7 @@ export class WalletsManager {
 
     const newSecondFactorWallet = Wallet.generate(email)
     const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
-      kdfParams,
-      newPassword
+      kdfParams, newPassword
     )
 
     const accountId = await this._getAccountIdByRecoveryId(recoveryWallet.id)
