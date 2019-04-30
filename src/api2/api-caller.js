@@ -13,7 +13,8 @@ const methods = Object.freeze({
   PATCH: 'PATCH',
   POST: 'POST',
   PUT: 'PUT',
-  GET: 'GET'
+  GET: 'GET',
+  DELETE: 'DELETE'
 })
 
 /**
@@ -33,6 +34,7 @@ export class ApiCaller {
     this._baseURL = opts.baseURL
 
     this._wallet = null
+    this._networkDetails = {}
     this._customTimeout = null
     this._clockDiff = 0
 
@@ -54,17 +56,31 @@ export class ApiCaller {
 
   static async getInstanceWithPassphrase (baseURL) {
     const caller = this.getInstance(baseURL)
-    const networkDetails = await caller.get('/')
+    const { data: networkDetails } = await caller.getRaw('/')
 
-    caller.usePassphrase(networkDetails.data.networkPassphrase)
+    caller._networkDetails = networkDetails
+    caller.usePassphrase(networkDetails.networkPassphrase)
 
     return caller
+  }
+
+  get networkDetails () {
+    return this._networkDetails
   }
 
   get (endpoint, query, needSign = false) {
     return this._call({
       method: methods.GET,
       needSign,
+      endpoint,
+      query
+    })
+  }
+
+  getRaw (endpoint, query) {
+    return this._call({
+      method: methods.GET,
+      needRaw: true,
       endpoint,
       query
     })
@@ -111,6 +127,18 @@ export class ApiCaller {
 
   putWithSignature (endpoint, data) {
     return this.put(endpoint, data, true)
+  }
+
+  delete (endpoint, needSign = false) {
+    return this._call({
+      method: methods.DELETE,
+      needSign,
+      endpoint
+    })
+  }
+
+  deleteWithSignature (endpoint, data) {
+    return this.delete(endpoint, data, true)
   }
 
   /**
@@ -175,6 +203,7 @@ export class ApiCaller {
    * @param {object} opts.query - request query params. See {@link parseQuery} for details
    * @param {string} opts.method - the http method of request
    * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
+   * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
    *
    * @private
    */
@@ -211,14 +240,18 @@ export class ApiCaller {
       throw middlewares.parseJsonapiError(e)
     }
 
-    response = middlewares.parseJsonapiResponse(response)
+    if (!opts.needRaw) {
+      response = middlewares.parseJsonapiResponse(response)
 
-    if (!isEmpty(response.links)) {
-      if (opts.needSign) {
-        response.makeLinkCallersWithSignature(this)
-      } else {
-        response.makeLinkCallers(this)
+      if (!isEmpty(response.links)) {
+        if (opts.needSign) {
+          response.makeLinkCallersWithSignature(this)
+        } else {
+          response.makeLinkCallers(this)
+        }
       }
+    } else {
+      response = toCamelCaseDeep(response)
     }
 
     return response
