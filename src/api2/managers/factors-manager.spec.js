@@ -4,6 +4,7 @@ import { FactorsManager } from './factors-manager'
 import { ApiCaller } from '../api-caller'
 
 import { Wallet } from '../../wallet'
+import { TFARequiredError } from '../../errors'
 
 describe('Factors manager', () => {
   let sandbox
@@ -34,34 +35,37 @@ describe('Factors manager', () => {
         factorsManagerInstance._apiCaller.useWallet(mockedWallet)
       })
 
-      it('gets attributes from error instance and sends PUT verification request', async () => {
-        const keychainData = 'eyJJViI6IkFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFEQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFFQUFBQUFBQUFBQUFBQUFBREFBQUFCQUFBQUFRQUFBQUlBQUFBQndBQUFBUUFBQUFBIiwiY2lwaGVyVGV4dCI6Ii90enkreXV6ajdtdEEyTGlVQjFsQ013NWlPVUtjL2owOHVHcW9iK1ZsWk9XaEdHVWlLSUpmSWU0clY1c3JZMzVNRi83M1N4NTd3aUR1MFA0K2h0NjRHYnIzNFV6MHpZMUlZVGVUd2REbWVHZ1NBeVNQTGloS0c3OHNxY1NsV2owQmpxMU13ZVV3SEpXM1ZIMDFSeGlTUk5oSmlFcEtsUDdzOFhwZUhDNDlyM1RWOW9RcS9CcWJMeStERkZHRHNGWFFMenhBYnp2c0VxWGlnPT0iLCJjaXBoZXJOYW1lIjoiYWVzIiwibW9kZU5hbWUiOiJnY20ifQ=='
-
+      it('calls _apiCaller.put to proper endpoint with derived error attributes', async () => {
         sandbox.stub(factorsManagerInstance, '_getKdfParams')
           .resolves({ data: 'some-kdf-params' })
         sandbox.stub(Wallet, 'fromEncrypted').returns(mockedWallet)
         sandbox.stub(factorsManagerInstance._apiCaller, 'put')
-          .withArgs('/wallets/some-wallet-id/factors/1/verification')
           .resolves()
 
         await factorsManagerInstance.verifyPasswordFactor(
-          {
-            meta: {
-              token: 'some-token',
-              keychainData,
-              salt: '/1dwsCq6f1zdpIObxLBOiQ==',
-              factorId: '1'
+          new TFARequiredError({
+            response: {
+              data: {
+                errors: [{
+                  meta: {
+                    token: 'some-token',
+                    keychain_data: 'some-keychain-data',
+                    salt: 'some-salt',
+                    factor_id: '1'
+                  }
+                }]
+              }
             }
-          },
+          }),
           'qwe123'
         )
 
         expect(factorsManagerInstance._getKdfParams)
           .to.have.been.calledOnceWithExactly('foo@bar.com')
         expect(Wallet.fromEncrypted).to.have.been.calledOnceWithExactly({
-          keychainData: 'eyJJViI6IkFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFEQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQkFBQUFBQUFBQUFFQUFBQUFBQUFBQUFBQUFBREFBQUFCQUFBQUFRQUFBQUlBQUFBQndBQUFBUUFBQUFBIiwiY2lwaGVyVGV4dCI6Ii90enkreXV6ajdtdEEyTGlVQjFsQ013NWlPVUtjL2owOHVHcW9iK1ZsWk9XaEdHVWlLSUpmSWU0clY1c3JZMzVNRi83M1N4NTd3aUR1MFA0K2h0NjRHYnIzNFV6MHpZMUlZVGVUd2REbWVHZ1NBeVNQTGloS0c3OHNxY1NsV2owQmpxMU13ZVV3SEpXM1ZIMDFSeGlTUk5oSmlFcEtsUDdzOFhwZUhDNDlyM1RWOW9RcS9CcWJMeStERkZHRHNGWFFMenhBYnp2c0VxWGlnPT0iLCJjaXBoZXJOYW1lIjoiYWVzIiwibW9kZU5hbWUiOiJnY20ifQ==',
+          keychainData: 'some-keychain-data',
           kdfParams: 'some-kdf-params',
-          salt: '/1dwsCq6f1zdpIObxLBOiQ==',
+          salt: 'some-salt',
           email: 'foo@bar.com',
           password: 'qwe123',
           accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
@@ -74,19 +78,24 @@ describe('Factors manager', () => {
     })
 
     describe('verifyTotpFactor', () => {
-      it('gets attributes from error instance and sends PUT verification request', async () => {
+      it('calls apiCaller.put to proper endpoint with derived error attributes', async () => {
         sandbox.stub(factorsManagerInstance._apiCaller, 'put')
-          .withArgs('/wallets/some-wallet-id/factors/1/verification')
           .resolves()
 
         await factorsManagerInstance.verifyTotpFactor(
-          {
-            meta: {
-              walletId: 'some-wallet-id',
-              factorId: '1',
-              token: 'some-token'
+          new TFARequiredError({
+            response: {
+              data: {
+                errors: [{
+                  meta: {
+                    wallet_id: 'some-wallet-id',
+                    factor_id: '1',
+                    token: 'some-token'
+                  }
+                }]
+              }
             }
-          },
+          }),
           '123456'
         )
 

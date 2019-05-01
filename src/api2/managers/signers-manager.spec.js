@@ -32,23 +32,23 @@ describe('Signers manager', () => {
       sandbox.stub(signersManagerInstance, '_getSigners').resolves([
         {
           id: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-          identity: 0
+          role: { id: '2' }
         },
         {
           id: 'GAJIMZYYBBU7XPXDLR2HUI6KIIV5LMUNJ2WOHY2FQ2Y5MCTDPMLOFLDY',
-          identity: 0
+          role: { id: '2' }
         },
         {
           id: 'GBEHGGVNR6I4J3KV4WP5VONSGALNXJIXI3QHLLGXYVSVBEETR3YHFYDF',
-          identity: 0
+          role: { id: '2' }
         },
         {
           id: 'GD2BSUAJPCN3UKRI64IJI53BJ22NKSVQ7OB6CM2D6OLAZU7U44GC23A7',
-          identity: 1
+          role: { id: '1' }
         }
       ])
       sandbox.stub(signersManagerInstance, '_getDefaultSignerRole')
-        .resolves('1')
+        .resolves('2')
     })
 
     it('should create a transaction, that changes master signer and removes signer to replace', async () => {
@@ -65,7 +65,7 @@ describe('Signers manager', () => {
           {
             type: 'manageSigner',
             publicKey: 'GABMN37HVQYAX4YCUMSKCCEJNFV4YOMNZOZDUMNEW5FAX5QESM7QO63Q',
-            roleID: '1',
+            roleID: '2',
             weight: '1000',
             identity: '0',
             details: {}
@@ -94,7 +94,7 @@ describe('Signers manager', () => {
           {
             type: 'manageSigner',
             publicKey: 'GABMN37HVQYAX4YCUMSKCCEJNFV4YOMNZOZDUMNEW5FAX5QESM7QO63Q',
-            roleID: '1',
+            roleID: '2',
             weight: '1000',
             identity: '0',
             details: {}

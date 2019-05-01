@@ -1,9 +1,7 @@
 import { TransactionBuilder } from '../../base/transaction_builder'
 import { ManageSignerBuilder } from '../../base/operations/manage_signer_builder'
 
-import { NotFoundError } from '../../errors'
-
-const RECOVERY_SIGNER_IDENTITY = 1
+const RECOVERY_SIGNER_ROLE_ID = '1'
 const DEFAULT_SIGNER_IDENTITY = 0
 const DEFAULT_SIGNER_WEIGHT = 1000
 const DEFAULT_SIGNER_ROLE_KEY = 'signer_role:default'
@@ -23,7 +21,7 @@ export class SignersManager {
   }
 
   /**
-   * Creates change signers transaction envelope
+   * Creates change signers transacIDENTITYtion envelope
    *
    * @param {object} opts
    * @param {string} opts.newPublicKey New master signer ID of account
@@ -40,7 +38,7 @@ export class SignersManager {
     signingKeypair
   }) {
     const tx = new TransactionBuilder(sourceAccount)
-    tx.operations = await this._getChangeSignerOperations({
+    tx.operations = await this._makeChangeSignerOperations({
       newPublicKey, sourceAccount, signerToReplace
     })
 
@@ -50,7 +48,7 @@ export class SignersManager {
     return txEnv.toEnvelope().toXDR().toString('base64')
   }
 
-  async _getChangeSignerOperations ({
+  async _makeChangeSignerOperations ({
     newPublicKey,
     sourceAccount,
     signerToReplace
@@ -58,17 +56,17 @@ export class SignersManager {
     const nonRecoverySigners = await this._getNonRecoverySigners(sourceAccount)
 
     let operations = []
-    const createSignerOp = await this._getCreateSignerOp(newPublicKey)
+    const createSignerOp = await this._makeCreateSignerOp(newPublicKey)
     operations.push(createSignerOp)
 
     if (nonRecoverySigners.length) {
       const removeSignerOps = signerToReplace
-        ? this._getRemoveMasterAndCurrentSignerOps(
+        ? this._makeRemoveMasterAndCurrentSignerOps(
           nonRecoverySigners,
           sourceAccount,
           signerToReplace
         )
-        : this._getRemoveAllSignersOps(nonRecoverySigners)
+        : this._makeRemoveAllSignersOps(nonRecoverySigners)
 
       operations.push(...removeSignerOps)
     }
@@ -79,23 +77,17 @@ export class SignersManager {
   async _getNonRecoverySigners (accountId) {
     const signers = await this._getSigners(accountId)
     return signers
-      .filter(signer => signer.identity !== RECOVERY_SIGNER_IDENTITY)
+      .filter(signer => signer.role.id !== RECOVERY_SIGNER_ROLE_ID)
   }
 
   async _getSigners (accountId) {
-    try {
-      const endpoint = `/v3/accounts/${accountId}/signers`
-      const { data: signers } = await this._apiCaller.get(endpoint)
+    const endpoint = `/v3/accounts/${accountId}/signers`
+    const { data: signers } = await this._apiCaller.get(endpoint)
 
-      return signers
-    } catch (err) {
-      if (err instanceof NotFoundError) {
-        return []
-      }
-    }
+    return signers
   }
 
-  async _getCreateSignerOp (newAccountId) {
+  async _makeCreateSignerOp (newAccountId) {
     const signerRoleId = await this._getDefaultSignerRole()
 
     return ManageSignerBuilder.createSigner({
@@ -114,19 +106,19 @@ export class SignersManager {
     return String(data.value.u32)
   }
 
-  _getRemoveMasterAndCurrentSignerOps (signers, masterId, signerId) {
+  _makeRemoveMasterAndCurrentSignerOps (signers, masterId, signerId) {
     return signers
       .filter(signer => {
         return signer.id === masterId || signer.id === signerId
       })
-      .map(signer => this._getRemoveSignerOp(signer))
+      .map(signer => this._makeRemoveSignerOp(signer))
   }
 
-  _getRemoveAllSignersOps (signers) {
-    return signers.map(signer => this._getRemoveSignerOp(signer))
+  _makeRemoveAllSignersOps (signers) {
+    return signers.map(signer => this._makeRemoveSignerOp(signer))
   }
 
-  _getRemoveSignerOp (signer) {
+  _makeRemoveSignerOp (signer) {
     return ManageSignerBuilder.deleteSigner({
       publicKey: signer.id
     })
