@@ -24,6 +24,9 @@ for further information about branching and tagging conventions.
   - Creator details
 - Check for spaces in `BaseOperation.isValidString`
 
+### Updated
+- Now using new validators in `CreateIssuanceRequestBuilder`
+
 ## [1.6.0-x.0] - 2019-04-26
 ### Added
 - `DELETE` method for ApiCaller
