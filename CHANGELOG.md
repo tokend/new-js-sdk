@@ -8,14 +8,17 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
-#### Added
+### Added
+- Builders for `CancelPollOp`, `UpdatePollEndTime`
+- Unit tests for for `CancelPollOp`, `UpdatePollEndTime`
+- Integration tests for `CancelPollOp`, `UpdatePollEndTime`
 - New managers classes for encapsulating actions with wallets,
   factors, and change signers operations:
   - `WalletsManager`
   - `FactorsManager`
   - `SignersManager`
-
-#### Changed
+  
+### Changed
 - Now using default axios instance in `ServerErrorBase` constructor
   if there are no passed one
 

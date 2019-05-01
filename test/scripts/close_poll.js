@@ -29,6 +29,9 @@ export async function closePoll (pollID, resultProviderKp) {
   log.info(`Created the account, id: ${voter.accountId()}`)
   await voteHelper.createSingle({ pollID: pollID, choice: poll.numberOfChoices }, voter)
 
+  await pollHelper.mustLoadEnded(pollID)
+  log.info(`Poll ended, id: ${pollID}`)
+
   await pollHelper.close(pollID, resultProviderKp)
   log.info(`Poll closed, id: ${pollID}`)
 
