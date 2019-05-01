@@ -8,9 +8,9 @@ import { Keypair } from '../base/keypair'
 import { default as xdr } from '../base/generated/xdr_generated'
 
 /**
- * Example of use:
+ * Validators for encapsulating types checks and throwing errors.
  *
- * ```js
+ * @example
  * import { validateUndefined } from './validators'
  *
  * function someFunction (someParam) {
@@ -21,11 +21,18 @@ import { default as xdr } from '../base/generated/xdr_generated'
  *
  *   // do something with someParam
  * }
- * ```
  */
 
-// common types validators
+/** Common types validators */
 
+/**
+ * Validate value to be not undefined.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be defined.
+ */
 export function validateUndefined ({ value, fieldName = '' }) {
   if (_isUndefined(value)) {
     throw new TypeError(_composeErrorMessage({
@@ -36,6 +43,14 @@ export function validateUndefined ({ value, fieldName = '' }) {
   }
 }
 
+/**
+ * Validate value to be not NaN (Not a number).
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be not NaN.
+ */
 export function validateNaN ({ value, fieldName = '' }) {
   if (Number.isNaN(Number(value))) {
     throw new TypeError(_composeErrorMessage({
@@ -46,6 +61,16 @@ export function validateNaN ({ value, fieldName = '' }) {
   }
 }
 
+/**
+ * Validate value to be an array.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ * @param {number} [minLength] The minimum array length.
+ *
+ * @throws {TypeError} Value should be an array.
+ * @throws {Error} Array should have at least minimum length.
+ */
 export function validateArray ({ value, fieldName = '', minLength }) {
   if (!_isArray(value)) {
     throw new TypeError(_composeTypeErrorMessage({
@@ -64,6 +89,16 @@ export function validateArray ({ value, fieldName = '', minLength }) {
   }
 }
 
+/**
+ * Validate value to be a string.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ * @param {number} [minLength] The minimum string length.
+ * @param {number} [maxLength] The maximum string length.
+ *
+ * @throws {TypeError} Value should be a valid string.
+ */
 export function validateString ({ value, fieldName = '', minLength, maxLength }) {
   if (!BaseOperation.isValidString(value, minLength, maxLength)) {
     throw new TypeError(_composeErrorMessage({
@@ -75,8 +110,16 @@ export function validateString ({ value, fieldName = '', minLength, maxLength })
   }
 }
 
-// keys validators
+/** Keys validators */
 
+/**
+ * Validate value to be a public key.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be a valid public key.
+ */
 export function validatePublicKey ({ value, fieldName = '' }) {
   if (!Keypair.isValidPublicKey(value)) {
     throw new TypeError(_composeTypeErrorMessage({
@@ -87,6 +130,14 @@ export function validatePublicKey ({ value, fieldName = '' }) {
   }
 }
 
+/**
+ * Validate value to be a secret key.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be a valid secret key.
+ */
 export function validateSecretKey ({ value, fieldName = '' }) {
   if (!Keypair.isValidSecretKey(value)) {
     throw new TypeError(_composeTypeErrorMessage({
@@ -97,6 +148,14 @@ export function validateSecretKey ({ value, fieldName = '' }) {
   }
 }
 
+/**
+ * Validate value to be a balance key.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be a valid balance key.
+ */
 export function validateBalanceKey ({ value, fieldName = '' }) {
   if (!Keypair.isValidBalanceKey(value)) {
     throw new TypeError(_composeTypeErrorMessage({
@@ -107,8 +166,19 @@ export function validateBalanceKey ({ value, fieldName = '' }) {
   }
 }
 
-// fields validators
+/** Fields validators */
 
+/**
+ * Validate value to be a int64 amount.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ * @param {boolean} [allowZero] Is zero amount allowed.
+ * @param {number} [min] The minimum amount.
+ * @param {number} [max] The maximum amount.
+ *
+ * @throws {TypeError} Value should be a valid int64 amount.
+ */
 export function validateAmount ({
   value,
   fieldName = '',
@@ -126,6 +196,14 @@ export function validateAmount ({
   }
 }
 
+/**
+ * Validate value to be an operation subject.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be a valid operation subject.
+ */
 export function validateSubject ({ value, fieldName = '' }) {
   if (!BaseOperation.isValidSubject(value)) {
     throw new TypeError(_composeErrorMessage({
@@ -136,6 +214,14 @@ export function validateSubject ({ value, fieldName = '' }) {
   }
 }
 
+/**
+ * Validate value to be an asset code.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be a valid asset code.
+ */
 export function validateAssetCode ({ value, fieldName = '' }) {
   if (!BaseOperation.isValidAsset(value)) {
     throw new TypeError(_composeErrorMessage({
@@ -146,6 +232,14 @@ export function validateAssetCode ({ value, fieldName = '' }) {
   }
 }
 
+/**
+ * Validate value to be a `xdr.FeeType` instance.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be a `xdr.FeeType` instance.
+ */
 export function validateFeeType ({ value, fieldName = '' }) {
   validateUndefined({ value, fieldName })
 
@@ -158,6 +252,14 @@ export function validateFeeType ({ value, fieldName = '' }) {
   }
 }
 
+/**
+ * Validate value to be non-empty object with snake_cased keys.
+ *
+ * @param {any} value The value to validate.
+ * @param {string} [fieldName] The name of the field, containing value.
+ *
+ * @throws {TypeError} Value should be non-empty object with snake_cased keys.
+ */
 export function validateCreatorDetails ({ value, fieldName = '' }) {
   const isCreatorDetailsValid = _isObject(value) &&
     !_isEmpty(value) && _isObjectKeysSnakeCased(value)
@@ -171,7 +273,7 @@ export function validateCreatorDetails ({ value, fieldName = '' }) {
   }
 }
 
-// helpers
+/** @private Helpers */
 
 function _composeTypeErrorMessage ({ value, expectedType, fieldName = '' }) {
   return _composeErrorMessage({
