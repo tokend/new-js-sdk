@@ -5,7 +5,7 @@ import { BaseOperation } from './base_operation'
 
 export class ManagePollBuilder {
   /**
-   * Create new signer for source account.
+   * Close existing poll with a result.
    * @param {object} opts
    * @param {string} opts.pollID - ID of poll to voting in
    * @param {number} opts.result - 0 or 1, see PollResult
@@ -29,6 +29,41 @@ export class ManagePollBuilder {
     }
 
     return this._managePoll(opts, new xdr.ManagePollOpData.close(new xdr.ClosePollData(attrs)))
+  }
+
+  /**
+   * Cancels existing poll.
+   * @param {object} opts
+   * @param {string} opts.pollID - ID of poll to voting in
+   * @param {string} [opts.source] - The source account. Defaults to the transaction's source account.
+   * @returns {xdr.ManagePollOp}
+   */
+  static cancelPoll (opts) {
+    return this._managePoll(opts,
+      new xdr.ManagePollOpData.cancel(new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())))
+  }
+
+  /**
+   * Updates poll end time.
+   * @param {object} opts
+   * @param {string} opts.pollID - ID of poll to voting in
+   * @param {string} opts.newEndTime - end time to set
+   * @param {string} [opts.source] - The source account. Defaults to the transaction's source account.
+   * @returns {xdr.ManagePollOp}
+   */
+  static updatePollEndTime (opts) {
+    if (isUndefined(opts.newEndTime)) {
+      throw new Error('opts.newEndTime is undefined')
+    }
+    let endTime = UnsignedHyper.fromString(opts.newEndTime)
+
+    let attrs = {
+      newEndTime: endTime,
+      ext: new xdr.UpdatePollEndTimeDataExt(xdr.LedgerVersion.emptyVersion())
+    }
+    return this._managePoll(opts,
+      new xdr.ManagePollOpData
+        .updateEndTime(new xdr.UpdatePollEndTimeData(attrs)))
   }
 
   static _managePoll (opts, data) {
@@ -55,6 +90,12 @@ export class ManagePollBuilder {
         let closeData = attrs.data().closePollData()
         result.result = closeData.result().value
         result.details = JSON.parse(closeData.details())
+        break
+      case xdr.ManagePollAction.cancel():
+        break
+      case xdr.ManagePollAction.updateEndTime():
+        let updateEndTimeData = attrs.data().updateTimeData()
+        result.newEndTime = updateEndTimeData.newEndTime().toString()
         break
       default:
         throw new Error('Unexpected manage poll action')
