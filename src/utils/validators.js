@@ -1,3 +1,12 @@
+import _isUndefined from 'lodash/isUndefined'
+import _isArray from 'lodash/isArray'
+import _isEmpty from 'lodash/isEmpty'
+import _isObject from 'lodash/isObject'
+
+import { BaseOperation } from '../base/operations/base_operation'
+import { Keypair } from '../base/keypair'
+import { default as xdr } from '../base/generated/xdr_generated'
+
 /**
  * Example of use:
  *
@@ -15,16 +24,8 @@
  * ```
  */
 
-import _isUndefined from 'lodash/isUndefined'
-import _isArray from 'lodash/isArray'
-import _isEmpty from 'lodash/isEmpty'
-import _isObject from 'lodash/isObject'
-
-import { BaseOperation } from '../base/operations/base_operation'
-import { Keypair } from '../base/keypair'
-import { default as xdr } from '../base/generated/xdr_generated'
-
 // common types validators
+
 export function validateUndefined ({ value, fieldName = '' }) {
   if (_isUndefined(value)) {
     throw new TypeError(_composeErrorMessage({
@@ -68,12 +69,14 @@ export function validateString ({ value, fieldName = '', minLength, maxLength })
     throw new TypeError(_composeErrorMessage({
       value,
       statement: 'must be a valid string',
+      params: { minLength, maxLength },
       fieldName
     }))
   }
 }
 
 // keys validators
+
 export function validatePublicKey ({ value, fieldName = '' }) {
   if (!Keypair.isValidPublicKey(value)) {
     throw new TypeError(_composeTypeErrorMessage({
@@ -105,17 +108,19 @@ export function validateBalanceKey ({ value, fieldName = '' }) {
 }
 
 // fields validators
+
 export function validateAmount ({
   value,
   fieldName = '',
   allowZero = false,
-  max = undefined,
-  min = undefined
+  max,
+  min
 }) {
   if (!BaseOperation.isValidAmount(value, allowZero, max, min)) {
     throw new TypeError(_composeErrorMessage({
       value,
-      statement: `should be a valid int64 amount`,
+      statement: 'should be a valid int64 amount',
+      params: { min, max },
       fieldName
     }))
   }
@@ -125,7 +130,7 @@ export function validateSubject ({ value, fieldName = '' }) {
   if (!BaseOperation.isValidSubject(value)) {
     throw new TypeError(_composeErrorMessage({
       value,
-      statement: `must be of type String 0-256 long`,
+      statement: 'must be of type String 0-256 long',
       fieldName
     }))
   }
@@ -135,7 +140,7 @@ export function validateAssetCode ({ value, fieldName = '' }) {
   if (!BaseOperation.isValidAsset(value)) {
     throw new TypeError(_composeErrorMessage({
       value,
-      statement: `must be valid asset code`,
+      statement: 'must be valid asset code of type String 1-16 long',
       fieldName
     }))
   }
@@ -167,6 +172,7 @@ export function validateCreatorDetails ({ value, fieldName = '' }) {
 }
 
 // helpers
+
 function _composeTypeErrorMessage ({ value, expectedType, fieldName = '' }) {
   return _composeErrorMessage({
     value,
@@ -175,11 +181,27 @@ function _composeTypeErrorMessage ({ value, expectedType, fieldName = '' }) {
   })
 }
 
-function _composeErrorMessage ({ value, statement, fieldName = '' }) {
+function _composeErrorMessage ({ value, statement, params, fieldName = '' }) {
+  const paramsString = _composeParamsString(params)
+  const errorStatement = paramsString
+    ? `${statement} with ${paramsString}`
+    : statement
+
   if (fieldName) {
-    return `${fieldName} ${statement}, got ${typeof value}: ${value}`
+    return `${fieldName} ${errorStatement}, got ${typeof value}: ${value}`
   } else {
-    return `${value} ${statement}, got ${typeof value}`
+    return `Value ${errorStatement}, got ${typeof value}: ${value}`
+  }
+}
+
+function _composeParamsString (params) {
+  if (params) {
+    return Object.keys(params)
+      .filter(key => !_isUndefined(params[key]))
+      .map(key => `${key} = ${params[key]}`)
+      .join(', ')
+  } else {
+    return ''
   }
 }
 
