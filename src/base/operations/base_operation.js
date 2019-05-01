@@ -35,7 +35,7 @@ export class BaseOperation {
   }
 
   static isValidAsset (value) {
-    return BaseOperation.isValidString(value, 1, 16)
+    return BaseOperation.isValidString(value, 1, 16) && !value.includes(' ')
   }
 
   static isValidString (value, minSize, maxSize) {

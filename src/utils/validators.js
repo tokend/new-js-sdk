@@ -20,12 +20,11 @@ import _isArray from 'lodash/isArray'
 import _isEmpty from 'lodash/isEmpty'
 import _isObject from 'lodash/isObject'
 
-import { BaseOperation } from './base_operation'
-import { Keypair } from '../keypair'
+import { BaseOperation } from '../base/operations/base_operation'
+import { Keypair } from '../base/keypair'
+import { default as xdr } from '../base/generated/xdr_generated'
 
-import { default as xdr } from './base/generated/xdr_generated'
-
-// common types
+// common types validators
 export function validateUndefined ({ value, fieldName = '' }) {
   if (_isUndefined(value)) {
     throw new TypeError(_composeErrorMessage({
@@ -38,7 +37,7 @@ export function validateUndefined ({ value, fieldName = '' }) {
 
 export function validateNaN ({ value, fieldName = '' }) {
   if (Number.isNaN(Number(value))) {
-    throw new TypeError(_composeTypeErrorMessage({
+    throw new TypeError(_composeErrorMessage({
       value,
       statement: 'should be not NaN',
       fieldName
@@ -74,7 +73,7 @@ export function validateString ({ value, fieldName = '', minLength, maxLength })
   }
 }
 
-// keys
+// keys validators
 export function validatePublicKey ({ value, fieldName = '' }) {
   if (!Keypair.isValidPublicKey(value)) {
     throw new TypeError(_composeTypeErrorMessage({
@@ -105,7 +104,7 @@ export function validateBalanceKey ({ value, fieldName = '' }) {
   }
 }
 
-// fields
+// fields validators
 export function validateAmount ({
   value,
   fieldName = '',
@@ -167,7 +166,7 @@ export function validateCreatorDetails ({ value, fieldName = '' }) {
   }
 }
 
-// error messages
+// helpers
 function _composeTypeErrorMessage ({ value, expectedType, fieldName = '' }) {
   return _composeErrorMessage({
     value,
