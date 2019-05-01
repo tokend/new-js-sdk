@@ -24,21 +24,26 @@ describe('Factors manager', () => {
 
   describe('method', () => {
     describe('verifyPasswordFactor', () => {
-      const mockedWallet = new Wallet(
-        'foo@bar.com',
-        'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-        'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-        'some-wallet-id'
-      )
-
-      beforeEach(() => {
-        factorsManagerInstance._apiCaller.useWallet(mockedWallet)
-      })
-
       it('calls _apiCaller.put to proper endpoint with derived error attributes', async () => {
+        sandbox.stub(factorsManagerInstance._apiCaller, 'wallet').get(() => {
+          return {
+            id: 'some-wallet-id',
+            email: 'foo@bar.com',
+            accountId: 'SOME_ACCOUNT_ID'
+          }
+        })
+
         sandbox.stub(factorsManagerInstance, '_getKdfParams')
           .resolves({ data: 'some-kdf-params' })
-        sandbox.stub(Wallet, 'fromEncrypted').returns(mockedWallet)
+
+        sandbox.stub(Wallet, 'fromEncrypted').returns(
+          new Wallet(
+            'foo@bar.com',
+            'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
+            'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+            'some-wallet-id'
+          )
+        )
         sandbox.stub(factorsManagerInstance._apiCaller, 'put')
           .resolves()
 
@@ -68,7 +73,7 @@ describe('Factors manager', () => {
           salt: 'some-salt',
           email: 'foo@bar.com',
           password: 'qwe123',
-          accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
+          accountId: 'SOME_ACCOUNT_ID'
         })
         expect(factorsManagerInstance._apiCaller.put)
           .to.have.been.calledOnceWith(

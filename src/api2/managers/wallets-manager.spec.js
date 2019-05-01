@@ -36,7 +36,7 @@ describe('Wallets manager', () => {
 
   describe('method', () => {
     describe('getKdfParams', () => {
-      it('calls /kdf endpoint with proper query and returns KDF params', async () => {
+      it('returns KDF params calling _apiCaller.get with correct params', async () => {
         const result = await walletsManagerInstance
           .getKdfParams('foo@bar.com', true)
 
@@ -57,7 +57,7 @@ describe('Wallets manager', () => {
     })
 
     describe('get', () => {
-      it('returns wallet by provided credentials', async () => {
+      it('returns decrypted wallet received from response of _apiCaller.get method called with derived wallet ID', async () => {
         sandbox.stub(Wallet, 'deriveId').returns('some-wallet-id')
         walletsManagerInstance._apiCaller.get
           .withArgs('/wallets/some-wallet-id')
@@ -112,7 +112,7 @@ describe('Wallets manager', () => {
     })
 
     describe('create', () => {
-      it('creates and returns new wallet', async () => {
+      it('returns new wallet, created by calling _apiCaller.post method with generated params', async () => {
         sandbox.stub(Wallet, 'generate').returns(
           new Wallet(
             'foo@bar.com',
@@ -143,7 +143,7 @@ describe('Wallets manager', () => {
     })
 
     describe('verifyEmail', () => {
-      it('performs email verification request with correct params', async () => {
+      it('calls _apiCaller.put with derived verification params', async () => {
         const payload = (Buffer.from(
           JSON.stringify({
             type: 1,
@@ -173,7 +173,7 @@ describe('Wallets manager', () => {
     })
 
     describe('resendEmail', () => {
-      it('performs POST request with correct params', async () => {
+      it('calls _apiCaller.post with derived verification wallet ID', async () => {
         sandbox.stub(walletsManagerInstance._apiCaller, 'post')
           .withArgs('/wallets/some-wallet-id/verification')
           .resolves()
@@ -188,19 +188,15 @@ describe('Wallets manager', () => {
     })
 
     describe('recovery', () => {
-      const mockedWallet = new Wallet(
-        'foo@bar.com',
-        'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-        'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-        'some-wallet-id'
-      )
-
-      beforeEach(() => {
-        walletsManagerInstance._apiCaller.useWallet(mockedWallet)
-      })
-
-      it('creates and returns new wallet using recovery seed', async () => {
-        sandbox.stub(Wallet, 'generate').returns(mockedWallet)
+      it('changes user\'s main wallet by calling _apiCaller.putWithSignature with derived params', async () => {
+        sandbox.stub(Wallet, 'generate').returns(
+          new Wallet(
+            'foo@bar.com',
+            'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
+            'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+            'some-wallet-id'
+          )
+        )
         sandbox.stub(walletsManagerInstance, '_getAccountIdByRecoveryId')
           .resolves('SOME_ACCOUNT_ID')
 
@@ -239,16 +235,16 @@ describe('Wallets manager', () => {
         'some-wallet-id'
       )
 
-      beforeEach(() => {
-        walletsManagerInstance._apiCaller.useWallet(mockedWallet)
-      })
-
-      it('creates and returns new wallet using provided password', async () => {
+      it('changes user\'s main wallet by calling _apiCaller.putWithSignature with derived params', async () => {
+        sandbox.stub(walletsManagerInstance._apiCaller, 'wallet')
+          .get(() => mockedWallet)
         sandbox.stub(Wallet, 'generate').returns(mockedWallet)
+
         sandbox.stub(
           walletsManagerInstance._signersManager,
           'createChangeSignerTransaction'
         ).resolves('SOME_TX_ENVELOPE')
+
         sandbox.stub(walletsManagerInstance._apiCaller, 'putWithSignature')
           .resolves()
 
