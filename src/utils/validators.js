@@ -272,7 +272,7 @@ export function validateFeeType ({ value, fieldName = '' }) {
  */
 export function validateCreatorDetails ({ value, fieldName = '' }) {
   const isCreatorDetailsValid = _isObject(value) &&
-    !_isEmpty(value) && isObjectKeysSnakeCased(value)
+    !_isEmpty(value) && isObjectKeysSnakeCasedDeep(value)
 
   if (!isCreatorDetailsValid) {
     throw new TypeError(composeTypeErrorMessage({
@@ -317,17 +317,14 @@ function composeParamsString (params) {
   }
 }
 
-function isObjectKeysSnakeCased (object) {
-  return !getObjectKeysDeep(object)
-    .some(item => item.match(/[A-Z | -]/))
-}
+function isObjectKeysSnakeCasedDeep (object) {
+  let result = true
 
-function getObjectKeysDeep (object) {
-  let result = Object.keys(object)
-
-  for (const key of Object.keys(object)) {
-    if (_isObject(object[key])) {
-      result = result.concat(getObjectKeysDeep(object[key]))
+  for (const [key, value] of Object.entries(object)) {
+    if (_isObject(value)) {
+      result &= isObjectKeysSnakeCasedDeep(value)
+    } else {
+      result &= /^[a-z_\d]+$/.test(key)
     }
   }
 
