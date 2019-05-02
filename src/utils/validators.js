@@ -11,10 +11,10 @@ import { default as xdr } from '../base/generated/xdr_generated'
  * Validators for encapsulating types checks and throwing errors.
  *
  * @example
- * import { validateUndefined } from './validators'
+ * import { validateNotUndefined } from './validators'
  *
  * function someFunction (someParam) {
- *   validateUndefined({
+ *   validateNotUndefined({
  *     value: someParam,
  *     fieldName: 'Some field'
  *   })
@@ -33,7 +33,7 @@ import { default as xdr } from '../base/generated/xdr_generated'
  *
  * @throws {TypeError} Value should be defined.
  */
-export function validateUndefined ({ value, fieldName = '' }) {
+export function validateNotUndefined ({ value, fieldName = '' }) {
   if (_isUndefined(value)) {
     throw new TypeError(_composeErrorMessage({
       value,
@@ -51,7 +51,7 @@ export function validateUndefined ({ value, fieldName = '' }) {
  *
  * @throws {TypeError} Value should be not NaN.
  */
-export function validateNaN ({ value, fieldName = '' }) {
+export function validateNotNaN ({ value, fieldName = '' }) {
   if (Number.isNaN(Number(value))) {
     throw new TypeError(_composeErrorMessage({
       value,
@@ -241,8 +241,6 @@ export function validateAssetCode ({ value, fieldName = '' }) {
  * @throws {TypeError} Value should be a `xdr.FeeType` instance.
  */
 export function validateFeeType ({ value, fieldName = '' }) {
-  validateUndefined({ value, fieldName })
-
   if (!(value instanceof xdr.FeeType)) {
     throw new TypeError(_composeTypeErrorMessage({
       value,

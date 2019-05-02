@@ -1,6 +1,6 @@
 import {
-  validateUndefined,
-  validateNaN,
+  validateNotUndefined,
+  validateNotNaN,
   validateArray,
   validateString,
   validatePublicKey,
@@ -15,29 +15,29 @@ import {
 
 import { default as xdr } from '../base/generated/xdr_generated'
 
-describe('validateUndefined', () => {
+describe('validateNotUndefined', () => {
   it('should not throw error for defined values', () => {
     const validValues = [10, 'some', '', {}, [], false, 0, null]
 
     expect(() => {
       for (const value of validValues) {
-        validateUndefined({ value })
+        validateNotUndefined({ value })
       }
     }).to.not.throw()
   })
 
   it('should throw TypeError for undefined values', () => {
-    expect(() => validateUndefined()).to.throw(TypeError)
-    expect(() => validateUndefined({ value: undefined }))
+    expect(() => validateNotUndefined()).to.throw(TypeError)
+    expect(() => validateNotUndefined({ value: undefined }))
       .to.throw(TypeError)
 
     let notDefinedVar
-    expect(() => validateUndefined({ value: notDefinedVar }))
+    expect(() => validateNotUndefined({ value: notDefinedVar }))
       .to.throw(TypeError)
   })
 })
 
-describe('validateNaN', () => {
+describe('validateNotNaN', () => {
   it('should not throw error for not NaN numbers', () => {
     const validValues = [
       10,
@@ -56,7 +56,7 @@ describe('validateNaN', () => {
 
     expect(() => {
       for (const value of validValues) {
-        validateNaN({ value })
+        validateNotNaN({ value })
       }
     }).to.not.throw()
   })
@@ -73,7 +73,7 @@ describe('validateNaN', () => {
     ]
 
     for (const value of invalidValues) {
-      expect(() => validateNaN({ value })).to.throw(TypeError)
+      expect(() => validateNotNaN({ value })).to.throw(TypeError)
     }
   })
 })
