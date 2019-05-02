@@ -1,6 +1,6 @@
-// revision: d29f88b246ed9040ab1d7b072a435108ae496701
-// branch:   feature/poll_update_cancel
-// Automatically generated on 2019-04-30T08:54:34+00:00
+// revision: 73064c40ce0bf38821038aa479ad7829c834b2b3
+// branch:   master
+// Automatically generated on 2019-05-02T11:17:44+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1785,7 +1785,8 @@ xdr.struct("ScpQuorumSet", [
 //   enum LedgerVersion {
 //   	EMPTY_VERSION = 0,
 //   	CHECK_SET_FEE_ACCOUNT_EXISTING = 1,
-//   	FIX_PAYMENT_STATS = 2
+//   	FIX_PAYMENT_STATS = 2,
+//   	ADD_INVEST_FEE = 3
 //   };
 //
 // ===========================================================================
@@ -1793,6 +1794,7 @@ xdr.enum("LedgerVersion", {
   emptyVersion: 0,
   checkSetFeeAccountExisting: 1,
   fixPaymentStat: 2,
+  addInvestFee: 3,
 });
 
 // === xdr source ============================================================
