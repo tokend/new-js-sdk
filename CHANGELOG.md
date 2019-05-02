@@ -13,6 +13,9 @@ for further information about branching and tagging conventions.
 * Unit tests for for `CancelPollOp`, `UpdatePollEndTime`
 * Integration tests for `CancelPollOp`, `UpdatePollEndTime`
 
+### Changed
+* Use XDR revision 3.2.0
+
 ## [1.6.0-x.0] - 2019-04-26
 ### Added
 - `DELETE` method for ApiCaller
