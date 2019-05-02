@@ -7,12 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## Unreleased
+## [Unreleased]
 ### Added
 - Manage account specific rule builder
 
 ### Changed
 - XDR - https://github.com/tokend/xdr/pull/56/files
+
+## [1.6.0-rc.0] - 2019-05-02
+### Added
+- Builders for `CancelPollOp`, `UpdatePollEndTime`
+- Unit tests for for `CancelPollOp`, `UpdatePollEndTime`
+- Integration tests for `CancelPollOp`, `UpdatePollEndTime`
+
+### Changed
+- Use XDR version 3.2.0
 
 ## [1.6.0-x.0] - 2019-04-26
 ### Added
@@ -80,7 +89,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.6.0-x.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.6.0-rc.0...HEAD
+[1.6.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0-x.0...1.6.0-rc.0
 [1.6.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.5.0...1.6.0-x.0
 [1.5.0]: https://github.com/tokend/new-js-sdk/compare/1.5.0-rc.1...1.5.0
 [1.5.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.5.0-rc.0...1.5.0-rc.1
