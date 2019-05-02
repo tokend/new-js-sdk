@@ -1,6 +1,6 @@
-// revision: 96983557e5b06c6cc8679ac316c0d5fd6ace094f
+// revision: 6da80385aa81c2db787778b9ca9908385df3d340
 // branch:   feature/whitelist_management
-// Automatically generated on 2019-04-26T16:30:20+00:00
+// Automatically generated on 2019-05-02T14:52:20+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -4232,7 +4232,8 @@ xdr.union("SignerRuleResource", {
 //       BIND = 12,
 //       UPDATE_MAX_ISSUANCE = 13,
 //       CHECK = 14,
-//       CLOSE = 15
+//       CLOSE = 15,
+//       UPDATE_END_TIME = 16
 //   };
 //
 // ===========================================================================
@@ -4252,6 +4253,7 @@ xdr.enum("SignerRuleAction", {
   updateMaxIssuance: 13,
   check: 14,
   close: 15,
+  updateEndTime: 16,
 });
 
 // === xdr source ============================================================
@@ -4306,14 +4308,16 @@ xdr.struct("LicenseEntry", [
 //
 //   enum ManagePollAction
 //   {
-//       CLOSE = 0
-//   //    UPDATE_END_TIME = 1,
-//   //    REMOVE = 2,
+//       CLOSE = 0,
+//       UPDATE_END_TIME = 1,
+//       CANCEL = 2
 //   };
 //
 // ===========================================================================
 xdr.enum("ManagePollAction", {
   close: 0,
+  updateEndTime: 1,
+  cancel: 2,
 });
 
 // === xdr source ============================================================
@@ -4421,10 +4425,10 @@ xdr.struct("UpdatePollEndTimeData", [
 //       {
 //       case CLOSE:
 //           ClosePollData closePollData;
-//   //    case UPDATE_END_TIME:
-//   //        UpdatePollEndTimeData updateTimeData;
-//   //    case REMOVE:
-//   //        EmptyExt ext;
+//       case UPDATE_END_TIME:
+//           UpdatePollEndTimeData updateTimeData;
+//       case CANCEL:
+//           EmptyExt ext;
 //       }
 //
 // ===========================================================================
@@ -4433,9 +4437,13 @@ xdr.union("ManagePollOpData", {
   switchName: "action",
   switches: [
     ["close", "closePollData"],
+    ["updateEndTime", "updateTimeData"],
+    ["cancel", "ext"],
   ],
   arms: {
     closePollData: xdr.lookup("ClosePollData"),
+    updateTimeData: xdr.lookup("UpdatePollEndTimeData"),
+    ext: xdr.lookup("EmptyExt"),
   },
 });
 
@@ -4470,10 +4478,10 @@ xdr.union("ManagePollOpExt", {
 //       {
 //       case CLOSE:
 //           ClosePollData closePollData;
-//   //    case UPDATE_END_TIME:
-//   //        UpdatePollEndTimeData updateTimeData;
-//   //    case REMOVE:
-//   //        EmptyExt ext;
+//       case UPDATE_END_TIME:
+//           UpdatePollEndTimeData updateTimeData;
+//       case CANCEL:
+//           EmptyExt ext;
 //       }
 //       data;
 //   
@@ -4506,7 +4514,11 @@ xdr.struct("ManagePollOp", [
 //       //: Not allowed to close poll which
 //       POLL_NOT_READY = -2,
 //       //: Only result provider is allowed to close poll
-//       NOT_AUTHORIZED_TO_CLOSE_POLL = -3
+//       NOT_AUTHORIZED_TO_CLOSE_POLL = -3,
+//       //: End time is in the past
+//       INVALID_END_TIME = -4,
+//       //: Only poll owner and admin are allowed to cancel poll and update end time
+//       NOT_AUTHORIZED = -5
 //   };
 //
 // ===========================================================================
@@ -4515,6 +4527,8 @@ xdr.enum("ManagePollResultCode", {
   notFound: -1,
   pollNotReady: -2,
   notAuthorizedToClosePoll: -3,
+  invalidEndTime: -4,
+  notAuthorized: -5,
 });
 
 // === xdr source ============================================================
@@ -6667,9 +6681,9 @@ xdr.union("CreateAccountSaleRuleDataExt", {
 //
 //   struct CreateAccountSaleRuleData
 //   {
-//       //: Value from enum that can be applied to `resource`
+//       //: Certain account for which rule is applied, null means rule is global
 //       AccountID* accountID;
-//       //: True if such `action` on such `resource` is prohibited, otherwise allows
+//       //: True if such rule is deniable, otherwise allows
 //       bool forbids;
 //   
 //       //: reserved for future use
@@ -6694,6 +6708,7 @@ xdr.struct("CreateAccountSaleRuleData", [
 //       case EMPTY_VERSION:
 //           void;
 //       case ADD_SALE_WHITELISTS:
+//           //: array of rules which determine sale participation
 //           CreateAccountSaleRuleData saleRules<>;
 //       }
 //
@@ -6741,12 +6756,14 @@ xdr.union("SaleCreationRequestExt", {
 //       uint32 sequenceNumber;
 //       //: Array of quote assets that are available for participation
 //       SaleCreationRequestQuoteAsset quoteAssets<100>;
-//       //: Reserved for future use
+//       //: Use `EMPTY_VERSION` to allow anyone participate in sale,
+//       //: use `ADD_SALE_WHITELISTS` to specify sale participation rules
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
 //       case ADD_SALE_WHITELISTS:
+//           //: array of rules which determine sale participation
 //           CreateAccountSaleRuleData saleRules<>;
 //       }
 //       ext;
@@ -7601,11 +7618,11 @@ xdr.union("CreateAccountSpecificRuleDataExt", {
 //
 //   struct CreateAccountSpecificRuleData
 //   {
-//       //: Resource is used to specify an entity (for some - with properties) that can be managed through operations
+//       //: ledgerKey is used to specify an entity with primary key that can be used through operations
 //       LedgerKey ledgerKey;
-//       //: Value from enum that can be applied to `resource`
+//       //: Certain account for which rule is applied, null means rule is global
 //       AccountID* accountID;
-//       //: True if such `action` on such `resource` is prohibited, otherwise allows
+//       //: True if such rule is deniable, otherwise allows
 //       bool forbids;
 //   
 //       //: reserved for future use
@@ -7647,7 +7664,7 @@ xdr.union("RemoveAccountSpecificRuleDataExt", {
 //
 //   struct RemoveAccountSpecificRuleData
 //   {
-//       //: Identifier of existing account rule
+//       //: Identifier of existing account specific rule
 //       uint64 ruleID;
 //   
 //       //: reserved for future use
@@ -7711,7 +7728,7 @@ xdr.union("ManageAccountSpecificRuleOpExt", {
 //
 //   struct ManageAccountSpecificRuleOp
 //   {
-//       //: data is used to pass one of `ManageAccountRuleAction` with required params
+//       //: data is used to pass one of `ManageAccountSpecificRuleAction` with required params
 //       union switch (ManageAccountSpecificRuleAction action)
 //       {
 //       case CREATE:
@@ -7739,17 +7756,28 @@ xdr.struct("ManageAccountSpecificRuleOp", [
 //
 //   enum ManageAccountSpecificRuleResultCode
 //   {
-//       //: Means that specified action in `data` of ManageAccountRuleOp was successfully performed
+//       //: Means that specified action in `data` of ManageAccountSpecificRuleOp was successfully performed
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
-//       //: There is no account rule with such id
+//       //: There is no rule with such id
 //       NOT_FOUND = -1,
+//       //: There is no sale with such id
 //       SALE_NOT_FOUND = -2,
+//       //: Only entry (sale) owner or admin can perform such operation
 //       NOT_AUTHORIZED = -3,
+//       //: Not allowed to create duplicated rules
 //       ALREADY_EXISTS = -4,
+//       //: Not allowed to create rule with the same accountID and ledger key, but different forbids value
 //       REVERSED_ALREADY_EXISTS = -5,
-//       ENTRY_TYPE_NOT_SUPPORTED = -6
+//       //: Not allowed to use such entry type in ledger key
+//       ENTRY_TYPE_NOT_SUPPORTED = -6,
+//       //: There is no account rule with such id
+//       ACCOUNT_NOT_FOUND = -7,
+//       //: Version of entry does not allow to add specific rules
+//       SPECIFIC_RULE_NOT_SUPPORTED = -8,
+//       //: Not allowed to remove global rule
+//       REMOVING_GLOBAL_RULE_FORBIDDEN = -9
 //   };
 //
 // ===========================================================================
@@ -7761,6 +7789,9 @@ xdr.enum("ManageAccountSpecificRuleResultCode", {
   alreadyExist: -4,
   reversedAlreadyExist: -5,
   entryTypeNotSupported: -6,
+  accountNotFound: -7,
+  specificRuleNotSupported: -8,
+  removingGlobalRuleForbidden: -9,
 });
 
 // === xdr source ============================================================
@@ -8493,8 +8524,8 @@ xdr.struct("ManageOfferOp", [
 //       REQUIRES_VERIFICATION = -27,
 //       //: Precision set in the system and precision of the amount are mismatched
 //       INCORRECT_AMOUNT_PRECISION = -28,
-//       NO_SPECIFIC_RULE_TO_PARTICIPATE = -29,
-//       SPECIFIC_RULE_FORBIDS = -30
+//       //: Sale specific rule forbids to participate in sale for source account
+//       SPECIFIC_RULE_FORBIDS = -29
 //   };
 //
 // ===========================================================================
@@ -8528,8 +8559,7 @@ xdr.enum("ManageOfferResultCode", {
   sourceBalanceLockOverflow: -26,
   requiresVerification: -27,
   incorrectAmountPrecision: -28,
-  noSpecificRuleToParticipate: -29,
-  specificRuleForbid: -30,
+  specificRuleForbid: -29,
 });
 
 // === xdr source ============================================================
@@ -9331,7 +9361,8 @@ xdr.union("AccountRuleResource", {
 //       CHECK = 14,
 //       CANCEL = 15,
 //       CLOSE = 16,
-//       REMOVE = 17
+//       REMOVE = 17,
+//       UPDATE_END_TIME = 18
 //   };
 //
 // ===========================================================================
@@ -9353,6 +9384,7 @@ xdr.enum("AccountRuleAction", {
   cancel: 15,
   close: 16,
   remove: 17,
+  updateEndTime: 18,
 });
 
 // === xdr source ============================================================
@@ -12353,7 +12385,7 @@ xdr.union("ManageVoteResult", {
 //   {
 //       //: Create new balance
 //       CREATE = 0,
-//       //: Delete existing balance by ID
+//       //: Delete existing balance by ID. Is reserved and not implemented yet.
 //       DELETE_BALANCE = 1,
 //       //: Ensures that the balance will not be created if the balance of the provided asset exists and is attached to the provided account
 //       CREATE_UNIQUE = 2
@@ -12389,7 +12421,7 @@ xdr.union("ManageBalanceOpExt", {
 //
 //   struct ManageBalanceOp
 //   {
-//       //: Defines a ManageBalanceAction to be performed
+//       //: Defines a ManageBalanceAction to be performed. `DELETE_BALANCE` is reserved and not implemented yet.
 //       ManageBalanceAction action;
 //       //: Defines an account whose balance will be managed
 //       AccountID destination;
@@ -14354,6 +14386,7 @@ xdr.struct("SaleQuoteAsset", [
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
+//           void;
 //       case ADD_SALE_WHITELISTS:
 //           void;
 //       }
@@ -14394,6 +14427,7 @@ xdr.union("SaleEntryExt", {
 //   	union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
+//           void;
 //       case ADD_SALE_WHITELISTS:
 //           void;
 //       }
@@ -14960,11 +14994,13 @@ xdr.struct("ReferenceEntry", [
 
 // === xdr source ============================================================
 //
-//   enum LedgerVersion {
-//   	EMPTY_VERSION = 0,
-//   	CHECK_SET_FEE_ACCOUNT_EXISTING = 1,
-//   	FIX_PAYMENT_STATS = 2,
-//   	ADD_SALE_WHITELISTS = 3
+//   enum LedgerVersion
+//   {
+//       EMPTY_VERSION = 0,
+//       CHECK_SET_FEE_ACCOUNT_EXISTING = 1,
+//       FIX_PAYMENT_STATS = 2,
+//       ADD_INVEST_FEE = 3,
+//       ADD_SALE_WHITELISTS = 4
 //   };
 //
 // ===========================================================================
@@ -14972,7 +15008,8 @@ xdr.enum("LedgerVersion", {
   emptyVersion: 0,
   checkSetFeeAccountExisting: 1,
   fixPaymentStat: 2,
-  addSaleWhitelist: 3,
+  addInvestFee: 3,
+  addSaleWhitelist: 4,
 });
 
 // === xdr source ============================================================
@@ -18003,10 +18040,16 @@ xdr.struct("CreateSaleCreationRequestOp", [
 //       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -15,
 //       //: Auto review failed due to a particular reason (e.g., hard cap exceeded either max issuance amount or preissued amount of an asset)
 //       AUTO_REVIEW_FAILED = -16,
+//       //: Not allowed to pass more account sale rule than allowed by `max_sale_rules_number` key value
 //       EXCEEDED_MAX_RULES_SIZE = -17,
+//       //: Not allowed to pass rules with the same ledger key and null accountID
 //       GLOBAL_SPECIFIC_RULE_DUPLICATION = -18,
-//       ACCOUNT_SPECIFIC_RULE_DUPLICATION = -19
-//   
+//       //: Not allowed to pass rules with the same accountID and ledger key
+//       ACCOUNT_SPECIFIC_RULE_DUPLICATION = -19,
+//       //: Not allowed to pass rules with out global one (`accountID == null`)
+//       GLOBAL_SPECIFIC_RULE_REQUIRED = -20,
+//       //: There is no account with id specified in sale rules
+//       ACCOUNT_NOT_FOUND = -21
 //   };
 //
 // ===========================================================================
@@ -18031,6 +18074,8 @@ xdr.enum("CreateSaleCreationRequestResultCode", {
   exceededMaxRulesSize: -17,
   globalSpecificRuleDuplication: -18,
   accountSpecificRuleDuplication: -19,
+  globalSpecificRuleRequired: -20,
+  accountNotFound: -21,
 });
 
 // === xdr source ============================================================
