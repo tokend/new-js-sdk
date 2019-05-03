@@ -1,13 +1,11 @@
 import {
   validateNotUndefined,
-  validateNotNaN,
   validateArray,
   validateString,
   validatePublicKey,
   validateSecretKey,
   validateBalanceKey,
   validateAmount,
-  validateSubject,
   validateAssetCode,
   validateFeeType,
   validateCreatorDetails
@@ -34,47 +32,6 @@ describe('validateNotUndefined', () => {
     let notDefinedVar
     expect(() => validateNotUndefined({ value: notDefinedVar }))
       .to.throw(TypeError)
-  })
-})
-
-describe('validateNotNaN', () => {
-  it('should not throw error for not NaN numbers', () => {
-    const validValues = [
-      10,
-      -60.23,
-      0,
-      '0',
-      '26.35',
-      '5e3',
-      '000005',
-      Infinity,
-      '',
-      [],
-      null,
-      new Date()
-    ]
-
-    expect(() => {
-      for (const value of validValues) {
-        validateNotNaN({ value })
-      }
-    }).to.not.throw()
-  })
-
-  it('should throw TypeError for NaN values', () => {
-    const invalidValues = [
-      NaN,
-      undefined,
-      {},
-      'Not a number',
-      '10.20.56',
-      0 / 0,
-      Infinity / Infinity
-    ]
-
-    for (const value of invalidValues) {
-      expect(() => validateNotNaN({ value })).to.throw(TypeError)
-    }
   })
 })
 
@@ -339,54 +296,14 @@ describe('validateAmount', () => {
   })
 })
 
-describe('validateSubject', () => {
-  it('should not throw error for valid subjects', () => {
-    const validSubjects = [
-      '',
-      [1, 2, 3].join(''),
-      'Some subject',
-      `Some subject containing 256 symbols, that is the maximum
-       length of valid subject string. Lorem ipsum dolor sit amet,
-       consectetur adipiscing elit, sed do eiusmod tempor incididunt
-       ut labore et dolore magna aliqua. Ut enim ad minim venia`
-    ]
-
-    expect(() => {
-      for (const value of validSubjects) {
-        validateSubject({ value })
-      }
-    }).to.not.throw()
-  })
-
-  it('should throw TypeError for invalid subjects', () => {
-    const invalidSubjects = [
-      {},
-      undefined,
-      { length: 1 },
-      10,
-      null,
-      [],
-      true,
-      `Some subject containing more than 256 symbols, more than allowed.
-       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-       eiusmod tempor incididunt ut labore et dolore magna aliqua.
-       Ut enim ad minim veniam, quis nostrud exercita`
-    ]
-
-    for (const value of invalidSubjects) {
-      expect(() => validateSubject({ value })).to.throw(TypeError)
-    }
-  })
-})
-
 describe('validateAssetCode', () => {
   it('should not throw error for valid asset codes', () => {
     const validAssetCodes = [
       'A',
       'BTC',
       'eth',
-      'Some_code',
-      `SIXTEEN_SMB_CODE`
+      'SomeCode',
+      `SIXTEENCHARSCODE`
     ]
 
     expect(() => {
@@ -400,10 +317,12 @@ describe('validateAssetCode', () => {
     const invalidSubjects = [
       {},
       undefined,
+      null,
       '',
-      'Some code',
       'WITH SPACES',
-      'TOO_LONG_ASSET_CODE'
+      'not_@lphanum',
+      'kebab-case',
+      'TOOLOONGASSETCODE'
     ]
 
     for (const value of invalidSubjects) {

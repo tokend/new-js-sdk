@@ -35,7 +35,7 @@ export class BaseOperation {
   }
 
   static isValidAsset (value) {
-    return BaseOperation.isValidString(value, 1, 16) && !value.includes(' ')
+    return isString(value) && /^[a-z\d]{1,16}$/i.test(value)
   }
 
   static isValidString (value, minSize, maxSize) {

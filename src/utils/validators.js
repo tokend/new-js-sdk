@@ -45,25 +45,6 @@ export function validateNotUndefined ({ value, fieldName = '' }) {
 }
 
 /**
- * Validate value to be not NaN (Not a number).
- *
- * @param {object} opts
- * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
- *
- * @throws {TypeError} Value should be not NaN.
- */
-export function validateNotNaN ({ value, fieldName = '' }) {
-  if (Number.isNaN(Number(value))) {
-    throw new TypeError(composeErrorMessage({
-      value,
-      statement: 'should be not NaN',
-      fieldName
-    }))
-  }
-}
-
-/**
  * Validate value to be an array.
  *
  * @param {object} opts
@@ -205,25 +186,6 @@ export function validateAmount ({
 }
 
 /**
- * Validate value to be an operation subject.
- *
- * @param {object} opts
- * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
- *
- * @throws {TypeError} Value should be a valid operation subject.
- */
-export function validateSubject ({ value, fieldName = '' }) {
-  if (!BaseOperation.isValidSubject(value)) {
-    throw new TypeError(composeErrorMessage({
-      value,
-      statement: 'must be of type String 0-256 long',
-      fieldName
-    }))
-  }
-}
-
-/**
  * Validate value to be an asset code.
  *
  * @param {object} opts
@@ -272,7 +234,7 @@ export function validateFeeType ({ value, fieldName = '' }) {
  */
 export function validateCreatorDetails ({ value, fieldName = '' }) {
   const isCreatorDetailsValid = _isObject(value) &&
-    !_isEmpty(value) && isObjectKeysSnakeCased(value)
+    !_isEmpty(value) && isObjectKeysSnakeCasedDeep(value)
 
   if (!isCreatorDetailsValid) {
     throw new TypeError(composeTypeErrorMessage({
@@ -317,17 +279,14 @@ function composeParamsString (params) {
   }
 }
 
-function isObjectKeysSnakeCased (object) {
-  return !getObjectKeysDeep(object)
-    .some(item => item.match(/[A-Z | -]/))
-}
+function isObjectKeysSnakeCasedDeep (object) {
+  let result = true
 
-function getObjectKeysDeep (object) {
-  let result = Object.keys(object)
-
-  for (const key of Object.keys(object)) {
-    if (_isObject(object[key])) {
-      result = result.concat(getObjectKeysDeep(object[key]))
+  for (const [key, value] of Object.entries(object)) {
+    if (_isObject(value)) {
+      result &= isObjectKeysSnakeCasedDeep(value)
+    } else {
+      result &= /^[a-z_\d]+$/.test(key)
     }
   }
 
