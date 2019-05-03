@@ -10,7 +10,7 @@ import isNumber from 'lodash/isNumber'
 import isFinite from 'lodash/isFinite'
 
 const ONE = 1000000
-const DECIMAL_PLACES = 6
+const MAX_DECIMAL_PLACES = 6
 const MAX_INT64 = '9223372036854775807'
 const MAX_INT64_AMOUNT = '9223372036854.775807'
 
@@ -117,8 +117,15 @@ export class BaseOperation {
     value,
     allowZero = false,
     max = undefined,
-    min = undefined
+    min = undefined,
+    maxDecimalPlaces = MAX_DECIMAL_PLACES
   ) {
+    if (maxDecimalPlaces > MAX_DECIMAL_PLACES) {
+      throw new Error(
+        `maxDecimalPlaces cannot exceed ${MAX_DECIMAL_PLACES}`
+      )
+    }
+
     if (!isString(value)) {
       return false
     }
@@ -154,7 +161,7 @@ export class BaseOperation {
     }
 
     // Decimal places
-    if (amount.decimalPlaces() > DECIMAL_PLACES) {
+    if (amount.decimalPlaces() > maxDecimalPlaces) {
       return false
     }
 
