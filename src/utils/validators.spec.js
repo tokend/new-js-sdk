@@ -383,9 +383,12 @@ describe('validateCreatorDetails', () => {
       '',
       undefined,
       null,
-      { Foo: 'bar' },
+      { Foo: { 'true': 'bar' } },
       { fi_zz: { buZz: 'value' } },
-      { 'kebab-case': 'value' }
+      { 'kebab-case': 'value' },
+      { mixed_Style: { 'some_Camel-kebab': 1 } },
+      { 'абв': {} },
+      { 'wrong_$ymbol': 1 }
     ]
 
     for (const value of invalidCreatorDetails) {

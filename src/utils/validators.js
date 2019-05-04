@@ -5,7 +5,6 @@ import _isObject from 'lodash/isObject'
 
 import { BaseOperation } from '../base/operations/base_operation'
 import { Keypair } from '../base/keypair'
-import { default as xdr } from '../base/generated/xdr_generated'
 
 /**
  * Validators for encapsulating types checks and throwing errors.
@@ -36,11 +35,7 @@ import { default as xdr } from '../base/generated/xdr_generated'
  */
 export function validateNotUndefined ({ value, fieldName = '' }) {
   if (_isUndefined(value)) {
-    throw new TypeError(composeErrorMessage({
-      value,
-      statement: `should be defined`,
-      fieldName
-    }))
+    throw new TypeError(`${fieldName} must be defined`)
   }
 }
 
@@ -55,21 +50,23 @@ export function validateNotUndefined ({ value, fieldName = '' }) {
  * @throws {TypeError} Value should be an array.
  * @throws {Error} Array should have at least minimum length.
  */
-export function validateArray ({ value, fieldName = '', minLength }) {
+export function validateArray ({ value, fieldName = '', minLength, maxLength }) {
   if (!_isArray(value)) {
-    throw new TypeError(composeTypeErrorMessage({
-      value,
-      expectedType: 'array',
-      fieldName
-    }))
+    throw new TypeError(
+      `${fieldName} must be a valid array, got ${JSON.stringify(value)}`
+    )
   }
 
-  if (value.length < minLength) {
-    throw new Error(composeErrorMessage({
-      value,
-      statement: `must have minimum length of ${minLength}`,
-      fieldName
-    }))
+  if (minLength && value.length < minLength) {
+    throw new Error(
+      `${fieldName} must have minimum length of ${minLength}, got ${value.length}`
+    )
+  }
+
+  if (maxLength && value.length > maxLength) {
+    throw new Error(
+      `${fieldName} must have maximum length of ${maxLength}, got ${value.length}`
+    )
   }
 }
 
@@ -86,12 +83,10 @@ export function validateArray ({ value, fieldName = '', minLength }) {
  */
 export function validateString ({ value, fieldName = '', minLength, maxLength }) {
   if (!BaseOperation.isValidString(value, minLength, maxLength)) {
-    throw new TypeError(composeErrorMessage({
-      value,
-      statement: 'must be a valid string',
-      params: { minLength, maxLength },
-      fieldName
-    }))
+    throw new TypeError(
+      `${fieldName} must be a valid string with params:
+       ${JSON.stringify({ minLength, maxLength })}, got ${JSON.stringify(value)}`
+    )
   }
 }
 
@@ -108,11 +103,9 @@ export function validateString ({ value, fieldName = '', minLength, maxLength })
  */
 export function validatePublicKey ({ value, fieldName = '' }) {
   if (!Keypair.isValidPublicKey(value)) {
-    throw new TypeError(composeTypeErrorMessage({
-      value,
-      expectedType: 'public key',
-      fieldName
-    }))
+    throw new TypeError(
+      `${fieldName} must be a valid public key, got ${JSON.stringify(value)}`
+    )
   }
 }
 
@@ -127,11 +120,9 @@ export function validatePublicKey ({ value, fieldName = '' }) {
  */
 export function validateSecretKey ({ value, fieldName = '' }) {
   if (!Keypair.isValidSecretKey(value)) {
-    throw new TypeError(composeTypeErrorMessage({
-      value,
-      expectedType: 'secret key',
-      fieldName
-    }))
+    throw new TypeError(
+      `${fieldName} must be a valid secret key, got ${JSON.stringify(value)}`
+    )
   }
 }
 
@@ -146,11 +137,9 @@ export function validateSecretKey ({ value, fieldName = '' }) {
  */
 export function validateBalanceKey ({ value, fieldName = '' }) {
   if (!Keypair.isValidBalanceKey(value)) {
-    throw new TypeError(composeTypeErrorMessage({
-      value,
-      expectedType: 'balance key',
-      fieldName
-    }))
+    throw new TypeError(
+      `${fieldName} must be a valid balance key, got ${JSON.stringify(value)}`
+    )
   }
 }
 
@@ -176,12 +165,11 @@ export function validateAmount ({
   min
 }) {
   if (!BaseOperation.isValidAmount(value, allowZero, max, min)) {
-    throw new TypeError(composeErrorMessage({
-      value,
-      statement: 'should be a valid int64 amount',
-      params: { min, max },
-      fieldName
-    }))
+    throw new TypeError(
+      `${fieldName} must be a valid int64 amount with params:
+       ${JSON.stringify({ min, max, allowZero })},
+       got ${JSON.stringify(value)}`
+    )
   }
 }
 
@@ -196,30 +184,29 @@ export function validateAmount ({
  */
 export function validateAssetCode ({ value, fieldName = '' }) {
   if (!BaseOperation.isValidAsset(value)) {
-    throw new TypeError(composeErrorMessage({
-      value,
-      statement: 'must be valid asset code of type String 1-16 long',
-      fieldName
-    }))
+    throw new TypeError(
+      `${fieldName} must be valid asset code (alphanumeric string
+       with the length of 1-16, got ${JSON.stringify(value)}`
+    )
   }
 }
 
 /**
- * Validate value to be a `xdr.FeeType` instance.
+ * Validate value to be a specified type instance.
  *
  * @param {object} opts
+ * @param {*} opts.type The type to validate.
  * @param {*} opts.value The value to validate.
  * @param {string=} [opts.fieldName] The name of the field, containing value.
  *
- * @throws {TypeError} Value should be a `xdr.FeeType` instance.
+ * @throws {TypeError} Value should be a specified type instance.
  */
-export function validateFeeType ({ value, fieldName = '' }) {
-  if (!(value instanceof xdr.FeeType)) {
-    throw new TypeError(composeTypeErrorMessage({
-      value,
-      fieldName,
-      expectedType: 'xdr.FeeType'
-    }))
+export function validateType ({ value, type, fieldName = '' }) {
+  if (!(value instanceof type)) {
+    throw new TypeError(
+      `${fieldName} must be a valid ${type.constructor.name},
+       got ${JSON.stringify(value)} of type ${value.constructor.name}`
+    )
   }
 }
 
@@ -237,56 +224,23 @@ export function validateCreatorDetails ({ value, fieldName = '' }) {
     !_isEmpty(value) && isObjectKeysSnakeCasedDeep(value)
 
   if (!isCreatorDetailsValid) {
-    throw new TypeError(composeTypeErrorMessage({
-      value,
-      statement: 'should be non-empty object with snake_cased keys',
-      fieldName
-    }))
+    throw new TypeError(
+      `${fieldName} must be a non-empty object with snake_cased keys,
+       got ${JSON.stringify(value)}`
+    )
   }
 }
 
 /** @private Helpers */
 
-function composeTypeErrorMessage ({ value, expectedType, fieldName = '' }) {
-  return composeErrorMessage({
-    value,
-    statement: `should be a valid ${expectedType}`,
-    fieldName
-  })
-}
-
-function composeErrorMessage ({ value, statement, params, fieldName = '' }) {
-  const paramsString = composeParamsString(params)
-  const errorStatement = paramsString
-    ? `${statement} with ${paramsString}`
-    : statement
-
-  if (fieldName) {
-    return `${fieldName} ${errorStatement}, got ${typeof value}: ${value}`
-  } else {
-    return `Value ${errorStatement}, got ${typeof value}: ${value}`
-  }
-}
-
-function composeParamsString (params) {
-  if (params) {
-    return Object.keys(params)
-      .filter(key => !_isUndefined(params[key]))
-      .map(key => `${key} = ${params[key]}`)
-      .join(', ')
-  } else {
-    return ''
-  }
-}
-
 function isObjectKeysSnakeCasedDeep (object) {
   let result = true
 
   for (const [key, value] of Object.entries(object)) {
+    result &= /^[a-z_\d]+$/.test(key)
+
     if (_isObject(value)) {
       result &= isObjectKeysSnakeCasedDeep(value)
-    } else {
-      result &= /^[a-z_\d]+$/.test(key)
     }
   }
 
