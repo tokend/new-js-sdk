@@ -11,21 +11,22 @@ for further information about branching and tagging conventions.
 ### Added
 - Validators for specified types:
   - Undefined
-  - NaN
   - Array
   - String
   - Public key
   - Secret key
   - Balance key
   - Int64 amount
-  - Operation subject
   - Asset code
-  - Fee type
+  - XDR enum type
   - Creator details
 - Check for spaces in `BaseOperation.isValidString`
 
 ### Updated
 - Now using new validators in `CreateIssuanceRequestBuilder`
+
+### Fixed
+- `BaseOperation.isValidAsset` method to accept only alphanumeric symbols
 
 ## [1.6.0-x.0] - 2019-04-26
 ### Added
