@@ -29,7 +29,7 @@ import { Keypair } from '../base/keypair'
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  *
  * @throws {TypeError} Value should be defined.
  */
@@ -44,7 +44,7 @@ export function validateNotUndefined ({ value, fieldName = '' }) {
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  * @param {number} [opts.minLength] The minimum array length.
  *
  * @throws {TypeError} Value should be an array.
@@ -75,7 +75,7 @@ export function validateArray ({ value, fieldName = '', minLength, maxLength }) 
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  * @param {number} [opts.minLength] The minimum string length.
  * @param {number} [opts.maxLength] The maximum string length.
  *
@@ -84,8 +84,8 @@ export function validateArray ({ value, fieldName = '', minLength, maxLength }) 
 export function validateString ({ value, fieldName = '', minLength, maxLength }) {
   if (!BaseOperation.isValidString(value, minLength, maxLength)) {
     throw new TypeError(
-      `${fieldName} must be a valid string with params:
-       ${JSON.stringify({ minLength, maxLength })}, got ${JSON.stringify(value)}`
+      `${fieldName} must be a valid string with params: ` +
+      `${JSON.stringify({ minLength, maxLength })}, got ${JSON.stringify(value)}`
     )
   }
 }
@@ -97,7 +97,7 @@ export function validateString ({ value, fieldName = '', minLength, maxLength })
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  *
  * @throws {TypeError} Value should be a valid public key.
  */
@@ -114,7 +114,7 @@ export function validatePublicKey ({ value, fieldName = '' }) {
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  *
  * @throws {TypeError} Value should be a valid secret key.
  */
@@ -131,7 +131,7 @@ export function validateSecretKey ({ value, fieldName = '' }) {
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  *
  * @throws {TypeError} Value should be a valid balance key.
  */
@@ -146,31 +146,89 @@ export function validateBalanceKey ({ value, fieldName = '' }) {
 /** Fields validators */
 
 /**
- * Validate value to be a int64 amount.
+ * Validate value to be an int64 amount.
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  * @param {boolean} [opts.allowZero] Is zero amount allowed.
  * @param {number} [opts.min] The minimum amount.
  * @param {number} [opts.max] The maximum amount.
+ * @param {number} [opts.maxDecimalPlaces] The maximum decimal places allowed.
  *
  * @throws {TypeError} Value should be a valid int64 amount.
  */
 export function validateAmount ({
   value,
   fieldName = '',
-  allowZero = false,
+  allowZero,
+  max,
+  min,
+  maxDecimalPlaces
+}) {
+  if (!BaseOperation.isValidAmount(value, allowZero, max, min, maxDecimalPlaces)) {
+    throw new TypeError(
+      `${fieldName} must be a valid int64 string with params:` +
+      `${JSON.stringify({ min, max, allowZero, maxDecimalPlaces })}, ` +
+      `got ${JSON.stringify(value)}`
+    )
+  }
+}
+
+/**
+ * Validate value to be a double string with specified precision.
+ *
+ * @param {object} opts
+ * @param {*} opts.value The value to validate.
+ * @param {string} opts.fieldName The name of the field, containing value.
+ * @param {number} [opts.min] The minimum amount.
+ * @param {number} [opts.max] The maximum amount.
+ * @param {number} [opts.maxDecimalPlaces] The maximum decimal places allowed.
+ *
+ * @throws {TypeError} Value should be a valid double string with specified precision.
+ */
+export function validateDouble ({
+  value,
+  fieldName = '',
+  max,
+  min,
+  maxDecimalPlaces
+}) {
+  validateAmount({
+    value,
+    fieldName,
+    min,
+    max,
+    maxDecimalPlaces,
+    allowZero: true
+  })
+}
+
+/**
+ * Validate value to be a uint64 string.
+ *
+ * @param {object} opts
+ * @param {*} opts.value The value to validate.
+ * @param {string} opts.fieldName The name of the field, containing value.
+ * @param {number} [opts.min] The minimum amount.
+ * @param {number} [opts.max] The maximum amount.
+ *
+ * @throws {TypeError} Value should be a valid uint64 string.
+ */
+export function validateUint64 ({
+  value,
+  fieldName = '',
   max,
   min
 }) {
-  if (!BaseOperation.isValidAmount(value, allowZero, max, min)) {
-    throw new TypeError(
-      `${fieldName} must be a valid int64 amount with params:
-       ${JSON.stringify({ min, max, allowZero })},
-       got ${JSON.stringify(value)}`
-    )
-  }
+  validateAmount({
+    value,
+    fieldName,
+    min,
+    max,
+    maxDecimalPlaces: 0,
+    allowZero: true
+  })
 }
 
 /**
@@ -178,34 +236,33 @@ export function validateAmount ({
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string=} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  *
  * @throws {TypeError} Value should be a valid asset code.
  */
 export function validateAssetCode ({ value, fieldName = '' }) {
   if (!BaseOperation.isValidAsset(value)) {
     throw new TypeError(
-      `${fieldName} must be valid asset code (alphanumeric string
-       with the length of 1-16, got ${JSON.stringify(value)}`
+      `${fieldName} must be valid asset code (alphanumeric string` +
+      `with the length of 1-16, got ${JSON.stringify(value)}`
     )
   }
 }
 
 /**
- * Validate value to be a specified type instance.
+ * Validate value to be a XDR-specified enum type instance.
  *
  * @param {object} opts
- * @param {*} opts.type The type to validate.
+ * @param {xdr.*} opts.type The XDR enum type to validate.
  * @param {*} opts.value The value to validate.
- * @param {string=} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  *
- * @throws {TypeError} Value should be a specified type instance.
+ * @throws {TypeError} Value should be a XDR-specified enum type instance.
  */
-export function validateType ({ value, type, fieldName = '' }) {
+export function validateXdrEnumType ({ value, type, fieldName = '' }) {
   if (!(value instanceof type)) {
     throw new TypeError(
-      `${fieldName} must be a valid ${type.constructor.name},
-       got ${JSON.stringify(value)} of type ${value.constructor.name}`
+      `${fieldName} must be a valid xdr.${type.enumName}, got ${JSON.stringify(value)}`
     )
   }
 }
@@ -215,13 +272,13 @@ export function validateType ({ value, type, fieldName = '' }) {
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
- * @param {string=} [opts.fieldName] The name of the field, containing value.
+ * @param {string} opts.fieldName The name of the field, containing value.
  *
  * @throws {TypeError} Value should be non-empty object with snake_cased keys.
  */
 export function validateCreatorDetails ({ value, fieldName = '' }) {
-  const isCreatorDetailsValid = _isObject(value) &&
-    !_isEmpty(value) && isObjectKeysSnakeCasedDeep(value)
+  const isCreatorDetailsValid = _isObject(value) && !_isEmpty(value) &&
+    isObjectKeysSnakeCasedDeep(value)
 
   if (!isCreatorDetailsValid) {
     throw new TypeError(

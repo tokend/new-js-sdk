@@ -7,8 +7,10 @@ import {
   validateBalanceKey,
   validateAmount,
   validateAssetCode,
-  validateFeeType,
-  validateCreatorDetails
+  validateXdrEnumType,
+  validateCreatorDetails,
+  validateDouble,
+  validateUint64
 } from './validators'
 
 import { default as xdr } from '../base/generated/xdr_generated'
@@ -254,7 +256,7 @@ describe('validateAmount', () => {
       { value: '50.236523', min: '40' },
       { value: '50.000000', max: '50' },
       { value: '35.000000', min: '35', max: '35' },
-      { value: '9223372036854.775807' }
+      { value: '9223372036854.77580', maxDecimalPlaces: 5 }
     ]
 
     expect(() => {
@@ -283,15 +285,117 @@ describe('validateAmount', () => {
     }
   })
 
-  it('should throw TypeError for amounts not in provided range', () => {
+  it('should throw TypeError for amounts not passed the params validations', () => {
     const invalidAmountOpts = [
       { value: '9.999999', min: '10.000000' },
       { value: '500.000001', max: '500.000000' },
-      { value: '92233720368542342', min: '100', max: '9223372036854' }
+      { value: '92233720368542342', min: '100', max: '9223372036854' },
+      { value: '0', allowZero: false },
+      { value: '9223372036854.775803', maxDecimalPlaces: 5 }
     ]
 
     for (const opts of invalidAmountOpts) {
       expect(() => validateAmount(opts)).to.throw(TypeError)
+    }
+  })
+})
+
+describe('validateDouble', () => {
+  it('should not throw error for valid double strings', () => {
+    const validOpts = [
+      { value: '123' },
+      { value: '52.135153' },
+      { value: '0' },
+      { value: '50.236523', min: '40' },
+      { value: '50.000000', max: '50' },
+      { value: '35.000000', min: '35', max: '35' },
+      { value: '9223372036854.77580', maxDecimalPlaces: 5 }
+    ]
+
+    expect(() => {
+      for (const opts of validOpts) {
+        validateDouble(opts)
+      }
+    }).to.not.throw()
+  })
+
+  it('should throw TypeError for invalid double strings', () => {
+    const invalidAmounts = [
+      {},
+      undefined,
+      { length: 1 },
+      100,
+      '9223372036854.775808',
+      '230.8496165',
+      '230.230.563',
+      '-1',
+      true
+    ]
+
+    for (const value of invalidAmounts) {
+      expect(() => validateDouble({ value })).to.throw(TypeError)
+    }
+  })
+
+  it('should throw TypeError for amounts not passed the params validations', () => {
+    const invalidAmountOpts = [
+      { value: '9.999999', min: '10.000000' },
+      { value: '500.000001', max: '500.000000' },
+      { value: '92233720368542342', min: '100', max: '9223372036854' },
+      { value: '9223372036854.775803', maxDecimalPlaces: 5 }
+    ]
+
+    for (const opts of invalidAmountOpts) {
+      expect(() => validateDouble(opts)).to.throw(TypeError)
+    }
+  })
+})
+
+describe('validateUint64', () => {
+  it('should not throw error for valid uint64 strings', () => {
+    const validOpts = [
+      { value: '100' },
+      { value: '52' },
+      { value: '0' },
+      { value: '50', min: '40' },
+      { value: '50', max: '50' },
+      { value: '35', min: '35', max: '35' }
+    ]
+
+    expect(() => {
+      for (const opts of validOpts) {
+        validateUint64(opts)
+      }
+    }).to.not.throw()
+  })
+
+  it('should throw TypeError for invalid uint64 strings', () => {
+    const invalidAmounts = [
+      {},
+      undefined,
+      { length: 1 },
+      100,
+      '9223372036854.775808',
+      '230.865',
+      '230.230.563',
+      '-1',
+      true
+    ]
+
+    for (const value of invalidAmounts) {
+      expect(() => validateUint64({ value })).to.throw(TypeError)
+    }
+  })
+
+  it('should throw TypeError for amounts not passed the params validations', () => {
+    const invalidAmountOpts = [
+      { value: '9', min: '10' },
+      { value: '501', max: '500' },
+      { value: '92233720368542342', min: '100', max: '9223372036854' }
+    ]
+
+    for (const opts of invalidAmountOpts) {
+      expect(() => validateUint64(opts)).to.throw(TypeError)
     }
   })
 })
@@ -331,34 +435,41 @@ describe('validateAssetCode', () => {
   })
 })
 
-describe('validateFeeType', () => {
-  it('should not throw error for valid fee types', () => {
-    const validFeeTypes = [
-      xdr.FeeType.paymentFee(),
-      xdr.FeeType.offerFee(),
-      xdr.FeeType.investFee()
-    ]
-
+describe('validateXdrEnumType', () => {
+  it('should not throw error for valid types', () => {
     expect(() => {
-      for (const value of validFeeTypes) {
-        validateFeeType({ value })
-      }
+      validateXdrEnumType({
+        value: xdr.FeeType.paymentFee(),
+        type: xdr.FeeType
+      })
+      validateXdrEnumType({
+        value: xdr.PollType.singleChoice(),
+        type: xdr.PollType
+      })
+      validateXdrEnumType({
+        value: xdr.SaleType.basicSale(),
+        type: xdr.SaleType
+      })
     }).to.not.throw()
   })
 
-  it('should throw TypeError for invalid fee types', () => {
-    const invalidFeeTypes = [
-      undefined,
-      '',
-      'Some type',
-      '2',
-      0,
-      1
-    ]
-
-    for (const value of invalidFeeTypes) {
-      expect(() => validateFeeType({ value })).to.throw(TypeError)
-    }
+  it('should throw TypeError for invalid XDR types', () => {
+    expect(() => validateXdrEnumType({ value: null, type: xdr.PollType }))
+      .to.throw(TypeError)
+    expect(() => validateXdrEnumType({ value: 'SaleType', type: xdr.SaleType }))
+      .to.throw(TypeError)
+    expect(() => validateXdrEnumType({
+      value: xdr.SaleType.basicSale(),
+      type: xdr.PollType
+    })).to.throw(TypeError)
+    expect(() => validateXdrEnumType({
+      value: undefined,
+      type: xdr.FeeType
+    })).to.throw(TypeError)
+    expect(() => validateXdrEnumType({
+      value: xdr.FeeType.paymentFee(),
+      type: xdr.SaleType
+    })).to.throw(TypeError)
   })
 })
 
