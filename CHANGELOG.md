@@ -8,6 +8,11 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
+### Added
+- Manage account specific rule builder
+
+### Changed
+- Use XDR version 3.3.0-x.0
 
 ## [1.6.0-rc.0] - 2019-05-02
 ### Added

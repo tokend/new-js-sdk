@@ -1,9 +1,10 @@
 import { SaleRequestBuilder } from '../../src/base'
 import { Running } from './_running'
-import { getRequestIdFromResultXdr, Helper } from './_helper'
+import { getRequestIdFromResultXdr, getSuccessResultFromXDR, Helper } from './_helper'
 import { base } from '../../src'
 import { SALE_TYPES } from '../../src/const/enums.const'
 import { SALE_STATES } from '../../src/const'
+import config from '../config'
 import moment from 'moment'
 
 export class Sale extends Helper {
@@ -44,6 +45,12 @@ export class Sale extends Helper {
       saleEnumType: SALE_TYPES.fixedPrice
     }
 
+    if (config.use_sale_rules) {
+      DEFAULTS.saleRules = [{
+        forbids: true
+      }]
+    }
+
     const operation = base.SaleRequestBuilder.createSaleCreationRequest({
       ...DEFAULTS,
       ...opts
@@ -52,6 +59,40 @@ export class Sale extends Helper {
     const response = await this.submit(operation, ownerKp)
 
     return getRequestIdFromResultXdr(response.resultXdr, 'createSaleCreationRequestResult')
+  }
+
+  /**
+   * @param opts
+   * @param opts.saleID
+   * @param [opts.accountID]
+   * @param [opts.forbids]
+   * @param {Keypair} ownerKp
+   *
+   * @returns {string} the ID of the rule
+   */
+  async createSaleRule (opts, ownerKp = this.masterKp) {
+    const DEFAULTS = {
+      forbids: false
+    }
+
+    const op = base.ManageAccountSpecificRuleBuilder.createSaleRule({
+      ...DEFAULTS,
+      ...opts
+    })
+
+    const response = await this.submit(op, ownerKp)
+
+    return getSuccessResultFromXDR(response.resultXdr, 'manageAccountSpecificRuleResult')
+      .ruleId().toString()
+  }
+
+  async removeRule (opts, ownerKp = this.masterKp) {
+    const op = base.ManageAccountSpecificRuleBuilder.removeRule(opts)
+
+    const response = await this.submit(op, ownerKp)
+
+    return getSuccessResultFromXDR(response.resultXdr, 'manageAccountSpecificRuleResult')
+      .ruleId().toString()
   }
 
   checkSaleState (id) {
