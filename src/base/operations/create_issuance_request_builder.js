@@ -23,7 +23,19 @@ export class CreateIssuanceRequestBuilder {
    * @returns {xdr.CreateIssuanceRequestOp}
    */
   static createIssuanceRequest (opts) {
-    this._validateOpts(opts)
+    validateAssetCode({ value: opts.asset, fieldName: 'opts.asset' })
+    validateAmount({ value: opts.amount, fieldName: 'opts.amount' })
+    validateBalanceKey({ value: opts.receiver, fieldName: 'opts.receiver' })
+    validateString({
+      value: opts.reference,
+      fieldName: 'opts.reference',
+      minLength: 1,
+      maxLength: 64
+    })
+    validateCreatorDetails({
+      value: opts.creatorDetails,
+      fieldName: 'opts.creatorDetails'
+    })
 
     const attrs = {
       asset: opts.asset,
@@ -55,21 +67,5 @@ export class CreateIssuanceRequestBuilder {
     result.amount = BaseOperation._fromXDRAmount(request.amount())
     result.receiver = BaseOperation.balanceIdtoString(request.receiver())
     result.creatorDetails = JSON.parse(request.creatorDetails())
-  }
-
-  static _validateOpts (opts) {
-    validateAssetCode({ value: opts.asset, fieldName: 'opts.asset' })
-    validateAmount({ value: opts.amount, fieldName: 'opts.amount' })
-    validateBalanceKey({ value: opts.receiver, fieldName: 'opts.receiver' })
-    validateString({
-      value: opts.reference,
-      fieldName: 'opts.reference',
-      minLength: 1,
-      maxLength: 64
-    })
-    validateCreatorDetails({
-      value: opts.creatorDetails,
-      fieldName: 'opts.creatorDetails'
-    })
   }
 }

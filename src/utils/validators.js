@@ -46,6 +46,7 @@ export function validateNotUndefined ({ value, fieldName = '' }) {
  * @param {*} opts.value The value to validate.
  * @param {string} opts.fieldName The name of the field, containing value.
  * @param {number} [opts.minLength] The minimum array length.
+ * @param {number} [opts.maxLength] The maximum array length.
  *
  * @throws {TypeError} Value should be an array.
  * @throws {Error} Array should have at least minimum length.
@@ -146,7 +147,7 @@ export function validateBalanceKey ({ value, fieldName = '' }) {
 /** Fields validators */
 
 /**
- * Validate value to be an int64 amount.
+ * Validate value to be a double amount string.
  *
  * @param {object} opts
  * @param {*} opts.value The value to validate.
@@ -156,7 +157,7 @@ export function validateBalanceKey ({ value, fieldName = '' }) {
  * @param {number} [opts.max] The maximum amount.
  * @param {number} [opts.maxDecimalPlaces] The maximum decimal places allowed.
  *
- * @throws {TypeError} Value should be a valid int64 amount.
+ * @throws {TypeError} Value should be a valid double amount string.
  */
 export function validateAmount ({
   value,
@@ -168,7 +169,7 @@ export function validateAmount ({
 }) {
   if (!BaseOperation.isValidAmount(value, allowZero, max, min, maxDecimalPlaces)) {
     throw new TypeError(
-      `${fieldName} must be a valid int64 string with params:` +
+      `${fieldName} must be a valid double string with params:` +
       `${JSON.stringify({ min, max, allowZero, maxDecimalPlaces })}, ` +
       `got ${JSON.stringify(value)}`
     )
@@ -260,6 +261,10 @@ export function validateAssetCode ({ value, fieldName = '' }) {
  * @throws {TypeError} Value should be a XDR-specified enum type instance.
  */
 export function validateXdrEnumType ({ value, type, fieldName = '' }) {
+  if (!type.enumName) {
+    throw new Error('Invalid XDR enum type provided')
+  }
+
   if (!(value instanceof type)) {
     throw new TypeError(
       `${fieldName} must be a valid xdr.${type.enumName}, got ${JSON.stringify(value)}`
