@@ -12,7 +12,7 @@ for further information about branching and tagging conventions.
 - Manage account specific rule builder
 
 ### Changed
-- XDR - https://github.com/tokend/xdr/pull/56/files
+- Use XDR version 3.3.0-x.0
 
 ## [1.6.0-rc.0] - 2019-05-02
 ### Added
