@@ -16,7 +16,7 @@ export class ManageAccountSpecificRuleBuilder {
    */
   static createSaleRule (opts) {
     if (isUndefined(opts.saleID)) {
-      throw new Error('opts.choice is undefined')
+      throw new Error('opts.saleID is undefined')
     }
 
     let attrs = {}

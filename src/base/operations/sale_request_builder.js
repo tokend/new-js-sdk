@@ -26,9 +26,9 @@ export class SaleRequestBuilder {
      * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
      * @param {object} opts.quoteAssets.asset - asset code of the quote asset
      * @param {number} opts.saleEnumType - Sale type
-     * @param {array} [opts.saleRules] - rules for sale participation
-     * @param {string} [opts.saleRules.accountID] - ID of account for which rule will be applied
-     * @param {boolean} opts.saleRules.forbids - Means rule is restrictive or not
+     * @param {object[]} [opts.saleRules] - rules for sale participation
+     * @param {string} [opts.saleRules[].accountID] - ID of account for which rule will be applied
+     * @param {boolean} opts.saleRules[].forbids - Means rule is restrictive or not
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
      * @returns {xdr.CreateSaleCreationRequestOp}
      */
