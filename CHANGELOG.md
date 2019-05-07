@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+- New managers classes for encapsulating actions with wallets,
+  factors, and change signers operations:
+  - `WalletsManager`
+  - `FactorsManager`
+  - `SignersManager`
+  
+### Changed
+- Now using default axios instance in `ServerErrorBase` constructor
+  if there are no passed one
+
 ## [1.7.0-x.0] - 2019-05-07
 ### Added
 - Manage account specific rule builder
