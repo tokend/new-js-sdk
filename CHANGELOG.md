@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [1.6.0] - 2019-05-07
-
 ## [1.7.0-x.0] - 2019-05-07
 ### Added
 - Manage account specific rule builder
@@ -16,6 +14,8 @@ for further information about branching and tagging conventions.
 
 ### Changed
 - Use XDR version 3.3.0-x.0
+
+## [1.6.0] - 2019-05-07
 
 ## [1.6.0-rc.0] - 2019-05-02
 ### Added
