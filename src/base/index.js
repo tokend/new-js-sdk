@@ -37,6 +37,7 @@ export { LicenseBuilder } from './operations/license_operation'
 export { ManageCreatePollRequestBuilder } from './operations/manage_create_poll_request_builder'
 export { ManagePollBuilder } from './operations/manage_poll_builder'
 export { ManageVoteBuilder } from './operations/manage_vote_builder'
+export { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
 
 export * from './strkey'
 
