@@ -26,7 +26,8 @@ for further information about branching and tagging conventions.
 - Now using new validators in `CreateIssuanceRequestBuilder`
 
 ### Fixed
-- `BaseOperation.isValidAsset` method to accept only alphanumeric symbols
+- `BaseOperation.isValidAsset` method, now it accepts only alphanumeric
+  symbols
 
 ## [1.6.0-x.0] - 2019-04-26
 ### Added

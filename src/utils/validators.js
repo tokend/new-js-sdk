@@ -33,7 +33,7 @@ import { Keypair } from '../base/keypair'
  *
  * @throws {TypeError} Value should be defined.
  */
-export function validateNotUndefined ({ value, fieldName = '' }) {
+export function validateNotUndefined ({ value, fieldName }) {
   if (_isUndefined(value)) {
     throw new TypeError(`${fieldName} must be defined`)
   }
@@ -51,7 +51,7 @@ export function validateNotUndefined ({ value, fieldName = '' }) {
  * @throws {TypeError} Value should be an array.
  * @throws {Error} Array should have at least minimum length.
  */
-export function validateArray ({ value, fieldName = '', minLength, maxLength }) {
+export function validateArray ({ value, fieldName, minLength, maxLength }) {
   if (!_isArray(value)) {
     throw new TypeError(
       `${fieldName} must be a valid array, got ${JSON.stringify(value)}`
@@ -82,7 +82,7 @@ export function validateArray ({ value, fieldName = '', minLength, maxLength }) 
  *
  * @throws {TypeError} Value should be a valid string.
  */
-export function validateString ({ value, fieldName = '', minLength, maxLength }) {
+export function validateString ({ value, fieldName, minLength, maxLength }) {
   if (!BaseOperation.isValidString(value, minLength, maxLength)) {
     throw new TypeError(
       `${fieldName} must be a valid string with params: ` +
@@ -102,7 +102,7 @@ export function validateString ({ value, fieldName = '', minLength, maxLength })
  *
  * @throws {TypeError} Value should be a valid public key.
  */
-export function validatePublicKey ({ value, fieldName = '' }) {
+export function validatePublicKey ({ value, fieldName }) {
   if (!Keypair.isValidPublicKey(value)) {
     throw new TypeError(
       `${fieldName} must be a valid public key, got ${JSON.stringify(value)}`
@@ -119,7 +119,7 @@ export function validatePublicKey ({ value, fieldName = '' }) {
  *
  * @throws {TypeError} Value should be a valid secret key.
  */
-export function validateSecretKey ({ value, fieldName = '' }) {
+export function validateSecretKey ({ value, fieldName }) {
   if (!Keypair.isValidSecretKey(value)) {
     throw new TypeError(
       `${fieldName} must be a valid secret key, got ${JSON.stringify(value)}`
@@ -136,7 +136,7 @@ export function validateSecretKey ({ value, fieldName = '' }) {
  *
  * @throws {TypeError} Value should be a valid balance key.
  */
-export function validateBalanceKey ({ value, fieldName = '' }) {
+export function validateBalanceKey ({ value, fieldName }) {
   if (!Keypair.isValidBalanceKey(value)) {
     throw new TypeError(
       `${fieldName} must be a valid balance key, got ${JSON.stringify(value)}`
@@ -161,7 +161,7 @@ export function validateBalanceKey ({ value, fieldName = '' }) {
  */
 export function validateAmount ({
   value,
-  fieldName = '',
+  fieldName,
   allowZero,
   max,
   min,
@@ -190,7 +190,7 @@ export function validateAmount ({
  */
 export function validateDouble ({
   value,
-  fieldName = '',
+  fieldName,
   max,
   min,
   maxDecimalPlaces
@@ -218,7 +218,7 @@ export function validateDouble ({
  */
 export function validateUint64 ({
   value,
-  fieldName = '',
+  fieldName,
   max,
   min
 }) {
@@ -241,7 +241,7 @@ export function validateUint64 ({
  *
  * @throws {TypeError} Value should be a valid asset code.
  */
-export function validateAssetCode ({ value, fieldName = '' }) {
+export function validateAssetCode ({ value, fieldName }) {
   if (!BaseOperation.isValidAsset(value)) {
     throw new TypeError(
       `${fieldName} must be valid asset code (alphanumeric string` +
@@ -260,8 +260,8 @@ export function validateAssetCode ({ value, fieldName = '' }) {
  *
  * @throws {TypeError} Value should be a XDR-specified enum type instance.
  */
-export function validateXdrEnumType ({ value, type, fieldName = '' }) {
-  if (!type.enumName) {
+export function validateXdrEnumType ({ value, type, fieldName }) {
+  if (!(_isObject(type) && type.enumName)) {
     throw new Error('Invalid XDR enum type provided')
   }
 
@@ -281,11 +281,11 @@ export function validateXdrEnumType ({ value, type, fieldName = '' }) {
  *
  * @throws {TypeError} Value should be non-empty object with snake_cased keys.
  */
-export function validateCreatorDetails ({ value, fieldName = '' }) {
-  const isCreatorDetailsValid = _isObject(value) && !_isEmpty(value) &&
+export function validateCreatorDetails ({ value, fieldName }) {
+  const isValid = _isObject(value) && !_isEmpty(value) &&
     isObjectKeysSnakeCasedDeep(value)
 
-  if (!isCreatorDetailsValid) {
+  if (!isValid) {
     throw new TypeError(
       `${fieldName} must be a non-empty object with snake_cased keys,
        got ${JSON.stringify(value)}`
