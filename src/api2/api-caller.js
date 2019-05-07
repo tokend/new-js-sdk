@@ -68,6 +68,10 @@ export class ApiCaller {
     return this._networkDetails
   }
 
+  get wallet () {
+    return this._wallet
+  }
+
   get (endpoint, query, needSign = false) {
     return this._call({
       method: methods.GET,
@@ -237,7 +241,7 @@ export class ApiCaller {
     try {
       response = await this._axios(config)
     } catch (e) {
-      throw middlewares.parseJsonapiError(e)
+      throw middlewares.parseJsonapiError(e, this._axios)
     }
 
     if (!opts.needRaw) {

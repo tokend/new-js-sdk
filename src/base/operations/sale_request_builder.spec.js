@@ -5,7 +5,7 @@ import { Operation } from '../operation'
 import { SaleRequestBuilder } from './sale_request_builder'
 
 describe('SaleRequestBuilder', () => {
-  it('Success', () => {
+  it('Success with sale rules', () => {
     let opt = {
       requestID: '12',
       baseAsset: 'XAAU',
@@ -32,6 +32,15 @@ describe('SaleRequestBuilder', () => {
           price: '21.12',
           asset: 'BTC'
         }
+      ],
+      saleRules: [
+        {
+          forbids: true
+        },
+        {
+          accountID: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
+          forbids: false
+        }
       ]
     }
     let op = SaleRequestBuilder.createSaleCreationRequest(opt)
@@ -49,7 +58,8 @@ describe('SaleRequestBuilder', () => {
     expect(opt.hardCap).to.be.equal(obj.hardCap)
     expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(JSON.stringify(opt.quoteAssets)).to.be.equal(JSON.stringify(obj.quoteAssets))
-    expect(isEqual(opt.details, obj.details)).to.be.true
+    expect(isEqual(opt.creatorDetails, obj.creatorDetails)).to.be.true
+    expect(JSON.stringify(opt.saleRules)).to.be.equal(JSON.stringify(obj.saleRules))
   })
   it('Success Crowdfund', () => {
     let opt = {
@@ -95,7 +105,7 @@ describe('SaleRequestBuilder', () => {
     expect(opt.hardCap).to.be.equal(obj.hardCap)
     expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(opt.quoteAssets).to.be.jsonEqual(obj.quoteAssets)
-    expect(isEqual(opt.details, obj.details)).to.be.true
+    expect(isEqual(opt.creatorDetails, obj.creatorDetails)).to.be.true
   })
   it('Success create basic sale', () => {
     let opt = {
@@ -141,7 +151,7 @@ describe('SaleRequestBuilder', () => {
     expect(opt.allTasks).to.be.equal(obj.allTasks)
     expect(opt.requiredBaseAssetForHardCap).to.be.equal(obj.requiredBaseAssetForHardCap)
     expect(JSON.stringify(opt.quoteAssets)).to.be.equal(JSON.stringify(obj.quoteAssets))
-    expect(isEqual(opt.details, obj.details)).to.be.true
+    expect(isEqual(opt.creatorDetails, obj.creatorDetails)).to.be.true
   })
   it('Success cancel sale creation request', () => {
     let opt = {
