@@ -96,7 +96,7 @@ export class ManageAccountSpecificRuleBuilder {
               createData.ledgerKey().type().value)
         }
 
-        if (!isUndefined(createData.accountId())){
+        if (!isUndefined(createData.accountId())) {
           result.accountID = BaseOperation.accountIdtoAddress(createData.accountId())
         }
         break

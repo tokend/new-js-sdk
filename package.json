@@ -11,15 +11,17 @@
     "test:browser": "karma start",
     "lint": "eslint ./src --cache --fix",
     "coverage": "nyc mocha --opts ./mocha.opts 'src/**/*.spec.js'",
-    "docs": "rimraf docs/pages && npm run docs:xdr && jsdoc -c ./.jsdoc.json && rm docs/enums.js",
+    "docs": "rimraf docs/pages && yarn docs:xdr && jsdoc -c ./.jsdoc.json && rm docs/enums.js",
     "docs:md": "rimraf docs/markdown && node scripts/jsdoc_to_markdown.js",
     "docs:xdr": "node scripts/xdr_to_jsdoc.js",
-    "prepare": "npm run build & npm run build:browser",
-    "init:sales": "node scripts/init_sales.js"
+    "prepare": "yarn build & yarn build:browser",
+    "init:sales": "node scripts/init_sales.js",
+    "rsc": "node scripts/release_sanity_check.js"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "eslint ./src --cache"
+      "pre-commit": "eslint ./src --cache",
+      "pre-push": "yarn rsc && yarn test"
     }
   },
   "nyc": {

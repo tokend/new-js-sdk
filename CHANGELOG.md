@@ -10,6 +10,7 @@ for further information about branching and tagging conventions.
 ## [Unreleased]
 ### Added
 - Manage account specific rule builder
+- Release sanity check script
 
 ### Changed
 - Use XDR version 3.3.0-x.0
