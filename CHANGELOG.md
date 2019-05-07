@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.6.0] - 2019-05-07
 
 ## [1.7.0-x.0] - 2019-05-07
 ### Added
@@ -93,7 +93,8 @@ for further information about branching and tagging conventions.
 ## [1.3.0] - 2019-03-01
 
 [Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.0...HEAD
-[1.7.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0-rc.0...1.7.0-x.0
+[1.7.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0...1.7.0-x.0
+[1.6.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0-rc.0...1.6.0
 [1.6.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0-x.0...1.6.0-rc.0
 [1.6.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.5.0...1.6.0-x.0
 [1.5.0]: https://github.com/tokend/new-js-sdk/compare/1.5.0-rc.1...1.5.0
