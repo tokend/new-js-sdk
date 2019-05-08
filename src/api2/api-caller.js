@@ -47,6 +47,12 @@ export class ApiCaller {
     }
   }
 
+  withWallet (wallet) {
+    const newCaller = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+    newCaller.useWallet(wallet)
+    return newCaller
+  }
+
   static getInstance (baseURL) {
     return new ApiCaller({
       baseURL,
