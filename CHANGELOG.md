@@ -59,7 +59,6 @@ for further information about branching and tagging conventions.
 
 ### Changed
 - Use XDR version 3.2.0
->>>>>>> master
 
 ## [1.6.0-x.0] - 2019-04-26
 ### Added
