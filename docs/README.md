@@ -473,28 +473,30 @@ To resolve this issue, you should upgrade your version of nodejs, node-gyp and t
 TokenD JS SDK makes creation of tokens as simple as it's possible for your users.
 To start doing it on your own, follow next steps:
 
-1. First of all, import the SDK in your project and initiate it. You will need several modules described here:
+1. First of all, import the SDK in your project and create an `ApiCaller` 
+instance. You will need several modules described here:
 
 ```js
-    import { TokenD } from '@tokend/js-sdk'
+import {
+  ApiCaller, // the module for sending requests to API server
+  base // the module for crafting transactions
+} from '@tokend/js-sdk'
 
-    const sdk = await TokenD.create('https://<tokend-backend-url>')
-    const base = sdk.base // the module for crafting transactions
-    const horizon = sdk.horizon // the middleware for sending requests to horizon server
-    const api = sdk.api // the middleware for sending requests to api server
+const apiCaller = await ApiCaller
+  .getInstanceWithPassphrase('https://<tokend-backend-url>')
 ```
 
 2. Your token may need the logotype. Let's suppose that your app have the file field, where user can upload the image:
 
 ```html
-    <input type="file" id="#token-logo">
+<input type="file" id="#token-logo">
 ```
 
 Simply attach the listener to the field to handle image upload
 
 ```js
-    const field = document.getElementById('token-logo')
-    field.addEventListener('change', handleImageUpload)
+const field = document.getElementById('token-logo')
+field.addEventListener('change', handleImageUpload)
 ```
 
 3. Now to save the image in TokenD storage you need some magic:
@@ -502,18 +504,20 @@ Simply attach the listener to the field to handle image upload
 After simply deriving raw file from field event
 
 ```js
-    async function handleImageUpload (event) {
-        const file = event.target.files[0]
-    }
+async function handleImageUpload (event) {
+  const file = event.target.files[0]
+}
 ```
+
+<!-- TODO: Update this section after moving file uploading to the SDK -->
 
 tell the API you need the space for new image and get needed params for the file upload:
 
 ```js
-    async function handleImageUpload (event) {
-        const file = event.target.files[0]
-        const { url, formData } = await api.documents.create('general_public', file.type)
-    }
+async function handleImageUpload (event) {
+  const file = event.target.files[0]
+  const { url, formData } = await api.documents.create('general_public', file.type)
+}
 ```
 
 `formData` object will look like described in API docs [API documentation][1]. You will need it
@@ -523,54 +527,66 @@ Now you've got all the necessary data for uploading your token logotype. You can
 (we'll use `axios` here) to upload it to the storage using `POST` request
 
 ```js
-    import { axios } from 'axios'
+import { axios } from 'axios'
 
-    async function handleImageUpload (event) {
-         const file = event.target.files[0]
-         const { url, formData } = await api.documents.create('general_public', file.type)
-         await axios.post(url, Object.assign(formData, {
-            file: new Blob([file], { type: file.type })
-         }))
-         return formData.key
-    }
+async function handleImageUpload (event) {
+  const file = event.target.files[0]
+  const { url, formData } = await api.documents.create('general_public', file.type)
+  await axios.post(url, Object.assign(formData, {
+    file: new Blob([file], { type: file.type })
+  }))
+  return formData.key
+}
 ```
 
 3. Now you can create the token itself. For doing this, create the operation:
 
 ```js
-    const operation = base.ManageAssetBuilder.assetCreationRequest({
-      requestID: '0', // Request ID, if 0 - creates new, updates otherwise
-      code: 'TKN', // Asset code
-      preissuedAssetSigner: 'GBT3XFWQUHUTKZMI22TVTWRA7UHV2LIO2BIFNRCH3CXWPYVYPTMXMDGC', //  AccountID of keypair which will sign request for asset to be authrorized to be issued
-      maxIssuanceAmount: '100000', //  Max amount can be issued of that asset
-      policies: 0, // Asset policies
-      initialPreissuedAmount: '100000', // Amount of pre issued tokens available after creation of the asset
-      creatorDetails: {
-           name: 'My first token'
-           logo: {
-               key: key // the key you've derived before
-           }
-       }
-    })
+const operation = base.ManageAssetBuilder.assetCreationRequest({
+  // Request ID, if 0 - creates new, updates otherwise
+  requestID: '0',
+  // Asset code
+  code: 'TKN',
+  // Account ID of keypair which will sign request for asset to be 
+  // authrorized to be issued
+  preissuedAssetSigner: 'GBT3XFWQUHUTKZMI22TVTWRA7UHV2LIO2BIFNRCH3CXWPYVYPTMXMDGC',
+  // Max amount can be issued of that asset
+  maxIssuanceAmount: '100000',
+  // Asset policies
+  policies: 0,
+  // Amount of pre issued tokens available after creation of the asset
+  initialPreissuedAmount: '100000',
+  // Count of digits after the comma
+  trailingDigitsCount: 6,
+  creatorDetails: {
+    // Asset name
+    name: 'My first token',
+    logo: {
+      // The key you've derived before
+      key: key
+    }
   }
+})
 ```
 
 Craft the transaction and sign it:
 
-
 ```js
-    const seed = 'SA4CAMSMX6CRAC4XPUPUDAC5VYSFQRWEEFDBVBEDIIRWNEHDYAX5OHMC' // is just an example, replace it with the actual one
+// Just an example, replace it with the actual one
+const seed = 'SA4CAMSMX6CRAC4XPUPUDAC5VYSFQRWEEFDBVBEDIIRWNEHDYAX5OHMC'
 
-    const keypair = base.Keypair.fromSecret()
-    const accountId = base.accountId()
+const keypair = base.Keypair.fromSecret()
+const accountId = keypair.accountId()
 
-    let tx = new base.TransactionBuilder(accountId)
-      .addOperation(operation) // the previously created operation
-      .build()
+const tx = new base.TransactionBuilder(accountId)
+  .addOperation(operation)
+  .addSigner(keypair)
+  .build()
+  .toEnvelope()
+  .toXDR()
+  .toString('base64')
 
-    tx.sign(keypair)
-
-    const txResponse = await horizon.transactions.submit(tx) // returns promise, so you can handle response:
+const txResponse = await apiCaller.postTxEnvelope(tx)
 ```
 
 [1]: http://tokend.gitlab.io/docs/#upload
