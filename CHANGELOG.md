@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.7.0-x.1] - 2019-05-07
+### Added
+- New managers classes for encapsulating actions with wallets,
+  factors, and change signers operations:
+  - `WalletsManager`
+  - `FactorsManager`
+  - `SignersManager`
+
+### Changed
+- Now using default axios instance in `ServerErrorBase` constructor
+  if there are no passed one
+
+## [1.7.0-x.0] - 2019-05-07
+### Added
+- Manage account specific rule builder
+- Release sanity check script
+
+### Changed
+- Use XDR version 3.3.0-x.0
+
+## [1.6.0] - 2019-05-07
+
+## [1.6.0-rc.0] - 2019-05-02
+### Added
+- Builders for `CancelPollOp`, `UpdatePollEndTime`
+- Unit tests for for `CancelPollOp`, `UpdatePollEndTime`
+- Integration tests for `CancelPollOp`, `UpdatePollEndTime`
+
+### Changed
+- Use XDR version 3.2.0
+
 ## [1.6.0-x.0] - 2019-04-26
 ### Added
 - `DELETE` method for ApiCaller
@@ -73,7 +104,11 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.6.0-x.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.1...HEAD
+[1.7.0-x.1]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.0...1.7.0-x.1
+[1.7.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0...1.7.0-x.0
+[1.6.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0-rc.0...1.6.0
+[1.6.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0-x.0...1.6.0-rc.0
 [1.6.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.5.0...1.6.0-x.0
 [1.5.0]: https://github.com/tokend/new-js-sdk/compare/1.5.0-rc.1...1.5.0
 [1.5.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.5.0-rc.0...1.5.0-rc.1
