@@ -10,9 +10,9 @@ The TokenD JavaScript SDK facilitates client integration with the TokenD asset t
     - [Installation](#installation)
     - [TokenD SDK](#tokend-sdk)
     - [Wallets](#wallets)
+    - [Two Factor Auth](#two-factor-auth)
     - [API Server](#api-server)
     - [Horizon Server](#horizon-server)
-    - [Two Factor Auth](#two-factor-auth)
     - [Transactions](#transactions)
 
 1. [Development Guide](#development-guide)
@@ -58,27 +58,27 @@ The package also ships prebuilt minified scripts for browsers in the `/dist` fol
 <script type="text/javascript" src="https://<sdk-dist-url>"></script>
 <script type="text/javascript">
   (async () => {
-    let sdk = await Sdk.TokenD.create('https://<tokend-backend-url>')
+    const apiCaller = await ApiCaller
+      .getInstanceWithPassphrase('https://<tokend-backend-url>')
     // ...
   })()
 </script>
 ```
 
-## TokenD SDK
+## API Caller
 
-To get started create a TokenD SDK instance:
+To get started create an API Caller instance:
 
 ```js
-import { TokenD } from '@tokend/js-sdk'
+import { ApiCaller } from '@tokend/js-sdk'
 
-let sdk = await TokenD.create('https://<tokend-backend-url>')
+const apiCaller = await ApiCaller
+  .getInstanceWithPassphrase('https://<tokend-backend-url>')
 ```
-
-You can configure different environment setting such as proxy configuration via [options](./TokenD.create.html).
 
 ## Response Format
 
-All HTTP responses share the following format:
+All HTTP responses share the converted [JSON API](https://jsonapi.org/) format:
 
 ```js
 {
@@ -87,24 +87,47 @@ All HTTP responses share the following format:
   // Flattened and camel-cased response data
   data: [
     {
-      balanceId: 'BCTZM23JQ4RT5L643R2SUPM3VSR3AISVXWX56KNYJVZB2L4TNNDEFXDG',
-      accountId: 'GD3EIROYAVQUVDCSZDYVTOQSK7LGWPNXVIIQ7W7D5A7UFEJVLVH22GNY',
-      asset: 'ETH'
+      id: 'BTC',
+      issued: '100.000000',
+      maxIssuanceAmount: '21000000.000000',
+      owner: {
+        id: 'GBA4EX43M25UPV4WIE6RRMQOFTWXZZRIPFAI5VPY6Z2ZVVXVWZ6NEOOB',
+        type: 'accounts'
+      },
+      relationshipNames: ['owner'],
+      ...
     },
     {
-      balanceId: 'BBRL3IVE7QD4YGEWKVQRF5YVOK37PXNZZGR7ILZOYQ5SMZVRLFGOMISX',
-      accountId: 'GCBUB6JILEXAFGE6VIGJMPQUQHFCM5N6JSREA65P23SG2YLEVLIOAJNU',
-      asset: 'ETH'
-    }
+      id: 'USD',
+      issued: '956823.000000',
+      maxIssuanceAmount: '223372036853.000000',
+      owner: {
+        id: 'GBA4EX43M25UPV4WIE6RRMQOFTWXZZRIPFAI5VPY6Z2ZVVXVWZ6NEOOB',
+        type: 'accounts'
+      },
+      relationshipNames: ['owner'],
+      ...
+    },
   ],
 
   // Response headers
   headers: {...},
 
+  // Raw links URL paths
+  links: {
+    first: '/<path-to-first-page>',
+    last: '/<path-to-last-page>',
+    next: '/<path-to-next-page>',
+    prev: '/<path-to-prev-page>',
+    self: '/<path-to-current-page>'
+  }
+
   // Parsed links and relations
+  fetchFirst: () => {...},
+  fetchLast: () => {...},
   fetchNext: () => {...},
   fetchPrev: () => {...},
-  fetchAccount: () => {...}
+  fetchSelf: () => {...}
 }
 ```
 
@@ -112,10 +135,10 @@ The links and relations that are returned with the responses are converted into 
 For example you can use them for simple pagination through collections:
 
 ```js
-let page = await sdk.horizon.balances.getPage()
+const page = await apiCaller.get('/v3/assets')
 console.log('Page', page.data)
 
-let prevPage = await page.fetchPrev()
+const prevPage = await page.fetchPrev()
 console.log('Previous page', prevPage.data)
 ```
 
@@ -178,40 +201,78 @@ sdk.api.useResponseInterceptor(
 
 Wallets hold user's keypair and account ID that are used to identify user, authorize access to the backend services and sign the blockhain transactions.
 
+### Wallets manager
+
+To interact with wallets you should create `WalletsManager` instance:
+
+```js
+import { WalletsManager } from '@tokend/js-sdk'
+
+const walletsManager = new WalletsManager(apiCaller)
+```
+
 ### Create a wallet
 
 ```js
-let { wallet, recoverySeed } = await sdk.api.wallets.create(
+const { wallet, recoverySeed } = await walletsManager.create(
   'my@email.com',
   'MyPassw0rd'
 )
 
 // Get the confirmation token from email
-await sdk.api.wallets.verifyEmail(token)
+await walletsManager.verifyEmail(token)
 ```
 
 ### Retrieve and use the wallet to sign requests
 
 ```js
-let wallet = await sdk.api.wallets.get('my@email.com', 'MyPassw0rd')
-sdk.useWallet(wallet)
+const wallet = await walletsManager.get('my@email.com', 'MyPassw0rd')
+apiCaller.useWallet(wallet)
 ```
 
 ### Change password
 
 ```js
-let updateWallet = await sdk.api.wallets.changePassword('MyNewPassw0rd')
-sdk.useWallet(updatedWallet)
+const updatedWallet = await walletsManager.changePassword('MyNewPassw0rd')
+apiCaller.useWallet(updatedWallet)
 ```
 
 ### Recover the password
 
 ```js
-let recoveredWallet = await sdk.api.wallets.recovery(
+const recoveredWallet = await walletsManager.recovery(
   'my@email.com',
   recoverySeed,
   'MyNewPassw0rd'
 )
+```
+
+## Two Factor Auth
+
+Some actions may require 2FA. Following snipet uses `FactorsManager`
+instance to verify factors and retry failed requests:
+
+```js
+import { errors, FactorsManager } from '@tokend/js-sdk'
+
+// Create factors manager instance
+const factorsManager = new FactorsManager(apiCaller)
+ 
+try {
+  // Perform an action that may require 2FA
+  await walletsManager.changePassword('MyNewPassw0rd')
+} catch (e) {
+  if (e instanceof errors.TFARequiredError) {
+    // Handle 2FA
+    if (e.meta.factorType === 'password') {
+      // Show password prompt to user...
+      await factorsManager.verifyPasswordFactorAndRetry(e, password)
+    } else {
+      // Show TOTP prompt to user...
+      await factorsManager.verifyTotpFactorAndRetry(e, otp)
+    }
+  }
+}
 ```
 
 ## API Server
@@ -263,32 +324,6 @@ let recoveredWallet = await sdk.api.wallets.recovery(
 - [NotFoundError](./NotFoundError.html)
 - [InternalServerError](./InternalServerError.html)
 
-## Two Factor Auth
-
-Some actions may require 2FA. Following snipet allows utilizes [interceptors](#interceptors) to handle and retry failed requests:
-
-```js
-import { errors } from '@tokend/js-sdk'
-
-sdk.api.useResponseInterceptor(
-  config => config,
-  err => {
-    if (err instanceof errors.api.TFARequiredError) {
-      // Handle 2FA
-      if (err.meta.factorType === 'password') {
-        // Show password promt to user...
-        return sdk.api.factors.verifyPasswordFactorAndRetry(err, password)
-      } else {
-        // Shot TOTP prompt to user...
-        return sdk.api.factors.verifyTotpFactorAndRetry(err, otp)
-      }
-    } else {
-      return Promise.reject(err)
-    }
-  }
-)
-```
-
 ## Transactions
 
 Blockhain transactions must have:
@@ -302,17 +337,19 @@ Blockhain transactions must have:
 ```js
 import { base } from '@tokend/js-sdk'
 
-let tx = new base.TransactionBuilder(sdk.wallet.accountId)
+const tx = new base.TransactionBuilder(apiCaller.wallet.accountId)
   .addOperation(base.Operation.payment(paymentParamsObject))
-  .build();
-
-tx.sign(sdk.wallet.keypair);
+  .addSigner(apiCaller.wallet.keypair)
+  .build()
+  .toEnvelope()
+  .toXDR()
+  .toString('base64')
 ```
 
 ### Submitting
 
 ```js
-let response = await sdk.horizon.transactions.submit(tx)
+const response = await apiCaller.postTxEnvelope(tx)
 ```
 
 ### Handling XDR encoded fields in responses
@@ -325,13 +362,13 @@ An example of re-writing the txHandler from above to print the XDR fields as JSO
 ```js
 import { base } from '@tokend/js-sdk'
 
-let envelope = response.data.envelopeXdr
+const envelope = response.data.envelopeXdr
 console.log(base.xdr.TransactionEnvelope.fromXDR(envelope, 'base64'))
 
-let result = response.data.resultXdr
+const result = response.data.resultXdr
 console.log(base.xdr.TransactionResult.fromXDR(result, 'base64'))
 
-let resultMeta = response.data.resultMetaXdr
+const resultMeta = response.data.resultMetaXdr
 console.log(base.xdr.TransactionMeta.fromXDR(resultMeta, 'base64'))
 ```
 
