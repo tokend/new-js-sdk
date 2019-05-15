@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
-###Added
-- Method allows to make requests with another wallet
+## [1.7.0-x.2] - 2019-05-15
+### Added
 - Method `useBaseURL` to api-caller
 - Method `useNetworkDetails` to api-caller
+- Method `withWallet` to api-caller
 - Method `useApi` to factors-manager
 - Method `useApi` to wallet-manager
 
@@ -112,7 +112,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.1...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.2...HEAD
+[1.7.0-x.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.1...1.7.0-x.2
 [1.7.0-x.1]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.0...1.7.0-x.1
 [1.7.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0...1.7.0-x.0
 [1.6.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0-rc.0...1.6.0
