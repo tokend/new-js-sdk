@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+###Added
+- Method allows to make requests with another wallet
+- Method `useBaseURL` to api-caller
+- Method `useNetworkDetails` to api-caller
+- Method `useApi` to factors-manager
+- Method `useApi` to wallet-manager
+
 ## [1.7.0-x.1] - 2019-05-07
 ### Added
 - New managers classes for encapsulating actions with wallets,
