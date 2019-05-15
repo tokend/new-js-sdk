@@ -1,6 +1,7 @@
 import { Wallet } from '../../wallet'
 
 import middlewares from '../middlewares'
+import { ApiCaller } from '../api-caller'
 
 /**
  * Factors manager.
@@ -13,7 +14,16 @@ export class FactorsManager {
    * @param {ApiCaller} apiCaller ApiCaller instance to process the requests.
    */
   constructor (apiCaller) {
-    this._apiCaller = apiCaller
+    if (apiCaller) {
+      this.useApi(apiCaller)
+    }
+  }
+
+  useApi (api) {
+    if (!(api instanceof ApiCaller)) {
+      throw new Error('Is not ApiCaller')
+    }
+    this._apiCaller = api
   }
 
   /**

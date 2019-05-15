@@ -29,9 +29,11 @@ export class ApiCaller {
    * @param {Wallet} [opts.wallet] - the initialized {@link Wallet} instance for signing requests/transactions
    * @param {string} [opts.passphrase] - the passphrase of current TokenD network (is used internally when signing transactions)
    */
-  constructor (opts) {
-    this._axios = opts.axios
-    this._baseURL = opts.baseURL
+  constructor (opts = {}) {
+    this._axios = axios.create()
+    if (opts.baseURL) {
+      this.useBaseURL(opts.baseURL)
+    }
 
     this._wallet = null
     this._networkDetails = {}
@@ -55,8 +57,7 @@ export class ApiCaller {
 
   static getInstance (baseURL) {
     return new ApiCaller({
-      baseURL,
-      axios: axios.create()
+      baseURL
     })
   }
 
@@ -282,5 +283,14 @@ export class ApiCaller {
 
   usePassphrase (networkPassphrase) {
     Network.use(new Network(networkPassphrase))
+  }
+
+  useBaseURL (baseURL) {
+    this._baseURL = baseURL
+  }
+
+  useNetworkDetails (networkDetails) {
+    this._networkDetails = networkDetails
+    this.usePassphrase(networkDetails.networkPassphrase)
   }
 }

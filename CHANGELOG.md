@@ -10,6 +10,10 @@ for further information about branching and tagging conventions.
 ## [Unreleased]
 ###Added
 - Method allows to make requests with another wallet
+- Method `useBaseURL` to api-caller
+- Method `useNetworkDetails` to api-caller
+- Method `useApi` to factors-manager
+- Method `useApi` to wallet-manager
 
 ## [1.7.0-x.1] - 2019-05-07
 ### Added

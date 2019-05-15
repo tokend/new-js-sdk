@@ -4,6 +4,7 @@ import { Wallet } from '../../wallet'
 import { Keypair } from '../../base/keypair'
 
 import { SignersManager } from './signers-manager'
+import { ApiCaller } from '../api-caller'
 
 import { VerificationRequiredError } from '../../errors'
 
@@ -18,8 +19,17 @@ export class WalletsManager {
    * @param {ApiCaller} apiCaller ApiCaller instance to process the requests.
    */
   constructor (apiCaller) {
-    this._apiCaller = apiCaller
-    this._signersManager = new SignersManager(apiCaller)
+    if (apiCaller) {
+      this.useApi(apiCaller)
+    }
+  }
+
+  useApi (api) {
+    if (!(api instanceof ApiCaller)) {
+      throw new Error('Is not ApiCaller')
+    }
+    this._signersManager = new SignersManager(api)
+    this._apiCaller = api
   }
 
   /**
