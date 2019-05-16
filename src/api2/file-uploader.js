@@ -1,9 +1,12 @@
 import axios from 'axios'
 
-import middlewares from './middlewares'
-import _omit from 'lodash/omit'
+import FormData from 'form-data'
 
 import { toKebabCaseDeep } from '../utils/case_converter'
+import _omit from 'lodash/omit'
+
+const HEADER_CONTENT_TYPE = 'Content-Type'
+const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
 
 /**
  * FileUploader uploads a file to the storage server
@@ -11,8 +14,8 @@ import { toKebabCaseDeep } from '../utils/case_converter'
 export class FileUploader {
   /**
    * @param {object} opts
-   * @param {string} opts.storageURL
    * @param {ApiCaller} opts.apiCaller
+   * @param {string} [opts.storageURL]
    */
   constructor (opts = {}) {
     this._axios = axios.create()
@@ -27,17 +30,27 @@ export class FileUploader {
     this._storageURL = url
   }
 
+  /**
+   * Uploads the file into storage
+   *
+   * @param {object} opts
+   * @param {string} opts.type - Type of the document
+   * (!! nothing common with MIME-type)
+   * @param {string} opts.mimeType - MIME-type of the file being uploaded
+   * @param {ArrayBuffer} opts.file - File itself
+   *
+   * @return {string} - File storage key
+   */
   async uploadFile ({ type, mimeType, file }) {
     const config = await this._createDocumentAnchorConfig(
       { type, mimeType }
     )
 
-    const formData = this._createFileFormData(
+    const formData = this._createFileFormData({
       file,
-      _omit(config, ['id', 'url', 'type']),
-      mimeType
-    )
-    await this._postFileFormData(formData)
+      policy: _omit(config, ['id', 'url', 'type'])
+    })
+    await this._postFormData(formData)
 
     return config.key
   }
@@ -61,33 +74,25 @@ export class FileUploader {
     return config
   }
 
-  _createFileFormData (file, policy, mimeType) {
-    // eslint-disable-next-line no-undef
+  _createFileFormData ({ file, policy }) {
     const formData = new FormData()
 
     for (const key in policy) {
       formData.append(toKebabCaseDeep(key), policy[key])
     }
 
-    // eslint-disable-next-line no-undef
-    const blob = new Blob([file], { type: mimeType })
-    formData.append('file', blob)
+    formData.append('file', file)
 
     return formData
   }
 
-  async _postFileFormData (formData) {
+  async _postFormData (formData) {
     const config = {
-      baseURL: this._storageURL,
-      headers: { 'Content-Type': 'multipart/form-data' },
-      data: formData,
-      method: 'POST'
+      headers: {
+        [HEADER_CONTENT_TYPE]: MIME_TYPE_MULTIPART_FORM_DATA
+      }
     }
 
-    try {
-      await this._axios(config)
-    } catch (e) {
-      throw middlewares.parseJsonapiError(e, this._axios)
-    }
+    await this._axios.post(this._storageURL, formData, config)
   }
 }
