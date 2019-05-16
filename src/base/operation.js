@@ -27,6 +27,10 @@ import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 import { StampBuilder } from './operations/stamp'
 import { LicenseBuilder } from './operations/license_operation'
+import { ManageCreatePollRequestBuilder } from './operations/manage_create_poll_request_builder'
+import { ManageVoteBuilder } from './operations/manage_vote_builder'
+import { ManagePollBuilder } from './operations/manage_poll_builder'
+import { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -424,21 +428,33 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.createManageLimitsRequest():
         CreateManageLimitsRequestBuilder.createManageLimitsRequestToObject(result, attrs)
         break
-      case xdr.OperationType.createAswapBidRequest():
+      case xdr.OperationType.createAtomicSwapBidRequest():
         CreateAtomicSwapBidCreationRequestBuilder
-          .createASwapBidCreationRequestToObject(result, attrs)
+          .createAtomicSwapBidCreationRequestToObject(result, attrs)
         break
-      case xdr.OperationType.cancelAswapBid():
-        CancelAtomicSwapBidBuilder.cancelASwapBidToObject(result, attrs)
+      case xdr.OperationType.cancelAtomicSwapBid():
+        CancelAtomicSwapBidBuilder.cancelAtomicSwapBidToObject(result, attrs)
         break
-      case xdr.OperationType.createAswapRequest():
-        CreateAtomicSwapRequestBuilder.createASwapRequestToObject(result, attrs)
+      case xdr.OperationType.createAtomicSwapRequest():
+        CreateAtomicSwapRequestBuilder.createAtomicSwapRequestToObject(result, attrs)
         break
       case xdr.OperationType.stamp():
         StampBuilder.stampToObject(result, attrs)
         break
       case xdr.OperationType.license():
         LicenseBuilder.licenseToObject(result, attrs)
+        break
+      case xdr.OperationType.manageCreatePollRequest():
+        ManageCreatePollRequestBuilder.manageCreatePollRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.manageVote():
+        ManageVoteBuilder.manageVoteToObject(result, attrs)
+        break
+      case xdr.OperationType.managePoll():
+        ManagePollBuilder.managePollToObject(result, attrs)
+        break
+      case xdr.OperationType.manageAccountSpecificRule():
+        ManageAccountSpecificRuleBuilder.manageAccountSpecificRuleToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

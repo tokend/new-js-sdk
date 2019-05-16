@@ -13,7 +13,8 @@ const methods = Object.freeze({
   PATCH: 'PATCH',
   POST: 'POST',
   PUT: 'PUT',
-  GET: 'GET'
+  GET: 'GET',
+  DELETE: 'DELETE'
 })
 
 /**
@@ -28,11 +29,14 @@ export class ApiCaller {
    * @param {Wallet} [opts.wallet] - the initialized {@link Wallet} instance for signing requests/transactions
    * @param {string} [opts.passphrase] - the passphrase of current TokenD network (is used internally when signing transactions)
    */
-  constructor (opts) {
-    this._axios = opts.axios
-    this._baseURL = opts.baseURL
+  constructor (opts = {}) {
+    this._axios = axios.create()
+    if (opts.baseURL) {
+      this.useBaseURL(opts.baseURL)
+    }
 
     this._wallet = null
+    this._networkDetails = {}
     this._customTimeout = null
     this._clockDiff = 0
 
@@ -45,26 +49,49 @@ export class ApiCaller {
     }
   }
 
+  withWallet (wallet) {
+    const newCaller = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+    newCaller.useWallet(wallet)
+    return newCaller
+  }
+
   static getInstance (baseURL) {
     return new ApiCaller({
-      baseURL,
-      axios: axios.create()
+      baseURL
     })
   }
 
   static async getInstanceWithPassphrase (baseURL) {
     const caller = this.getInstance(baseURL)
-    const networkDetails = await caller.get('/')
+    const { data: networkDetails } = await caller.getRaw('/')
 
-    caller.usePassphrase(networkDetails.data.networkPassphrase)
+    caller._networkDetails = networkDetails
+    caller.usePassphrase(networkDetails.networkPassphrase)
 
     return caller
+  }
+
+  get networkDetails () {
+    return this._networkDetails
+  }
+
+  get wallet () {
+    return this._wallet
   }
 
   get (endpoint, query, needSign = false) {
     return this._call({
       method: methods.GET,
       needSign,
+      endpoint,
+      query
+    })
+  }
+
+  getRaw (endpoint, query) {
+    return this._call({
+      method: methods.GET,
+      needRaw: true,
       endpoint,
       query
     })
@@ -111,6 +138,18 @@ export class ApiCaller {
 
   putWithSignature (endpoint, data) {
     return this.put(endpoint, data, true)
+  }
+
+  delete (endpoint, needSign = false) {
+    return this._call({
+      method: methods.DELETE,
+      needSign,
+      endpoint
+    })
+  }
+
+  deleteWithSignature (endpoint, data) {
+    return this.delete(endpoint, data, true)
   }
 
   /**
@@ -175,6 +214,7 @@ export class ApiCaller {
    * @param {object} opts.query - request query params. See {@link parseQuery} for details
    * @param {string} opts.method - the http method of request
    * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
+   * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
    *
    * @private
    */
@@ -208,17 +248,21 @@ export class ApiCaller {
     try {
       response = await this._axios(config)
     } catch (e) {
-      throw middlewares.parseJsonapiError(e)
+      throw middlewares.parseJsonapiError(e, this._axios)
     }
 
-    response = middlewares.parseJsonapiResponse(response)
+    if (!opts.needRaw) {
+      response = middlewares.parseJsonapiResponse(response)
 
-    if (!isEmpty(response.links)) {
-      if (opts.needSign) {
-        response.makeLinkCallersWithSignature(this)
-      } else {
-        response.makeLinkCallers(this)
+      if (!isEmpty(response.links)) {
+        if (opts.needSign) {
+          response.makeLinkCallersWithSignature(this)
+        } else {
+          response.makeLinkCallers(this)
+        }
       }
+    } else {
+      response = toCamelCaseDeep(response)
     }
 
     return response
@@ -239,5 +283,14 @@ export class ApiCaller {
 
   usePassphrase (networkPassphrase) {
     Network.use(new Network(networkPassphrase))
+  }
+
+  useBaseURL (baseURL) {
+    this._baseURL = baseURL
+  }
+
+  useNetworkDetails (networkDetails) {
+    this._networkDetails = networkDetails
+    this.usePassphrase(networkDetails.networkPassphrase)
   }
 }

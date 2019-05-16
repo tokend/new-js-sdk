@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 import { toCamelCaseDeep } from './utils/case_converter'
 import { get } from 'lodash'
 
@@ -33,12 +35,13 @@ export class ServerErrorBase extends Error {
    * Wrap a raw axios error.
    *
    * @param {object} originalError Raw axios response.
-   * @param {axios} axios Axios instance used for request.
+   * @param {axios} axiosInstance Axios instance used for request.
    */
-  constructor (originalError, axios) {
+  constructor (originalError, axiosInstance) {
     super(originalError.message)
+
     this.originalError = originalError
-    this._axios = axios
+    this._axios = axiosInstance || axios.create()
   }
 
   /**
@@ -78,7 +81,7 @@ export class ServerErrorBase extends Error {
    * Use it to retry requests after 2FA.
    */
   retryRequest () {
-    let config = this.originalError.config
+    const config = this.originalError.config
     return this._axios(config)
   }
 }
@@ -162,7 +165,32 @@ export class TransactionError extends ServerError {
   }
 
   includesOpCode (opCode) {
-    return this._resultCodes.operations.includes(opCode)
+    return this._resultCodes.operations
+      ? this._resultCodes.operations.includes(opCode)
+      : this._resultCodes.transaction === opCode
+  }
+
+  /**
+   * Information about failed operations.
+   */
+
+  get errorResults () {
+    if (this._resultCodes.operations) {
+      return this._resultCodes.operations.reduce((resultCodes, item, index) => {
+        if (item !== 'tx_success') {
+          resultCodes.push({
+            errorCode: item,
+            message: this._resultCodes.messages[index]
+          })
+        }
+        return resultCodes
+      }, [])
+    } else {
+      return [{
+        errorCode: this._resultCodes.transaction,
+        message: ''
+      }]
+    }
   }
 
   /**

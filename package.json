@@ -1,6 +1,6 @@
 {
   "name": "@tokend/js-sdk",
-  "version": "1.3.1-x.1",
+  "version": "1.7.0-x.2",
   "description": "js-sdk is a client-side SDK for TokenD asset tokenization platform.",
   "main": "lib/index.js",
   "scripts": {
@@ -11,15 +11,17 @@
     "test:browser": "karma start",
     "lint": "eslint ./src --cache --fix",
     "coverage": "nyc mocha --opts ./mocha.opts 'src/**/*.spec.js'",
-    "docs": "rimraf docs/pages && npm run docs:xdr && jsdoc -c ./.jsdoc.json && rm docs/enums.js",
+    "docs": "rimraf docs/pages && yarn docs:xdr && jsdoc -c ./.jsdoc.json && rm docs/enums.js",
     "docs:md": "rimraf docs/markdown && node scripts/jsdoc_to_markdown.js",
     "docs:xdr": "node scripts/xdr_to_jsdoc.js",
-    "prepare": "npm run build & npm run build:browser",
-    "init:sales": "node scripts/init_sales.js"
+    "prepare": "yarn build & yarn build:browser",
+    "init:sales": "node scripts/init_sales.js",
+    "rsc": "node scripts/release_sanity_check.js"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "eslint ./src --cache"
+      "pre-commit": "eslint ./src --cache",
+      "pre-push": "yarn rsc && yarn test"
     }
   },
   "nyc": {
@@ -39,14 +41,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/tokend/new-js-sdk.git"
+    "url": "git+https://github.com/tokend/new-js-sdk.git"
   },
   "author": "Distributed Lab <contact@distributedlab.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://gitlab.com/tokend/new-js-sdk.git/issues"
+    "url": "https://github.com/tokend/new-js-sdk/issues"
   },
-  "homepage": "https://gitlab.com/tokend/new-js-sdk",
+  "homepage": "https://github.com/tokend/new-js-sdk",
   "devDependencies": {
     "@babel/cli": "7.1.2",
     "@babel/core": "7.1.2",

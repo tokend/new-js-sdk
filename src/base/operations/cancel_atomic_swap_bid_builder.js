@@ -10,14 +10,14 @@ export class CancelAtomicSwapBidBuilder {
      * @param {string} [opts.source] - The source account for the operation.
      * Defaults to the transaction's source account.
      *
-     * @returns {xdr.CancelASwapBidOp}
+     * @returns {xdr.Operation}
      */
-  static cancelASwapBid (opts) {
+  static cancelAtomicSwapBid (opts) {
     let opAttributes = {}
-    opAttributes.body = new xdr.OperationBody.cancelAswapBid(
-      new xdr.CancelASwapBidOp({
+    opAttributes.body = new xdr.OperationBody.cancelAtomicSwapBid(
+      new xdr.CancelAtomicSwapBidOp({
         bidId: UnsignedHyper.fromString(opts.bidID),
-        ext: new xdr.CancelASwapBidOpExt(
+        ext: new xdr.CancelAtomicSwapBidOpExt(
           xdr.LedgerVersion.emptyVersion())
       }))
 
@@ -25,7 +25,7 @@ export class CancelAtomicSwapBidBuilder {
     return new xdr.Operation(opAttributes)
   }
 
-  static cancelASwapBidToObject (result, attrs) {
+  static cancelAtomicSwapBidToObject (result, attrs) {
     result.bidID = attrs.bidId().toString()
   }
 }

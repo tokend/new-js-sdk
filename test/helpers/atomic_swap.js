@@ -1,4 +1,3 @@
-import { Running } from './_running'
 import { getRequestIdFromResultXdr, Helper } from './_helper'
 import { base } from '../../src'
 
@@ -25,43 +24,13 @@ export class AtomicSwap extends Helper {
       }
     }
 
-    const operation = base.CreateAtomicSwapRequestBuilder.createASwapRequest({
+    const operation = base.CreateAtomicSwapRequestBuilder.createAtomicSwapRequest({
       ...DEFAULTS,
       ...opts
     })
 
     const response = await this.submit(operation, ownerKp)
 
-    return getRequestIdFromResultXdr(response.resultXdr, 'createASwapRequestResult')
-  }
-
-  checkSaleState (id) {
-    return this.submit(SaleRequestBuilder.checkSaleState({ saleID: id }))
-  }
-
-  mustLoadById (id) {
-    return Running.untilFound(async () => {
-      const { data } = await this.sdk.horizon.sales.get(id)
-      return data
-    })
-  }
-
-  mustLoadClosed (id) {
-    return Running.untilGotReturnValue(async () => {
-      const { data: sale } = await this.sdk.horizon.sales.get(id)
-      if (sale.state.value !== SALE_STATES.closed) {
-        return undefined
-      }
-      return sale
-    })
-  }
-
-  async mustLoadByBaseAsset (baseAsset) {
-    return Running.untilGotReturnValue(async () => {
-      const { data } = await this.sdk.horizon.sales.getPage({
-        base_asset: baseAsset
-      })
-      return data[0]
-    })
+    return getRequestIdFromResultXdr(response.resultXdr, 'createAtomicSwapRequestResult')
   }
 }

@@ -22,11 +22,11 @@ describe('Create ASwapBidCreation request', function () {
       ],
       allTasks: '1'
     }
-    let op = CreateAtomicSwapBidCreationRequestBuilder.createASwapBidCreationRequest(opts)
+    let op = CreateAtomicSwapBidCreationRequestBuilder.createAtomicSwapBidCreationRequest(opts)
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
-    expect(obj.type).to.be.equal(xdr.OperationType.createAswapBidRequest().name)
+    expect(obj.type).to.be.equal(xdr.OperationType.createAtomicSwapBidRequest().name)
     expect(obj.balanceID).to.be.equal(opts.balanceID)
     expect(obj.amount).to.be.equal(opts.amount)
     expect(obj.allTasks).to.be.equal(opts.allTasks)

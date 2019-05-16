@@ -4,8 +4,6 @@ import { getRequestIdFromResultXdr, Helper } from './_helper'
 import { base } from '../../src'
 import { Wallet } from '../../src/wallet'
 import { ApiCaller } from '../../src/api2/api-caller'
-import { isUndefined } from 'lodash'
-import { NotFoundError } from '../../src/errors'
 import * as config from '../config'
 import { logger } from '../logger'
 
@@ -35,14 +33,14 @@ export class AtomicSwapBid extends Helper {
     }
 
     const operation = base.CreateAtomicSwapBidCreationRequestBuilder
-      .createASwapBidCreationRequest({
+      .createAtomicSwapBidCreationRequest({
         ...DEFAULTS,
         ...opts
       })
 
     const response = await this.submit(operation, ownerKp)
 
-    return getRequestIdFromResultXdr(response.resultXdr, 'createASwapBidCreationRequestResult')
+    return getRequestIdFromResultXdr(response.resultXdr, 'createAtomicSwapBidCreationRequestResult')
   }
   mustLoadById (id) {
     return Running.untilFound(async () => {

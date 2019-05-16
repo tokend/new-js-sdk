@@ -5,16 +5,16 @@ import { Keypair } from '../keypair'
 
 export class CreateIssuanceRequestBuilder {
   /**
-     * Creates operation to create issuance request
-     * @param {object} opts
-     * @param {string} opts.asset - asset to be issued
-     * @param {string} opts.amount - amount to be issued
-     * @param {string} opts.receiver - balance ID of the receiver
-     * @param {string} opts.reference - Reference of the request
-     * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
-     * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-     * @returns {xdr.CreateIssuanceRequestOp}
-     */
+   * Creates operation to create issuance request
+   * @param {object} opts
+   * @param {string} opts.asset - asset to be issued
+   * @param {string} opts.amount - amount to be issued
+   * @param {string} opts.receiver - balance ID of the receiver
+   * @param {string} opts.reference - Reference of the request
+   * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
+   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
+   * @returns {xdr.CreateIssuanceRequestOp}
+   */
   static createIssuanceRequest (opts) {
     let attrs = {}
     if (!BaseOperation.isValidAsset(opts.asset)) {
@@ -59,8 +59,7 @@ export class CreateIssuanceRequestBuilder {
       ext: new xdr.CreateIssuanceRequestOpExt(xdr.LedgerVersion.emptyVersion())
     })
     let opAttributes = {}
-    opAttributes.body = xdr.OperationBody
-      .createIssuanceRequest(issuanceRequestOp)
+    opAttributes.body = xdr.OperationBody.createIssuanceRequest(issuanceRequestOp)
     BaseOperation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)
   }

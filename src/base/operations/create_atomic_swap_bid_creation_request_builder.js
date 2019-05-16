@@ -19,9 +19,9 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
      * @param {string} [opts.source] - The source account for the operation.
      * Defaults to the transaction's source account.
      *
-     * @returns {xdr.CreateASwapBidCreationRequestOp}
+     * @returns {xdr.Operation}
      */
-  static createASwapBidCreationRequest (opts) {
+  static createAtomicSwapBidCreationRequest (opts) {
     let rawRequest = {}
     if (!BaseOperation.isValidAmount(opts.amount)) {
       throw new Error('opts.amount is invalid')
@@ -52,15 +52,15 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
         throw new Error('opts.quoteAssets[i].asset is invalid')
       }
 
-      rawRequest.quoteAssets.push(new xdr.ASwapBidQuoteAsset({
+      rawRequest.quoteAssets.push(new xdr.AtomicSwapBidQuoteAsset({
         price: BaseOperation._toUnsignedXDRAmount(quoteAsset.price),
         quoteAsset: quoteAsset.asset,
-        ext: new xdr.ASwapBidQuoteAssetExt(xdr.LedgerVersion.emptyVersion())
+        ext: new xdr.AtomicSwapBidQuoteAssetExt(xdr.LedgerVersion.emptyVersion())
       }))
     }
 
     rawRequest.creatorDetails = JSON.stringify(opts.creatorDetails)
-    rawRequest.ext = new xdr.ASwapBidCreationRequestExt(
+    rawRequest.ext = new xdr.AtomicSwapBidCreationRequestExt(
       xdr.LedgerVersion.emptyVersion())
 
     let tasks
@@ -69,11 +69,11 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
     }
 
     let opAttributes = {}
-    opAttributes.body = new xdr.OperationBody.createAswapBidRequest(
-      new xdr.CreateASwapBidCreationRequestOp({
-        request: new xdr.ASwapBidCreationRequest(rawRequest),
+    opAttributes.body = new xdr.OperationBody.createAtomicSwapBidRequest(
+      new xdr.CreateAtomicSwapBidCreationRequestOp({
+        request: new xdr.AtomicSwapBidCreationRequest(rawRequest),
         allTasks: tasks,
-        ext: new xdr.CreateASwapBidCreationRequestOpExt(
+        ext: new xdr.CreateAtomicSwapBidCreationRequestOpExt(
           xdr.LedgerVersion.emptyVersion())
       }))
 
@@ -81,7 +81,7 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
     return new xdr.Operation(opAttributes)
   }
 
-  static createASwapBidCreationRequestToObject (result, attrs) {
+  static createAtomicSwapBidCreationRequestToObject (result, attrs) {
     result.balanceID = BaseOperation.balanceIdtoString(
       attrs.request().baseBalance())
     result.amount = BaseOperation._fromXDRAmount(

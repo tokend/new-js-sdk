@@ -75,10 +75,11 @@ export class Wallets extends ResourceGroupBase {
    * @param {string} email User's email.
    * @param {string} password User's password.
    * @param {Keypair} recoveryKeypair the keypair to later recover the account
+   * @param {string} [referrerId] public key of the referrer
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
-  async create (email, password, recoveryKeypair) {
+  async create (email, password, recoveryKeypair, referrerId = '') {
     let kdfResponse = await this.getKdfParams()
     let kdfParams = kdfResponse.data
 
@@ -129,7 +130,17 @@ export class Wallets extends ResourceGroupBase {
                 type: 'password',
                 id: encryptedMainWallet.id
               }
-            }
+            },
+            ...(referrerId
+              ? {
+                referrer: {
+                  data: {
+                    id: referrerId
+                  }
+                }
+              }
+              : {}
+            )
           }
         },
         included: [
@@ -173,7 +184,12 @@ export class Wallets extends ResourceGroupBase {
     return this._makeWalletsCallBuilder()
       .appendUrlSegment(jsonPayload.meta.wallet_id)
       .appendUrlSegment('verification')
-      .put({ data: { attributes: { token: jsonPayload.meta.token } } })
+      .put({
+        data: {
+          type: 'wallet_verification',
+          attributes: { token: jsonPayload.meta.token }
+        }
+      })
   }
 
   /**

@@ -1,6 +1,6 @@
-// revision: 07643f13fd5610cc258999bbcb8dc931fba0f84d
+// revision: 9c52f2c32a284a36c17dd6296a0578e0dfc19700
 // branch:   feature/atomic_swap_returning
-// Automatically generated on 2019-03-18T11:06:26+00:00
+// Automatically generated on 2019-05-16T10:56:18+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -53,6 +53,76 @@ xdr.struct("PendingStatisticsEntry", [
   ["requestId", xdr.lookup("Uint64")],
   ["amount", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("PendingStatisticsEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum PollType
+//   {
+//       SINGLE_CHOICE = 0
+//   };
+//
+// ===========================================================================
+xdr.enum("PollType", {
+  singleChoice: 0,
+});
+
+// === xdr source ============================================================
+//
+//   union PollData switch (PollType type)
+//   {
+//   case SINGLE_CHOICE:
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.union("PollData", {
+  switchOn: xdr.lookup("PollType"),
+  switchName: "type",
+  switches: [
+    ["singleChoice", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct PollEntry
+//   {
+//       uint64 id;
+//       uint32 permissionType;
+//   
+//       uint32 numberOfChoices;
+//       PollData data;
+//   
+//       uint64 startTime;
+//       uint64 endTime;
+//   
+//       AccountID ownerID;
+//       AccountID resultProviderID;
+//   
+//       bool voteConfirmationRequired;
+//   
+//       longstring details;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("PollEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
+  ["numberOfChoices", xdr.lookup("Uint32")],
+  ["data", xdr.lookup("PollData")],
+  ["startTime", xdr.lookup("Uint64")],
+  ["endTime", xdr.lookup("Uint64")],
+  ["ownerId", xdr.lookup("AccountId")],
+  ["resultProviderId", xdr.lookup("AccountId")],
+  ["voteConfirmationRequired", xdr.bool()],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -205,12 +275,12 @@ xdr.struct("StampEntry", [
 //           ManageContractOp manageContractOp;
 //       case CANCEL_SALE_REQUEST:
 //           CancelSaleCreationRequestOp cancelSaleCreationRequestOp;
-//       case CREATE_ASWAP_BID_REQUEST:
-//           CreateASwapBidCreationRequestOp createASwapBidCreationRequestOp;
-//       case CANCEL_ASWAP_BID:
-//           CancelASwapBidOp cancelASwapBidOp;
-//       case CREATE_ASWAP_REQUEST:
-//           CreateASwapRequestOp createASwapRequestOp;
+//       case CREATE_ATOMIC_SWAP_BID_REQUEST:
+//           CreateAtomicSwapBidCreationRequestOp createAtomicSwapBidCreationRequestOp;
+//       case CANCEL_ATOMIC_SWAP_BID:
+//           CancelAtomicSwapBidOp cancelAtomicSwapBidOp;
+//       case CREATE_ATOMIC_SWAP_REQUEST:
+//           CreateAtomicSwapRequestOp createAtomicSwapRequestOp;
 //       case MANAGE_ACCOUNT_ROLE:
 //           ManageAccountRoleOp manageAccountRoleOp;
 //       case MANAGE_ACCOUNT_RULE:
@@ -225,6 +295,14 @@ xdr.struct("StampEntry", [
 //           StampOp stampOp;
 //       case LICENSE:
 //           LicenseOp licenseOp;
+//       case MANAGE_CREATE_POLL_REQUEST:
+//           ManageCreatePollRequestOp manageCreatePollRequestOp;
+//       case MANAGE_POLL:
+//           ManagePollOp managePollOp;
+//       case MANAGE_VOTE:
+//           ManageVoteOp manageVoteOp;
+//       case MANAGE_ACCOUNT_SPECIFIC_RULE:
+//           ManageAccountSpecificRuleOp manageAccountSpecificRuleOp;
 //       }
 //
 // ===========================================================================
@@ -258,9 +336,9 @@ xdr.union("OperationBody", {
     ["manageContractRequest", "manageContractRequestOp"],
     ["manageContract", "manageContractOp"],
     ["cancelSaleRequest", "cancelSaleCreationRequestOp"],
-    ["createAswapBidRequest", "createASwapBidCreationRequestOp"],
-    ["cancelAswapBid", "cancelASwapBidOp"],
-    ["createAswapRequest", "createASwapRequestOp"],
+    ["createAtomicSwapBidRequest", "createAtomicSwapBidCreationRequestOp"],
+    ["cancelAtomicSwapBid", "cancelAtomicSwapBidOp"],
+    ["createAtomicSwapRequest", "createAtomicSwapRequestOp"],
     ["manageAccountRole", "manageAccountRoleOp"],
     ["manageAccountRule", "manageAccountRuleOp"],
     ["manageSigner", "manageSignerOp"],
@@ -268,6 +346,10 @@ xdr.union("OperationBody", {
     ["manageSignerRule", "manageSignerRuleOp"],
     ["stamp", "stampOp"],
     ["license", "licenseOp"],
+    ["manageCreatePollRequest", "manageCreatePollRequestOp"],
+    ["managePoll", "managePollOp"],
+    ["manageVote", "manageVoteOp"],
+    ["manageAccountSpecificRule", "manageAccountSpecificRuleOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -296,9 +378,9 @@ xdr.union("OperationBody", {
     manageContractRequestOp: xdr.lookup("ManageContractRequestOp"),
     manageContractOp: xdr.lookup("ManageContractOp"),
     cancelSaleCreationRequestOp: xdr.lookup("CancelSaleCreationRequestOp"),
-    createASwapBidCreationRequestOp: xdr.lookup("CreateASwapBidCreationRequestOp"),
-    cancelASwapBidOp: xdr.lookup("CancelASwapBidOp"),
-    createASwapRequestOp: xdr.lookup("CreateASwapRequestOp"),
+    createAtomicSwapBidCreationRequestOp: xdr.lookup("CreateAtomicSwapBidCreationRequestOp"),
+    cancelAtomicSwapBidOp: xdr.lookup("CancelAtomicSwapBidOp"),
+    createAtomicSwapRequestOp: xdr.lookup("CreateAtomicSwapRequestOp"),
     manageAccountRoleOp: xdr.lookup("ManageAccountRoleOp"),
     manageAccountRuleOp: xdr.lookup("ManageAccountRuleOp"),
     manageSignerOp: xdr.lookup("ManageSignerOp"),
@@ -306,6 +388,10 @@ xdr.union("OperationBody", {
     manageSignerRuleOp: xdr.lookup("ManageSignerRuleOp"),
     stampOp: xdr.lookup("StampOp"),
     licenseOp: xdr.lookup("LicenseOp"),
+    manageCreatePollRequestOp: xdr.lookup("ManageCreatePollRequestOp"),
+    managePollOp: xdr.lookup("ManagePollOp"),
+    manageVoteOp: xdr.lookup("ManageVoteOp"),
+    manageAccountSpecificRuleOp: xdr.lookup("ManageAccountSpecificRuleOp"),
   },
 });
 
@@ -372,12 +458,12 @@ xdr.union("OperationBody", {
 //           ManageContractOp manageContractOp;
 //       case CANCEL_SALE_REQUEST:
 //           CancelSaleCreationRequestOp cancelSaleCreationRequestOp;
-//       case CREATE_ASWAP_BID_REQUEST:
-//           CreateASwapBidCreationRequestOp createASwapBidCreationRequestOp;
-//       case CANCEL_ASWAP_BID:
-//           CancelASwapBidOp cancelASwapBidOp;
-//       case CREATE_ASWAP_REQUEST:
-//           CreateASwapRequestOp createASwapRequestOp;
+//       case CREATE_ATOMIC_SWAP_BID_REQUEST:
+//           CreateAtomicSwapBidCreationRequestOp createAtomicSwapBidCreationRequestOp;
+//       case CANCEL_ATOMIC_SWAP_BID:
+//           CancelAtomicSwapBidOp cancelAtomicSwapBidOp;
+//       case CREATE_ATOMIC_SWAP_REQUEST:
+//           CreateAtomicSwapRequestOp createAtomicSwapRequestOp;
 //       case MANAGE_ACCOUNT_ROLE:
 //           ManageAccountRoleOp manageAccountRoleOp;
 //       case MANAGE_ACCOUNT_RULE:
@@ -392,6 +478,14 @@ xdr.union("OperationBody", {
 //           StampOp stampOp;
 //       case LICENSE:
 //           LicenseOp licenseOp;
+//       case MANAGE_CREATE_POLL_REQUEST:
+//           ManageCreatePollRequestOp manageCreatePollRequestOp;
+//       case MANAGE_POLL:
+//           ManagePollOp managePollOp;
+//       case MANAGE_VOTE:
+//           ManageVoteOp manageVoteOp;
+//       case MANAGE_ACCOUNT_SPECIFIC_RULE:
+//           ManageAccountSpecificRuleOp manageAccountSpecificRuleOp;
 //       }
 //       body;
 //   };
@@ -665,12 +759,12 @@ xdr.struct("AccountRuleRequirement", [
 //           ManageContractResult manageContractResult;
 //       case CANCEL_SALE_REQUEST:
 //           CancelSaleCreationRequestResult cancelSaleCreationRequestResult;
-//       case CREATE_ASWAP_BID_REQUEST:
-//           CreateASwapBidCreationRequestResult createASwapBidCreationRequestResult;
-//       case CANCEL_ASWAP_BID:
-//           CancelASwapBidResult cancelASwapBidResult;
-//       case CREATE_ASWAP_REQUEST:
-//           CreateASwapRequestResult createASwapRequestResult;
+//       case CREATE_ATOMIC_SWAP_BID_REQUEST:
+//           CreateAtomicSwapBidCreationRequestResult createAtomicSwapBidCreationRequestResult;
+//       case CANCEL_ATOMIC_SWAP_BID:
+//           CancelAtomicSwapBidResult cancelAtomicSwapBidResult;
+//       case CREATE_ATOMIC_SWAP_REQUEST:
+//           CreateAtomicSwapRequestResult createAtomicSwapRequestResult;
 //       case MANAGE_ACCOUNT_ROLE:
 //           ManageAccountRoleResult manageAccountRoleResult;
 //       case MANAGE_ACCOUNT_RULE:
@@ -685,6 +779,14 @@ xdr.struct("AccountRuleRequirement", [
 //           StampResult stampResult;
 //       case LICENSE:
 //           LicenseResult licenseResult;
+//       case MANAGE_POLL:
+//           ManagePollResult managePollResult;
+//       case MANAGE_CREATE_POLL_REQUEST:
+//           ManageCreatePollRequestResult manageCreatePollRequestResult;
+//       case MANAGE_VOTE:
+//           ManageVoteResult manageVoteResult;
+//       case MANAGE_ACCOUNT_SPECIFIC_RULE:
+//           ManageAccountSpecificRuleResult manageAccountSpecificRuleResult;
 //       }
 //
 // ===========================================================================
@@ -718,9 +820,9 @@ xdr.union("OperationResultTr", {
     ["manageContractRequest", "manageContractRequestResult"],
     ["manageContract", "manageContractResult"],
     ["cancelSaleRequest", "cancelSaleCreationRequestResult"],
-    ["createAswapBidRequest", "createASwapBidCreationRequestResult"],
-    ["cancelAswapBid", "cancelASwapBidResult"],
-    ["createAswapRequest", "createASwapRequestResult"],
+    ["createAtomicSwapBidRequest", "createAtomicSwapBidCreationRequestResult"],
+    ["cancelAtomicSwapBid", "cancelAtomicSwapBidResult"],
+    ["createAtomicSwapRequest", "createAtomicSwapRequestResult"],
     ["manageAccountRole", "manageAccountRoleResult"],
     ["manageAccountRule", "manageAccountRuleResult"],
     ["manageSigner", "manageSignerResult"],
@@ -728,6 +830,10 @@ xdr.union("OperationResultTr", {
     ["manageSignerRule", "manageSignerRuleResult"],
     ["stamp", "stampResult"],
     ["license", "licenseResult"],
+    ["managePoll", "managePollResult"],
+    ["manageCreatePollRequest", "manageCreatePollRequestResult"],
+    ["manageVote", "manageVoteResult"],
+    ["manageAccountSpecificRule", "manageAccountSpecificRuleResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -756,9 +862,9 @@ xdr.union("OperationResultTr", {
     manageContractRequestResult: xdr.lookup("ManageContractRequestResult"),
     manageContractResult: xdr.lookup("ManageContractResult"),
     cancelSaleCreationRequestResult: xdr.lookup("CancelSaleCreationRequestResult"),
-    createASwapBidCreationRequestResult: xdr.lookup("CreateASwapBidCreationRequestResult"),
-    cancelASwapBidResult: xdr.lookup("CancelASwapBidResult"),
-    createASwapRequestResult: xdr.lookup("CreateASwapRequestResult"),
+    createAtomicSwapBidCreationRequestResult: xdr.lookup("CreateAtomicSwapBidCreationRequestResult"),
+    cancelAtomicSwapBidResult: xdr.lookup("CancelAtomicSwapBidResult"),
+    createAtomicSwapRequestResult: xdr.lookup("CreateAtomicSwapRequestResult"),
     manageAccountRoleResult: xdr.lookup("ManageAccountRoleResult"),
     manageAccountRuleResult: xdr.lookup("ManageAccountRuleResult"),
     manageSignerResult: xdr.lookup("ManageSignerResult"),
@@ -766,6 +872,10 @@ xdr.union("OperationResultTr", {
     manageSignerRuleResult: xdr.lookup("ManageSignerRuleResult"),
     stampResult: xdr.lookup("StampResult"),
     licenseResult: xdr.lookup("LicenseResult"),
+    managePollResult: xdr.lookup("ManagePollResult"),
+    manageCreatePollRequestResult: xdr.lookup("ManageCreatePollRequestResult"),
+    manageVoteResult: xdr.lookup("ManageVoteResult"),
+    manageAccountSpecificRuleResult: xdr.lookup("ManageAccountSpecificRuleResult"),
   },
 });
 
@@ -828,12 +938,12 @@ xdr.union("OperationResultTr", {
 //           ManageContractResult manageContractResult;
 //       case CANCEL_SALE_REQUEST:
 //           CancelSaleCreationRequestResult cancelSaleCreationRequestResult;
-//       case CREATE_ASWAP_BID_REQUEST:
-//           CreateASwapBidCreationRequestResult createASwapBidCreationRequestResult;
-//       case CANCEL_ASWAP_BID:
-//           CancelASwapBidResult cancelASwapBidResult;
-//       case CREATE_ASWAP_REQUEST:
-//           CreateASwapRequestResult createASwapRequestResult;
+//       case CREATE_ATOMIC_SWAP_BID_REQUEST:
+//           CreateAtomicSwapBidCreationRequestResult createAtomicSwapBidCreationRequestResult;
+//       case CANCEL_ATOMIC_SWAP_BID:
+//           CancelAtomicSwapBidResult cancelAtomicSwapBidResult;
+//       case CREATE_ATOMIC_SWAP_REQUEST:
+//           CreateAtomicSwapRequestResult createAtomicSwapRequestResult;
 //       case MANAGE_ACCOUNT_ROLE:
 //           ManageAccountRoleResult manageAccountRoleResult;
 //       case MANAGE_ACCOUNT_RULE:
@@ -848,6 +958,14 @@ xdr.union("OperationResultTr", {
 //           StampResult stampResult;
 //       case LICENSE:
 //           LicenseResult licenseResult;
+//       case MANAGE_POLL:
+//           ManagePollResult managePollResult;
+//       case MANAGE_CREATE_POLL_REQUEST:
+//           ManageCreatePollRequestResult manageCreatePollRequestResult;
+//       case MANAGE_VOTE:
+//           ManageVoteResult manageVoteResult;
+//       case MANAGE_ACCOUNT_SPECIFIC_RULE:
+//           ManageAccountSpecificRuleResult manageAccountSpecificRuleResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -1102,7 +1220,7 @@ xdr.struct("ChangeRoleRequest", [
 //       }
 //
 // ===========================================================================
-xdr.union("CreateASwapRequestOpExt", {
+xdr.union("CreateAtomicSwapRequestOpExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -1114,10 +1232,12 @@ xdr.union("CreateASwapRequestOpExt", {
 
 // === xdr source ============================================================
 //
-//   struct CreateASwapRequestOp
+//   struct CreateAtomicSwapRequestOp
 //   {
-//       ASwapRequest request;
+//       //: Body of request which will be created
+//       AtomicSwapRequest request;
 //   
+//       //: reserved for the future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -1126,36 +1246,44 @@ xdr.union("CreateASwapRequestOpExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("CreateASwapRequestOp", [
-  ["request", xdr.lookup("ASwapRequest")],
-  ["ext", xdr.lookup("CreateASwapRequestOpExt")],
+xdr.struct("CreateAtomicSwapRequestOp", [
+  ["request", xdr.lookup("AtomicSwapRequest")],
+  ["ext", xdr.lookup("CreateAtomicSwapRequestOpExt")],
 ]);
 
 // === xdr source ============================================================
 //
-//   enum CreateASwapRequestResultCode
+//   enum CreateAtomicSwapRequestResultCode
 //   {
-//       // codes considered as "success" for the operation
+//       //: request was successfully created
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
+//       //: Not allowed to create `CREATE_ATOMIC_SWAP` request with zero base amount
 //       INVALID_BASE_AMOUNT = -1,
+//       //: Not allowed to pass invalid quote asset code
 //       INVALID_QUOTE_ASSET = -2,
+//       //: There is no atomic swap bid with such id
 //       BID_NOT_FOUND = -3,
+//       //: There is no quote asset with such code
 //       QUOTE_ASSET_NOT_FOUND = -4,
+//       //: Not allowed to create `CREATE_ATOMIC_SWAP` request with amount which exceeds available amount of atomic swap bid
 //       BID_UNDERFUNDED = -5, // bid has not enough base amount available for lock
+//       //: There is no key-value entry by `atomic_swap_tasks` key in the system;
+//       //: configuration does not allow create `CREATE_ATOMIC_SWAP` request
 //       ATOMIC_SWAP_TASKS_NOT_FOUND = -6,
-//       NOT_ALLOWED_BY_ASSET_POLICY = -7,
+//       //: Base amount precision and asset precision are mismatched
+//       INCORRECT_PRECISION = -7,
+//       //: Not allowed to create `CREATE_ATOMIC_SWAP` request for atomic swap bid which is marked as `canceled`
 //       BID_IS_CANCELLED = -8,
+//       //: Not allowed to create `CREATE_ATOMIC_SWAP` request for own atomic swap bid
 //       CANNOT_CREATE_ASWAP_REQUEST_FOR_OWN_BID = -9,
 //       //: 0 value is received from key value entry by `atomic_swap_tasks` key
-//       ATOMIC_SWAP_ZERO_TASKS_NOT_ALLOWED = -10,
-//       //: Base amount precision and asset precision set in the system are mismatched
-//       INCORRECT_PRECISION = -11
+//       ATOMIC_SWAP_ZERO_TASKS_NOT_ALLOWED = -10
 //   };
 //
 // ===========================================================================
-xdr.enum("CreateASwapRequestResultCode", {
+xdr.enum("CreateAtomicSwapRequestResultCode", {
   success: 0,
   invalidBaseAmount: -1,
   invalidQuoteAsset: -2,
@@ -1163,11 +1291,10 @@ xdr.enum("CreateASwapRequestResultCode", {
   quoteAssetNotFound: -4,
   bidUnderfunded: -5,
   atomicSwapTasksNotFound: -6,
-  notAllowedByAssetPolicy: -7,
+  incorrectPrecision: -7,
   bidIsCancelled: -8,
   cannotCreateAswapRequestForOwnBid: -9,
   atomicSwapZeroTasksNotAllowed: -10,
-  incorrectPrecision: -11,
 });
 
 // === xdr source ============================================================
@@ -1179,7 +1306,7 @@ xdr.enum("CreateASwapRequestResultCode", {
 //       }
 //
 // ===========================================================================
-xdr.union("CreateASwapRequestSuccessExt", {
+xdr.union("CreateAtomicSwapRequestSuccessExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -1191,12 +1318,16 @@ xdr.union("CreateASwapRequestSuccessExt", {
 
 // === xdr source ============================================================
 //
-//   struct CreateASwapRequestSuccess
+//   struct CreateAtomicSwapRequestSuccess
 //   {
+//       //: id of created request
 //       uint64 requestID;
+//       //: id of bid owner
 //       AccountID bidOwnerID;
+//       //: amount in quote asset which required for request applying
 //       uint64 quoteAmount;
 //   
+//       //: reserved for the future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -1205,32 +1336,33 @@ xdr.union("CreateASwapRequestSuccessExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("CreateASwapRequestSuccess", [
+xdr.struct("CreateAtomicSwapRequestSuccess", [
   ["requestId", xdr.lookup("Uint64")],
   ["bidOwnerId", xdr.lookup("AccountId")],
   ["quoteAmount", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("CreateASwapRequestSuccessExt")],
+  ["ext", xdr.lookup("CreateAtomicSwapRequestSuccessExt")],
 ]);
 
 // === xdr source ============================================================
 //
-//   union CreateASwapRequestResult switch (CreateASwapRequestResultCode code)
+//   union CreateAtomicSwapRequestResult switch (CreateAtomicSwapRequestResultCode code)
 //   {
 //   case SUCCESS:
-//       CreateASwapRequestSuccess success;
+//       //: is used to pass useful fields after successful operation applying
+//       CreateAtomicSwapRequestSuccess success;
 //   default:
 //       void;
 //   };
 //
 // ===========================================================================
-xdr.union("CreateASwapRequestResult", {
-  switchOn: xdr.lookup("CreateASwapRequestResultCode"),
+xdr.union("CreateAtomicSwapRequestResult", {
+  switchOn: xdr.lookup("CreateAtomicSwapRequestResultCode"),
   switchName: "code",
   switches: [
     ["success", "success"],
   ],
   arms: {
-    success: xdr.lookup("CreateASwapRequestSuccess"),
+    success: xdr.lookup("CreateAtomicSwapRequestSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -1843,7 +1975,7 @@ xdr.union("ManageSignerRuleResult", {
 //       }
 //
 // ===========================================================================
-xdr.union("CancelASwapBidOpExt", {
+xdr.union("CancelAtomicSwapBidOpExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -1855,11 +1987,12 @@ xdr.union("CancelASwapBidOpExt", {
 
 // === xdr source ============================================================
 //
-//   struct CancelASwapBidOp
+//   struct CancelAtomicSwapBidOp
 //   {
+//       //: id of existing atomic swap bid
 //       uint64 bidID;
 //   
-//       // reserved for future use
+//       //: reserved for future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -1868,25 +2001,27 @@ xdr.union("CancelASwapBidOpExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("CancelASwapBidOp", [
+xdr.struct("CancelAtomicSwapBidOp", [
   ["bidId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("CancelASwapBidOpExt")],
+  ["ext", xdr.lookup("CancelAtomicSwapBidOpExt")],
 ]);
 
 // === xdr source ============================================================
 //
-//   enum CancelASwapBidResultCode
+//   enum CancelAtomicSwapBidResultCode
 //   {
-//       // codes considered as "success" for the operation
+//       //: Atomic swap bid was successfully removed or marked as canceled
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
+//       //: There is no atomic swap bid with such id
 //       NOT_FOUND = -1, // atomic swap bid does not exist
+//       //: Not allowed to mark canceled atomic swap bid as canceled
 //       ALREADY_CANCELLED = -2 // atomic swap bid already cancelled
 //   };
 //
 // ===========================================================================
-xdr.enum("CancelASwapBidResultCode", {
+xdr.enum("CancelAtomicSwapBidResultCode", {
   success: 0,
   notFound: -1,
   alreadyCancelled: -2,
@@ -1901,7 +2036,7 @@ xdr.enum("CancelASwapBidResultCode", {
 //       }
 //
 // ===========================================================================
-xdr.union("CancelASwapBidResultSuccessExt", {
+xdr.union("CancelAtomicSwapBidResultSuccessExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -1913,10 +2048,13 @@ xdr.union("CancelASwapBidResultSuccessExt", {
 
 // === xdr source ============================================================
 //
-//   struct CancelASwapBidResultSuccess
+//   struct CancelAtomicSwapBidResultSuccess
 //   {
+//       //: Sum of `CREATE_ATOMIC_SWAP` requests' base amounts which are waiting for applying.
+//       //: Zero means that bid successfully removed
 //       uint64 lockedAmount;
 //   
+//       //: reserved for the future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -1925,30 +2063,31 @@ xdr.union("CancelASwapBidResultSuccessExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("CancelASwapBidResultSuccess", [
+xdr.struct("CancelAtomicSwapBidResultSuccess", [
   ["lockedAmount", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("CancelASwapBidResultSuccessExt")],
+  ["ext", xdr.lookup("CancelAtomicSwapBidResultSuccessExt")],
 ]);
 
 // === xdr source ============================================================
 //
-//   union CancelASwapBidResult switch (CancelASwapBidResultCode code)
+//   union CancelAtomicSwapBidResult switch (CancelAtomicSwapBidResultCode code)
 //   {
 //   case SUCCESS:
-//       CancelASwapBidResultSuccess success;
+//       //: is used to pass useful fields after successful operation applying
+//       CancelAtomicSwapBidResultSuccess success;
 //   default:
 //       void;
 //   };
 //
 // ===========================================================================
-xdr.union("CancelASwapBidResult", {
-  switchOn: xdr.lookup("CancelASwapBidResultCode"),
+xdr.union("CancelAtomicSwapBidResult", {
+  switchOn: xdr.lookup("CancelAtomicSwapBidResultCode"),
   switchName: "code",
   switches: [
     ["success", "success"],
   ],
   arms: {
-    success: xdr.lookup("CancelASwapBidResultSuccess"),
+    success: xdr.lookup("CancelAtomicSwapBidResultSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -3901,6 +4040,48 @@ xdr.struct("SignerRuleResourceKeyValue", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint32 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourcePoll", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint32 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceVote", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union SignerRuleResource switch (LedgerEntryType type)
 //   {
 //   case REVIEWABLE_REQUEST:
@@ -4001,6 +4182,30 @@ xdr.struct("SignerRuleResourceKeyValue", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } keyValue;
+//   case POLL:
+//       struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint32 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } poll;
+//   case VOTE:
+//       struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint32 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } vote;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -4021,6 +4226,8 @@ xdr.union("SignerRuleResource", {
     ["signerRole", "signerRole"],
     ["signer", "signer"],
     ["keyValue", "keyValue"],
+    ["poll", "poll"],
+    ["vote", "vote"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -4032,6 +4239,8 @@ xdr.union("SignerRuleResource", {
     signerRole: xdr.lookup("SignerRuleResourceSignerRole"),
     signer: xdr.lookup("SignerRuleResourceSigner"),
     keyValue: xdr.lookup("SignerRuleResourceKeyValue"),
+    poll: xdr.lookup("SignerRuleResourcePoll"),
+    vote: xdr.lookup("SignerRuleResourceVote"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -4054,7 +4263,9 @@ xdr.union("SignerRuleResource", {
 //       PARTICIPATE = 11,
 //       BIND = 12,
 //       UPDATE_MAX_ISSUANCE = 13,
-//       CHECK = 14
+//       CHECK = 14,
+//       CLOSE = 15,
+//       UPDATE_END_TIME = 16
 //   };
 //
 // ===========================================================================
@@ -4073,6 +4284,8 @@ xdr.enum("SignerRuleAction", {
   bind: 12,
   updateMaxIssuance: 13,
   check: 14,
+  close: 15,
+  updateEndTime: 16,
 });
 
 // === xdr source ============================================================
@@ -4122,6 +4335,256 @@ xdr.struct("LicenseEntry", [
   ["signatures", xdr.varArray(xdr.lookup("DecoratedSignature"), 2147483647)],
   ["ext", xdr.lookup("LicenseEntryExt")],
 ]);
+
+// === xdr source ============================================================
+//
+//   enum ManagePollAction
+//   {
+//       CLOSE = 0,
+//       UPDATE_END_TIME = 1,
+//       CANCEL = 2
+//   };
+//
+// ===========================================================================
+xdr.enum("ManagePollAction", {
+  close: 0,
+  updateEndTime: 1,
+  cancel: 2,
+});
+
+// === xdr source ============================================================
+//
+//   enum PollResult
+//   {
+//       PASSED = 0,
+//       FAILED = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("PollResult", {
+  passed: 0,
+  failed: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ClosePollDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ClosePollData
+//   {
+//       //: result of voting
+//       PollResult result;
+//   
+//       //: Arbitrary stringified json object with details about the result
+//       longstring details;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ClosePollData", [
+  ["result", xdr.lookup("PollResult")],
+  ["details", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("ClosePollDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("UpdatePollEndTimeDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct UpdatePollEndTimeData
+//   {
+//       uint64 newEndTime;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdatePollEndTimeData", [
+  ["newEndTime", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("UpdatePollEndTimeDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManagePollAction action)
+//       {
+//       case CLOSE:
+//           ClosePollData closePollData;
+//       case UPDATE_END_TIME:
+//           UpdatePollEndTimeData updateTimeData;
+//       case CANCEL:
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.union("ManagePollOpData", {
+  switchOn: xdr.lookup("ManagePollAction"),
+  switchName: "action",
+  switches: [
+    ["close", "closePollData"],
+    ["updateEndTime", "updateTimeData"],
+    ["cancel", "ext"],
+  ],
+  arms: {
+    closePollData: xdr.lookup("ClosePollData"),
+    updateTimeData: xdr.lookup("UpdatePollEndTimeData"),
+    ext: xdr.lookup("EmptyExt"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManagePollOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManagePollOp
+//   {
+//       //: ID of poll to manage
+//       uint64 pollID;
+//   
+//       //: data is used to pass one of `ManagePollAction` with required params
+//       union switch (ManagePollAction action)
+//       {
+//       case CLOSE:
+//           ClosePollData closePollData;
+//       case UPDATE_END_TIME:
+//           UpdatePollEndTimeData updateTimeData;
+//       case CANCEL:
+//           EmptyExt ext;
+//       }
+//       data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManagePollOp", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["data", xdr.lookup("ManagePollOpData")],
+  ["ext", xdr.lookup("ManagePollOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManagePollResultCode
+//   {
+//       //: Specified action in `data` of ManagePollOp was successfully executed
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: There is no poll with such id
+//       NOT_FOUND = -1,
+//       //: Not allowed to close poll which
+//       POLL_NOT_READY = -2,
+//       //: Only result provider is allowed to close poll
+//       NOT_AUTHORIZED_TO_CLOSE_POLL = -3,
+//       //: End time is in the past
+//       INVALID_END_TIME = -4,
+//       //: Only poll owner and admin are allowed to cancel poll and update end time
+//       NOT_AUTHORIZED = -5
+//   };
+//
+// ===========================================================================
+xdr.enum("ManagePollResultCode", {
+  success: 0,
+  notFound: -1,
+  pollNotReady: -2,
+  notAuthorizedToClosePoll: -3,
+  invalidEndTime: -4,
+  notAuthorized: -5,
+});
+
+// === xdr source ============================================================
+//
+//   union ManagePollResult switch (ManagePollResultCode code)
+//   {
+//   case SUCCESS:
+//       EmptyExt ext;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManagePollResult", {
+  switchOn: xdr.lookup("ManagePollResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
+  },
+  defaultArm: xdr.void(),
+});
 
 // === xdr source ============================================================
 //
@@ -5456,6 +5919,12 @@ xdr.enum("ThresholdIndices", {
 //           LicenseEntry license;
 //       case STAMP:
 //           StampEntry stamp;
+//       case POLL:
+//           PollEntry poll;
+//       case VOTE:
+//           VoteEntry vote;
+//       case ACCOUNT_SPECIFIC_RULE:
+//           AccountSpecificRuleEntry accountSpecificRule;
 //       }
 //
 // ===========================================================================
@@ -5490,6 +5959,9 @@ xdr.union("LedgerEntryData", {
     ["signerRole", "signerRole"],
     ["license", "license"],
     ["stamp", "stamp"],
+    ["poll", "poll"],
+    ["vote", "vote"],
+    ["accountSpecificRule", "accountSpecificRule"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
@@ -5519,6 +5991,9 @@ xdr.union("LedgerEntryData", {
     signerRole: xdr.lookup("SignerRoleEntry"),
     license: xdr.lookup("LicenseEntry"),
     stamp: xdr.lookup("StampEntry"),
+    poll: xdr.lookup("PollEntry"),
+    vote: xdr.lookup("VoteEntry"),
+    accountSpecificRule: xdr.lookup("AccountSpecificRuleEntry"),
   },
 });
 
@@ -5603,6 +6078,12 @@ xdr.union("LedgerEntryExt", {
 //           LicenseEntry license;
 //       case STAMP:
 //           StampEntry stamp;
+//       case POLL:
+//           PollEntry poll;
+//       case VOTE:
+//           VoteEntry vote;
+//       case ACCOUNT_SPECIFIC_RULE:
+//           AccountSpecificRuleEntry accountSpecificRule;
 //       }
 //       data;
 //   
@@ -6218,13 +6699,61 @@ xdr.struct("SaleCreationRequestQuoteAsset", [
 //       }
 //
 // ===========================================================================
-xdr.union("SaleCreationRequestExt", {
+xdr.union("CreateAccountSaleRuleDataExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
   ],
   arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateAccountSaleRuleData
+//   {
+//       //: Certain account for which rule is applied, null means rule is global
+//       AccountID* accountID;
+//       //: True if such rule is deniable, otherwise allows
+//       bool forbids;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateAccountSaleRuleData", [
+  ["accountId", xdr.option(xdr.lookup("AccountId"))],
+  ["forbids", xdr.bool()],
+  ["ext", xdr.lookup("CreateAccountSaleRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case ADD_SALE_WHITELISTS:
+//           //: array of rules that define participation rules. One global rule must be specified. 
+//           CreateAccountSaleRuleData saleRules<>;
+//       }
+//
+// ===========================================================================
+xdr.union("SaleCreationRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+    ["addSaleWhitelist", "saleRules"],
+  ],
+  arms: {
+    saleRules: xdr.varArray(xdr.lookup("CreateAccountSaleRuleData"), 2147483647),
   },
 });
 
@@ -6259,11 +6788,15 @@ xdr.union("SaleCreationRequestExt", {
 //       uint32 sequenceNumber;
 //       //: Array of quote assets that are available for participation
 //       SaleCreationRequestQuoteAsset quoteAssets<100>;
-//       //: Reserved for future use
+//       //: Use `EMPTY_VERSION` to allow anyone participate in sale,
+//       //: use `ADD_SALE_WHITELISTS` to specify sale participation rules
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
 //           void;
+//       case ADD_SALE_WHITELISTS:
+//           //: array of rules that define participation rules. One global rule must be specified. 
+//           CreateAccountSaleRuleData saleRules<>;
 //       }
 //       ext;
 //   };
@@ -6769,7 +7302,7 @@ xdr.struct("AssetEntry", [
 //       }
 //
 // ===========================================================================
-xdr.union("ASwapRequestExt", {
+xdr.union("AtomicSwapRequestExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -6781,7 +7314,7 @@ xdr.union("ASwapRequestExt", {
 
 // === xdr source ============================================================
 //
-//   struct ASwapRequest
+//   struct AtomicSwapRequest
 //   {
 //       uint64 bidID;
 //       uint64 baseAmount;
@@ -6796,12 +7329,12 @@ xdr.union("ASwapRequestExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("ASwapRequest", [
+xdr.struct("AtomicSwapRequest", [
   ["bidId", xdr.lookup("Uint64")],
   ["baseAmount", xdr.lookup("Uint64")],
   ["quoteAsset", xdr.lookup("AssetCode")],
   ["creatorDetails", xdr.lookup("Longstring")],
-  ["ext", xdr.lookup("ASwapRequestExt")],
+  ["ext", xdr.lookup("AtomicSwapRequestExt")],
 ]);
 
 // === xdr source ============================================================
@@ -6813,7 +7346,7 @@ xdr.struct("ASwapRequest", [
 //       }
 //
 // ===========================================================================
-xdr.union("ASwapBidQuoteAssetExt", {
+xdr.union("AtomicSwapBidQuoteAssetExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -6825,7 +7358,7 @@ xdr.union("ASwapBidQuoteAssetExt", {
 
 // === xdr source ============================================================
 //
-//   struct ASwapBidQuoteAsset
+//   struct AtomicSwapBidQuoteAsset
 //   {
 //       AssetCode quoteAsset;
 //       uint64 price;
@@ -6839,10 +7372,10 @@ xdr.union("ASwapBidQuoteAssetExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("ASwapBidQuoteAsset", [
+xdr.struct("AtomicSwapBidQuoteAsset", [
   ["quoteAsset", xdr.lookup("AssetCode")],
   ["price", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("ASwapBidQuoteAssetExt")],
+  ["ext", xdr.lookup("AtomicSwapBidQuoteAssetExt")],
 ]);
 
 // === xdr source ============================================================
@@ -6880,7 +7413,7 @@ xdr.union("AtomicSwapBidEntryExt", {
 //   
 //       longstring details;
 //   
-//       ASwapBidQuoteAsset quoteAssets<>;
+//       AtomicSwapBidQuoteAsset quoteAssets<>;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
@@ -6902,7 +7435,7 @@ xdr.struct("AtomicSwapBidEntry", [
   ["createdAt", xdr.lookup("Uint64")],
   ["isCancelled", xdr.bool()],
   ["details", xdr.lookup("Longstring")],
-  ["quoteAssets", xdr.varArray(xdr.lookup("ASwapBidQuoteAsset"), 2147483647)],
+  ["quoteAssets", xdr.varArray(xdr.lookup("AtomicSwapBidQuoteAsset"), 2147483647)],
   ["ext", xdr.lookup("AtomicSwapBidEntryExt")],
 ]);
 
@@ -6986,7 +7519,9 @@ xdr.struct("CreateChangeRoleRequestOp", [
 //       INVALID_CREATOR_DETAILS = -8,
 //       //: There is no key-value entry by `change_role_tasks` key in the system;
 //       //: configuration does not allow changing the role from current to `accountRoleToSet`
-//       CHANGE_ROLE_TASKS_NOT_FOUND = -9
+//       CHANGE_ROLE_TASKS_NOT_FOUND = -9,
+//       //: There is no account role with provided id
+//       ACCOUNT_ROLE_TO_SET_DOES_NOT_EXIST = -10
 //   };
 //
 // ===========================================================================
@@ -6999,6 +7534,7 @@ xdr.enum("CreateChangeRoleRequestResultCode", {
   invalidChangeRoleRequestDatum: -7,
   invalidCreatorDetail: -8,
   changeRoleTasksNotFound: -9,
+  accountRoleToSetDoesNotExist: -10,
 });
 
 // === xdr source ============================================================
@@ -7076,6 +7612,294 @@ xdr.union("CreateChangeRoleRequestResult", {
   ],
   arms: {
     success: xdr.lookup("CreateChangeRoleRequestResultSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   enum ManageAccountSpecificRuleAction
+//   {
+//       CREATE = 0,
+//       REMOVE = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageAccountSpecificRuleAction", {
+  create: 0,
+  remove: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateAccountSpecificRuleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateAccountSpecificRuleData
+//   {
+//       //: ledgerKey is used to specify an entity with primary key that can be used through operations
+//       LedgerKey ledgerKey;
+//       //: Certain account for which rule is applied, null means rule is global
+//       AccountID* accountID;
+//       //: True if such rule is deniable, otherwise allows
+//       bool forbids;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateAccountSpecificRuleData", [
+  ["ledgerKey", xdr.lookup("LedgerKey")],
+  ["accountId", xdr.option(xdr.lookup("AccountId"))],
+  ["forbids", xdr.bool()],
+  ["ext", xdr.lookup("CreateAccountSpecificRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveAccountSpecificRuleDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct RemoveAccountSpecificRuleData
+//   {
+//       //: Identifier of existing account specific rule
+//       uint64 ruleID;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveAccountSpecificRuleData", [
+  ["ruleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("RemoveAccountSpecificRuleDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageAccountSpecificRuleAction action)
+//       {
+//       case CREATE:
+//           CreateAccountSpecificRuleData createData;
+//       case REMOVE:
+//           RemoveAccountSpecificRuleData removeData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageAccountSpecificRuleOpData", {
+  switchOn: xdr.lookup("ManageAccountSpecificRuleAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["remove", "removeData"],
+  ],
+  arms: {
+    createData: xdr.lookup("CreateAccountSpecificRuleData"),
+    removeData: xdr.lookup("RemoveAccountSpecificRuleData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageAccountSpecificRuleOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageAccountSpecificRuleOp
+//   {
+//       //: data is used to pass one of `ManageAccountSpecificRuleAction` with required params
+//       union switch (ManageAccountSpecificRuleAction action)
+//       {
+//       case CREATE:
+//           CreateAccountSpecificRuleData createData;
+//       case REMOVE:
+//           RemoveAccountSpecificRuleData removeData;
+//       } data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageAccountSpecificRuleOp", [
+  ["data", xdr.lookup("ManageAccountSpecificRuleOpData")],
+  ["ext", xdr.lookup("ManageAccountSpecificRuleOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageAccountSpecificRuleResultCode
+//   {
+//       //: Means that specified action in `data` of ManageAccountSpecificRuleOp was successfully performed
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: There is no rule with such id
+//       NOT_FOUND = -1,
+//       //: There is no sale with such id
+//       SALE_NOT_FOUND = -2,
+//       //: Only entry (sale) owner or admin can perform such operation
+//       NOT_AUTHORIZED = -3,
+//       //: Not allowed to create duplicated rules
+//       ALREADY_EXISTS = -4,
+//       //: Not allowed to create rule with the same accountID and ledger key, but different forbids value
+//       REVERSED_ALREADY_EXISTS = -5,
+//       //: Not allowed to use such entry type in ledger key
+//       ENTRY_TYPE_NOT_SUPPORTED = -6,
+//       //: There is no account rule with such id
+//       ACCOUNT_NOT_FOUND = -7,
+//       //: Version of entry does not allow to add specific rules
+//       SPECIFIC_RULE_NOT_SUPPORTED = -8,
+//       //: Not allowed to remove global rule
+//       REMOVING_GLOBAL_RULE_FORBIDDEN = -9
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageAccountSpecificRuleResultCode", {
+  success: 0,
+  notFound: -1,
+  saleNotFound: -2,
+  notAuthorized: -3,
+  alreadyExist: -4,
+  reversedAlreadyExist: -5,
+  entryTypeNotSupported: -6,
+  accountNotFound: -7,
+  specificRuleNotSupported: -8,
+  removingGlobalRuleForbidden: -9,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("ManageAccountSpecificRuleResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           //: id of the rule that was managed
+//           uint64 ruleID;
+//   
+//           //: reserved for future use
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ManageAccountSpecificRuleResultSuccess", [
+  ["ruleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("ManageAccountSpecificRuleResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union ManageAccountSpecificRuleResult switch (ManageAccountSpecificRuleResultCode code)
+//   {
+//   case SUCCESS:
+//       //: Is used to pass useful params if operation is success
+//       struct {
+//           //: id of the rule that was managed
+//           uint64 ruleID;
+//   
+//           //: reserved for future use
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageAccountSpecificRuleResult", {
+  switchOn: xdr.lookup("ManageAccountSpecificRuleResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("ManageAccountSpecificRuleResultSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -7366,6 +8190,7 @@ xdr.struct("UpdateSaleDetailsRequest", [
 //   	CREATE_INVOICE = 11,
 //   	MANAGE_CONTRACT = 12,
 //   	UPDATE_ASSET = 13,
+//   	CREATE_POLL = 14,
 //   	CREATE_ATOMIC_SWAP_BID = 16,
 //   	CREATE_ATOMIC_SWAP = 17
 //   };
@@ -7386,6 +8211,7 @@ xdr.enum("ReviewableRequestType", {
   createInvoice: 11,
   manageContract: 12,
   updateAsset: 13,
+  createPoll: 14,
   createAtomicSwapBid: 16,
   createAtomicSwap: 17,
 });
@@ -7464,9 +8290,11 @@ xdr.struct("TasksExt", [
 //           case MANAGE_CONTRACT:
 //               ContractRequest contractRequest;
 //           case CREATE_ATOMIC_SWAP_BID:
-//               ASwapBidCreationRequest aSwapBidCreationRequest;
+//               AtomicSwapBidCreationRequest atomicSwapBidCreationRequest;
 //           case CREATE_ATOMIC_SWAP:
-//               ASwapRequest aSwapRequest;
+//               AtomicSwapRequest atomicSwapRequest;
+//           case CREATE_POLL:
+//               CreatePollRequest createPollRequest;
 //   	}
 //
 // ===========================================================================
@@ -7486,8 +8314,9 @@ xdr.union("ReviewableRequestEntryBody", {
     ["updateSaleDetail", "updateSaleDetailsRequest"],
     ["createInvoice", "invoiceRequest"],
     ["manageContract", "contractRequest"],
-    ["createAtomicSwapBid", "aSwapBidCreationRequest"],
-    ["createAtomicSwap", "aSwapRequest"],
+    ["createAtomicSwapBid", "atomicSwapBidCreationRequest"],
+    ["createAtomicSwap", "atomicSwapRequest"],
+    ["createPoll", "createPollRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -7502,8 +8331,9 @@ xdr.union("ReviewableRequestEntryBody", {
     updateSaleDetailsRequest: xdr.lookup("UpdateSaleDetailsRequest"),
     invoiceRequest: xdr.lookup("InvoiceRequest"),
     contractRequest: xdr.lookup("ContractRequest"),
-    aSwapBidCreationRequest: xdr.lookup("ASwapBidCreationRequest"),
-    aSwapRequest: xdr.lookup("ASwapRequest"),
+    atomicSwapBidCreationRequest: xdr.lookup("AtomicSwapBidCreationRequest"),
+    atomicSwapRequest: xdr.lookup("AtomicSwapRequest"),
+    createPollRequest: xdr.lookup("CreatePollRequest"),
   },
 });
 
@@ -7563,9 +8393,11 @@ xdr.union("ReviewableRequestEntryExt", {
 //           case MANAGE_CONTRACT:
 //               ContractRequest contractRequest;
 //           case CREATE_ATOMIC_SWAP_BID:
-//               ASwapBidCreationRequest aSwapBidCreationRequest;
+//               AtomicSwapBidCreationRequest atomicSwapBidCreationRequest;
 //           case CREATE_ATOMIC_SWAP:
-//               ASwapRequest aSwapRequest;
+//               AtomicSwapRequest atomicSwapRequest;
+//           case CREATE_POLL:
+//               CreatePollRequest createPollRequest;
 //   	} body;
 //   
 //   	TasksExt tasks;
@@ -7726,7 +8558,9 @@ xdr.struct("ManageOfferOp", [
 //       //: Source account must be verified in order to participate
 //       REQUIRES_VERIFICATION = -27,
 //       //: Precision set in the system and precision of the amount are mismatched
-//       INCORRECT_AMOUNT_PRECISION = -28
+//       INCORRECT_AMOUNT_PRECISION = -28,
+//       //: Sale specific rule forbids to participate in sale for source account
+//       SPECIFIC_RULE_FORBIDS = -29
 //   };
 //
 // ===========================================================================
@@ -7760,6 +8594,7 @@ xdr.enum("ManageOfferResultCode", {
   sourceBalanceLockOverflow: -26,
   requiresVerification: -27,
   incorrectAmountPrecision: -28,
+  specificRuleForbid: -29,
 });
 
 // === xdr source ============================================================
@@ -8165,20 +9000,70 @@ xdr.struct("ReviewableRequestResourceCreateWithdraw", [
 // === xdr source ============================================================
 //
 //   struct
+//           {
+//               //: code of asset
+//               AssetCode assetCode;
+//               //: type of asset
+//               uint64 assetType;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCreateAtomicSwapBidExtCreateAtomicSwapBid", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
 //       {
-//           //: code of asset
-//           AssetCode assetCode;
-//           //: type of asset
-//           uint64 assetType;
+//       case EMPTY_VERSION:
+//           void;
+//       case ATOMIC_SWAP_RETURNING:
+//           //: is used to restrict the usage of a reviewable request with create_atomic_swap_bid type
+//           struct
+//           {
+//               //: code of asset
+//               AssetCode assetCode;
+//               //: type of asset
+//               uint64 assetType;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           } createAtomicSwapBid;
+//       }
+//
+// ===========================================================================
+xdr.union("ReviewableRequestResourceCreateAtomicSwapBidExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+    ["atomicSwapReturning", "createAtomicSwapBid"],
+  ],
+  arms: {
+    createAtomicSwapBid: xdr.lookup("ReviewableRequestResourceCreateAtomicSwapBidExtCreateAtomicSwapBid"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: permission type of poll
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       }
 //
 // ===========================================================================
-xdr.struct("ReviewableRequestResourceCreateAtomicSwapBid", [
-  ["assetCode", xdr.lookup("AssetCode")],
-  ["assetType", xdr.lookup("Uint64")],
+xdr.struct("ReviewableRequestResourceCreatePoll", [
+  ["permissionType", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -8221,17 +9106,33 @@ xdr.struct("ReviewableRequestResourceCreateAtomicSwapBid", [
 //           EmptyExt ext;
 //       } createWithdraw;
 //   case CREATE_ATOMIC_SWAP_BID:
-//       //: is used to restrict the usage of a reviewable request with create_atomic_swap_bid type
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case ATOMIC_SWAP_RETURNING:
+//           //: is used to restrict the usage of a reviewable request with create_atomic_swap_bid type
+//           struct
+//           {
+//               //: code of asset
+//               AssetCode assetCode;
+//               //: type of asset
+//               uint64 assetType;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           } createAtomicSwapBid;
+//       } createAtomicSwapBidExt;
+//   case CREATE_POLL:
+//       //: is used to restrict the creating of a `CREATE_POLL` reviewable request type
 //       struct
 //       {
-//           //: code of asset
-//           AssetCode assetCode;
-//           //: type of asset
-//           uint64 assetType;
+//           //: permission type of poll
+//           uint32 permissionType;
 //   
 //           //: reserved for future extension
 //           EmptyExt ext;
-//       } createAtomicSwapBid;
+//       } createPoll;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -8245,13 +9146,15 @@ xdr.union("ReviewableRequestResource", {
     ["createSale", "createSale"],
     ["createIssuance", "createIssuance"],
     ["createWithdraw", "createWithdraw"],
-    ["createAtomicSwapBid", "createAtomicSwapBid"],
+    ["createAtomicSwapBid", "createAtomicSwapBidExt"],
+    ["createPoll", "createPoll"],
   ],
   arms: {
     createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
     createIssuance: xdr.lookup("ReviewableRequestResourceCreateIssuance"),
     createWithdraw: xdr.lookup("ReviewableRequestResourceCreateWithdraw"),
-    createAtomicSwapBid: xdr.lookup("ReviewableRequestResourceCreateAtomicSwapBid"),
+    createAtomicSwapBidExt: xdr.lookup("ReviewableRequestResourceCreateAtomicSwapBidExt"),
+    createPoll: xdr.lookup("ReviewableRequestResourceCreatePoll"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -8376,6 +9279,48 @@ xdr.struct("AccountRuleResourceKeyValue", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint32 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourcePoll", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint32 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceVote", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["permissionType", xdr.lookup("Uint32")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
 //   case ASSET:
@@ -8446,6 +9391,30 @@ xdr.struct("AccountRuleResourceKeyValue", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } keyValue;
+//   case POLL:
+//       struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint32 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } poll;
+//   case VOTE:
+//       struct
+//       {
+//           //: ID of the poll
+//           uint64 pollID;
+//   
+//           //: permission type of poll
+//           uint32 permissionType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } vote;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -8463,6 +9432,8 @@ xdr.union("AccountRuleResource", {
     ["sale", "sale"],
     ["atomicSwapBid", "atomicSwapBid"],
     ["keyValue", "keyValue"],
+    ["poll", "poll"],
+    ["vote", "vote"],
   ],
   arms: {
     asset: xdr.lookup("AccountRuleResourceAsset"),
@@ -8471,6 +9442,8 @@ xdr.union("AccountRuleResource", {
     sale: xdr.lookup("AccountRuleResourceSale"),
     atomicSwapBid: xdr.lookup("AccountRuleResourceAtomicSwapBid"),
     keyValue: xdr.lookup("AccountRuleResourceKeyValue"),
+    poll: xdr.lookup("AccountRuleResourcePoll"),
+    vote: xdr.lookup("AccountRuleResourceVote"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -8494,7 +9467,10 @@ xdr.union("AccountRuleResource", {
 //       BIND = 12,
 //       UPDATE_MAX_ISSUANCE = 13,
 //       CHECK = 14,
-//       CANCEL = 15
+//       CANCEL = 15,
+//       CLOSE = 16,
+//       REMOVE = 17,
+//       UPDATE_END_TIME = 18
 //   };
 //
 // ===========================================================================
@@ -8514,6 +9490,9 @@ xdr.enum("AccountRuleAction", {
   updateMaxIssuance: 13,
   check: 14,
   cancel: 15,
+  close: 16,
+  remove: 17,
+  updateEndTime: 18,
 });
 
 // === xdr source ============================================================
@@ -10489,6 +11468,360 @@ xdr.struct("StatisticsEntry", [
 
 // === xdr source ============================================================
 //
+//   enum ManageCreatePollRequestAction
+//   {
+//       CREATE = 0,
+//       CANCEL = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageCreatePollRequestAction", {
+  create: 0,
+  cancel: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreatePollRequestDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreatePollRequestData
+//   {
+//       //: Body of `CREATE_POLL` request
+//       CreatePollRequest request;
+//   
+//       //: Bit mask that will be used instead of the value from key-value entry by
+//       //: `create_poll_tasks:<permissionType>` key
+//       uint32* allTasks;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePollRequestData", [
+  ["request", xdr.lookup("CreatePollRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("CreatePollRequestDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelPollRequestDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CancelPollRequestData
+//   {
+//       //: ID of `CREATE_POLL` request to remove
+//       uint64 requestID;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelPollRequestData", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelPollRequestDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageCreatePollRequestAction action)
+//       {
+//       case CREATE:
+//           CreatePollRequestData createData;
+//       case CANCEL:
+//           CancelPollRequestData cancelData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestOpData", {
+  switchOn: xdr.lookup("ManageCreatePollRequestAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["cancel", "cancelData"],
+  ],
+  arms: {
+    createData: xdr.lookup("CreatePollRequestData"),
+    cancelData: xdr.lookup("CancelPollRequestData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageCreatePollRequestOp
+//   {
+//       //: data is used to pass one of `ManageCreatePollRequestAction` with required params
+//       union switch (ManageCreatePollRequestAction action)
+//       {
+//       case CREATE:
+//           CreatePollRequestData createData;
+//       case CANCEL:
+//           CancelPollRequestData cancelData;
+//       }
+//       data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageCreatePollRequestOp", [
+  ["data", xdr.lookup("ManageCreatePollRequestOpData")],
+  ["ext", xdr.lookup("ManageCreatePollRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageCreatePollRequestResultCode
+//   {
+//       //: `CREATE_POLL` request has either been successfully created
+//       //: or auto approved
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: Passed details have invalid json structure
+//       INVALID_CREATOR_DETAILS = -1,
+//       //: There is no `CREATE_POLL` request with such id
+//       NOT_FOUND = -2,
+//       //: Not allowed to create poll which has `endTime` not later than `startTime`
+//       INVALID_DATES = -3,
+//       //: Not allowed to create poll which `endTime` early than currentTime
+//       INVALID_END_TIME = -4,
+//       //: There is no account which such id
+//       RESULT_PROVIDER_NOT_FOUND = -5,
+//       //: There is no key-value entry by `create_poll_tasks:<permissionType>` key in the system;
+//       //: configuration does not allow to create `CREATE_POLL` request with such `permissionType`
+//       CREATE_POLL_TASKS_NOT_FOUND = -6,
+//       //: Not allowed to create poll with zero number of choices
+//       INVALID_NUMBER_OF_CHOICES = -7
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageCreatePollRequestResultCode", {
+  success: 0,
+  invalidCreatorDetail: -1,
+  notFound: -2,
+  invalidDate: -3,
+  invalidEndTime: -4,
+  resultProviderNotFound: -5,
+  createPollTasksNotFound: -6,
+  invalidNumberOfChoice: -7,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreatePollRequestResponseExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreatePollRequestResponse
+//   {
+//       //: ID of a created request
+//       uint64 requestID;
+//   
+//       //: Indicates whether or not the `CREATE_POLL` request was auto approved and fulfilled
+//       //: True means that poll was successfully created
+//       bool fulfilled;
+//   
+//       //: ID of created poll if request was fulfilled
+//       uint64* pollID;
+//   
+//       //: reserved for the future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePollRequestResponse", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["pollId", xdr.option(xdr.lookup("Uint64"))],
+  ["ext", xdr.lookup("CreatePollRequestResponseExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageCreatePollRequestAction action)
+//       {
+//       case CREATE:
+//           CreatePollRequestResponse response;
+//       case CANCEL:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestSuccessResultDetails", {
+  switchOn: xdr.lookup("ManageCreatePollRequestAction"),
+  switchName: "action",
+  switches: [
+    ["create", "response"],
+    ["cancel", xdr.void()],
+  ],
+  arms: {
+    response: xdr.lookup("CreatePollRequestResponse"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestSuccessResultExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageCreatePollRequestSuccessResult
+//   {
+//       //: `details` id used to pass useful fields
+//       union switch (ManageCreatePollRequestAction action)
+//       {
+//       case CREATE:
+//           CreatePollRequestResponse response;
+//       case CANCEL:
+//           void;
+//       } details;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageCreatePollRequestSuccessResult", [
+  ["details", xdr.lookup("ManageCreatePollRequestSuccessResultDetails")],
+  ["ext", xdr.lookup("ManageCreatePollRequestSuccessResultExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union ManageCreatePollRequestResult switch (ManageCreatePollRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       ManageCreatePollRequestSuccessResult success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageCreatePollRequestResult", {
+  switchOn: xdr.lookup("ManageCreatePollRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("ManageCreatePollRequestSuccessResult"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -10551,7 +11884,7 @@ xdr.struct("ExternalSystemAccountIdPoolEntry", [
 //       }
 //
 // ===========================================================================
-xdr.union("ASwapBidCreationRequestExt", {
+xdr.union("AtomicSwapBidCreationRequestExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -10563,13 +11896,13 @@ xdr.union("ASwapBidCreationRequestExt", {
 
 // === xdr source ============================================================
 //
-//   struct ASwapBidCreationRequest
+//   struct AtomicSwapBidCreationRequest
 //   {
 //       BalanceID baseBalance;
 //       uint64 amount;
 //       longstring creatorDetails; // details set by requester
 //   
-//       ASwapBidQuoteAsset quoteAssets<>;
+//       AtomicSwapBidQuoteAsset quoteAssets<>;
 //   
 //       // reserved for future use
 //       union switch (LedgerVersion v)
@@ -10580,12 +11913,12 @@ xdr.union("ASwapBidCreationRequestExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("ASwapBidCreationRequest", [
+xdr.struct("AtomicSwapBidCreationRequest", [
   ["baseBalance", xdr.lookup("BalanceId")],
   ["amount", xdr.lookup("Uint64")],
   ["creatorDetails", xdr.lookup("Longstring")],
-  ["quoteAssets", xdr.varArray(xdr.lookup("ASwapBidQuoteAsset"), 2147483647)],
-  ["ext", xdr.lookup("ASwapBidCreationRequestExt")],
+  ["quoteAssets", xdr.varArray(xdr.lookup("AtomicSwapBidQuoteAsset"), 2147483647)],
+  ["ext", xdr.lookup("AtomicSwapBidCreationRequestExt")],
 ]);
 
 // === xdr source ============================================================
@@ -10930,11 +12263,237 @@ xdr.union("StampResult", {
 
 // === xdr source ============================================================
 //
+//   enum ManageVoteAction
+//   {
+//       CREATE = 0,
+//       REMOVE = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageVoteAction", {
+  create: 0,
+  remove: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateVoteDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateVoteData
+//   {
+//       //: ID of poll to vote in
+//       uint64 pollID;
+//   
+//       //: `data` is used to pass choice with functional type of poll
+//       VoteData data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateVoteData", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["data", xdr.lookup("VoteData")],
+  ["ext", xdr.lookup("CreateVoteDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveVoteDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct RemoveVoteData
+//   {
+//       //: ID of poll
+//       uint64 pollID;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveVoteData", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("RemoveVoteDataExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (ManageVoteAction action)
+//       {
+//       case CREATE:
+//           CreateVoteData createData;
+//       case REMOVE:
+//           RemoveVoteData removeData;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageVoteOpData", {
+  switchOn: xdr.lookup("ManageVoteAction"),
+  switchName: "action",
+  switches: [
+    ["create", "createData"],
+    ["remove", "removeData"],
+  ],
+  arms: {
+    createData: xdr.lookup("CreateVoteData"),
+    removeData: xdr.lookup("RemoveVoteData"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageVoteOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct ManageVoteOp
+//   {
+//       //: `data` is used to pass `ManageVoteAction` with needed params
+//       union switch (ManageVoteAction action)
+//       {
+//       case CREATE:
+//           CreateVoteData createData;
+//       case REMOVE:
+//           RemoveVoteData removeData;
+//       }
+//       data;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageVoteOp", [
+  ["data", xdr.lookup("ManageVoteOpData")],
+  ["ext", xdr.lookup("ManageVoteOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum ManageVoteResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Specified action in `data` of ManageVoteOp was successfully executed
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: There is no vote from source account in such poll
+//       VOTE_NOT_FOUND = -1, // vote to remove  not found
+//       //: There is no poll with such id
+//       POLL_NOT_FOUND = -2, // poll not found
+//       //: Not allowed to create (send) two votes for one poll
+//       VOTE_EXISTS = -3,
+//       //: Not allowed to create (send) vote with functional type that is different from the poll functional type
+//       POLL_TYPE_MISMATCHED = -4,
+//       //: Not allowed to vote in poll which not started yet
+//       POLL_NOT_STARTED = -5,
+//       //: Not allowed to vote in poll which already was ended
+//       POLL_ENDED = -6
+//   };
+//
+// ===========================================================================
+xdr.enum("ManageVoteResultCode", {
+  success: 0,
+  voteNotFound: -1,
+  pollNotFound: -2,
+  voteExist: -3,
+  pollTypeMismatched: -4,
+  pollNotStarted: -5,
+  pollEnded: -6,
+});
+
+// === xdr source ============================================================
+//
+//   union ManageVoteResult switch (ManageVoteResultCode code)
+//   {
+//   case SUCCESS:
+//       EmptyExt ext;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("ManageVoteResult", {
+  switchOn: xdr.lookup("ManageVoteResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   enum ManageBalanceAction
 //   {
 //       //: Create new balance
 //       CREATE = 0,
-//       //: Delete existing balance by ID
+//       //: Delete existing balance by ID. Is reserved and not implemented yet.
 //       DELETE_BALANCE = 1,
 //       //: Ensures that the balance will not be created if the balance of the provided asset exists and is attached to the provided account
 //       CREATE_UNIQUE = 2
@@ -10970,7 +12529,7 @@ xdr.union("ManageBalanceOpExt", {
 //
 //   struct ManageBalanceOp
 //   {
-//       //: Defines a ManageBalanceAction to be performed
+//       //: Defines a ManageBalanceAction to be performed. `DELETE_BALANCE` is reserved and not implemented yet.
 //       ManageBalanceAction action;
 //       //: Defines an account whose balance will be managed
 //       AccountID destination;
@@ -11100,7 +12659,7 @@ xdr.union("ManageBalanceResult", {
 //       }
 //
 // ===========================================================================
-xdr.union("CreateASwapBidCreationRequestOpExt", {
+xdr.union("CreateAtomicSwapBidCreationRequestOpExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -11112,11 +12671,15 @@ xdr.union("CreateASwapBidCreationRequestOpExt", {
 
 // === xdr source ============================================================
 //
-//   struct CreateASwapBidCreationRequestOp
+//   struct CreateAtomicSwapBidCreationRequestOp
 //   {
-//       ASwapBidCreationRequest request;
+//       //: Body of request which will be created
+//       AtomicSwapBidCreationRequest request;
 //   
+//       //: (optional) Bit mask whose flags must be cleared in order for `CREATE_ATOMIC_SWAP_BID` request to be approved,
+//       //: which will be used instead of key-value by `atomic_swap_bid_tasks` key
 //       uint32* allTasks;
+//       //: reserved for the future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -11126,40 +12689,52 @@ xdr.union("CreateASwapBidCreationRequestOpExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("CreateASwapBidCreationRequestOp", [
-  ["request", xdr.lookup("ASwapBidCreationRequest")],
+xdr.struct("CreateAtomicSwapBidCreationRequestOp", [
+  ["request", xdr.lookup("AtomicSwapBidCreationRequest")],
   ["allTasks", xdr.option(xdr.lookup("Uint32"))],
-  ["ext", xdr.lookup("CreateASwapBidCreationRequestOpExt")],
+  ["ext", xdr.lookup("CreateAtomicSwapBidCreationRequestOpExt")],
 ]);
 
 // === xdr source ============================================================
 //
-//   enum CreateASwapBidCreationRequestResultCode
+//   enum CreateAtomicSwapBidCreationRequestResultCode
 //   {
-//       // codes considered as "success" for the operation
+//       //: `CREATE_ATOMIC_SWAP_BID` request has either been successfully created
+//       //: or auto approved
 //       SUCCESS = 0,
 //   
 //       // codes considered as "failure" for the operation
+//       //: Not allowed to create atomic swap bid with zero amount
 //       INVALID_AMOUNT = -1, // amount is equal to 0
+//       //: Not allowed to create atomic swap bid with quote asset price equals zero
 //       INVALID_PRICE = -2, // price is equal to 0
+//       //: Not allowed to create atomic swap bid with json invalid details
 //       INVALID_DETAILS = -3,
+//       //: Not allowed to create atomic swap bid in which product of `baseAmount` and price of one `quoteAsset` exceeds MAX_INT64 value
 //       ATOMIC_SWAP_BID_OVERFLOW = -4,
+//       //: There is no asset with such code
 //       BASE_ASSET_NOT_FOUND = -5, // base asset does not exist
+//       //: Not allowed to use asset as base asset for atomic swap bid which has not `CAN_BE_BASE_IN_ATOMIC_SWAP` policy
 //       BASE_ASSET_CANNOT_BE_SWAPPED = -6,
+//       //: There is no asset with such code
 //       QUOTE_ASSET_NOT_FOUND = -7, // quote asset does not exist
+//       //: Not allowed to use asset as base asset for atomic swap bid which has not `CAN_BE_QUOTE_IN_ATOMIC_SWAP` policy
 //       QUOTE_ASSET_CANNOT_BE_SWAPPED = -8,
+//       //: There is no balance with such id and source account as owner
 //       BASE_BALANCE_NOT_FOUND = -9,
+//       //: Not allowed to create atomic swap bid in which base and quote assets are the same
 //       ASSETS_ARE_EQUAL = -10, // base and quote assets are the same
+//       //: There is not enough amount on `baseBalance` or `baseAmount` precision does not fit asset precision
 //       BASE_BALANCE_UNDERFUNDED = -11,
+//       //: Not allowed to pass invalid or duplicated quote asset codes
 //       INVALID_QUOTE_ASSET = -12, // one of the quote assets is invalid
-//       NOT_ALLOWED_BY_ASSET_POLICY = -13,
 //       //: There is no key-value entry by `atomic_swap_bid_tasks` key in the system;
 //       //: configuration does not allow create atomic swap bids
-//       ATOMIC_SWAP_BID_TASKS_NOT_FOUND = -14
+//       ATOMIC_SWAP_BID_TASKS_NOT_FOUND = -13
 //   };
 //
 // ===========================================================================
-xdr.enum("CreateASwapBidCreationRequestResultCode", {
+xdr.enum("CreateAtomicSwapBidCreationRequestResultCode", {
   success: 0,
   invalidAmount: -1,
   invalidPrice: -2,
@@ -11173,8 +12748,7 @@ xdr.enum("CreateASwapBidCreationRequestResultCode", {
   assetsAreEqual: -10,
   baseBalanceUnderfunded: -11,
   invalidQuoteAsset: -12,
-  notAllowedByAssetPolicy: -13,
-  atomicSwapBidTasksNotFound: -14,
+  atomicSwapBidTasksNotFound: -13,
 });
 
 // === xdr source ============================================================
@@ -11186,7 +12760,7 @@ xdr.enum("CreateASwapBidCreationRequestResultCode", {
 //       }
 //
 // ===========================================================================
-xdr.union("CreateASwapBidCreationRequestSuccessExt", {
+xdr.union("CreateAtomicSwapBidCreationRequestSuccessExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -11198,12 +12772,14 @@ xdr.union("CreateASwapBidCreationRequestSuccessExt", {
 
 // === xdr source ============================================================
 //
-//   struct CreateASwapBidCreationRequestSuccess
+//   struct CreateAtomicSwapBidCreationRequestSuccess
 //   {
+//       //: id of created request
 //       uint64 requestID;
+//       //: Indicates whether or not the `CREATE_ATOMIC_SWAP_BID` request was auto approved and fulfilled
 //       bool fulfilled;
-//       AssetCode baseAsset;
 //   
+//       //: reserved for the future use
 //       union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -11212,32 +12788,32 @@ xdr.union("CreateASwapBidCreationRequestSuccessExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("CreateASwapBidCreationRequestSuccess", [
+xdr.struct("CreateAtomicSwapBidCreationRequestSuccess", [
   ["requestId", xdr.lookup("Uint64")],
   ["fulfilled", xdr.bool()],
-  ["baseAsset", xdr.lookup("AssetCode")],
-  ["ext", xdr.lookup("CreateASwapBidCreationRequestSuccessExt")],
+  ["ext", xdr.lookup("CreateAtomicSwapBidCreationRequestSuccessExt")],
 ]);
 
 // === xdr source ============================================================
 //
-//   union CreateASwapBidCreationRequestResult switch (CreateASwapBidCreationRequestResultCode code)
+//   union CreateAtomicSwapBidCreationRequestResult switch (CreateAtomicSwapBidCreationRequestResultCode code)
 //   {
 //   case SUCCESS:
-//       CreateASwapBidCreationRequestSuccess success;
+//       //: is used to pass useful fields after successful operation applying
+//       CreateAtomicSwapBidCreationRequestSuccess success;
 //   default:
 //       void;
 //   };
 //
 // ===========================================================================
-xdr.union("CreateASwapBidCreationRequestResult", {
-  switchOn: xdr.lookup("CreateASwapBidCreationRequestResultCode"),
+xdr.union("CreateAtomicSwapBidCreationRequestResult", {
+  switchOn: xdr.lookup("CreateAtomicSwapBidCreationRequestResultCode"),
   switchName: "code",
   switches: [
     ["success", "success"],
   ],
   arms: {
-    success: xdr.lookup("CreateASwapBidCreationRequestSuccess"),
+    success: xdr.lookup("CreateAtomicSwapBidCreationRequestSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -11425,1348 +13001,6 @@ xdr.union("LedgerUpgrade", {
     newLedgerVersion: xdr.lookup("Uint32"),
     newMaxTxSetSize: xdr.lookup("Uint32"),
     newTxExpirationPeriod: xdr.lookup("Int64"),
-  },
-});
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyAccountExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct
-//       {
-//           AccountID accountID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAccount", [
-  ["accountId", xdr.lookup("AccountId")],
-  ["ext", xdr.lookup("LedgerKeyAccountExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeySignerExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct
-//       {
-//           PublicKey pubKey;
-//           AccountID accountID;
-//   
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeySigner", [
-  ["pubKey", xdr.lookup("PublicKey")],
-  ["accountId", xdr.lookup("AccountId")],
-  ["ext", xdr.lookup("LedgerKeySignerExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyFeeStateExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           Hash hash;
-//   		int64 lowerBound;
-//   		int64 upperBound;
-//   		 union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyFeeState", [
-  ["hash", xdr.lookup("Hash")],
-  ["lowerBound", xdr.lookup("Int64")],
-  ["upperBound", xdr.lookup("Int64")],
-  ["ext", xdr.lookup("LedgerKeyFeeStateExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyBalanceExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct
-//       {
-//   		BalanceID balanceID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyBalance", [
-  ["balanceId", xdr.lookup("BalanceId")],
-  ["ext", xdr.lookup("LedgerKeyBalanceExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyAssetExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct
-//       {
-//   		AssetCode code;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAsset", [
-  ["code", xdr.lookup("AssetCode")],
-  ["ext", xdr.lookup("LedgerKeyAssetExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyReferenceExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct
-//       {
-//   		AccountID sender;
-//   		string64 reference;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyReference", [
-  ["sender", xdr.lookup("AccountId")],
-  ["reference", xdr.lookup("String64")],
-  ["ext", xdr.lookup("LedgerKeyReferenceExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyStatsExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           AccountID accountID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyStats", [
-  ["accountId", xdr.lookup("AccountId")],
-  ["ext", xdr.lookup("LedgerKeyStatsExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyAccountLimitsExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           AccountID accountID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAccountLimits", [
-  ["accountId", xdr.lookup("AccountId")],
-  ["ext", xdr.lookup("LedgerKeyAccountLimitsExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyAssetPairExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//            AssetCode base;
-//   		 AssetCode quote;
-//   		 union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAssetPair", [
-  ["base", xdr.lookup("AssetCode")],
-  ["quote", xdr.lookup("AssetCode")],
-  ["ext", xdr.lookup("LedgerKeyAssetPairExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   struct {
-//   		uint64 offerID;
-//   		AccountID ownerID;
-//   	}
-//
-// ===========================================================================
-xdr.struct("LedgerKeyOffer", [
-  ["offerId", xdr.lookup("Uint64")],
-  ["ownerId", xdr.lookup("AccountId")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyReviewableRequestExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 requestID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyReviewableRequest", [
-  ["requestId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyReviewableRequestExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyExternalSystemAccountIdExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//   		AccountID accountID;
-//   		int32 externalSystemType;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	}
-//
-// ===========================================================================
-xdr.struct("LedgerKeyExternalSystemAccountId", [
-  ["accountId", xdr.lookup("AccountId")],
-  ["externalSystemType", xdr.lookup("Int32")],
-  ["ext", xdr.lookup("LedgerKeyExternalSystemAccountIdExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeySaleExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//   		uint64 saleID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	}
-//
-// ===========================================================================
-xdr.struct("LedgerKeySale", [
-  ["saleId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeySaleExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           	case EMPTY_VERSION:
-//           		void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyKeyValueExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           longstring key;
-//           union switch (LedgerVersion v)
-//           {
-//           	case EMPTY_VERSION:
-//           		void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyKeyValue", [
-  ["key", xdr.lookup("Longstring")],
-  ["ext", xdr.lookup("LedgerKeyKeyValueExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch(LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyAccountKycExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           AccountID accountID;
-//           union switch(LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAccountKyc", [
-  ["accountId", xdr.lookup("AccountId")],
-  ["ext", xdr.lookup("LedgerKeyAccountKycExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//
-// ===========================================================================
-xdr.union("LedgerKeyExternalSystemAccountIdPoolEntryExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//   		uint64 poolEntryID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	}
-//
-// ===========================================================================
-xdr.struct("LedgerKeyExternalSystemAccountIdPoolEntry", [
-  ["poolEntryId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyExternalSystemAccountIdPoolEntryExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyLimitsV2Ext", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           } ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyLimitsV2", [
-  ["id", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyLimitsV2Ext")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyStatisticsV2Ext", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyStatisticsV2", [
-  ["id", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyStatisticsV2Ext")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyPendingStatisticsExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 statisticsID;
-//           uint64 requestID;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyPendingStatistics", [
-  ["statisticsId", xdr.lookup("Uint64")],
-  ["requestId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyPendingStatisticsExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyContractExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 contractID;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyContract", [
-  ["contractId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyContractExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyAtomicSwapBidExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 bidID;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAtomicSwapBid", [
-  ["bidId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyAtomicSwapBidExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyAccountRoleExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAccountRole", [
-  ["id", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyAccountRoleExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyAccountRuleExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyAccountRule", [
-  ["id", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeyAccountRuleExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeySignerRoleExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeySignerRole", [
-  ["id", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeySignerRoleExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeySignerRuleExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeySignerRule", [
-  ["id", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("LedgerKeySignerRuleExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyStampExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           Hash ledgerHash;
-//           Hash licenseHash;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyStamp", [
-  ["ledgerHash", xdr.lookup("Hash")],
-  ["licenseHash", xdr.lookup("Hash")],
-  ["ext", xdr.lookup("LedgerKeyStampExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//
-// ===========================================================================
-xdr.union("LedgerKeyLicenseExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
-//   struct {
-//           Hash licenseHash;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           } ext;
-//       }
-//
-// ===========================================================================
-xdr.struct("LedgerKeyLicense", [
-  ["licenseHash", xdr.lookup("Hash")],
-  ["ext", xdr.lookup("LedgerKeyLicenseExt")],
-]);
-
-// === xdr source ============================================================
-//
-//   union LedgerKey switch (LedgerEntryType type)
-//   {
-//   case ACCOUNT:
-//       struct
-//       {
-//           AccountID accountID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } account;
-//   case SIGNER:
-//       struct
-//       {
-//           PublicKey pubKey;
-//           AccountID accountID;
-//   
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } signer;
-//   case FEE:
-//       struct {
-//           Hash hash;
-//   		int64 lowerBound;
-//   		int64 upperBound;
-//   		 union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } feeState;
-//   case BALANCE:
-//       struct
-//       {
-//   		BalanceID balanceID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } balance;
-//   case ASSET:
-//       struct
-//       {
-//   		AssetCode code;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } asset;
-//   case REFERENCE_ENTRY:
-//       struct
-//       {
-//   		AccountID sender;
-//   		string64 reference;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } reference;
-//   case STATISTICS:
-//       struct {
-//           AccountID accountID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } stats;
-//   case ACCOUNT_LIMITS:
-//       struct {
-//           AccountID accountID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } accountLimits;
-//   case ASSET_PAIR:
-//   	struct {
-//            AssetCode base;
-//   		 AssetCode quote;
-//   		 union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } assetPair;
-//   case OFFER_ENTRY:
-//   	struct {
-//   		uint64 offerID;
-//   		AccountID ownerID;
-//   	} offer;
-//   case REVIEWABLE_REQUEST:
-//       struct {
-//           uint64 requestID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//       } reviewableRequest;
-//   case EXTERNAL_SYSTEM_ACCOUNT_ID:
-//   	struct {
-//   		AccountID accountID;
-//   		int32 externalSystemType;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	} externalSystemAccountID;
-//   case SALE:
-//   	struct {
-//   		uint64 saleID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	} sale;
-//   case KEY_VALUE:
-//       struct {
-//           longstring key;
-//           union switch (LedgerVersion v)
-//           {
-//           	case EMPTY_VERSION:
-//           		void;
-//           }
-//           ext;
-//       } keyValue;
-//   case ACCOUNT_KYC:
-//       struct {
-//           AccountID accountID;
-//           union switch(LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } accountKYC;
-//   case EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY:
-//       struct {
-//   		uint64 poolEntryID;
-//   		union switch (LedgerVersion v)
-//   		{
-//   		case EMPTY_VERSION:
-//   			void;
-//   		}
-//   		ext;
-//   	} externalSystemAccountIDPoolEntry;
-//   case LIMITS_V2:
-//       struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           } ext;
-//       } limitsV2;
-//   case STATISTICS_V2:
-//       struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } statisticsV2;
-//   case PENDING_STATISTICS:
-//       struct {
-//           uint64 statisticsID;
-//           uint64 requestID;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } pendingStatistics;
-//   case CONTRACT:
-//       struct {
-//           uint64 contractID;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } contract;
-//   case ATOMIC_SWAP_BID:
-//       struct {
-//           uint64 bidID;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } atomicSwapBid;
-//   case ACCOUNT_ROLE:
-//       struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } accountRole;
-//   case ACCOUNT_RULE:
-//       struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } accountRule;
-//   case SIGNER_ROLE:
-//       struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } signerRole;
-//   case SIGNER_RULE:
-//       struct {
-//           uint64 id;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } signerRule;
-//   case STAMP:
-//       struct {
-//           Hash ledgerHash;
-//           Hash licenseHash;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           }
-//           ext;
-//       } stamp;
-//   case LICENSE:
-//       struct {
-//           Hash licenseHash;
-//           union switch (LedgerVersion v)
-//           {
-//           case EMPTY_VERSION:
-//               void;
-//           } ext;
-//       } license;
-//   };
-//
-// ===========================================================================
-xdr.union("LedgerKey", {
-  switchOn: xdr.lookup("LedgerEntryType"),
-  switchName: "type",
-  switches: [
-    ["account", "account"],
-    ["signer", "signer"],
-    ["fee", "feeState"],
-    ["balance", "balance"],
-    ["asset", "asset"],
-    ["referenceEntry", "reference"],
-    ["statistic", "stats"],
-    ["accountLimit", "accountLimits"],
-    ["assetPair", "assetPair"],
-    ["offerEntry", "offer"],
-    ["reviewableRequest", "reviewableRequest"],
-    ["externalSystemAccountId", "externalSystemAccountId"],
-    ["sale", "sale"],
-    ["keyValue", "keyValue"],
-    ["accountKyc", "accountKyc"],
-    ["externalSystemAccountIdPoolEntry", "externalSystemAccountIdPoolEntry"],
-    ["limitsV2", "limitsV2"],
-    ["statisticsV2", "statisticsV2"],
-    ["pendingStatistic", "pendingStatistics"],
-    ["contract", "contract"],
-    ["atomicSwapBid", "atomicSwapBid"],
-    ["accountRole", "accountRole"],
-    ["accountRule", "accountRule"],
-    ["signerRole", "signerRole"],
-    ["signerRule", "signerRule"],
-    ["stamp", "stamp"],
-    ["license", "license"],
-  ],
-  arms: {
-    account: xdr.lookup("LedgerKeyAccount"),
-    signer: xdr.lookup("LedgerKeySigner"),
-    feeState: xdr.lookup("LedgerKeyFeeState"),
-    balance: xdr.lookup("LedgerKeyBalance"),
-    asset: xdr.lookup("LedgerKeyAsset"),
-    reference: xdr.lookup("LedgerKeyReference"),
-    stats: xdr.lookup("LedgerKeyStats"),
-    accountLimits: xdr.lookup("LedgerKeyAccountLimits"),
-    assetPair: xdr.lookup("LedgerKeyAssetPair"),
-    offer: xdr.lookup("LedgerKeyOffer"),
-    reviewableRequest: xdr.lookup("LedgerKeyReviewableRequest"),
-    externalSystemAccountId: xdr.lookup("LedgerKeyExternalSystemAccountId"),
-    sale: xdr.lookup("LedgerKeySale"),
-    keyValue: xdr.lookup("LedgerKeyKeyValue"),
-    accountKyc: xdr.lookup("LedgerKeyAccountKyc"),
-    externalSystemAccountIdPoolEntry: xdr.lookup("LedgerKeyExternalSystemAccountIdPoolEntry"),
-    limitsV2: xdr.lookup("LedgerKeyLimitsV2"),
-    statisticsV2: xdr.lookup("LedgerKeyStatisticsV2"),
-    pendingStatistics: xdr.lookup("LedgerKeyPendingStatistics"),
-    contract: xdr.lookup("LedgerKeyContract"),
-    atomicSwapBid: xdr.lookup("LedgerKeyAtomicSwapBid"),
-    accountRole: xdr.lookup("LedgerKeyAccountRole"),
-    accountRule: xdr.lookup("LedgerKeyAccountRule"),
-    signerRole: xdr.lookup("LedgerKeySignerRole"),
-    signerRule: xdr.lookup("LedgerKeySignerRule"),
-    stamp: xdr.lookup("LedgerKeyStamp"),
-    license: xdr.lookup("LedgerKeyLicense"),
   },
 });
 
@@ -13851,6 +14085,63 @@ xdr.struct("IssuanceRequest", [
 
 // === xdr source ============================================================
 //
+//   struct SingleChoiceVote
+//   {
+//       uint32 choice;
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("SingleChoiceVote", [
+  ["choice", xdr.lookup("Uint32")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union VoteData switch (PollType pollType)
+//   {
+//   case SINGLE_CHOICE:
+//       SingleChoiceVote single;
+//   //case MULTIPLE_CHOICE:
+//   //    MultipleChoiceVote multiple;
+//   };
+//
+// ===========================================================================
+xdr.union("VoteData", {
+  switchOn: xdr.lookup("PollType"),
+  switchName: "pollType",
+  switches: [
+    ["singleChoice", "single"],
+  ],
+  arms: {
+    single: xdr.lookup("SingleChoiceVote"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct VoteEntry
+//   {
+//       uint64 pollID;
+//   
+//       AccountID voterID;
+//   
+//       VoteData data;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("VoteEntry", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["voterId", xdr.lookup("AccountId")],
+  ["data", xdr.lookup("VoteData")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   enum ManageAssetPairAction
 //   {
 //       //: Create new asset pair
@@ -14229,6 +14520,8 @@ xdr.struct("SaleQuoteAsset", [
 //       {
 //       case EMPTY_VERSION:
 //           void;
+//       case ADD_SALE_WHITELISTS:
+//           void;
 //       }
 //
 // ===========================================================================
@@ -14237,6 +14530,7 @@ xdr.union("SaleEntryExt", {
   switchName: "v",
   switches: [
     ["emptyVersion", xdr.void()],
+    ["addSaleWhitelist", xdr.void()],
   ],
   arms: {
   },
@@ -14266,6 +14560,8 @@ xdr.union("SaleEntryExt", {
 //   	union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
+//           void;
+//       case ADD_SALE_WHITELISTS:
 //           void;
 //       }
 //       ext;
@@ -14831,15 +15127,28 @@ xdr.struct("ReferenceEntry", [
 
 // === xdr source ============================================================
 //
-//   enum LedgerVersion {
-//   	EMPTY_VERSION = 0,
-//   	CHECK_SET_FEE_ACCOUNT_EXISTING = 1
+//   enum LedgerVersion
+//   {
+//       EMPTY_VERSION = 0,
+//       CHECK_SET_FEE_ACCOUNT_EXISTING = 1,
+//       FIX_PAYMENT_STATS = 2,
+//       ADD_INVEST_FEE = 3,
+//       ADD_SALE_WHITELISTS = 4,
+//       ASSET_PAIR_RESTRICTIONS = 5,
+//       FIX_CHANGE_TO_NON_EXISTING_ROLE = 6,
+//       ATOMIC_SWAP_RETURNING = 7
 //   };
 //
 // ===========================================================================
 xdr.enum("LedgerVersion", {
   emptyVersion: 0,
   checkSetFeeAccountExisting: 1,
+  fixPaymentStat: 2,
+  addInvestFee: 3,
+  addSaleWhitelist: 4,
+  assetPairRestriction: 5,
+  fixChangeToNonExistingRole: 6,
+  atomicSwapReturning: 7,
 });
 
 // === xdr source ============================================================
@@ -14981,7 +15290,10 @@ xdr.union("PublicKey", {
 //       SIGNER_RULE = 30,
 //       SIGNER_ROLE = 31,
 //       STAMP = 32,
-//       LICENSE = 33
+//       LICENSE = 33,
+//       POLL = 34,
+//       VOTE = 35,
+//       ACCOUNT_SPECIFIC_RULE = 36
 //   };
 //
 // ===========================================================================
@@ -15017,6 +15329,9 @@ xdr.enum("LedgerEntryType", {
   signerRole: 31,
   stamp: 32,
   license: 33,
+  poll: 34,
+  vote: 35,
+  accountSpecificRule: 36,
 });
 
 // === xdr source ============================================================
@@ -15233,14 +15548,18 @@ xdr.struct("Fee", [
 //       PAYOUT = 32,
 //       MANAGE_ACCOUNT_ROLE = 33,
 //       MANAGE_ACCOUNT_RULE = 34,
-//       CREATE_ASWAP_BID_REQUEST = 35,
-//       CANCEL_ASWAP_BID = 36,
-//       CREATE_ASWAP_REQUEST = 37,
+//       CREATE_ATOMIC_SWAP_BID_REQUEST = 35,
+//       CANCEL_ATOMIC_SWAP_BID = 36,
+//       CREATE_ATOMIC_SWAP_REQUEST = 37,
 //       MANAGE_SIGNER = 38,
 //       MANAGE_SIGNER_ROLE = 39,
 //       MANAGE_SIGNER_RULE = 40,
 //       STAMP = 41,
-//       LICENSE = 42
+//       LICENSE = 42,
+//       MANAGE_CREATE_POLL_REQUEST = 43,
+//       MANAGE_POLL = 44,
+//       MANAGE_VOTE = 45,
+//       MANAGE_ACCOUNT_SPECIFIC_RULE = 46
 //   };
 //
 // ===========================================================================
@@ -15273,14 +15592,18 @@ xdr.enum("OperationType", {
   payout: 32,
   manageAccountRole: 33,
   manageAccountRule: 34,
-  createAswapBidRequest: 35,
-  cancelAswapBid: 36,
-  createAswapRequest: 37,
+  createAtomicSwapBidRequest: 35,
+  cancelAtomicSwapBid: 36,
+  createAtomicSwapRequest: 37,
   manageSigner: 38,
   manageSignerRole: 39,
   manageSignerRule: 40,
   stamp: 41,
   license: 42,
+  manageCreatePollRequest: 43,
+  managePoll: 44,
+  manageVote: 45,
+  manageAccountSpecificRule: 46,
 });
 
 // === xdr source ============================================================
@@ -15606,7 +15929,7 @@ xdr.struct("SaleExtended", [
 //       }
 //
 // ===========================================================================
-xdr.union("ASwapBidExtendedExt", {
+xdr.union("AtomicSwapBidExtendedExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -15618,7 +15941,7 @@ xdr.union("ASwapBidExtendedExt", {
 
 // === xdr source ============================================================
 //
-//   struct ASwapBidExtended
+//   struct AtomicSwapBidExtended
 //   {
 //       //: ID of the newly created bid as a result of Create Atomic Swap Bid Request successful review
 //       uint64 bidID;
@@ -15633,9 +15956,9 @@ xdr.union("ASwapBidExtendedExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("ASwapBidExtended", [
+xdr.struct("AtomicSwapBidExtended", [
   ["bidId", xdr.lookup("Uint64")],
-  ["ext", xdr.lookup("ASwapBidExtendedExt")],
+  ["ext", xdr.lookup("AtomicSwapBidExtendedExt")],
 ]);
 
 // === xdr source ============================================================
@@ -15643,11 +15966,11 @@ xdr.struct("ASwapBidExtended", [
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
-//               void;
+//           void;
 //       }
 //
 // ===========================================================================
-xdr.union("ASwapExtendedExt", {
+xdr.union("CreatePollExtendedExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -15659,7 +15982,48 @@ xdr.union("ASwapExtendedExt", {
 
 // === xdr source ============================================================
 //
-//   struct ASwapExtended
+//   struct CreatePollExtended
+//   {
+//       //: ID of the newly created poll
+//       uint64 pollID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePollExtended", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CreatePollExtendedExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//               void;
+//       }
+//
+// ===========================================================================
+xdr.union("AtomicSwapExtendedExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct AtomicSwapExtended
 //   {
 //       //: ID of a bid to apply atomic swap to
 //       uint64 bidID;
@@ -15692,7 +16056,7 @@ xdr.union("ASwapExtendedExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("ASwapExtended", [
+xdr.struct("AtomicSwapExtended", [
   ["bidId", xdr.lookup("Uint64")],
   ["bidOwnerId", xdr.lookup("AccountId")],
   ["purchaserId", xdr.lookup("AccountId")],
@@ -15703,7 +16067,7 @@ xdr.struct("ASwapExtended", [
   ["price", xdr.lookup("Uint64")],
   ["bidOwnerBaseBalanceId", xdr.lookup("BalanceId")],
   ["purchaserBaseBalanceId", xdr.lookup("BalanceId")],
-  ["ext", xdr.lookup("ASwapExtendedExt")],
+  ["ext", xdr.lookup("AtomicSwapExtendedExt")],
 ]);
 
 // === xdr source ============================================================
@@ -15714,9 +16078,11 @@ xdr.struct("ASwapExtended", [
 //       case NONE:
 //           void;
 //       case CREATE_ATOMIC_SWAP_BID:
-//           ASwapBidExtended aSwapBidExtended;
+//           AtomicSwapBidExtended atomicSwapBidExtended;
 //       case CREATE_ATOMIC_SWAP:
-//           ASwapExtended aSwapExtended;
+//           AtomicSwapExtended atomicSwapExtended;
+//       case CREATE_POLL:
+//           CreatePollExtended createPoll;
 //       }
 //
 // ===========================================================================
@@ -15726,13 +16092,15 @@ xdr.union("ExtendedResultTypeExt", {
   switches: [
     ["createSale", "saleExtended"],
     ["none", xdr.void()],
-    ["createAtomicSwapBid", "aSwapBidExtended"],
-    ["createAtomicSwap", "aSwapExtended"],
+    ["createAtomicSwapBid", "atomicSwapBidExtended"],
+    ["createAtomicSwap", "atomicSwapExtended"],
+    ["createPoll", "createPoll"],
   ],
   arms: {
     saleExtended: xdr.lookup("SaleExtended"),
-    aSwapBidExtended: xdr.lookup("ASwapBidExtended"),
-    aSwapExtended: xdr.lookup("ASwapExtended"),
+    atomicSwapBidExtended: xdr.lookup("AtomicSwapBidExtended"),
+    atomicSwapExtended: xdr.lookup("AtomicSwapExtended"),
+    createPoll: xdr.lookup("CreatePollExtended"),
   },
 });
 
@@ -15767,9 +16135,11 @@ xdr.union("ExtendedResultExt", {
 //       case NONE:
 //           void;
 //       case CREATE_ATOMIC_SWAP_BID:
-//           ASwapBidExtended aSwapBidExtended;
+//           AtomicSwapBidExtended atomicSwapBidExtended;
 //       case CREATE_ATOMIC_SWAP:
-//           ASwapExtended aSwapExtended;
+//           AtomicSwapExtended atomicSwapExtended;
+//       case CREATE_POLL:
+//           CreatePollExtended createPoll;
 //       } typeExt;
 //   
 //       //: Reserved for future use
@@ -15958,6 +16328,9 @@ xdr.struct("ReviewRequestOp", [
 //       //: Change role 
 //       //: Trying to remove zero tasks
 //       NON_ZERO_TASKS_TO_REMOVE_NOT_ALLOWED = -600,
+//       //: There is no account role with provided id
+//       ACCOUNT_ROLE_TO_SET_DOES_NOT_EXIST = -610,
+//   
 //   
 //       //: Update sale details
 //       //: Trying to update details of a non-existing sale
@@ -16041,6 +16414,7 @@ xdr.enum("ReviewRequestResultCode", {
   baseAssetNotFound: -530,
   quoteAssetNotFound: -550,
   nonZeroTasksToRemoveNotAllowed: -600,
+  accountRoleToSetDoesNotExist: -610,
   saleNotFound: -700,
   amountMismatched: -1010,
   destinationBalanceMismatched: -1020,
@@ -16100,6 +16474,1533 @@ xdr.union("ReviewRequestResult", {
     success: xdr.lookup("ExtendedResult"),
   },
   defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreatePollRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreatePollRequest
+//   {
+//       //: is used to restrict using of poll through rules
+//       uint32 permissionType;
+//   
+//       //: Number of allowed choices
+//       uint32 numberOfChoices;
+//   
+//       //: Specification of poll
+//       PollData data;
+//   
+//       //: Arbitrary stringified json object with details about the poll
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: The date from which voting in the poll will be allowed
+//       uint64 startTime;
+//   
+//       //: The date until which voting in the poll will be allowed
+//       uint64 endTime;
+//   
+//       //: ID of account which is responsible for poll result submitting
+//       AccountID resultProviderID;
+//   
+//       //: True means that signature of `resultProvider` is required to participate in poll voting
+//       bool voteConfirmationRequired;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePollRequest", [
+  ["permissionType", xdr.lookup("Uint32")],
+  ["numberOfChoices", xdr.lookup("Uint32")],
+  ["data", xdr.lookup("PollData")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["startTime", xdr.lookup("Uint64")],
+  ["endTime", xdr.lookup("Uint64")],
+  ["resultProviderId", xdr.lookup("AccountId")],
+  ["voteConfirmationRequired", xdr.bool()],
+  ["ext", xdr.lookup("CreatePollRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("AccountSpecificRuleEntryExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct AccountSpecificRuleEntry
+//   {
+//       uint64 id;
+//   
+//       LedgerKey ledgerKey;
+//       AccountID* accountID;
+//       bool forbids;
+//   
+//       // reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("AccountSpecificRuleEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["ledgerKey", xdr.lookup("LedgerKey")],
+  ["accountId", xdr.option(xdr.lookup("AccountId"))],
+  ["forbids", xdr.bool()],
+  ["ext", xdr.lookup("AccountSpecificRuleEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//          {
+//          case EMPTY_VERSION:
+//             void;
+//          }
+//
+// ===========================================================================
+xdr.union("LedgerKeyAccountExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           AccountID accountID;
+//           union switch (LedgerVersion v)
+//          {
+//          case EMPTY_VERSION:
+//             void;
+//          }
+//          ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAccount", [
+  ["accountId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("LedgerKeyAccountExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeySignerExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           PublicKey pubKey;
+//           AccountID accountID;
+//   
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySigner", [
+  ["pubKey", xdr.lookup("PublicKey")],
+  ["accountId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("LedgerKeySignerExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyFeeStateExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           Hash hash;
+//           int64 lowerBound;
+//           int64 upperBound;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyFeeState", [
+  ["hash", xdr.lookup("Hash")],
+  ["lowerBound", xdr.lookup("Int64")],
+  ["upperBound", xdr.lookup("Int64")],
+  ["ext", xdr.lookup("LedgerKeyFeeStateExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyBalanceExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           BalanceID balanceID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyBalance", [
+  ["balanceId", xdr.lookup("BalanceId")],
+  ["ext", xdr.lookup("LedgerKeyBalanceExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyAssetExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           AssetCode code;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAsset", [
+  ["code", xdr.lookup("AssetCode")],
+  ["ext", xdr.lookup("LedgerKeyAssetExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//
+// ===========================================================================
+xdr.union("LedgerKeyReferenceExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//   		AccountID sender;
+//   		string64 reference;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyReference", [
+  ["sender", xdr.lookup("AccountId")],
+  ["reference", xdr.lookup("String64")],
+  ["ext", xdr.lookup("LedgerKeyReferenceExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//
+// ===========================================================================
+xdr.union("LedgerKeyStatsExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           AccountID accountID;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyStats", [
+  ["accountId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("LedgerKeyStatsExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//
+// ===========================================================================
+xdr.union("LedgerKeyAccountLimitsExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           AccountID accountID;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAccountLimits", [
+  ["accountId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("LedgerKeyAccountLimitsExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyAssetPairExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           AssetCode base;
+//           AssetCode quote;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAssetPair", [
+  ["base", xdr.lookup("AssetCode")],
+  ["quote", xdr.lookup("AssetCode")],
+  ["ext", xdr.lookup("LedgerKeyAssetPairExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 offerID;
+//           AccountID ownerID;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyOffer", [
+  ["offerId", xdr.lookup("Uint64")],
+  ["ownerId", xdr.lookup("AccountId")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyReviewableRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 requestID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyReviewableRequest", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyReviewableRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//
+// ===========================================================================
+xdr.union("LedgerKeyExternalSystemAccountIdExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//   		AccountID accountID;
+//   		int32 externalSystemType;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//   	}
+//
+// ===========================================================================
+xdr.struct("LedgerKeyExternalSystemAccountId", [
+  ["accountId", xdr.lookup("AccountId")],
+  ["externalSystemType", xdr.lookup("Int32")],
+  ["ext", xdr.lookup("LedgerKeyExternalSystemAccountIdExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeySaleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 saleID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySale", [
+  ["saleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeySaleExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyKeyValueExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           longstring key;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyKeyValue", [
+  ["key", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("LedgerKeyKeyValueExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch(LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyAccountKycExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           AccountID accountID;
+//           union switch(LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAccountKyc", [
+  ["accountId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("LedgerKeyAccountKycExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//
+// ===========================================================================
+xdr.union("LedgerKeyExternalSystemAccountIdPoolEntryExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//   		uint64 poolEntryID;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//   	}
+//
+// ===========================================================================
+xdr.struct("LedgerKeyExternalSystemAccountIdPoolEntry", [
+  ["poolEntryId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyExternalSystemAccountIdPoolEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyLimitsV2Ext", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           } ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyLimitsV2", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyLimitsV2Ext")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyStatisticsV2Ext", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyStatisticsV2", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyStatisticsV2Ext")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyPendingStatisticsExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 statisticsID;
+//           uint64 requestID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyPendingStatistics", [
+  ["statisticsId", xdr.lookup("Uint64")],
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyPendingStatisticsExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyContractExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 contractID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyContract", [
+  ["contractId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyContractExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyAtomicSwapBidExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 bidID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAtomicSwapBid", [
+  ["bidId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyAtomicSwapBidExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyAccountRoleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAccountRole", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyAccountRoleExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyAccountRuleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAccountRule", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeyAccountRuleExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeySignerRoleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySignerRole", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeySignerRoleExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeySignerRuleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySignerRule", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("LedgerKeySignerRuleExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyStampExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           Hash ledgerHash;
+//           Hash licenseHash;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyStamp", [
+  ["ledgerHash", xdr.lookup("Hash")],
+  ["licenseHash", xdr.lookup("Hash")],
+  ["ext", xdr.lookup("LedgerKeyStampExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("LedgerKeyLicenseExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           Hash licenseHash;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           } ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyLicense", [
+  ["licenseHash", xdr.lookup("Hash")],
+  ["ext", xdr.lookup("LedgerKeyLicenseExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyPoll", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 pollID;
+//           AccountID voterID;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyVote", [
+  ["pollId", xdr.lookup("Uint64")],
+  ["voterId", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyAccountSpecificRule", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union LedgerKey switch (LedgerEntryType type)
+//   {
+//   case ACCOUNT:
+//       struct
+//       {
+//           AccountID accountID;
+//           union switch (LedgerVersion v)
+//          {
+//          case EMPTY_VERSION:
+//             void;
+//          }
+//          ext;
+//       } account;
+//   case SIGNER:
+//       struct
+//       {
+//           PublicKey pubKey;
+//           AccountID accountID;
+//   
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } signer;
+//   case FEE:
+//       struct {
+//           Hash hash;
+//           int64 lowerBound;
+//           int64 upperBound;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } feeState;
+//   case BALANCE:
+//       struct
+//       {
+//           BalanceID balanceID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } balance;
+//   case ASSET:
+//       struct
+//       {
+//           AssetCode code;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } asset;
+//   case REFERENCE_ENTRY:
+//       struct
+//       {
+//   		AccountID sender;
+//   		string64 reference;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//       } reference;
+//   case STATISTICS:
+//       struct {
+//           AccountID accountID;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//       } stats;
+//   case ACCOUNT_LIMITS:
+//       struct {
+//           AccountID accountID;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//       } accountLimits;
+//   case ASSET_PAIR:
+//       struct {
+//           AssetCode base;
+//           AssetCode quote;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } assetPair;
+//   case OFFER_ENTRY:
+//       struct {
+//           uint64 offerID;
+//           AccountID ownerID;
+//       } offer;
+//   case REVIEWABLE_REQUEST:
+//       struct {
+//           uint64 requestID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } reviewableRequest;
+//   case EXTERNAL_SYSTEM_ACCOUNT_ID:
+//   	struct {
+//   		AccountID accountID;
+//   		int32 externalSystemType;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//   	} externalSystemAccountID;
+//   case SALE:
+//       struct {
+//           uint64 saleID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } sale;
+//   case KEY_VALUE:
+//       struct {
+//           longstring key;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } keyValue;
+//   case ACCOUNT_KYC:
+//       struct {
+//           AccountID accountID;
+//           union switch(LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } accountKYC;
+//   case EXTERNAL_SYSTEM_ACCOUNT_ID_POOL_ENTRY:
+//       struct {
+//   		uint64 poolEntryID;
+//   		union switch (LedgerVersion v)
+//   		{
+//   		case EMPTY_VERSION:
+//   			void;
+//   		}
+//   		ext;
+//   	} externalSystemAccountIDPoolEntry;
+//   case LIMITS_V2:
+//       struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           } ext;
+//       } limitsV2;
+//   case STATISTICS_V2:
+//       struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } statisticsV2;
+//   case PENDING_STATISTICS:
+//       struct {
+//           uint64 statisticsID;
+//           uint64 requestID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } pendingStatistics;
+//   case CONTRACT:
+//       struct {
+//           uint64 contractID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } contract;
+//   case ATOMIC_SWAP_BID:
+//       struct {
+//           uint64 bidID;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } atomicSwapBid;
+//   case ACCOUNT_ROLE:
+//       struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } accountRole;
+//   case ACCOUNT_RULE:
+//       struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } accountRule;
+//   case SIGNER_ROLE:
+//       struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } signerRole;
+//   case SIGNER_RULE:
+//       struct {
+//           uint64 id;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } signerRule;
+//   case STAMP:
+//       struct {
+//           Hash ledgerHash;
+//           Hash licenseHash;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } stamp;
+//   case LICENSE:
+//       struct {
+//           Hash licenseHash;
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           } ext;
+//       } license;
+//   case POLL:
+//       struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       } poll;
+//   case VOTE:
+//       struct {
+//           uint64 pollID;
+//           AccountID voterID;
+//   
+//           EmptyExt ext;
+//       } vote;
+//   case ACCOUNT_SPECIFIC_RULE:
+//       struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       } accountSpecificRule;
+//   };
+//
+// ===========================================================================
+xdr.union("LedgerKey", {
+  switchOn: xdr.lookup("LedgerEntryType"),
+  switchName: "type",
+  switches: [
+    ["account", "account"],
+    ["signer", "signer"],
+    ["fee", "feeState"],
+    ["balance", "balance"],
+    ["asset", "asset"],
+    ["referenceEntry", "reference"],
+    ["statistic", "stats"],
+    ["accountLimit", "accountLimits"],
+    ["assetPair", "assetPair"],
+    ["offerEntry", "offer"],
+    ["reviewableRequest", "reviewableRequest"],
+    ["externalSystemAccountId", "externalSystemAccountId"],
+    ["sale", "sale"],
+    ["keyValue", "keyValue"],
+    ["accountKyc", "accountKyc"],
+    ["externalSystemAccountIdPoolEntry", "externalSystemAccountIdPoolEntry"],
+    ["limitsV2", "limitsV2"],
+    ["statisticsV2", "statisticsV2"],
+    ["pendingStatistic", "pendingStatistics"],
+    ["contract", "contract"],
+    ["atomicSwapBid", "atomicSwapBid"],
+    ["accountRole", "accountRole"],
+    ["accountRule", "accountRule"],
+    ["signerRole", "signerRole"],
+    ["signerRule", "signerRule"],
+    ["stamp", "stamp"],
+    ["license", "license"],
+    ["poll", "poll"],
+    ["vote", "vote"],
+    ["accountSpecificRule", "accountSpecificRule"],
+  ],
+  arms: {
+    account: xdr.lookup("LedgerKeyAccount"),
+    signer: xdr.lookup("LedgerKeySigner"),
+    feeState: xdr.lookup("LedgerKeyFeeState"),
+    balance: xdr.lookup("LedgerKeyBalance"),
+    asset: xdr.lookup("LedgerKeyAsset"),
+    reference: xdr.lookup("LedgerKeyReference"),
+    stats: xdr.lookup("LedgerKeyStats"),
+    accountLimits: xdr.lookup("LedgerKeyAccountLimits"),
+    assetPair: xdr.lookup("LedgerKeyAssetPair"),
+    offer: xdr.lookup("LedgerKeyOffer"),
+    reviewableRequest: xdr.lookup("LedgerKeyReviewableRequest"),
+    externalSystemAccountId: xdr.lookup("LedgerKeyExternalSystemAccountId"),
+    sale: xdr.lookup("LedgerKeySale"),
+    keyValue: xdr.lookup("LedgerKeyKeyValue"),
+    accountKyc: xdr.lookup("LedgerKeyAccountKyc"),
+    externalSystemAccountIdPoolEntry: xdr.lookup("LedgerKeyExternalSystemAccountIdPoolEntry"),
+    limitsV2: xdr.lookup("LedgerKeyLimitsV2"),
+    statisticsV2: xdr.lookup("LedgerKeyStatisticsV2"),
+    pendingStatistics: xdr.lookup("LedgerKeyPendingStatistics"),
+    contract: xdr.lookup("LedgerKeyContract"),
+    atomicSwapBid: xdr.lookup("LedgerKeyAtomicSwapBid"),
+    accountRole: xdr.lookup("LedgerKeyAccountRole"),
+    accountRule: xdr.lookup("LedgerKeyAccountRule"),
+    signerRole: xdr.lookup("LedgerKeySignerRole"),
+    signerRule: xdr.lookup("LedgerKeySignerRule"),
+    stamp: xdr.lookup("LedgerKeyStamp"),
+    license: xdr.lookup("LedgerKeyLicense"),
+    poll: xdr.lookup("LedgerKeyPoll"),
+    vote: xdr.lookup("LedgerKeyVote"),
+    accountSpecificRule: xdr.lookup("LedgerKeyAccountSpecificRule"),
+  },
 });
 
 // === xdr source ============================================================
@@ -16281,7 +18182,17 @@ xdr.struct("CreateSaleCreationRequestOp", [
 //       //: It is not allowed to set all tasks on rejected SaleCreationRequest update
 //       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -15,
 //       //: Auto review failed due to a particular reason (e.g., hard cap exceeded either max issuance amount or preissued amount of an asset)
-//       AUTO_REVIEW_FAILED = -16 
+//       AUTO_REVIEW_FAILED = -16,
+//       //: Not allowed to pass more account sale rule than allowed by `max_sale_rules_number` key value
+//       EXCEEDED_MAX_RULES_SIZE = -17,
+//       //: Not allowed to pass rules with the same ledger key and null accountID
+//       GLOBAL_SPECIFIC_RULE_DUPLICATION = -18,
+//       //: Not allowed to pass rules with the same accountID and ledger key
+//       ACCOUNT_SPECIFIC_RULE_DUPLICATION = -19,
+//       //: Not allowed to pass rules with out global one (`accountID == null`)
+//       GLOBAL_SPECIFIC_RULE_REQUIRED = -20,
+//       //: There is no account with id specified in sale rules
+//       ACCOUNT_NOT_FOUND = -21
 //   };
 //
 // ===========================================================================
@@ -16303,6 +18214,11 @@ xdr.enum("CreateSaleCreationRequestResultCode", {
   saleCreateTasksNotFound: -14,
   notAllowedToSetTasksOnUpdate: -15,
   autoReviewFailed: -16,
+  exceededMaxRulesSize: -17,
+  globalSpecificRuleDuplication: -18,
+  accountSpecificRuleDuplication: -19,
+  globalSpecificRuleRequired: -20,
+  accountNotFound: -21,
 });
 
 // === xdr source ============================================================
