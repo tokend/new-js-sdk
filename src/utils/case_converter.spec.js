@@ -1,8 +1,4 @@
-import {
-  toCamelCaseDeep,
-  toSnakeCaseDeep,
-  toKebabCaseDeep
-} from './case_converter'
+import { toCamelCaseDeep, toSnakeCaseDeep } from './case_converter'
 
 describe('utils/case_converter', function () {
   describe('.toCamelCaseDeep', function () {
@@ -140,74 +136,6 @@ describe('utils/case_converter', function () {
       expect(converted).to.eql([
         { element_1: 1 },
         { element_2: 2 }
-      ])
-    })
-  })
-
-  describe('.toKebabCaseDeep', function () {
-    it('Should convert a plain object.', function () {
-      const object = {
-        property1: '1',
-        otherProperty: '2'
-      }
-
-      const converted = toKebabCaseDeep(object)
-
-      expect(converted).to.eql({
-        'property-1': '1',
-        'other-property': '2'
-      })
-    })
-
-    it('Should convert nested objects.', function () {
-      const object = {
-        some_property1: {
-          someProperty2: {
-            someProperty_3: '3'
-          }
-        }
-      }
-
-      const converted = toKebabCaseDeep(object)
-
-      expect(converted).to.eql({
-        'some-property-1': {
-          'some-property-2': {
-            'some-property-3': '3'
-          }
-        }
-      })
-    })
-
-    it('Should convert array elements.', function () {
-      const object = {
-        someArray: [
-          { element1: 1 },
-          { element2: 2 }
-        ]
-      }
-
-      const converted = toKebabCaseDeep(object)
-
-      expect(converted).to.eql({
-        'some-array': [
-          { 'element-1': 1 },
-          { 'element-2': 2 }
-        ]
-      })
-    })
-
-    it('Should convert an array.', function () {
-      const object = [
-        { element1: 1 },
-        { element2: 2 }
-      ]
-
-      const converted = toKebabCaseDeep(object)
-
-      expect(converted).to.eql([
-        { 'element-1': 1 },
-        { 'element-2': 2 }
       ])
     })
   })

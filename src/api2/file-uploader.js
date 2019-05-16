@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import FormData from 'form-data'
 
-import { toKebabCaseDeep } from '../utils/case_converter'
+import _kebabCase from 'lodash/kebabCase'
 import _omit from 'lodash/omit'
 
 const HEADER_CONTENT_TYPE = 'Content-Type'
@@ -78,7 +78,7 @@ export class FileUploader {
     const formData = new FormData()
 
     for (const key in policy) {
-      formData.append(toKebabCaseDeep(key), policy[key])
+      formData.append(_kebabCase(key), policy[key])
     }
 
     formData.append('file', file)
