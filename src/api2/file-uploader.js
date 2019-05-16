@@ -3,6 +3,8 @@ import axios from 'axios'
 import middlewares from './middlewares'
 import _omit from 'lodash/omit'
 
+import { toKebabCaseDeep } from '../utils/case_converter'
+
 /**
  * FileUploader uploads a file to the storage server
  */
@@ -64,9 +66,7 @@ export class FileUploader {
     const formData = new FormData()
 
     for (const key in policy) {
-      // converts camelCase policy to kebab-case
-      const convertedPolicy = key.replace(/([A-Z])/g, '-$1').toLowerCase()
-      formData.append(convertedPolicy, policy[key])
+      formData.append(toKebabCaseDeep(key), policy[key])
     }
 
     // eslint-disable-next-line no-undef
@@ -77,7 +77,7 @@ export class FileUploader {
   }
 
   async _postFileFormData (formData) {
-    let config = {
+    const config = {
       baseURL: this._storageURL,
       headers: { 'Content-Type': 'multipart/form-data' },
       data: formData,

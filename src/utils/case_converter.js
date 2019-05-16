@@ -8,6 +8,10 @@ export function toSnakeCaseDeep (object) {
   return convertCaseDeep(object, _.snakeCase)
 }
 
+export function toKebabCaseDeep (object) {
+  return convertCaseDeep(object, _.kebabCase)
+}
+
 function convertCaseDeep (object, transformPropertyName) {
   if (_.isString(object) || _.isNumber(object)) {
     return object
