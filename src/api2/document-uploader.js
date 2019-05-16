@@ -9,9 +9,9 @@ const HEADER_CONTENT_TYPE = 'Content-Type'
 const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
 
 /**
- * FileUploader uploads a file to the storage server
+ * DocumentUploader uploads a file to the storage server
  */
-export class FileUploader {
+export class DocumentUploader {
   /**
    * @param {object} opts
    * @param {ApiCaller} opts.apiCaller
@@ -31,19 +31,21 @@ export class FileUploader {
   }
 
   /**
-   * Uploads the file into storage
+   * Uploads the document into storage
    *
    * @param {object} opts
    * @param {string} opts.type - Type of the document
    * (!! nothing common with MIME-type)
    * @param {string} opts.mimeType - MIME-type of the file being uploaded
    * @param {ArrayBuffer} opts.file - File itself
+   * @param {string} [accountId] - Document's owner account ID.
+   * User wallet's account ID by default
    *
    * @return {string} - File storage key
    */
-  async uploadFile ({ type, mimeType, file }) {
+  async uploadDocument ({ type, mimeType, file, accountId }) {
     const config = await this._createDocumentAnchorConfig(
-      { type, mimeType }
+      { type, mimeType, accountId }
     )
 
     const formData = this._createFileFormData({
@@ -55,7 +57,7 @@ export class FileUploader {
     return config.key
   }
 
-  async _createDocumentAnchorConfig ({ type, mimeType }) {
+  async _createDocumentAnchorConfig ({ type, mimeType, accountId }) {
     const { data: config } = await this._apiCaller.postWithSignature(
       '/documents',
       {
@@ -64,7 +66,7 @@ export class FileUploader {
           attributes: { content_type: mimeType },
           relationships: {
             owner: {
-              data: { id: this._apiCaller.wallet.accountId }
+              data: { id: accountId || this._apiCaller.wallet.accountId }
             }
           }
         }

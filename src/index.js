@@ -11,7 +11,7 @@ export { ApiResponse } from './api'
 
 export {
   ApiCaller,
-  FileUploader,
+  DocumentUploader,
   WalletsManager,
   FactorsManager,
   JsonapiResponse
