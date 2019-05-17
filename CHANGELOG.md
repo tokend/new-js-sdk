@@ -7,10 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
-#### Changed
+## [Unresolved]
+### Added
+- Validators for specified types:
+  - Undefined
+  - Array
+  - String
+  - Public key
+  - Secret key
+  - Balance key
+  - Int64 amount
+  - Asset code
+  - XDR enum type
+  - Creator details
+- Check for spaces in `BaseOperation.isValidString`
+
+### Changed
 - api-caller method `deleteWithSignature` params
 - api-caller method `delete` params
+
+### Updated
+- Now using new validators in `CreateIssuanceRequestBuilder`
+
+### Fixed
+- `BaseOperation.isValidAsset` method, now it accepts only alphanumeric
+  symbols
 
 ## [1.7.0-x.2] - 2019-05-15
 ### Added

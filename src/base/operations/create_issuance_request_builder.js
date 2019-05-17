@@ -1,7 +1,14 @@
 import { default as xdr } from '../generated/xdr_generated'
-import isUndefined from 'lodash/isUndefined'
 import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
+
+import {
+  validateAssetCode,
+  validateAmount,
+  validateBalanceKey,
+  validateString,
+  validateCreatorDetails
+} from '../../utils/validators'
 
 export class CreateIssuanceRequestBuilder {
   /**
@@ -16,51 +23,40 @@ export class CreateIssuanceRequestBuilder {
    * @returns {xdr.CreateIssuanceRequestOp}
    */
   static createIssuanceRequest (opts) {
-    let attrs = {}
-    if (!BaseOperation.isValidAsset(opts.asset)) {
-      throw new Error('opts.asset is invalid')
+    validateAssetCode({ value: opts.asset, fieldName: 'opts.asset' })
+    validateAmount({ value: opts.amount, fieldName: 'opts.amount' })
+    validateBalanceKey({ value: opts.receiver, fieldName: 'opts.receiver' })
+    validateString({
+      value: opts.reference,
+      fieldName: 'opts.reference',
+      minLength: 1,
+      maxLength: 64
+    })
+    validateCreatorDetails({
+      value: opts.creatorDetails,
+      fieldName: 'opts.creatorDetails'
+    })
+
+    const attrs = {
+      asset: opts.asset,
+      amount: BaseOperation._toUnsignedXDRAmount(opts.amount),
+      receiver: Keypair.fromBalanceId(opts.receiver).xdrBalanceId(),
+      creatorDetails: JSON.stringify(opts.creatorDetails),
+      fee: BaseOperation.feeToXdr({ fixed: '0', percent: '0' }),
+      ext: new xdr.IssuanceRequestExt(xdr.LedgerVersion.emptyVersion())
     }
 
-    attrs.asset = opts.asset
-
-    if (!BaseOperation.isValidAmount(opts.amount)) {
-      throw new Error('opts.amount is invalid')
-    }
-
-    attrs.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
-
-    if (!Keypair.isValidBalanceKey(opts.receiver)) {
-      throw new Error('receiver is invalid')
-    }
-
-    attrs.receiver = Keypair.fromBalanceId(opts.receiver).xdrBalanceId()
-
-    if (!BaseOperation.isValidString(opts.reference, 1, 64)) {
-      throw new Error('opts.reference is invalid')
-    }
-
-    if (isUndefined(opts.creatorDetails)) {
-      throw new Error('creatorDetails is invalid')
-    }
-
-    attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
-
-    let fee = {
-      fixed: '0',
-      percent: '0'
-    }
-    attrs.fee = BaseOperation.feeToXdr(fee)
-
-    attrs.ext = new xdr.IssuanceRequestExt(xdr.LedgerVersion.emptyVersion())
-    let request = new xdr.IssuanceRequest(attrs)
-    let issuanceRequestOp = new xdr.CreateIssuanceRequestOp({
-      request: request,
+    const issuanceRequestOp = new xdr.CreateIssuanceRequestOp({
+      request: new xdr.IssuanceRequest(attrs),
       reference: opts.reference,
       ext: new xdr.CreateIssuanceRequestOpExt(xdr.LedgerVersion.emptyVersion())
     })
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.createIssuanceRequest(issuanceRequestOp)
+
+    const opAttributes = {
+      body: xdr.OperationBody.createIssuanceRequest(issuanceRequestOp)
+    }
     BaseOperation.setSourceAccount(opAttributes, opts)
+
     return new xdr.Operation(opAttributes)
   }
 
