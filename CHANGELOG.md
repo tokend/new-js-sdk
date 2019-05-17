@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+#### Changed
+- api-caller method `deleteWithSignature` params
+- api-caller method `delete` params
+
 ## [1.7.0-x.2] - 2019-05-15
 ### Added
 - Method `useBaseURL` to api-caller
