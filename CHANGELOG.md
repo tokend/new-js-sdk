@@ -22,6 +22,10 @@ for further information about branching and tagging conventions.
   - Creator details
 - Check for spaces in `BaseOperation.isValidString`
 
+### Changed
+- api-caller method `deleteWithSignature` params
+- api-caller method `delete` params
+
 ### Updated
 - Now using new validators in `CreateIssuanceRequestBuilder`
 

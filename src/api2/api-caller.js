@@ -140,11 +140,12 @@ export class ApiCaller {
     return this.put(endpoint, data, true)
   }
 
-  delete (endpoint, needSign = false) {
+  delete (endpoint, data, needSign = false) {
     return this._call({
       method: methods.DELETE,
       needSign,
-      endpoint
+      endpoint,
+      data
     })
   }
 
