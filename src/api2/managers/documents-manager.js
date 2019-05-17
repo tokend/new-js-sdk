@@ -1,31 +1,53 @@
 import axios from 'axios'
-
 import FormData from 'form-data'
 
 import _kebabCase from 'lodash/kebabCase'
 import _omit from 'lodash/omit'
 
+import { ApiCaller } from '../api-caller'
+
 const HEADER_CONTENT_TYPE = 'Content-Type'
 const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
 
 /**
- * DocumentUploader uploads a file to the storage server
+ * DocumentsManager uploads a document to the storage server
  */
-export class DocumentUploader {
+export class DocumentsManager {
   /**
    * @param {object} opts
-   * @param {ApiCaller} opts.apiCaller
-   * @param {string} [opts.storageURL]
+   * @param {ApiCaller} [opts.apiCaller] API caller instance.
+   * @param {string} [opts.storageURL] Storage base URL.
    */
   constructor (opts = {}) {
     this._axios = axios.create()
-    this._apiCaller = opts.apiCaller
+
+    if (opts.apiCaller) {
+      this.useApi(opts.apiCaller)
+    }
 
     if (opts.storageURL) {
       this.useStorageURL(opts.storageURL)
     }
   }
 
+  /**
+   * Use an API caller to create document's config.
+   *
+   * @param {ApiCaller} api API caller instance.
+   */
+  useApi (api) {
+    if (!(api instanceof ApiCaller)) {
+      throw new TypeError('An ApiCaller instance expected')
+    }
+
+    this._apiCaller = api
+  }
+
+  /**
+   * Use a storage URL to upload documents.
+   *
+   * @param {string} url Storage base URL.
+   */
   useStorageURL (url) {
     this._storageURL = url
   }

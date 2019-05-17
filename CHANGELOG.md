@@ -9,7 +9,7 @@ for further information about branching and tagging conventions.
 
 ## [Unresolved]
 ### Added
-- `DocumentUploader` class to encapsulate creating document's config & 
+- `DocumentsManager` class to encapsulate creating document's config & 
   uploading a file to the storage
 
 ## [1.7.0-x.2] - 2019-05-15

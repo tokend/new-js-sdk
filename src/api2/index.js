@@ -1,4 +1,8 @@
 export { ApiCaller } from './api-caller'
-export { DocumentUploader } from './document-uploader'
-export { WalletsManager, FactorsManager, SignersManager } from './managers'
+export {
+  DocumentsManager,
+  FactorsManager,
+  SignersManager,
+  WalletsManager
+} from './managers'
 export { JsonapiResponse } from './middlewares/parse-jsonapi-response'
