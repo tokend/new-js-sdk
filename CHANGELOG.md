@@ -29,6 +29,14 @@ for further information about branching and tagging conventions.
 - `BaseOperation.isValidAsset` method, now it accepts only alphanumeric
   symbols
 
+## [1.7.0-x.2] - 2019-05-15
+### Added
+- Method `useBaseURL` to api-caller
+- Method `useNetworkDetails` to api-caller
+- Method `withWallet` to api-caller
+- Method `useApi` to factors-manager
+- Method `useApi` to wallet-manager
+
 ## [1.7.0-x.1] - 2019-05-07
 ### Added
 - New managers classes for encapsulating actions with wallets,
@@ -126,7 +134,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.1...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.2...HEAD
+[1.7.0-x.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.1...1.7.0-x.2
 [1.7.0-x.1]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.0...1.7.0-x.1
 [1.7.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0...1.7.0-x.0
 [1.6.0]: https://github.com/tokend/new-js-sdk/compare/1.6.0-rc.0...1.6.0
