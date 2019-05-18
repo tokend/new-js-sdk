@@ -55,6 +55,21 @@ export class DocumentsManager {
   }
 
   /**
+   * Returns document URL by provided storage key.
+   *
+   * @param {string} key File storage key.
+   *
+   * @return {string} - Document URL
+   */
+  getDocumentUrlByKey (key) {
+    if (key) {
+      return `${this._storageURL}/${key}`
+    } else {
+      return ''
+    }
+  }
+
+  /**
    * Uploads the document into storage
    *
    * @param {object} opts
