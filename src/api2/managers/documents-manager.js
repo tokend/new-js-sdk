@@ -6,6 +6,8 @@ import _omit from 'lodash/omit'
 
 import { ApiCaller } from '../api-caller'
 
+import { StorageServerError } from '../../errors'
+
 const HEADER_CONTENT_TYPE = 'Content-Type'
 const MIME_TYPE_MULTIPART_FORM_DATA = 'multipart/form-data'
 
@@ -117,6 +119,10 @@ export class DocumentsManager {
       }
     }
 
-    await this._axios.post(this._storageURL, formData, config)
+    try {
+      await this._axios.post(this._storageURL, formData, config)
+    } catch (e) {
+      throw new StorageServerError(e, this._axios)
+    }
   }
 }
