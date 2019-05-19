@@ -1,6 +1,6 @@
-// revision: 64f602d18ea32e167ef231319da4db2a7f7a8ec8
-// branch:   (HEAD
-// Automatically generated on 2019-05-06T15:41:50+00:00
+// revision: 3eeaee41e521fd962b282b39059ffa0bad7bc66e
+// branch:   feature/kyc-recovery
+// Automatically generated on 2019-05-18T08:46:11+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -166,6 +166,7 @@ xdr.union("PreIssuanceRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: Is used to pass required values to perform pre issuance
 //   struct PreIssuanceRequest
 //   {
 //       //: Code of an asset whose `available_for_issuance_amount` will increase
@@ -219,6 +220,7 @@ xdr.union("IssuanceRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: Body of reviewable `IssuanceRequest`, contains parameters regarding issuance
 //   struct IssuanceRequest {
 //       //: Code of an asset to issue
 //   	AssetCode asset;
@@ -270,6 +272,8 @@ xdr.union("CreateWithdrawalRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateWithdrawalRequest operation is used to create a reviewable request,
+//   //: which, after reviewer's approval, will charge the specified amount from balance and send it to external wallet/account
 //   struct CreateWithdrawalRequestOp
 //   {
 //       //: Withdrawal request to create 
@@ -296,6 +300,7 @@ xdr.struct("CreateWithdrawalRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: CreateWithdrawalRequest operation result codes
 //   enum CreateWithdrawalRequestResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -385,6 +390,7 @@ xdr.union("CreateWithdrawalSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: Result of the successful withdrawal request creation
 //   struct CreateWithdrawalSuccess {
 //       //: ID of a newly created WithdrawalRequest
 //       uint64 requestID;
@@ -408,6 +414,7 @@ xdr.struct("CreateWithdrawalSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of applying CreateWithdrawalRequst operation along with the result code
 //   union CreateWithdrawalRequestResult switch (CreateWithdrawalRequestResultCode code)
 //   {
 //       case SUCCESS:
@@ -431,6 +438,7 @@ xdr.union("CreateWithdrawalRequestResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed with a signer rule
 //   enum ManageSignerRuleAction
 //   {
 //       CREATE = 0,
@@ -466,6 +474,7 @@ xdr.union("CreateSignerRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateSignerRuleData is used to pass necessary params to create a new signer rule
 //   struct CreateSignerRuleData
 //   {
 //       //: Resource is used to specify an entity (for some, with properties) that can be managed through operations
@@ -521,6 +530,7 @@ xdr.union("UpdateSignerRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: UpdateSignerRuleData is used to pass necessary params to update an existing signer rule
 //   struct UpdateSignerRuleData
 //   {
 //       //: Identifier of an existing signer rule
@@ -576,6 +586,7 @@ xdr.union("RemoveSignerRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: RemoveSignerRuleData is used to pass necessary params to remove existing signer rule
 //   struct RemoveSignerRuleData
 //   {
 //       //: Identifier of an existing signer rule
@@ -644,6 +655,7 @@ xdr.union("ManageSignerRuleOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageSignerRuleOp is used to create, update or remove signer rule
 //   struct ManageSignerRuleOp
 //   {
 //       //: data is used to pass one of `ManageSignerRuleAction` with required params
@@ -674,6 +686,7 @@ xdr.struct("ManageSignerRuleOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageSignerRuleOp
 //   enum ManageSignerRuleResultCode
 //   {
 //       //: Specified action in `data` of ManageSignerRuleOp was successfully executed
@@ -738,6 +751,7 @@ xdr.struct("ManageSignerRuleResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of operation application
 //   union ManageSignerRuleResult switch (ManageSignerRuleResultCode code)
 //   {
 //       case SUCCESS:
@@ -777,6 +791,7 @@ xdr.union("ManageSignerRuleResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be applied to a vote entry
 //   enum ManageVoteAction
 //   {
 //       CREATE = 0,
@@ -810,6 +825,7 @@ xdr.union("CreateVoteDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateVoteData is used to pass needed params to create (send) vote
 //   struct CreateVoteData
 //   {
 //       //: ID of poll to vote in
@@ -854,6 +870,7 @@ xdr.union("RemoveVoteDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: RemoveVoteData is used to pass needed params to remove (cancel) own vote
 //   struct RemoveVoteData
 //   {
 //       //: ID of poll
@@ -918,6 +935,7 @@ xdr.union("ManageVoteOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageVoteOp is used to create (send) or remove (cancel) vote
 //   struct ManageVoteOp
 //   {
 //       //: `data` is used to pass `ManageVoteAction` with needed params
@@ -946,6 +964,7 @@ xdr.struct("ManageVoteOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result code of ManageVoteOp
 //   enum ManageVoteResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -980,6 +999,7 @@ xdr.enum("ManageVoteResultCode", {
 
 // === xdr source ============================================================
 //
+//   //: Result of ManageVoteOp application
 //   union ManageVoteResult switch (ManageVoteResultCode code)
 //   {
 //   case SUCCESS:
@@ -1161,6 +1181,9 @@ xdr.union("CreateChangeRoleRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: `CreateChangeRoleRequestOp` is used to create reviewable requests
+//   //: that, with admin's approval, will change the role of `destinationAccount`
+//   //: from current role to `accountRoleToSet`
 //   struct CreateChangeRoleRequestOp
 //   {
 //       //: Set zero to create new request, set non zero to update existing request
@@ -1197,6 +1220,7 @@ xdr.struct("CreateChangeRoleRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of CreateChangeRoleRequestOp
 //   enum CreateChangeRoleRequestResultCode
 //   {
 //       //: Change role request has either been successfully created
@@ -1220,7 +1244,9 @@ xdr.struct("CreateChangeRoleRequestOp", [
 //       INVALID_CREATOR_DETAILS = -8,
 //       //: There is no key-value entry by `change_role_tasks` key in the system;
 //       //: configuration does not allow changing the role from current to `accountRoleToSet`
-//       CHANGE_ROLE_TASKS_NOT_FOUND = -9
+//       CHANGE_ROLE_TASKS_NOT_FOUND = -9,
+//       //: There is no account role with provided id
+//       ACCOUNT_ROLE_TO_SET_DOES_NOT_EXIST = -10
 //   };
 //
 // ===========================================================================
@@ -1233,6 +1259,7 @@ xdr.enum("CreateChangeRoleRequestResultCode", {
   invalidChangeRoleRequestDatum: -7,
   invalidCreatorDetail: -8,
   changeRoleTasksNotFound: -9,
+  accountRoleToSetDoesNotExist: -10,
 });
 
 // === xdr source ============================================================
@@ -1280,6 +1307,7 @@ xdr.struct("CreateChangeRoleRequestResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of operation application 
 //   union CreateChangeRoleRequestResult switch (CreateChangeRoleRequestResultCode code)
 //   {
 //   case SUCCESS:
@@ -1335,6 +1363,7 @@ xdr.union("CreateSaleCreationRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateSaleCreationRequest operation creates SaleCreationRequest or updates the rejected request
 //   struct CreateSaleCreationRequestOp
 //   {
 //       //: ID of the SaleCreationRequest. If set to 0, a new request is created
@@ -1365,6 +1394,7 @@ xdr.struct("CreateSaleCreationRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: CreateSaleCreationRequest result codes
 //   enum CreateSaleCreationRequestResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -1463,6 +1493,7 @@ xdr.union("CreateSaleCreationSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: Result of the successful application of CreateSaleCreationRequest operation
 //   struct CreateSaleCreationSuccess {
 //       //: ID of the SaleCreation request
 //       uint64 requestID;
@@ -1507,6 +1538,7 @@ xdr.union("CreateSaleCreationAutoReviewFailedExt", {
 
 // === xdr source ============================================================
 //
+//   //: specifies details on why an auto review has failed
 //   struct CreateSaleCreationAutoReviewFailed {
 //       //: auto review result
 //       ReviewRequestResult reviewRequestRequest;
@@ -1527,6 +1559,7 @@ xdr.struct("CreateSaleCreationAutoReviewFailed", [
 
 // === xdr source ============================================================
 //
+//   //: CreateSaleCreationRequest result along with the result code
 //   union CreateSaleCreationRequestResult switch (CreateSaleCreationRequestResultCode code)
 //   {
 //   case SUCCESS:
@@ -1803,7 +1836,14 @@ xdr.struct("ScpQuorumSet", [
 //       CHECK_SET_FEE_ACCOUNT_EXISTING = 1,
 //       FIX_PAYMENT_STATS = 2,
 //       ADD_INVEST_FEE = 3,
-//       ADD_SALE_WHITELISTS = 4
+//       ADD_SALE_WHITELISTS = 4,
+//       ASSET_PAIR_RESTRICTIONS = 5,
+//       FIX_CHANGE_TO_NON_EXISTING_ROLE = 6,
+//       FIX_REVERSE_SALE_PAIR = 7,
+//       FIX_NOT_CHECKING_SET_TASKS_PERMISSIONS = 8,
+//       UNLIMITED_ADMIN_COUNT = 9,
+//       FIX_AML_ALERT_ERROR_CODES = 10,
+//       FIX_EXT_SYS_ACC_EXPIRATION_TIME = 11
 //   };
 //
 // ===========================================================================
@@ -1813,6 +1853,13 @@ xdr.enum("LedgerVersion", {
   fixPaymentStat: 2,
   addInvestFee: 3,
   addSaleWhitelist: 4,
+  assetPairRestriction: 5,
+  fixChangeToNonExistingRole: 6,
+  fixReverseSalePair: 7,
+  fixNotCheckingSetTasksPermission: 8,
+  unlimitedAdminCount: 9,
+  fixAmlAlertErrorCode: 10,
+  fixExtSysAccExpirationTime: 11,
 });
 
 // === xdr source ============================================================
@@ -1957,7 +2004,8 @@ xdr.union("PublicKey", {
 //       LICENSE = 33,
 //       POLL = 34,
 //       VOTE = 35,
-//       ACCOUNT_SPECIFIC_RULE = 36
+//       ACCOUNT_SPECIFIC_RULE = 36,
+//       INITIATE_KYC_RECOVERY = 37
 //   };
 //
 // ===========================================================================
@@ -1996,6 +2044,7 @@ xdr.enum("LedgerEntryType", {
   poll: 34,
   vote: 35,
   accountSpecificRule: 36,
+  initiateKycRecovery: 37,
 });
 
 // === xdr source ============================================================
@@ -2158,6 +2207,7 @@ xdr.union("FeeExt", {
 
 // === xdr source ============================================================
 //
+//   //: `Fee` is used to unite fixed and percent fee amounts
 //   struct Fee {
 //       //: Fixed amount to pay for the operation
 //   	uint64 fixed;
@@ -2223,7 +2273,10 @@ xdr.struct("Fee", [
 //       MANAGE_CREATE_POLL_REQUEST = 43,
 //       MANAGE_POLL = 44,
 //       MANAGE_VOTE = 45,
-//       MANAGE_ACCOUNT_SPECIFIC_RULE = 46
+//       MANAGE_ACCOUNT_SPECIFIC_RULE = 46,
+//       CANCEL_CHANGE_ROLE_REQUEST = 47,
+//       INITIATE_KYC_RECOVERY = 48,
+//       CREATE_KYC_RECOVERY_REQUEST = 49
 //   };
 //
 // ===========================================================================
@@ -2268,6 +2321,9 @@ xdr.enum("OperationType", {
   managePoll: 44,
   manageVote: 45,
   manageAccountSpecificRule: 46,
+  cancelChangeRoleRequest: 47,
+  initiateKycRecovery: 48,
+  createKycRecoveryRequest: 49,
 });
 
 // === xdr source ============================================================
@@ -2360,6 +2416,9 @@ xdr.union("CancelSaleCreationRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CancelSaleCreationRequest operation is used to cancel sale creation request.
+//   //: If successful, request with the corresponding ID will be deleted
+//   //: SaleCreationRequest with provided ID
 //   struct CancelSaleCreationRequestOp
 //   {
 //       //: ID of the SaleCreation request to be canceled
@@ -2383,6 +2442,7 @@ xdr.struct("CancelSaleCreationRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes for CancelSaleCreationRequest operation
 //   enum CancelSaleCreationRequestResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -2424,6 +2484,7 @@ xdr.union("CancelSaleCreationSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: Result of successful `CancelSaleCreationRequestOp` application 
 //   struct CancelSaleCreationSuccess {
 //   
 //       //: Reserved for future use
@@ -2442,6 +2503,7 @@ xdr.struct("CancelSaleCreationSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of CancelSaleCreationRequest operation application along with the result code
 //   union CancelSaleCreationRequestResult switch (CancelSaleCreationRequestResultCode code)
 //   {
 //       case SUCCESS:
@@ -2484,6 +2546,7 @@ xdr.union("WithdrawalRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: WithdrawalRequest contains details regarding a withdraw
 //   struct WithdrawalRequest {
 //       //: Balance to withdraw from
 //       BalanceID balance; // balance id from which withdrawal will be performed
@@ -2517,7 +2580,8 @@ xdr.struct("WithdrawalRequest", [
 
 // === xdr source ============================================================
 //
-//   enum KeyValueEntryType
+//   //: `KeyValueEntryType` defines the type of value in the key-value entry
+//       enum KeyValueEntryType
 //       {
 //           UINT32 = 1,
 //           STRING = 2,
@@ -2533,7 +2597,8 @@ xdr.enum("KeyValueEntryType", {
 
 // === xdr source ============================================================
 //
-//   union KeyValueEntryValue switch (KeyValueEntryType type)
+//   //: `KeyValueEntryValue` represents the value based on given `KeyValueEntryType`
+//       union KeyValueEntryValue switch (KeyValueEntryType type)
 //       {
 //           case UINT32:
 //               uint32 ui32Value;
@@ -2580,7 +2645,8 @@ xdr.union("KeyValueEntryExt", {
 
 // === xdr source ============================================================
 //
-//   struct KeyValueEntry
+//   //: `KeyValueEntry` is an entry used to store key mapped values
+//       struct KeyValueEntry
 //       {
 //           //: String value that must be unique among other keys for kev-value pairs
 //           longstring key;
@@ -2889,6 +2955,7 @@ xdr.struct("AccountRuleEntry", [
 
 // === xdr source ============================================================
 //
+//   //: Policies that could be applied to AssetPair entry and define applicable operations for AssetPair
 //   enum AssetPairPolicy
 //   {
 //       //: If not set pair can not be traded on secondary market
@@ -2927,6 +2994,7 @@ xdr.union("AssetPairEntryExt", {
 
 // === xdr source ============================================================
 //
+//   //: `AssetPairEntry` is used in system to group different assets into pairs and set particular policies and properties for them
 //   struct AssetPairEntry
 //   {
 //       //: Code of base asset of the asset pair
@@ -2993,6 +3061,8 @@ xdr.union("CreatePreIssuanceRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreatePreIssuanceRequestOp is used to create a reviewable request,
+//   //: which, after admin's approval, will change `availableForIssuance` amount of asset
 //   struct CreatePreIssuanceRequestOp
 //   {
 //       //: Body of PreIssuanceRequest to be created
@@ -3019,6 +3089,7 @@ xdr.struct("CreatePreIssuanceRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of CreatePreIssuanceRequestOp
 //   enum CreatePreIssuanceRequestResultCode
 //   {
 //       //: Preissuance request is either successfully created
@@ -3108,6 +3179,7 @@ xdr.struct("CreatePreIssuanceRequestResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of `CreatePreIssuanceRequest` operation application along with the result code
 //   union CreatePreIssuanceRequestResult switch (CreatePreIssuanceRequestResultCode code)
 //   {
 //   case SUCCESS:
@@ -3145,6 +3217,7 @@ xdr.union("CreatePreIssuanceRequestResult", {
 
 // === xdr source ============================================================
 //
+//   //: `FeeType` represents different types of fees for different operations (e.g. fee charged on withdrawal or on investment)
 //   enum FeeType
 //   {
 //       PAYMENT_FEE = 0,
@@ -3175,6 +3248,7 @@ xdr.enum("FeeType", {
 
 // === xdr source ============================================================
 //
+//   //: (not used) `EmissionFeeType` is a subtype of `ISSUANCE_FEE`
 //   enum EmissionFeeType
 //   {
 //       PRIMARY_MARKET = 1,
@@ -3189,6 +3263,7 @@ xdr.enum("EmissionFeeType", {
 
 // === xdr source ============================================================
 //
+//   //: `PaymentFeeType` is a subtype of the Fee used for payments
 //   enum PaymentFeeType
 //   {
 //       OUTGOING = 1,
@@ -3222,6 +3297,8 @@ xdr.union("FeeEntryExt", {
 
 // === xdr source ============================================================
 //
+//   //: `FeeEntry` is used in the system configuration to set fees for different assets, operations (according to FeeType), particular account roles, particular accounts,
+//   //: or globally (only if both parameters particular account role and paticular account are not specified).
 //   struct FeeEntry
 //   {
 //       //: Type of a particular fee depending on the operation (e.g., PAYMENT_FEE for payment operation, WITHDRAWAL_FEE for withdrawal operation, etc.)
@@ -3601,6 +3678,7 @@ xdr.union("ManageInvoiceRequestResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be applied to a signer
 //   enum ManageSignerAction
 //   {
 //       CREATE = 0,
@@ -3617,6 +3695,7 @@ xdr.enum("ManageSignerAction", {
 
 // === xdr source ============================================================
 //
+//   //: UpdateSignerData is used to pass necessary data to create or update the signer
 //   struct UpdateSignerData
 //   {
 //       //: Public key of a signer
@@ -3649,6 +3728,7 @@ xdr.struct("UpdateSignerData", [
 
 // === xdr source ============================================================
 //
+//   //: RemoveSignerData is used to pass necessary data to remove a signer
 //   struct RemoveSignerData
 //   {
 //       //: Public key of an existing signer
@@ -3694,6 +3774,7 @@ xdr.union("ManageSignerOpData", {
 
 // === xdr source ============================================================
 //
+//   //: ManageSignerOp is used to create, update or remove a signer
 //   struct ManageSignerOp
 //   {
 //       //: data is used to pass one of `ManageSignerAction` with required params
@@ -3720,6 +3801,7 @@ xdr.struct("ManageSignerOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageSignerOp
 //   enum ManageSignerResultCode
 //   {
 //       //: Specified action in `data` of ManageSignerOp was successfully executed
@@ -3753,6 +3835,7 @@ xdr.enum("ManageSignerResultCode", {
 
 // === xdr source ============================================================
 //
+//   //: Result of operation application
 //   union ManageSignerResult switch (ManageSignerResultCode code)
 //   {
 //   case SUCCESS:
@@ -3777,6 +3860,7 @@ xdr.union("ManageSignerResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed with an external system account ID in the external system ID pool
 //   enum ManageExternalSystemAccountIdPoolEntryAction
 //   {
 //       CREATE = 0,
@@ -3810,6 +3894,8 @@ xdr.union("CreateExternalSystemAccountIdPoolEntryActionInputExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateExternalSystemAccountIdPoolEntryActionInput is used to
+//   //: pass necessary params to create a new external system account ID in the external system ID pool
 //   struct CreateExternalSystemAccountIdPoolEntryActionInput
 //   {
 //       //: Type of external system, selected arbitrarily
@@ -3857,6 +3943,8 @@ xdr.union("DeleteExternalSystemAccountIdPoolEntryActionInputExt", {
 
 // === xdr source ============================================================
 //
+//   //: DeleteExternalSystemAccountIdPoolEntryActionInput is used to
+//   //: pass necessary params to remove an existing external system account ID in the external system ID pool
 //   struct DeleteExternalSystemAccountIdPoolEntryActionInput
 //   {
 //       //: ID of an existing external system account ID pool
@@ -3922,6 +4010,8 @@ xdr.union("ManageExternalSystemAccountIdPoolEntryOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageExternalSystemAccountIdPoolEntryOp is used to create or remove
+//   //: an external system account ID from the external system ID pool
 //   struct ManageExternalSystemAccountIdPoolEntryOp
 //   {
 //       //: `actionInput` is used to pass one of
@@ -3951,6 +4041,7 @@ xdr.struct("ManageExternalSystemAccountIdPoolEntryOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageExternalSystemAccountIdPoolEntryOp
 //   enum ManageExternalSystemAccountIdPoolEntryResultCode
 //   {
 //       //: Specified action in `actionInput` of ManageExternalSystemAccountIdPoolEntryOp
@@ -3996,6 +4087,7 @@ xdr.union("ManageExternalSystemAccountIdPoolEntrySuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: Success result of operation application
 //   struct ManageExternalSystemAccountIdPoolEntrySuccess
 //   {
 //       //: ID of the created external system account ID pool
@@ -4018,6 +4110,7 @@ xdr.struct("ManageExternalSystemAccountIdPoolEntrySuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of operation application
 //   union ManageExternalSystemAccountIdPoolEntryResult switch (ManageExternalSystemAccountIdPoolEntryResultCode code)
 //   {
 //   case SUCCESS:
@@ -4569,6 +4662,7 @@ xdr.union("TransactionMeta", {
 
 // === xdr source ============================================================
 //
+//   //: `StatsOpType` is a type of operation for which statistics is maintained
 //   enum StatsOpType
 //   {
 //       PAYMENT_OUT = 1,
@@ -4608,6 +4702,9 @@ xdr.union("LimitsV2EntryExt", {
 
 // === xdr source ============================================================
 //
+//   //: `LimitsV2Entry` is used in the system configuration to set limits (daily, weekly, montly, annual)
+//   //: for different assets, operations (according to StatsOpType), particular account roles, particular accounts,
+//   //: or globally (only if both parameters particular account role and paticular account are not specified),
 //   struct LimitsV2Entry
 //   {
 //       //: ID of limits entry
@@ -4981,6 +5078,7 @@ xdr.struct("SaleEntry", [
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed on balances
 //   enum ManageBalanceAction
 //   {
 //       //: Create new balance
@@ -5019,6 +5117,8 @@ xdr.union("ManageBalanceOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: `ManageBalanceOp` applies an `action` of the `ManageBalanceAction` type on the balance of a particular `asset` (referenced to by its AssetCode)
+//   //: of the `destination` account (referenced to by its AccountID)
 //   struct ManageBalanceOp
 //   {
 //       //: Defines a ManageBalanceAction to be performed. `DELETE_BALANCE` is reserved and not implemented yet.
@@ -5045,6 +5145,7 @@ xdr.struct("ManageBalanceOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes for the ManageBalance operation
 //   enum ManageBalanceResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -5163,6 +5264,7 @@ xdr.union("LimitsUpdateRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: Body of reviewable `LimitsUpdateRequest` contains details regarding limit updates
 //   struct LimitsUpdateRequest
 //   {
 //       //: Arbitrary stringified JSON object that can be used to attach data to be reviewed by an admin
@@ -5204,6 +5306,7 @@ xdr.union("SaleCreationRequestQuoteAssetExt", {
 
 // === xdr source ============================================================
 //
+//   //: SaleCreationRequestQuoteAsset is a structure that contains an asset code with price
 //   struct SaleCreationRequestQuoteAsset {
 //       //: AssetCode of quote asset 
 //       AssetCode quoteAsset; // asset in which participation will be accepted
@@ -5246,6 +5349,7 @@ xdr.union("CreateAccountSaleRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateAccountSaleRuleData is used to pass necessary params to create a new account sale rule
 //   struct CreateAccountSaleRuleData
 //   {
 //       //: Certain account for which rule is applied, null means rule is global
@@ -5294,6 +5398,7 @@ xdr.union("SaleCreationRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: SaleCreationRequest is used to create a sale with provided parameters
 //   struct SaleCreationRequest
 //   {   
 //       //: Type of sale
@@ -5374,6 +5479,7 @@ xdr.union("LicenseOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: License operation is used to increase the allowed number of admins and due date
 //   struct LicenseOp
 //   {
 //       //: Allowed number of admins to set in the system
@@ -5408,6 +5514,7 @@ xdr.struct("LicenseOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result code of the License operation application 
 //   enum LicenseResultCode
 //   {
 //       //: License submit was successful, provided adminCount and dueDate were set in the system
@@ -5451,6 +5558,7 @@ xdr.union("LicenseSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: LicenseSuccess is a result of successful LicenseOp application
 //   struct LicenseSuccess {
 //       //: Reserved for future use
 //       union switch (LedgerVersion v)
@@ -5468,6 +5576,7 @@ xdr.struct("LicenseSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of the License operation application
 //   union LicenseResult switch (LicenseResultCode code)
 //   {
 //   case SUCCESS:
@@ -5755,6 +5864,20 @@ xdr.struct("SignerRuleResourceVote", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Role id
+//           uint64 roleID;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceInitiateKycRecovery", [
+  ["roleId", xdr.lookup("Uint64")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union SignerRuleResource switch (LedgerEntryType type)
 //   {
 //   case REVIEWABLE_REQUEST:
@@ -5879,6 +6002,12 @@ xdr.struct("SignerRuleResourceVote", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } vote;
+//   case INITIATE_KYC_RECOVERY:
+//       struct
+//       {
+//           //: Role id
+//           uint64 roleID;
+//       } initiateKYCRecovery;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -5901,6 +6030,7 @@ xdr.union("SignerRuleResource", {
     ["keyValue", "keyValue"],
     ["poll", "poll"],
     ["vote", "vote"],
+    ["initiateKycRecovery", "initiateKycRecovery"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -5914,6 +6044,7 @@ xdr.union("SignerRuleResource", {
     keyValue: xdr.lookup("SignerRuleResourceKeyValue"),
     poll: xdr.lookup("SignerRuleResourcePoll"),
     vote: xdr.lookup("SignerRuleResourceVote"),
+    initiateKycRecovery: xdr.lookup("SignerRuleResourceInitiateKycRecovery"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -5921,6 +6052,7 @@ xdr.union("SignerRuleResource", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be applied to a signer rule resource
 //   enum SignerRuleAction
 //   {
 //       ANY = 1,
@@ -5963,6 +6095,7 @@ xdr.enum("SignerRuleAction", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be applied to a `CREATE_POLL` request
 //   enum ManageCreatePollRequestAction
 //   {
 //       CREATE = 0,
@@ -5996,6 +6129,7 @@ xdr.union("CreatePollRequestDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreatePollRequestData is used to pass necessary data to create a `CREATE_POLL` request
 //   struct CreatePollRequestData
 //   {
 //       //: Body of `CREATE_POLL` request
@@ -6042,6 +6176,7 @@ xdr.union("CancelPollRequestDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CancelPollRequestData is used to pass necessary data to remove a `CREATE_POLL` request
 //   struct CancelPollRequestData
 //   {
 //       //: ID of `CREATE_POLL` request to remove
@@ -6107,6 +6242,7 @@ xdr.union("ManageCreatePollRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageCreatePollRequestOp is used to create or remove a `CREATE_POLL` request
 //   struct ManageCreatePollRequestOp
 //   {
 //       //: data is used to pass one of `ManageCreatePollRequestAction` with required params
@@ -6136,6 +6272,7 @@ xdr.struct("ManageCreatePollRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageCreatePollRequestOp
 //   enum ManageCreatePollRequestResultCode
 //   {
 //       //: `CREATE_POLL` request has either been successfully created
@@ -6193,6 +6330,7 @@ xdr.union("CreatePollRequestResponseExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreatePollRequestResponse is used to pass useful fields after `CREATE_POLL` request creation
 //   struct CreatePollRequestResponse
 //   {
 //       //: ID of a created request
@@ -6266,6 +6404,7 @@ xdr.union("ManageCreatePollRequestSuccessResultExt", {
 
 // === xdr source ============================================================
 //
+//   //: Success result of operation application
 //   struct ManageCreatePollRequestSuccessResult
 //   {
 //       //: `details` id used to pass useful fields
@@ -6294,6 +6433,7 @@ xdr.struct("ManageCreatePollRequestSuccessResult", [
 
 // === xdr source ============================================================
 //
+//   //: Result of ManageCreatePollRequestOp application
 //   union ManageCreatePollRequestResult switch (ManageCreatePollRequestResultCode code)
 //   {
 //   case SUCCESS:
@@ -6336,6 +6476,7 @@ xdr.union("UpdateSaleDetailsRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: UpdateSaleDetailsRequest is used to update details of an existing sale
 //   struct UpdateSaleDetailsRequest {
 //       //: ID of the sale whose details should be updated
 //       uint64 saleID; // ID of sale to update details
@@ -7143,6 +7284,8 @@ xdr.struct("ReviewableRequestResourceCreatePoll", [
 
 // === xdr source ============================================================
 //
+//   //: Describes properties of some reviewable request types that
+//   //: can be used to restrict the usage of reviewable requests
 //   union ReviewableRequestResource switch (ReviewableRequestType requestType)
 //   {
 //   case CREATE_SALE:
@@ -7375,6 +7518,7 @@ xdr.struct("AccountRuleResourceVote", [
 
 // === xdr source ============================================================
 //
+//   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
 //   case ASSET:
@@ -7505,6 +7649,7 @@ xdr.union("AccountRuleResource", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be applied to account rule resource
 //   enum AccountRuleAction
 //   {
 //       ANY = 1,
@@ -7524,7 +7669,8 @@ xdr.union("AccountRuleResource", {
 //       CANCEL = 15,
 //       CLOSE = 16,
 //       REMOVE = 17,
-//       UPDATE_END_TIME = 18
+//       UPDATE_END_TIME = 18,
+//       CREATE_FOR_OTHER_WITH_TASKS = 19
 //   };
 //
 // ===========================================================================
@@ -7547,6 +7693,7 @@ xdr.enum("AccountRuleAction", {
   close: 16,
   remove: 17,
   updateEndTime: 18,
+  createForOtherWithTask: 19,
 });
 
 // === xdr source ============================================================
@@ -7892,6 +8039,8 @@ xdr.union("CreateAmlAlertRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateAMLAlertRequest operation creates a reviewable request 
+//   //: that will void the specified amount from target balance after the reviewer's approval
 //   struct CreateAMLAlertRequestOp
 //   {
 //       //: Reference of AMLAlertRequest
@@ -7922,40 +8071,59 @@ xdr.struct("CreateAmlAlertRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes for CreateAMLAlert operation
 //   enum CreateAMLAlertRequestResultCode
 //   {
 //       // codes considered as "success" for the operation
 //       //: Operation has been successfully performed
 //       SUCCESS = 0,
-//       //: Balance with provided balance ID does not exist
-//       BALANCE_NOT_EXIST = 1, // balance doesn't exist
-//       //: Creator details are not in a valid JSON format
-//       INVALID_CREATOR_DETAILS = 2, //invalid reason for request
-//       //: Specified amount is greater than the amount on the balance
-//       UNDERFUNDED = 3, //when couldn't lock balance
-//       //: AML Alert request with the same reference already exists
-//       REFERENCE_DUPLICATION = 4, // reference already exists
-//       //: Amount must be positive
-//       INVALID_AMOUNT = 5, // amount must be positive
-//       //: Amount precision and asset precision set in the system are mismatched
-//       INCORRECT_PRECISION = 6,
+//       //: DEPRECATED: Balance with provided balance ID does not exist
+//       OLD_BALANCE_NOT_EXIST = 1, // balance doesn't exist
+//       //: DEPRECATED: Creator details are not in a valid JSON format
+//       OLD_INVALID_CREATOR_DETAILS = 2, //invalid reason for request
+//       //: DEPRECATED: Specified amount is greater than the amount on the balance
+//       OLD_UNDERFUNDED = 3, //when couldn't lock balance
+//       //: DEPRECATED: AML Alert request with the same reference already exists
+//       OLD_REFERENCE_DUPLICATION = 4, // reference already exists
+//       //: DEPRECATED: Amount must be positive
+//       OLD_INVALID_AMOUNT = 5, // amount must be positive
+//       //: DEPRECATED: Amount precision and asset precision set in the system are mismatched
+//       OLD_INCORRECT_PRECISION = 6,
 //   
 //       //codes considered as "failure" for the operation
 //       //: Update aml alert tasks are not set in the system, i.e. it's not allowed to perform aml alert
-//       AML_ALERT_TASKS_NOT_FOUND = -1
+//       AML_ALERT_TASKS_NOT_FOUND = -1,
+//       //: Balance with provided balance ID does not exist
+//       BALANCE_NOT_EXIST = -2, // balance doesn't exist
+//       //: Creator details are not in a valid JSON format
+//       INVALID_CREATOR_DETAILS = -3, //invalid reason for request
+//       //: Specified amount is greater than the amount on the balance
+//       UNDERFUNDED = -4, //when couldn't lock balance
+//       //: AML Alert request with the same reference already exists
+//       REFERENCE_DUPLICATION = -5, // reference already exists
+//       //: Amount must be positive
+//       INVALID_AMOUNT = -6, // amount must be positive
+//       //: Amount precision and asset precision set in the system are mismatched
+//       INCORRECT_PRECISION = -7
 //   
 //   };
 //
 // ===========================================================================
 xdr.enum("CreateAmlAlertRequestResultCode", {
   success: 0,
-  balanceNotExist: 1,
-  invalidCreatorDetail: 2,
-  underfunded: 3,
-  referenceDuplication: 4,
-  invalidAmount: 5,
-  incorrectPrecision: 6,
+  oldBalanceNotExist: 1,
+  oldInvalidCreatorDetail: 2,
+  oldUnderfunded: 3,
+  oldReferenceDuplication: 4,
+  oldInvalidAmount: 5,
+  oldIncorrectPrecision: 6,
   amlAlertTasksNotFound: -1,
+  balanceNotExist: -2,
+  invalidCreatorDetail: -3,
+  underfunded: -4,
+  referenceDuplication: -5,
+  invalidAmount: -6,
+  incorrectPrecision: -7,
 });
 
 // === xdr source ============================================================
@@ -7979,6 +8147,7 @@ xdr.union("CreateAmlAlertRequestSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: Result of successful application of `CreateAMLAlertRequest` operation
 //   struct CreateAMLAlertRequestSuccess {
 //       //: ID of a newly created reviewable request
 //       uint64 requestID;
@@ -8002,6 +8171,7 @@ xdr.struct("CreateAmlAlertRequestSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of `CreateAMLAlertRequest` operation application along with the result code
 //   union CreateAMLAlertRequestResult switch (CreateAMLAlertRequestResultCode code)
 //   {
 //       case SUCCESS:
@@ -8107,6 +8277,12 @@ xdr.union("CreateAmlAlertRequestResult", {
 //           ManageVoteOp manageVoteOp;
 //       case MANAGE_ACCOUNT_SPECIFIC_RULE:
 //           ManageAccountSpecificRuleOp manageAccountSpecificRuleOp;
+//       case CANCEL_CHANGE_ROLE_REQUEST:
+//           CancelChangeRoleRequestOp cancelChangeRoleRequestOp;
+//       case INITIATE_KYC_RECOVERY:
+//           InitiateKYCRecoveryOp initiateKYCRecoveryOp;
+//       case CREATE_KYC_RECOVERY_REQUEST:
+//           CreateKYCRecoveryRequestOp createKYCRecoveryRequestOp;
 //       }
 //
 // ===========================================================================
@@ -8154,6 +8330,9 @@ xdr.union("OperationBody", {
     ["managePoll", "managePollOp"],
     ["manageVote", "manageVoteOp"],
     ["manageAccountSpecificRule", "manageAccountSpecificRuleOp"],
+    ["cancelChangeRoleRequest", "cancelChangeRoleRequestOp"],
+    ["initiateKycRecovery", "initiateKycRecoveryOp"],
+    ["createKycRecoveryRequest", "createKycRecoveryRequestOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -8196,11 +8375,15 @@ xdr.union("OperationBody", {
     managePollOp: xdr.lookup("ManagePollOp"),
     manageVoteOp: xdr.lookup("ManageVoteOp"),
     manageAccountSpecificRuleOp: xdr.lookup("ManageAccountSpecificRuleOp"),
+    cancelChangeRoleRequestOp: xdr.lookup("CancelChangeRoleRequestOp"),
+    initiateKycRecoveryOp: xdr.lookup("InitiateKycRecoveryOp"),
+    createKycRecoveryRequestOp: xdr.lookup("CreateKycRecoveryRequestOp"),
   },
 });
 
 // === xdr source ============================================================
 //
+//   //: An operation is the lowest unit of work that a transaction does
 //   struct Operation
 //   {
 //       //: sourceAccount is the account used to run the operation
@@ -8290,6 +8473,12 @@ xdr.union("OperationBody", {
 //           ManageVoteOp manageVoteOp;
 //       case MANAGE_ACCOUNT_SPECIFIC_RULE:
 //           ManageAccountSpecificRuleOp manageAccountSpecificRuleOp;
+//       case CANCEL_CHANGE_ROLE_REQUEST:
+//           CancelChangeRoleRequestOp cancelChangeRoleRequestOp;
+//       case INITIATE_KYC_RECOVERY:
+//           InitiateKYCRecoveryOp initiateKYCRecoveryOp;
+//       case CREATE_KYC_RECOVERY_REQUEST:
+//           CreateKYCRecoveryRequestOp createKYCRecoveryRequestOp;
 //       }
 //       body;
 //   };
@@ -8393,6 +8582,10 @@ xdr.union("TransactionExt", {
 
 // === xdr source ============================================================
 //
+//   //: Transaction is a container for a set of operations
+//   //:    - is executed by an account
+//   //:    - operations are executed in order as one ACID transaction
+//   //: (either all operations are applied or none are if any returns a failing code)
 //   struct Transaction
 //   {
 //       //: account used to run the transaction
@@ -8486,6 +8679,7 @@ xdr.enum("OperationResultCode", {
 
 // === xdr source ============================================================
 //
+//   //: Defines requirements for tx or operation which were not fulfilled
 //   struct AccountRuleRequirement
 //   {
 //   	//: defines resources to which access was denied
@@ -8591,6 +8785,12 @@ xdr.struct("AccountRuleRequirement", [
 //           ManageVoteResult manageVoteResult;
 //       case MANAGE_ACCOUNT_SPECIFIC_RULE:
 //           ManageAccountSpecificRuleResult manageAccountSpecificRuleResult;
+//       case CANCEL_CHANGE_ROLE_REQUEST:
+//           CancelChangeRoleRequestResult cancelChangeRoleRequestResult;
+//       case CREATE_KYC_RECOVERY_REQUEST:
+//           CreateKYCRecoveryRequestResult createKYCRecoveryRequestResult;
+//       case INITIATE_KYC_RECOVERY:
+//           InitiateKYCRecoveryResult initiateKYCRecoveryResult;
 //       }
 //
 // ===========================================================================
@@ -8638,6 +8838,9 @@ xdr.union("OperationResultTr", {
     ["manageCreatePollRequest", "manageCreatePollRequestResult"],
     ["manageVote", "manageVoteResult"],
     ["manageAccountSpecificRule", "manageAccountSpecificRuleResult"],
+    ["cancelChangeRoleRequest", "cancelChangeRoleRequestResult"],
+    ["createKycRecoveryRequest", "createKycRecoveryRequestResult"],
+    ["initiateKycRecovery", "initiateKycRecoveryResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -8680,6 +8883,9 @@ xdr.union("OperationResultTr", {
     manageCreatePollRequestResult: xdr.lookup("ManageCreatePollRequestResult"),
     manageVoteResult: xdr.lookup("ManageVoteResult"),
     manageAccountSpecificRuleResult: xdr.lookup("ManageAccountSpecificRuleResult"),
+    cancelChangeRoleRequestResult: xdr.lookup("CancelChangeRoleRequestResult"),
+    createKycRecoveryRequestResult: xdr.lookup("CreateKycRecoveryRequestResult"),
+    initiateKycRecoveryResult: xdr.lookup("InitiateKycRecoveryResult"),
   },
 });
 
@@ -8770,6 +8976,12 @@ xdr.union("OperationResultTr", {
 //           ManageVoteResult manageVoteResult;
 //       case MANAGE_ACCOUNT_SPECIFIC_RULE:
 //           ManageAccountSpecificRuleResult manageAccountSpecificRuleResult;
+//       case CANCEL_CHANGE_ROLE_REQUEST:
+//           CancelChangeRoleRequestResult cancelChangeRoleRequestResult;
+//       case CREATE_KYC_RECOVERY_REQUEST:
+//           CreateKYCRecoveryRequestResult createKYCRecoveryRequestResult;
+//       case INITIATE_KYC_RECOVERY:
+//           InitiateKYCRecoveryResult initiateKYCRecoveryResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -9050,6 +9262,7 @@ xdr.struct("ContractEntry", [
 
 // === xdr source ============================================================
 //
+//   //: ManageAssetAction is used to specify an action to be performed with an asset or asset create/update request
 //   enum ManageAssetAction
 //   {
 //       CREATE_ASSET_CREATION_REQUEST = 0,
@@ -9089,6 +9302,7 @@ xdr.union("CancelAssetRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: CancelAssetRequest is used to cancel an `UPDATE_ASSET` or `CREATE_ASSET` request
 //   struct CancelAssetRequest
 //   {
 //       //: reserved for future use
@@ -9126,6 +9340,7 @@ xdr.union("UpdateMaxIssuanceExt", {
 
 // === xdr source ============================================================
 //
+//   //: UpdateMaxIssuance is used to update max issuance amount of an asset.
 //   struct UpdateMaxIssuance
 //   {
 //       //: `assetCode` defines an asset entry that will be updated
@@ -9331,6 +9546,12 @@ xdr.union("ManageAssetOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageAssetOp is used to:
+//   //: * create or update `CREATE_ASSET` request;
+//   //: * create or update `UPDATE_ASSET` request;
+//   //: * cancel `CREATE_ASSET` or `UPDATE_ASSET` request
+//   //: * change asset pre issuer
+//   //: * update max issuance of an asset
 //   struct ManageAssetOp
 //   {
 //       //: ID of a reviewable request
@@ -9405,6 +9626,7 @@ xdr.struct("ManageAssetOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageAssetOp
 //   enum ManageAssetResultCode
 //   {
 //       //: Specified action in `data` of ManageSignerOp was successfully performed
@@ -9496,6 +9718,7 @@ xdr.union("ManageAssetSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: Is used to pass useful params after the successful operation application
 //   struct ManageAssetSuccess
 //   {
 //       //: ID of the request that was created in the process of operation application 
@@ -9520,6 +9743,7 @@ xdr.struct("ManageAssetSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Is used to return the result of operation application
 //   union ManageAssetResult switch (ManageAssetResultCode code)
 //   {
 //   case SUCCESS:
@@ -9643,6 +9867,7 @@ xdr.struct("SignerEntry", [
 
 // === xdr source ============================================================
 //
+//   //: `ManageLimitsAction` defines which action can be performed on the Limits entry
 //   enum ManageLimitsAction
 //   {
 //       CREATE = 0,
@@ -9676,6 +9901,9 @@ xdr.union("LimitsCreateDetailsExt", {
 
 // === xdr source ============================================================
 //
+//   //: `LimitsCreateDetails` is used in the system configuration to set limits (daily, weekly, montly, annual)
+//   //: for different assets, operations (according to StatsOpType), particular account roles, particular accounts,
+//   //: or globally (only if both parameters particular account role and paticular account are not specified)
 //   struct LimitsCreateDetails
 //   {
 //       //: (optional) ID of an account role that will be imposed with limits
@@ -9768,6 +9996,7 @@ xdr.union("ManageLimitsOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: `ManageLimitsOp` is used to update limits set in the system
 //   struct ManageLimitsOp
 //   {
 //       //: `details` defines all details of an operation based on given `ManageLimitsAction`
@@ -9796,6 +10025,7 @@ xdr.struct("ManageLimitsOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes for ManageLimits operation
 //   enum ManageLimitsResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -9898,6 +10128,7 @@ xdr.struct("ManageLimitsResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: `ManageLimitsResult` defines the result of ManageLimitsOp application based on given `ManageLimitsResultCode`
 //   union ManageLimitsResult switch (ManageLimitsResultCode code)
 //   {
 //   case SUCCESS:
@@ -9939,6 +10170,7 @@ xdr.union("ManageLimitsResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed with account rule
 //   enum ManageAccountRuleAction
 //   {
 //       CREATE = 0,
@@ -9974,6 +10206,7 @@ xdr.union("CreateAccountRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateAccountRuleData is used to pass necessary params to create a new account rule
 //   struct CreateAccountRuleData
 //   {
 //       //: Resource is used to specify an entity (for some - with properties) that can be managed through operations
@@ -10023,6 +10256,7 @@ xdr.union("UpdateAccountRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: UpdateAccountRuleData is used to pass necessary params to update existing account rule
 //   struct UpdateAccountRuleData
 //   {
 //       //: Identifier of existing signer rule
@@ -10075,6 +10309,7 @@ xdr.union("RemoveAccountRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: RemoveAccountRuleData is used to pass necessary params to remove existing account rule
 //   struct RemoveAccountRuleData
 //   {
 //       //: Identifier of existing account rule
@@ -10143,6 +10378,7 @@ xdr.union("ManageAccountRuleOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageAccountRuleOp is used to create, update or remove account rule
 //   struct ManageAccountRuleOp
 //   {
 //       //: data is used to pass one of `ManageAccountRuleAction` with required params
@@ -10173,6 +10409,7 @@ xdr.struct("ManageAccountRuleOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageAccountRuleResultCode
 //   enum ManageAccountRuleResultCode
 //   {
 //       //: Means that specified action in `data` of ManageAccountRuleOp was successfully performed
@@ -10237,6 +10474,7 @@ xdr.struct("ManageAccountRuleResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of operation applying
 //   union ManageAccountRuleResult switch (ManageAccountRuleResultCode code)
 //   {
 //       case SUCCESS:
@@ -10277,6 +10515,7 @@ xdr.union("ManageAccountRuleResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed on a signer role
 //   enum ManageSignerRoleAction
 //   {
 //       CREATE = 0,
@@ -10312,6 +10551,7 @@ xdr.union("CreateSignerRoleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateSignerRoleData is used to pass necessary params to create a new signer role
 //   struct CreateSignerRoleData
 //   {
 //       //: Array of ids of existing, unique and not default rules
@@ -10358,6 +10598,7 @@ xdr.union("UpdateSignerRoleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: UpdateSignerRoleData is used to pass necessary params to update an existing signer role
 //   struct UpdateSignerRoleData
 //   {
 //       //: ID of an existing signer role
@@ -10405,6 +10646,7 @@ xdr.union("RemoveSignerRoleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: RemoveSignerRoleData is used to pass necessary params to remove existing signer role
 //   struct RemoveSignerRoleData
 //   {
 //       //: Identifier of an existing signer role
@@ -10473,6 +10715,7 @@ xdr.union("ManageSignerRoleOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageSignerRoleOp is used to create, update or remove a signer role
 //   struct ManageSignerRoleOp
 //   {
 //       //: data is used to pass one of `ManageSignerRoleAction` with required params
@@ -10503,6 +10746,7 @@ xdr.struct("ManageSignerRoleOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageSignerRoleResultCode
 //   enum ManageSignerRoleResultCode
 //   {
 //       //: Means that the specified action in `data` of ManageSignerRoleOp was successfully executed
@@ -10580,6 +10824,7 @@ xdr.struct("ManageSignerRoleResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of operation application
 //   union ManageSignerRoleResult switch (ManageSignerRoleResultCode code)
 //   {
 //       case SUCCESS:
@@ -10717,6 +10962,7 @@ xdr.union("CreatePollRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreatePollRequest is used to create poll entry with passed fields
 //   struct CreatePollRequest
 //   {
 //       //: is used to restrict using of poll through rules
@@ -10857,6 +11103,7 @@ xdr.struct("PaymentFeeData", [
 
 // === xdr source ============================================================
 //
+//   //: Defines the type of destination of the payment
 //   enum PaymentDestinationType {
 //       ACCOUNT = 0,
 //       BALANCE = 1
@@ -10912,6 +11159,7 @@ xdr.union("PaymentOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: PaymentOp is used to transfer some amount of asset from the source balance to destination account/balance
 //   struct PaymentOp
 //   {
 //       //: ID of the source balance of payment
@@ -11038,6 +11286,7 @@ xdr.union("PaymentResponseExt", {
 
 // === xdr source ============================================================
 //
+//   //: `PaymentResponse` defines the response on the corresponding PaymentOp
 //   struct PaymentResponse {
 //       //: ID of the destination account
 //       AccountID destination;
@@ -11121,6 +11370,8 @@ xdr.union("CreateIssuanceRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateIssuanceRequestOp is used to create a reviewable request that, after reviewer's approval,
+//   //: will issue the specified amount of asset to a receiver's balance
 //   struct CreateIssuanceRequestOp
 //   {
 //       //: Issuance request to create
@@ -11149,6 +11400,7 @@ xdr.struct("CreateIssuanceRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of the CreateIssuanceRequestOp
 //   enum CreateIssuanceRequestResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -11226,6 +11478,7 @@ xdr.union("CreateIssuanceRequestSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //:Result of successful application of CreateIssuanceRequest operation
 //   struct CreateIssuanceRequestSuccess {
 //       //: ID of a newly created issuance request
 //       uint64 requestID;
@@ -11255,6 +11508,7 @@ xdr.struct("CreateIssuanceRequestSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Create issuance request result with result code
 //   union CreateIssuanceRequestResult switch (CreateIssuanceRequestResultCode code)
 //   {
 //   case SUCCESS:
@@ -11602,6 +11856,7 @@ xdr.union("PayoutResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed with account specific rule
 //   enum ManageAccountSpecificRuleAction
 //   {
 //       CREATE = 0,
@@ -11635,6 +11890,7 @@ xdr.union("CreateAccountSpecificRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateAccountSpecificRuleData is used to pass necessary params to create a new account specific rule
 //   struct CreateAccountSpecificRuleData
 //   {
 //       //: ledgerKey is used to specify an entity with primary key that can be used through operations
@@ -11681,6 +11937,7 @@ xdr.union("RemoveAccountSpecificRuleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: RemoveAccountSpecificRuleData is used to pass necessary params to remove existing account specific rule
 //   struct RemoveAccountSpecificRuleData
 //   {
 //       //: Identifier of existing account specific rule
@@ -11745,6 +12002,7 @@ xdr.union("ManageAccountSpecificRuleOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageAccountSpecificRuleOp is used to create or remove account specific rule
 //   struct ManageAccountSpecificRuleOp
 //   {
 //       //: data is used to pass one of `ManageAccountSpecificRuleAction` with required params
@@ -11773,6 +12031,7 @@ xdr.struct("ManageAccountSpecificRuleOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageAccountSpecificRuleResult
 //   enum ManageAccountSpecificRuleResultCode
 //   {
 //       //: Means that specified action in `data` of ManageAccountSpecificRuleOp was successfully performed
@@ -11855,6 +12114,7 @@ xdr.struct("ManageAccountSpecificRuleResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of operation applying
 //   union ManageAccountSpecificRuleResult switch (ManageAccountSpecificRuleResultCode code)
 //   {
 //   case SUCCESS:
@@ -11897,6 +12157,142 @@ xdr.union("ManageAccountSpecificRuleResult", {
 //       }
 //
 // ===========================================================================
+xdr.union("InitiateKycRecoveryOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: InitiateKYCRecoveryOp is used to start KYC recovery process
+//   struct InitiateKYCRecoveryOp
+//   {
+//       //: Address of account to be recovered
+//       AccountID account;
+//       //: New signer to set
+//       PublicKey signer;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("InitiateKycRecoveryOp", [
+  ["account", xdr.lookup("AccountId")],
+  ["signer", xdr.lookup("PublicKey")],
+  ["ext", xdr.lookup("InitiateKycRecoveryOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes of InitiateKYCRecoveryOp
+//   enum InitiateKYCRecoveryResultCode
+//   {
+//       //: Means that KYC recovery was successfully initiated
+//       SUCCESS = 0,
+//   
+//       //: KYC target account not found
+//       NOT_FOUND = -1,
+//       //: System configuration forbids KYC recovery
+//       RECOVERY_NOT_ALLOWED = -2,
+//       //: Either, there is no entry by key `kyc_recovery_signer_role`, or such role does not exists
+//       RECOVERY_SIGNER_ROLE_NOT_FOUND = -3
+//   };
+//
+// ===========================================================================
+xdr.enum("InitiateKycRecoveryResultCode", {
+  success: 0,
+  notFound: -1,
+  recoveryNotAllowed: -2,
+  recoverySignerRoleNotFound: -3,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//            {
+//            case EMPTY_VERSION:
+//                void;
+//            }
+//
+// ===========================================================================
+xdr.union("InitiateKycRecoveryResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//            //: reserved for future use
+//            union switch (LedgerVersion v)
+//            {
+//            case EMPTY_VERSION:
+//                void;
+//            } ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("InitiateKycRecoveryResultSuccess", [
+  ["ext", xdr.lookup("InitiateKycRecoveryResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of operation applying
+//   union InitiateKYCRecoveryResult switch (InitiateKYCRecoveryResultCode code)
+//   {
+//   case SUCCESS:
+//       struct
+//       {
+//            //: reserved for future use
+//            union switch (LedgerVersion v)
+//            {
+//            case EMPTY_VERSION:
+//                void;
+//            } ext;
+//       } success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("InitiateKycRecoveryResult", {
+  switchOn: xdr.lookup("InitiateKycRecoveryResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("InitiateKycRecoveryResultSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
 xdr.union("CreateManageLimitsRequestOpExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
@@ -11909,6 +12305,7 @@ xdr.union("CreateManageLimitsRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateManageLimitsRequestOp is used to create a reviewable request which, after approval, will update the limits set in the system
 //   struct CreateManageLimitsRequestOp
 //   {
 //       //: Body of the `UpdateLimits` reviewable request to be created
@@ -11939,6 +12336,7 @@ xdr.struct("CreateManageLimitsRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes for CreateManageLimitsRequest operation
 //   enum CreateManageLimitsRequestResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -12015,6 +12413,7 @@ xdr.struct("CreateManageLimitsRequestResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: `CreateManageLimitsRequestResult` represents the result of the `CreateManageLimitsRequestOp` with corresponding details based on given `CreateManageLimitsRequestResultCode`
 //   union CreateManageLimitsRequestResult switch (CreateManageLimitsRequestResultCode code)
 //   {
 //   case SUCCESS:
@@ -12069,6 +12468,7 @@ xdr.union("BindExternalSystemAccountIdOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: BindExternalSystemAccountIdOp is used to bind a particular account to the external system account which is represented by account ID taken from the pool
 //   struct BindExternalSystemAccountIdOp
 //   {
 //       //: Type of external system to bind
@@ -12091,6 +12491,7 @@ xdr.struct("BindExternalSystemAccountIdOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of BindExternalSystemAccountIdOp
 //   enum BindExternalSystemAccountIdResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -12132,6 +12533,7 @@ xdr.union("BindExternalSystemAccountIdSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: `BindExternalSystemAccountIdSuccess` represents details of successful result of operation application
 //   struct BindExternalSystemAccountIdSuccess
 //   {
 //       //: `data` is used to pass data about account from external system ID
@@ -12154,6 +12556,7 @@ xdr.struct("BindExternalSystemAccountIdSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of operation application
 //   union BindExternalSystemAccountIdResult switch (BindExternalSystemAccountIdResultCode code)
 //   {
 //   case SUCCESS:
@@ -12172,6 +12575,256 @@ xdr.union("BindExternalSystemAccountIdResult", {
   ],
   arms: {
     success: xdr.lookup("BindExternalSystemAccountIdSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("KycRecoveryRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: KYCRecoveryRequest is used to change signers of target account
+//   struct KYCRecoveryRequest {
+//       //: Account to be recovered
+//       AccountID targetAccount;
+//       //: New signers for the target account
+//       UpdateSignerData signersData<>;
+//   
+//       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//       //: Sequence number increases when request is rejected
+//       uint32 sequenceNumber;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("KycRecoveryRequest", [
+  ["targetAccount", xdr.lookup("AccountId")],
+  ["signersData", xdr.varArray(xdr.lookup("UpdateSignerData"), 2147483647)],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["ext", xdr.lookup("KycRecoveryRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateKycRecoveryRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CreateKYCRecoveryRequestOp to create KYC recovery request and set new signers for account
+//   struct CreateKYCRecoveryRequestOp
+//   {
+//       //: ID of a reviewable request. If set 0, request is created, else - request is updated
+//       uint64 requestID;
+//       //: Account for which signers will be set
+//       AccountID targetAccount;
+//       //: New signers to set
+//       UpdateSignerData signersData<>;
+//   
+//        //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: (optional) Bit mask whose flags must be cleared in order for PreIssuanceRequest to be approved, which will be used by key `preissuance_tasks`
+//       //: instead of key-value
+//       uint32* allTasks;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateKycRecoveryRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["targetAccount", xdr.lookup("AccountId")],
+  ["signersData", xdr.varArray(xdr.lookup("UpdateSignerData"), 2147483647)],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("CreateKycRecoveryRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes of CreateKYCRecoveryRequestOp
+//   enum CreateKYCRecoveryRequestResultCode
+//   {
+//       //: KYC Recovery request was successfully created
+//       SUCCESS = 0,
+//   
+//       //: Creator details are not in a valid JSON format
+//       INVALID_CREATOR_DETAILS = -1,
+//       //: KYC recovery tasks are not set in the system
+//       KYC_RECOVERY_TASKS_NOT_FOUND = -2,
+//       //: Not allowed to provide empty slice of signers
+//       NO_SIGNER_DATA = -3,
+//       //: SignerData contains duplicates
+//       SIGNER_DUPLICATION = -4,
+//       //: Signer has weight > threshold
+//       INVALID_WEIGHT = -5,
+//       //: Signer has invalid details
+//       INVALID_DETAILS = -6,
+//       //: Request with provided parameters already exists
+//       REQUEST_ALREADY_EXISTS = -7,
+//       //: Account with provided account address does not exist
+//       TARGET_ACCOUNT_NOT_FOUND = -8,
+//       //: System configuration forbids KYC recovery
+//       RECOVERY_NOT_ALLOWED = -10,
+//       //: Either, there is no entry by key `kyc_recovery_account_role`, or such role does not exists
+//       RECOVERY_ACCOUNT_ROLE_NOT_FOUND = -11,
+//       //: Account role differs from expected
+//       TARGET_ACCOUNT_NOT_IN_RECOVERY_ROLE = -12,
+//       //: Only target account can update rejected request
+//       NOT_ALLOWED_TO_UPDATE_REQUEST = -13,
+//       //: There is no request with such ID
+//       KYC_RECOVERY_REQUEST_NOT_FOUND = -16,
+//       //: It is forbidden to change target account on update
+//       INVALID_UPDATE_DATA = -17,
+//       //: It is forbidden to set `allTasks` on update
+//       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -18
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateKycRecoveryRequestResultCode", {
+  success: 0,
+  invalidCreatorDetail: -1,
+  kycRecoveryTasksNotFound: -2,
+  noSignerDatum: -3,
+  signerDuplication: -4,
+  invalidWeight: -5,
+  invalidDetail: -6,
+  requestAlreadyExist: -7,
+  targetAccountNotFound: -8,
+  recoveryNotAllowed: -10,
+  recoveryAccountRoleNotFound: -11,
+  targetAccountNotInRecoveryRole: -12,
+  notAllowedToUpdateRequest: -13,
+  kycRecoveryRequestNotFound: -16,
+  invalidUpdateDatum: -17,
+  notAllowedToSetTasksOnUpdate: -18,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//
+// ===========================================================================
+xdr.union("CreateKycRecoveryRequestResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct {
+//           //: id of the created request
+//           uint64 requestID;
+//   
+//           //: Indicates whether or not the KYC Recovery request was auto approved and fulfilled
+//           bool fulfilled;
+//   
+//           //: reserved for future use
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("CreateKycRecoveryRequestResultSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["ext", xdr.lookup("CreateKycRecoveryRequestResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of operation applying
+//   union CreateKYCRecoveryRequestResult switch (CreateKYCRecoveryRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       //: Is used to pass useful params if operation is success
+//       struct {
+//           //: id of the created request
+//           uint64 requestID;
+//   
+//           //: Indicates whether or not the KYC Recovery request was auto approved and fulfilled
+//           bool fulfilled;
+//   
+//           //: reserved for future use
+//           union switch (LedgerVersion v)
+//           {
+//           case EMPTY_VERSION:
+//               void;
+//           }
+//           ext;
+//       } success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateKycRecoveryRequestResult", {
+  switchOn: xdr.lookup("CreateKycRecoveryRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateKycRecoveryRequestResultSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -12230,6 +12883,7 @@ xdr.struct("BalanceEntry", [
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed on the asset pair
 //   enum ManageAssetPairAction
 //   {
 //       //: Create new asset pair
@@ -12268,6 +12922,7 @@ xdr.union("ManageAssetPairOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: `ManageAssetPairOp` either creates new asset pairs or updates prices or policies of existing [asset pairs](#operation/assetPairResources)
 //   struct ManageAssetPairOp
 //   {
 //       //: Defines a ManageBalanceAction that will be performed on an asset pair
@@ -12311,6 +12966,7 @@ xdr.struct("ManageAssetPairOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes for ManageAssetPair operation
 //   enum ManageAssetPairResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -12368,6 +13024,7 @@ xdr.union("ManageAssetPairSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: `ManageAssetPairSuccess` represents a successful result of `ManageAssetPairOp`
 //   struct ManageAssetPairSuccess
 //   {
 //       //: Price of an asset pair after the operation
@@ -12389,6 +13046,7 @@ xdr.struct("ManageAssetPairSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: `ManageAssetPairResult` defines the result of `ManageBalanceOp` based on given `ManageAssetPairResultCode`
 //   union ManageAssetPairResult switch (ManageAssetPairResultCode code)
 //   {
 //   case SUCCESS:
@@ -12431,6 +13089,7 @@ xdr.union("AmlAlertRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: Body of a reviewable AMLAlertRequest, contains parameters regarding AML alert
 //   struct AMLAlertRequest {
 //       //: Target balance to void tokens from
 //       BalanceID balanceID;
@@ -12457,6 +13116,135 @@ xdr.struct("AmlAlertRequest", [
   ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("AmlAlertRequestExt")],
 ]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelChangeRoleRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelChangeRoleRequestOp is used to cancel reviwable request for changing role.
+//   //: If successful, request with the corresponding ID will be deleted
+//   struct CancelChangeRoleRequestOp
+//   {
+//       //: ID of the ChangeRoleRequest request to be canceled
+//       uint64 requestID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelChangeRoleRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelChangeRoleRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for CancelChangeRoleRequest operation
+//   enum CancelChangeRoleRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: ID of a request cannot be 0
+//       REQUEST_ID_INVALID = -1, // request id can not be equal zero
+//       //: ChangeRole request with provided ID is not found
+//       REQUEST_NOT_FOUND = -2 // trying to cancel not existing reviewable request
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelChangeRoleRequestResultCode", {
+  success: 0,
+  requestIdInvalid: -1,
+  requestNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelChangeRoleSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `CancelChangeRoleRequestOp` application
+//   struct CancelChangeRoleSuccess {
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelChangeRoleSuccess", [
+  ["ext", xdr.lookup("CancelChangeRoleSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelChangeRoleRequest operation application along with the result code
+//   union CancelChangeRoleRequestResult switch (CancelChangeRoleRequestResultCode code)
+//   {
+//       case SUCCESS:
+//           CancelSaleCreationSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelChangeRoleRequestResult", {
+  switchOn: xdr.lookup("CancelChangeRoleRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelSaleCreationSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
 
 // === xdr source ============================================================
 //
@@ -12531,7 +13319,8 @@ xdr.struct("InvoiceRequest", [
 //   	UPDATE_ASSET = 13,
 //   	CREATE_POLL = 14,
 //   	CREATE_ATOMIC_SWAP_BID = 16,
-//   	CREATE_ATOMIC_SWAP = 17
+//   	CREATE_ATOMIC_SWAP = 17,
+//   	KYC_RECOVERY = 18
 //   };
 //
 // ===========================================================================
@@ -12553,6 +13342,7 @@ xdr.enum("ReviewableRequestType", {
   createPoll: 14,
   createAtomicSwapBid: 16,
   createAtomicSwap: 17,
+  kycRecovery: 18,
 });
 
 // === xdr source ============================================================
@@ -12634,6 +13424,8 @@ xdr.struct("TasksExt", [
 //               ASwapRequest aSwapRequest;
 //           case CREATE_POLL:
 //               CreatePollRequest createPollRequest;
+//           case KYC_RECOVERY:
+//               KYCRecoveryRequest kycRecoveryRequest;
 //   	}
 //
 // ===========================================================================
@@ -12656,6 +13448,7 @@ xdr.union("ReviewableRequestEntryBody", {
     ["createAtomicSwapBid", "aSwapBidCreationRequest"],
     ["createAtomicSwap", "aSwapRequest"],
     ["createPoll", "createPollRequest"],
+    ["kycRecovery", "kycRecoveryRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -12673,6 +13466,7 @@ xdr.union("ReviewableRequestEntryBody", {
     aSwapBidCreationRequest: xdr.lookup("ASwapBidCreationRequest"),
     aSwapRequest: xdr.lookup("ASwapRequest"),
     createPollRequest: xdr.lookup("CreatePollRequest"),
+    kycRecoveryRequest: xdr.lookup("KycRecoveryRequest"),
   },
 });
 
@@ -12737,6 +13531,8 @@ xdr.union("ReviewableRequestEntryExt", {
 //               ASwapRequest aSwapRequest;
 //           case CREATE_POLL:
 //               CreatePollRequest createPollRequest;
+//           case KYC_RECOVERY:
+//               KYCRecoveryRequest kycRecoveryRequest;
 //   	} body;
 //   
 //   	TasksExt tasks;
@@ -13111,6 +13907,7 @@ xdr.union("CreateASwapBidCreationRequestResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed on request that is being reviewed
 //   enum ReviewRequestOpAction {
 //       //: Approve request
 //       APPROVE = 1,
@@ -13148,6 +13945,7 @@ xdr.union("LimitsUpdateDetailsExt", {
 
 // === xdr source ============================================================
 //
+//   //: Review details of a Limits Update request
 //   struct LimitsUpdateDetails { 
 //       //: Limits entry containing new limits to set 
 //       LimitsV2Entry newLimitsV2;
@@ -13188,6 +13986,7 @@ xdr.union("WithdrawalDetailsExt", {
 
 // === xdr source ============================================================
 //
+//   //: Review details of a Withdraw Request
 //   struct WithdrawalDetails {
 //       //: External details updated on a Withdraw review
 //       string externalDetails<>;
@@ -13227,6 +14026,7 @@ xdr.union("AmlAlertDetailsExt", {
 
 // === xdr source ============================================================
 //
+//   //: Details of AML Alert 
 //   struct AMLAlertDetails {
 //       //: Comment on reason of AML Alert
 //       string comment<>;
@@ -13305,6 +14105,7 @@ xdr.union("BillPayDetailsExt", {
 
 // === xdr source ============================================================
 //
+//   //: Details of a payment reviewable request
 //   struct BillPayDetails {
 //       //: Details of payment
 //       PaymentOp paymentDetails;
@@ -13345,6 +14146,7 @@ xdr.union("ReviewDetailsExt", {
 
 // === xdr source ============================================================
 //
+//   //: Details of a request review
 //   struct ReviewDetails {
 //       //: Tasks to add to pending
 //       uint32 tasksToAdd;
@@ -13390,6 +14192,7 @@ xdr.union("SaleExtendedExt", {
 
 // === xdr source ============================================================
 //
+//   //: Extended result of the review request operation containing details specific to a Create Sale Request
 //   struct SaleExtended {
 //       //: ID of the newly created sale as a result of Create Sale Request successful review
 //       uint64 saleID;
@@ -13430,6 +14233,7 @@ xdr.union("ASwapBidExtendedExt", {
 
 // === xdr source ============================================================
 //
+//   //: Extended result of the review request operation containing details specific to a Create Atomic Swap Bid Request
 //   struct ASwapBidExtended
 //   {
 //       //: ID of the newly created bid as a result of Create Atomic Swap Bid Request successful review
@@ -13471,6 +14275,7 @@ xdr.union("CreatePollExtendedExt", {
 
 // === xdr source ============================================================
 //
+//   //: Extended result of the review request operation containing details specific to a `CREATE_POLL` request
 //   struct CreatePollExtended
 //   {
 //       //: ID of the newly created poll
@@ -13512,6 +14317,7 @@ xdr.union("ASwapExtendedExt", {
 
 // === xdr source ============================================================
 //
+//   //: Extended result of a review request operation containing details specific to a Create Atomic Swap Request
 //   struct ASwapExtended
 //   {
 //       //: ID of a bid to apply atomic swap to
@@ -13614,6 +14420,7 @@ xdr.union("ExtendedResultExt", {
 
 // === xdr source ============================================================
 //
+//   //: Extended result of a Review Request operation containing details specific to certain request types
 //   struct ExtendedResult {
 //       //: Indicates whether or not the request that is being reviewed was applied
 //       bool fulfilled;
@@ -13706,6 +14513,7 @@ xdr.union("ReviewRequestOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: Review Request operation
 //   struct ReviewRequestOp
 //   {
 //       //: ID of a request that is being reviewed
@@ -13756,6 +14564,7 @@ xdr.struct("ReviewRequestOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result code of the ReviewRequest operation
 //   enum ReviewRequestResultCode
 //   {
 //       //: Codes considered as "success" for an operation
@@ -13817,6 +14626,9 @@ xdr.struct("ReviewRequestOp", [
 //       //: Change role 
 //       //: Trying to remove zero tasks
 //       NON_ZERO_TASKS_TO_REMOVE_NOT_ALLOWED = -600,
+//       //: There is no account role with provided id
+//       ACCOUNT_ROLE_TO_SET_DOES_NOT_EXIST = -610,
+//   
 //   
 //       //: Update sale details
 //       //: Trying to update details of a non-existing sale
@@ -13870,7 +14682,11 @@ xdr.struct("ReviewRequestOp", [
 //       QUOTE_ASSET_CANNOT_BE_SWAPPED = -1501,
 //       ASSETS_ARE_EQUAL = -1502,
 //       ASWAP_BID_UNDERFUNDED = -1503,
-//       ASWAP_PURCHASER_FULL_LINE = -1504
+//       ASWAP_PURCHASER_FULL_LINE = -1504,
+//   
+//       //KYC
+//       //:Signer data is invalid - either weight is wrong or details are invalid
+//       INVALID_SIGNER_DATA = -1600
 //   
 //   };
 //
@@ -13900,6 +14716,7 @@ xdr.enum("ReviewRequestResultCode", {
   baseAssetNotFound: -530,
   quoteAssetNotFound: -550,
   nonZeroTasksToRemoveNotAllowed: -600,
+  accountRoleToSetDoesNotExist: -610,
   saleNotFound: -700,
   amountMismatched: -1010,
   destinationBalanceMismatched: -1020,
@@ -13936,10 +14753,12 @@ xdr.enum("ReviewRequestResultCode", {
   assetsAreEqual: -1502,
   aswapBidUnderfunded: -1503,
   aswapPurchaserFullLine: -1504,
+  invalidSignerDatum: -1600,
 });
 
 // === xdr source ============================================================
 //
+//   //: Result of applying the review request with result code
 //   union ReviewRequestResult switch (ReviewRequestResultCode code)
 //   {
 //   case SUCCESS:
@@ -13963,6 +14782,7 @@ xdr.union("ReviewRequestResult", {
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be applied to a poll
 //   enum ManagePollAction
 //   {
 //       CLOSE = 0,
@@ -13979,6 +14799,7 @@ xdr.enum("ManagePollAction", {
 
 // === xdr source ============================================================
 //
+//   //: PollResult is used to specify result of voting
 //   enum PollResult
 //   {
 //       PASSED = 0,
@@ -14012,6 +14833,7 @@ xdr.union("ClosePollDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: ClosePollData is used to submit poll results
 //   struct ClosePollData
 //   {
 //       //: result of voting
@@ -14125,6 +14947,7 @@ xdr.union("ManagePollOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManagePollOp is used to close,  update end time or cancel the poll
 //   struct ManagePollOp
 //   {
 //       //: ID of poll to manage
@@ -14160,6 +14983,7 @@ xdr.struct("ManagePollOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManagePollOp
 //   enum ManagePollResultCode
 //   {
 //       //: Specified action in `data` of ManagePollOp was successfully executed
@@ -14190,6 +15014,7 @@ xdr.enum("ManagePollResultCode", {
 
 // === xdr source ============================================================
 //
+//   //: Result of operation application
 //   union ManagePollResult switch (ManagePollResultCode code)
 //   {
 //   case SUCCESS:
@@ -14213,6 +15038,7 @@ xdr.union("ManagePollResult", {
 
 // === xdr source ============================================================
 //
+//   //: Functional type of poll
 //   enum PollType
 //   {
 //       SINGLE_CHOICE = 0
@@ -14225,6 +15051,7 @@ xdr.enum("PollType", {
 
 // === xdr source ============================================================
 //
+//   //: PollData is used to pass `PollType` with necessary params
 //   union PollData switch (PollType type)
 //   {
 //   case SINGLE_CHOICE:
@@ -14283,7 +15110,8 @@ xdr.struct("PollEntry", [
 
 // === xdr source ============================================================
 //
-//   enum ManageKVAction
+//   //: Actions that can be performed on `KeyValueEntry`
+//       enum ManageKVAction
 //       {
 //           PUT = 1,
 //           REMOVE = 2
@@ -14339,7 +15167,8 @@ xdr.union("ManageKeyValueOpExt", {
 
 // === xdr source ============================================================
 //
-//   struct ManageKeyValueOp
+//   //: `ManageKeyValueOp` is used to create the manage key-value operation which, if applied successfully, will update the key-value entry present in the system
+//       struct ManageKeyValueOp
 //       {
 //           //: `key` is the key for KeyValueEntry
 //           longstring key;
@@ -14392,7 +15221,8 @@ xdr.union("ManageKeyValueSuccessExt", {
 
 // === xdr source ============================================================
 //
-//   struct ManageKeyValueSuccess
+//   //: `ManageKeyValueSuccess` represents details returned after the successful application of `ManageKeyValueOp`
+//       struct ManageKeyValueSuccess
 //       {
 //           //: reserved for future use
 //           union switch (LedgerVersion v)
@@ -14410,7 +15240,8 @@ xdr.struct("ManageKeyValueSuccess", [
 
 // === xdr source ============================================================
 //
-//   enum ManageKeyValueResultCode
+//   //: Result codes for `ManageKeyValueOp`
+//       enum ManageKeyValueResultCode
 //       {
 //           //: `ManageKeyValueOp` is applied successfully
 //           SUCCESS = 0,
@@ -14432,7 +15263,8 @@ xdr.enum("ManageKeyValueResultCode", {
 
 // === xdr source ============================================================
 //
-//   union ManageKeyValueResult switch (ManageKeyValueResultCode code)
+//   //: `ManageKeyValueResult` represents the result of ManageKeyValueOp
+//       union ManageKeyValueResult switch (ManageKeyValueResultCode code)
 //       {
 //           case SUCCESS:
 //               ManageKeyValueSuccess success;
@@ -14503,6 +15335,7 @@ xdr.struct("LicenseEntry", [
 
 // === xdr source ============================================================
 //
+//   //: Actions that can be performed with the account role
 //   enum ManageAccountRoleAction
 //   {
 //       CREATE = 0,
@@ -14538,6 +15371,7 @@ xdr.union("CreateAccountRoleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateAccountRoleData is used to pass necessary params to create a new account role
 //   struct CreateAccountRoleData
 //   {
 //       //: Arbitrary stringified json object that will be attached to the role
@@ -14581,6 +15415,7 @@ xdr.union("UpdateAccountRoleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: UpdateAccountRoleData is used to pass necessary params to update existing account role
 //   struct UpdateAccountRoleData
 //   {
 //       //: Identifier of existing signer role
@@ -14627,6 +15462,7 @@ xdr.union("RemoveAccountRoleDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: RemoveAccountRoleData is used to pass necessary params to remove an existing account role
 //   struct RemoveAccountRoleData
 //   {
 //       //: Identifier of an existing account role
@@ -14695,6 +15531,7 @@ xdr.union("ManageAccountRoleOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageAccountRoleOp is used to create, update or remove account role
 //   struct ManageAccountRoleOp
 //   {
 //       //: data is used to pass one of `ManageAccountRoleAction` with required params
@@ -14725,6 +15562,7 @@ xdr.struct("ManageAccountRoleOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of ManageAccountRoleResultCode
 //   enum ManageAccountRoleResultCode
 //   {
 //       //: This means that the specified action in `data` of ManageAccountRoleOp was successfully performed
@@ -14795,6 +15633,7 @@ xdr.struct("ManageAccountRoleResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of the operation performed 
 //   union ManageAccountRoleResult switch (ManageAccountRoleResultCode code)
 //   {
 //       case SUCCESS:
@@ -14856,6 +15695,7 @@ xdr.union("ManageOfferOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageOfferOp is used to create or delete offer
 //   struct ManageOfferOp
 //   {
 //       //: Balance for base asset of an offer creator
@@ -15047,6 +15887,7 @@ xdr.union("ClaimOfferAtomExt", {
 
 // === xdr source ============================================================
 //
+//   //: Used when offers are taken during the operation
 //   struct ClaimOfferAtom
 //   {
 //       // emitted to identify the offer
@@ -15138,6 +15979,7 @@ xdr.union("ManageOfferSuccessResultExt", {
 
 // === xdr source ============================================================
 //
+//   //: Contains details of successful operation application
 //   struct ManageOfferSuccessResult
 //   {
 //   
@@ -15257,6 +16099,7 @@ xdr.struct("ManageOfferResultCurrentPriceRestriction", [
 
 // === xdr source ============================================================
 //
+//   //: Result of `ManageOfferOp`
 //   union ManageOfferResult switch (ManageOfferResultCode code)
 //   {
 //   case SUCCESS:
@@ -16780,6 +17623,7 @@ xdr.union("CheckSaleStateOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CheckSaleState operation is used to perform check on sale state - whether the sale was successful or not
 //   struct CheckSaleStateOp
 //   {
 //       //:ID of the sale to check
@@ -16801,6 +17645,7 @@ xdr.struct("CheckSaleStateOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of CheckSaleState operation
 //   enum CheckSaleStateResultCode
 //   {
 //       // codes considered as "success" for the operation
@@ -16823,6 +17668,7 @@ xdr.enum("CheckSaleStateResultCode", {
 
 // === xdr source ============================================================
 //
+//   //: Effect of performed check sale state operation
 //   enum CheckSaleStateEffect {
 //       //: Sale hasn't reached the soft cap before end time
 //       CANCELED = 1,
@@ -16860,6 +17706,7 @@ xdr.union("SaleCanceledExt", {
 
 // === xdr source ============================================================
 //
+//   //: Entry for additional information regarding sale cancel
 //   struct SaleCanceled {
 //       //: Reserved for future use
 //       union switch (LedgerVersion v)
@@ -16896,6 +17743,7 @@ xdr.union("SaleUpdatedExt", {
 
 // === xdr source ============================================================
 //
+//   //: Entry for additional information regarding sale update
 //   struct SaleUpdated {
 //       //: Reserved for future use
 //       union switch (LedgerVersion v)
@@ -16932,6 +17780,7 @@ xdr.union("CheckSubSaleClosedResultExt", {
 
 // === xdr source ============================================================
 //
+//   //: Entry for additional information regarding sub sale closing
 //   struct CheckSubSaleClosedResult {
 //       //: Balance in base asset of the closed sale
 //       BalanceID saleBaseBalance;
@@ -16977,6 +17826,7 @@ xdr.union("CheckSaleClosedResultExt", {
 
 // === xdr source ============================================================
 //
+//   //: Entry for additional information regarding sale closing
 //   struct CheckSaleClosedResult {
 //       //: AccountID of the sale owner
 //       AccountID saleOwner;
@@ -17047,6 +17897,7 @@ xdr.union("CheckSaleStateSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: Result of the successful application of CheckSaleState operation
 //   struct CheckSaleStateSuccess
 //   {
 //       //: ID of the sale being checked
@@ -17080,6 +17931,7 @@ xdr.struct("CheckSaleStateSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of the CheckSaleState operation along with the result code
 //   union CheckSaleStateResult switch (CheckSaleStateResultCode code)
 //   {
 //   case SUCCESS:
@@ -17224,6 +18076,7 @@ xdr.union("StampOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: StampOp is used to save current ledger hash and current license hash
 //   struct StampOp
 //   {
 //       //: Reserved for future use
@@ -17275,6 +18128,7 @@ xdr.union("StampSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: StampSuccess is used to pass saved ledger hash and license hash
 //   struct StampSuccess {
 //       //: ledger hash saved into a database
 //       Hash ledgerHash;
@@ -17300,6 +18154,7 @@ xdr.struct("StampSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: StampResult is a result of Stamp operation application
 //   union StampResult switch (StampResultCode code)
 //   {
 //   case SUCCESS:
@@ -17356,6 +18211,7 @@ xdr.union("UpdateSaleDetailsDataExt", {
 
 // === xdr source ============================================================
 //
+//   //: Details regarding the `Update Sale Details` request
 //   struct UpdateSaleDetailsData {
 //       //: ID of a reviewable request. If set 0, request is created, else - request is updated
 //       uint64 requestID; // if requestID is 0 - create request, else - update
@@ -17424,6 +18280,7 @@ xdr.union("ManageSaleOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: ManageSaleOp is used to cancel a sale, or create a reviewable request which, after approval, will update sale details.
 //   struct ManageSaleOp
 //   {
 //       //: ID of the sale to manage
@@ -17453,6 +18310,7 @@ xdr.struct("ManageSaleOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes for ManageSaleOperation
 //   enum ManageSaleResultCode
 //   {
 //       //: Operation is successfully applied
@@ -17527,6 +18385,7 @@ xdr.union("ManageSaleResultSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //:Result of ManageSale operation successful application 
 //   struct ManageSaleResultSuccess
 //   {
 //       //: Indicates  whether or not the ManageSale request was auto approved and fulfilled
@@ -17558,6 +18417,7 @@ xdr.struct("ManageSaleResultSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of ManageSale operation application along with result code
 //   union ManageSaleResult switch (ManageSaleResultCode code)
 //   {
 //   case SUCCESS:
@@ -17704,7 +18564,8 @@ xdr.union("SetFeesOpExt", {
 
 // === xdr source ============================================================
 //
-//   struct SetFeesOp
+//   //: Allows to establish or remove a relationship between a particular fee entry with the different entities
+//       struct SetFeesOp
 //       {
 //           //: Fee entry to set
 //           FeeEntry* fee;
@@ -17728,7 +18589,8 @@ xdr.struct("SetFeesOp", [
 
 // === xdr source ============================================================
 //
-//   enum SetFeesResultCode
+//   //: Result codes for SetFees operation
+//       enum SetFeesResultCode
 //       {
 //           // codes considered as "success" for the operation
 //           //: `SetFeesOp` was successfully applied and a fee was successfully set or deleted
@@ -17840,7 +18702,8 @@ xdr.struct("SetFeesResultSuccess", [
 
 // === xdr source ============================================================
 //
-//   union SetFeesResult switch (SetFeesResultCode code)
+//   //: Is used to pass result of operation applying
+//       union SetFeesResult switch (SetFeesResultCode code)
 //       {
 //           case SUCCESS:
 //               struct {
@@ -17890,6 +18753,7 @@ xdr.union("AssetCreationRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: AssetCreationRequest is used to create an asset with provided parameters
 //   struct AssetCreationRequest {
 //       //: Code of an asset to create
 //       AssetCode code;
@@ -17954,6 +18818,7 @@ xdr.union("AssetUpdateRequestExt", {
 
 // === xdr source ============================================================
 //
+//   //: AssetUpdateRequest is used to update an asset with provided parameters
 //   struct AssetUpdateRequest {
 //       //: Code of an asset to update
 //       AssetCode code;
@@ -18003,6 +18868,7 @@ xdr.union("AssetChangePreissuedSignerExt", {
 
 // === xdr source ============================================================
 //
+//   //: AssetChangePreissuedSigner is used to update a pre issued asset signer
 //   struct AssetChangePreissuedSigner
 //   {
 //       //: code of an asset to update
@@ -18051,6 +18917,7 @@ xdr.union("CreateAccountOpExt", {
 
 // === xdr source ============================================================
 //
+//   //: CreateAccountOp is used to create new account
 //   struct CreateAccountOp
 //   {
 //       //: ID of account to be created
@@ -18084,6 +18951,7 @@ xdr.struct("CreateAccountOp", [
 
 // === xdr source ============================================================
 //
+//   //: Result codes of CreateAccountOp
 //   enum CreateAccountResultCode
 //   {
 //       //: Means that `destination` account has been successfully created with signers specified in `signersData`
@@ -18137,6 +19005,7 @@ xdr.union("CreateAccountSuccessExt", {
 
 // === xdr source ============================================================
 //
+//   //: Result of successful application of `CreateAccount` operation
 //   struct CreateAccountSuccess
 //   {
 //       //: Unique unsigned integer identifier of the new account
@@ -18159,6 +19028,7 @@ xdr.struct("CreateAccountSuccess", [
 
 // === xdr source ============================================================
 //
+//   //: Result of operation application
 //   union CreateAccountResult switch (CreateAccountResultCode code)
 //   {
 //   case SUCCESS:
