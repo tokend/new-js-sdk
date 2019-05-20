@@ -52,12 +52,38 @@ export class CreateKYCRecoveryRequestBuilder {
     BaseOperation.setSourceAccount(opAttributes, opts)
     return new xdr.Operation(opAttributes)
   }
+
+  /**
+   *  @param {string} opts.targetAccount
+   * @param {object[]} opts.signersData - new signers for the target account
+   * @param {string} opts.signersData.publicKey - public key of new signer
+   * @param {string} opts.signersData.roleID - id of role for signer
+   * @param {string} opts.signersData.weight - weight of signer up to 1000
+   * @param {string} opts.signersData.identity - identity of signer
+   * @param {object} opts.signersData.details - json object with details
+   * @param {object} opts.creatorDetails
+   * @param {number|string} opts.allTasks
+   * @param opts
+   * @return {xdr.CreateKYCRecoveryRequestOp}
+   */
   static create (opts) {
     return this._createKYCRecoveryRequest({
       ...opts,
       requestID: '0'
     })
   }
+  /**
+   *  @param {string} opts.targetAccount
+   * @param {object[]} opts.signersData - new signers for the target account
+   * @param {string} opts.signersData.publicKey - public key of new signer
+   * @param {string} opts.signersData.roleID - id of role for signer
+   * @param {string} opts.signersData.weight - weight of signer up to 1000
+   * @param {string} opts.signersData.identity - identity of signer
+   * @param {object} opts.signersData.details - json object with details
+   * @param {object} opts.creatorDetails
+   * @param opts
+   * @return {xdr.CreateKYCRecoveryRequestOp}
+   */
   static update (opts, requestID) {
     return this._createKYCRecoveryRequest({
       ...opts,
@@ -66,9 +92,14 @@ export class CreateKYCRecoveryRequestBuilder {
   }
 
   static createKYCRecoveryRequestOpToObject (result, attrs) {
-    result.requestID = attrs.requestId
+    result.requestID = attrs.requestId().toString()
     result.targetAccount = BaseOperation.accountIdtoAddress(attrs.targetAccount())
-    result.signersData = attrs.signersData
+    result.signersData = []
+    attrs.signersData().forEach(function (item) {
+      let data = {}
+      ManageSignerBuilder.signerDataToObject(data, item)
+      result.signersData.push(data)
+    })
     result.creatorDetails = JSON.parse(attrs.creatorDetails())
     result.allTasks = attrs.allTasks()
   }
