@@ -1,5 +1,6 @@
-import { getRequestIdFromResultXdr, Helper } from './_helper'
+import { getRequestIdFromResultXdr, getSuccessResultFromXDR, Helper } from './_helper'
 import { base } from '../../src'
+import { CancelChangeRoleRequestBuilder } from '../../src/base/operations/cancel_change_role_request_builder'
 
 export class ChangeRole extends Helper {
   /**
@@ -33,12 +34,12 @@ export class ChangeRole extends Helper {
   }
 
   async cancel (reqId, ownerKp = this.masterKp) {
-    const operation = base.CancelChangeRoleRequestBuilder.cancelChangeRoleRequest({
+    const operation = CancelChangeRoleRequestBuilder.cancelChangeRoleRequest({
       requestID: reqId
     })
 
     const response = await this.submit(operation, ownerKp)
 
-    return getRequestIdFromResultXdr(response.resultXdr, 'cancelChangeRoleRequestResult')
+    return getSuccessResultFromXDR(response.resultXdr, 'cancelChangeRoleRequestResult')
   }
 }

@@ -19,6 +19,8 @@ import { StampHelper } from './stamp'
 import { LicenseHelper } from './license'
 import { Poll } from './poll'
 import { Vote } from './vote'
+import { ManageAccountRole } from './manage_account_role'
+import { ChangeRole } from './change_role'
 
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
@@ -51,3 +53,5 @@ export const stampHelper = new StampHelper(DEFAULTS)
 export const licenseHelper = new LicenseHelper(DEFAULTS)
 export const pollHelper = new Poll(DEFAULTS)
 export const voteHelper = new Vote(DEFAULTS)
+export const manageAccountRoleHelper = new ManageAccountRole(DEFAULTS)
+export const changeRoleHelper = new ChangeRole(DEFAULTS)
