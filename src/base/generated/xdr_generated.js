@@ -1,6 +1,6 @@
-// revision: 3eeaee41e521fd962b282b39059ffa0bad7bc66e
+// revision: e249bfd09fffe75b27dacee4014fb26c67d0fbc9
 // branch:   feature/kyc-recovery
-// Automatically generated on 2019-05-18T08:46:11+00:00
+// Automatically generated on 2019-05-20T11:00:05+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -12712,18 +12712,14 @@ xdr.struct("CreateKycRecoveryRequestOp", [
 //       TARGET_ACCOUNT_NOT_FOUND = -8,
 //       //: System configuration forbids KYC recovery
 //       RECOVERY_NOT_ALLOWED = -10,
-//       //: Either, there is no entry by key `kyc_recovery_account_role`, or such role does not exists
-//       RECOVERY_ACCOUNT_ROLE_NOT_FOUND = -11,
-//       //: Account role differs from expected
-//       TARGET_ACCOUNT_NOT_IN_RECOVERY_ROLE = -12,
-//       //: Only target account can update rejected request
-//       NOT_ALLOWED_TO_UPDATE_REQUEST = -13,
+//       //: Only target account can update request
+//       NOT_ALLOWED_TO_UPDATE_REQUEST = -11,
 //       //: There is no request with such ID
-//       KYC_RECOVERY_REQUEST_NOT_FOUND = -16,
+//       REQUEST_NOT_FOUND = -12,
 //       //: It is forbidden to change target account on update
-//       INVALID_UPDATE_DATA = -17,
+//       INVALID_UPDATE_DATA = -13,
 //       //: It is forbidden to set `allTasks` on update
-//       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -18
+//       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -14
 //   };
 //
 // ===========================================================================
@@ -12738,12 +12734,10 @@ xdr.enum("CreateKycRecoveryRequestResultCode", {
   requestAlreadyExist: -7,
   targetAccountNotFound: -8,
   recoveryNotAllowed: -10,
-  recoveryAccountRoleNotFound: -11,
-  targetAccountNotInRecoveryRole: -12,
-  notAllowedToUpdateRequest: -13,
-  kycRecoveryRequestNotFound: -16,
-  invalidUpdateDatum: -17,
-  notAllowedToSetTasksOnUpdate: -18,
+  notAllowedToUpdateRequest: -11,
+  requestNotFound: -12,
+  invalidUpdateDatum: -13,
+  notAllowedToSetTasksOnUpdate: -14,
 });
 
 // === xdr source ============================================================
