@@ -11,8 +11,10 @@ export { ApiResponse } from './api'
 
 export {
   ApiCaller,
-  WalletsManager,
+  DocumentsManager,
   FactorsManager,
+  SignersManager,
+  WalletsManager,
   JsonapiResponse
 } from './api2'
 export { KeyServerCaller } from './api2/key-server-caller'
