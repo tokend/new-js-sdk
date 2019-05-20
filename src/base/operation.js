@@ -31,6 +31,7 @@ import { ManageCreatePollRequestBuilder } from './operations/manage_create_poll_
 import { ManageVoteBuilder } from './operations/manage_vote_builder'
 import { ManagePollBuilder } from './operations/manage_poll_builder'
 import { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
+import { CancelChangeRoleRequestBuilder } from './operations/cancel_change_role_request_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -455,6 +456,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.manageAccountSpecificRule():
         ManageAccountSpecificRuleBuilder.manageAccountSpecificRuleToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelChangeRoleRequest():
+        CancelChangeRoleRequestBuilder.cancelChangeRoleRequestToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')
