@@ -3,7 +3,7 @@ import isUndefined from 'lodash/isUndefined'
 import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
 
-export class CreateAtomicSwapBidCreationRequestBuilder {
+export class CreateAtomicSwapBidRequestBuilder {
   /**
      * Creates atomic swap bid creation request
      * @param {object} opts
@@ -21,7 +21,7 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
      *
      * @returns {xdr.Operation}
      */
-  static createAtomicSwapBidCreationRequest (opts) {
+  static createAtomicSwapBidRequest (opts) {
     let rawRequest = {}
     if (!BaseOperation.isValidAmount(opts.amount)) {
       throw new Error('opts.amount is invalid')
@@ -60,7 +60,7 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
     }
 
     rawRequest.creatorDetails = JSON.stringify(opts.creatorDetails)
-    rawRequest.ext = new xdr.AtomicSwapBidCreationRequestExt(
+    rawRequest.ext = new xdr.CreateAtomicSwapBidRequestExt(
       xdr.LedgerVersion.emptyVersion())
 
     let tasks
@@ -70,10 +70,10 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
 
     let opAttributes = {}
     opAttributes.body = new xdr.OperationBody.createAtomicSwapBidRequest(
-      new xdr.CreateAtomicSwapBidCreationRequestOp({
-        request: new xdr.AtomicSwapBidCreationRequest(rawRequest),
+      new xdr.CreateAtomicSwapBidRequestOp({
+        request: new xdr.CreateAtomicSwapBidRequest(rawRequest),
         allTasks: tasks,
-        ext: new xdr.CreateAtomicSwapBidCreationRequestOpExt(
+        ext: new xdr.CreateAtomicSwapBidRequestOpExt(
           xdr.LedgerVersion.emptyVersion())
       }))
 
@@ -81,7 +81,7 @@ export class CreateAtomicSwapBidCreationRequestBuilder {
     return new xdr.Operation(opAttributes)
   }
 
-  static createAtomicSwapBidCreationRequestToObject (result, attrs) {
+  static createAtomicSwapBidRequestToObject (result, attrs) {
     result.balanceID = BaseOperation.balanceIdtoString(
       attrs.request().baseBalance())
     result.amount = BaseOperation._fromXDRAmount(

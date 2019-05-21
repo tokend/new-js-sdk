@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import { CreateAtomicSwapBidCreationRequestBuilder } from './create_atomic_swap_bid_creation_request_builder'
+import { CreateAtomicSwapBidRequestBuilder } from './create_atomic_swap_bid_request_builder'
 import { Operation } from '../operation'
 import { Keypair } from '../keypair'
 import { default as xdr } from '../generated/xdr_generated'
@@ -22,7 +22,7 @@ describe('Create ASwapBidCreation request', function () {
       ],
       allTasks: '1'
     }
-    let op = CreateAtomicSwapBidCreationRequestBuilder.createAtomicSwapBidCreationRequest(opts)
+    let op = CreateAtomicSwapBidRequestBuilder.createAtomicSwapBidRequest(opts)
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)

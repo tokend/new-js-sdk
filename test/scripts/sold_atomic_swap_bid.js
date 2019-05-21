@@ -1,5 +1,4 @@
 import {
-  sdk,
   atomicSwapHelper,
   atomicSwapBidHelper, requestHelper,
 } from '../helpers'

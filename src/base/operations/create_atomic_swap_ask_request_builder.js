@@ -3,7 +3,7 @@ import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
 import isUndefined from 'lodash/isUndefined'
 
-export class CreateAtomicSwapRequestBuilder {
+export class CreateAtomicSwapAskRequestBuilder {
   /**
      * Creates atomic swap request
      * @param {object} opts
@@ -17,7 +17,7 @@ export class CreateAtomicSwapRequestBuilder {
      *
      * @returns {xdr.Operation}
      */
-  static createAtomicSwapRequest (opts) {
+  static createAtomicSwapAskRequest (opts) {
     let rawRequest = {}
     if (!BaseOperation.isValidAmount(opts.baseAmount)) {
       throw new Error('opts.amount is invalid')
@@ -36,14 +36,14 @@ export class CreateAtomicSwapRequestBuilder {
     rawRequest.quoteAsset = opts.quoteAsset
     rawRequest.creatorDetails = JSON.stringify(opts.creatorDetails)
     rawRequest.bidId = UnsignedHyper.fromString(opts.bidID)
-    rawRequest.ext = new xdr.AtomicSwapRequestExt(
+    rawRequest.ext = new xdr.CreateAtomicSwapAskRequestExt(
       xdr.LedgerVersion.emptyVersion())
 
     let opAttributes = {}
-    opAttributes.body = new xdr.OperationBody.createAtomicSwapRequest(
-      new xdr.CreateAtomicSwapRequestOp({
-        request: new xdr.AtomicSwapRequest(rawRequest),
-        ext: new xdr.CreateAtomicSwapRequestOpExt(
+    opAttributes.body = new xdr.OperationBody.createAtomicSwapAskRequest(
+      new xdr.CreateAtomicSwapAskRequestOp({
+        request: new xdr.CreateAtomicSwapAskRequest(rawRequest),
+        ext: new xdr.CreateAtomicSwapAskRequestOpExt(
           xdr.LedgerVersion.emptyVersion())
       }))
 
@@ -51,7 +51,7 @@ export class CreateAtomicSwapRequestBuilder {
     return new xdr.Operation(opAttributes)
   }
 
-  static createAtomicSwapRequestToObject (result, attrs) {
+  static createAtomicSwapAskRequestToObject (result, attrs) {
     result.bidID = attrs.request().bidId().toString()
     result.baseAmount = BaseOperation._fromXDRAmount(
       attrs.request().baseAmount())

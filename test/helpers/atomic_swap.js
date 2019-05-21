@@ -24,13 +24,13 @@ export class AtomicSwap extends Helper {
       }
     }
 
-    const operation = base.CreateAtomicSwapRequestBuilder.createAtomicSwapRequest({
+    const operation = base.CreateAtomicSwapAskRequestBuilder.createAtomicSwapAskRequest({
       ...DEFAULTS,
       ...opts
     })
 
     const response = await this.submit(operation, ownerKp)
 
-    return getRequestIdFromResultXdr(response.resultXdr, 'createAtomicSwapRequestResult')
+    return getRequestIdFromResultXdr(response.resultXdr, 'createAtomicSwapAskRequestResult')
   }
 }

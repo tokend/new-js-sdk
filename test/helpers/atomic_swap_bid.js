@@ -32,15 +32,14 @@ export class AtomicSwapBid extends Helper {
       },
     }
 
-    const operation = base.CreateAtomicSwapBidCreationRequestBuilder
-      .createAtomicSwapBidCreationRequest({
-        ...DEFAULTS,
-        ...opts
-      })
+    const operation = base.CreateAtomicSwapBidRequestBuilder.createAtomicSwapBidRequest({
+      ...DEFAULTS,
+      ...opts
+    })
 
     const response = await this.submit(operation, ownerKp)
 
-    return getRequestIdFromResultXdr(response.resultXdr, 'createAtomicSwapBidCreationRequestResult')
+    return getRequestIdFromResultXdr(response.resultXdr, 'createAtomicSwapBidRequestResult')
   }
   mustLoadById (id) {
     return Running.untilFound(async () => {
