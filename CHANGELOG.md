@@ -8,8 +8,8 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
-### Fixed
-- Now allowing an empty object on creator details validator
+### Updated
+- Now an empty object on creator details validator is allowed
 
 ## [1.7.0-rc.0] - 2019-05-21
 ### Added
