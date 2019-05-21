@@ -87,6 +87,13 @@ export class ServerErrorBase extends Error {
 }
 
 /**
+ * Storage server error.
+ *
+ * @class
+ */
+export class StorageServerError extends ServerErrorBase {}
+
+/**
  * Generic server error response.
  */
 export class ServerError extends ServerErrorBase {
