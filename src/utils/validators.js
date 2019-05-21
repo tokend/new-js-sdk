@@ -1,6 +1,5 @@
 import _isUndefined from 'lodash/isUndefined'
 import _isArray from 'lodash/isArray'
-import _isEmpty from 'lodash/isEmpty'
 import _isObject from 'lodash/isObject'
 
 import { BaseOperation } from '../base/operations/base_operation'
@@ -282,10 +281,7 @@ export function validateXdrEnumType ({ value, type, fieldName }) {
  * @throws {TypeError} Value should be non-empty object with snake_cased keys.
  */
 export function validateCreatorDetails ({ value, fieldName }) {
-  const isValid = _isObject(value) && !_isEmpty(value) &&
-    isObjectKeysSnakeCasedDeep(value)
-
-  if (!isValid) {
+  if (!_isObject(value) || !isObjectKeysSnakeCasedDeep(value)) {
     throw new TypeError(
       `${fieldName} must be a non-empty object with snake_cased keys,
        got ${JSON.stringify(value)}`
