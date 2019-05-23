@@ -2,6 +2,7 @@ import { logger } from '../logger'
 import { getKvEntryWithFallback } from './get_task_from_kv'
 import { KEY_VALUE_KEYS } from '../../src/const'
 import { kycRecoveryHelper, requestHelper } from '../helpers'
+
 /**
  *
  * @param {string} address - address of the account
@@ -26,19 +27,19 @@ export async function prepareForRecovery (recoveryTasks) {
  * @param {object} opts
  * @param {string} opts.targetAccount
  * @param {string[]} opts.signers - new signers for the target account
- * @param {number|string} opts.allTasks
- * @param {string} opts.creatorDetails - request details set by creator
  * @param {Keypair} source - request details set by creator
  */
 export async function createKycRecovery (opts, source) {
   const log = logger.new('create-kyc-recovery')
 
   const tasksToRemove = await getKvEntryWithFallback(
-    KEY_VALUE_KEYS.createKycRecoveryTasks, 1
+    KEY_VALUE_KEYS.createPollTasks, 1
   )
-  let signersData = []
+  log.info('tasks to remove for create kyc recovery request defined, value: ' + tasksToRemove)
+
+  let signers = []
   opts.signers.forEach(function (pk) {
-    signersData.push({
+    signers.push({
       publicKey: pk,
       identity: '1',
       weight: '1000',
@@ -46,14 +47,12 @@ export async function createKycRecovery (opts, source) {
       details: {}
     })
   })
-  const createRecoveryResult = await kycRecoveryHelper.createKycRecoveryRequest({
-    signersData: signersData,
-    targetAccount: opts.targetAccount,
-    allTasks: tasksToRemove
+  const requestId = await kycRecoveryHelper.createKycRecoveryRequest({
+    signers: signers,
+    targetAccount: {"sldkfksdjhf": 1} //   opts.targetAccount
   }, source)
-  const requestID = createRecoveryResult.requestId().toString()
-  log.info(`KYC recovery request has been created: ${requestID}`)
 
-  await requestHelper.approve(requestID, { tasksToRemove: tasksToRemove })
+  log.info(`KYC recovery request has been created: ${requestId}`)
+  await requestHelper.approve(requestId, { tasksToRemove: tasksToRemove })
   log.info('Approved the kyc recovery request')
 }

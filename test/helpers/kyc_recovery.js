@@ -1,5 +1,5 @@
 import { Running } from './_running'
-import { getSuccessResultFromXDR, Helper } from './_helper'
+import { getRequestIdFromResultXdr, getSuccessResultFromXDR, Helper } from './_helper'
 import { ApiCaller } from '../../src/api2/api-caller'
 import { Wallet } from '../../src/wallet'
 import * as config from '../config'
@@ -39,12 +39,11 @@ export class KYCRecoveryHelper extends Helper {
     * @param {string} opts.signersData.identity - identity of signer
     * @param {object} opts.signersData.details - json object with details
     * @param {object} opts.creatorDetails - Additional details about request
-    * @param {number} opts.allTasks - tasks to set on request creation.
+    * @param {number} [opts.allTasks] - tasks to set on request creation.
     * @param {Keypair} source - source of the operation. Defaults to master
   */
   async createKycRecoveryRequest (opts, source) {
     const DEFAULTS = {
-      allTasks: 1,
       creatorDetails: {
         description: 'Need to recover my account'
       },
@@ -58,7 +57,7 @@ export class KYCRecoveryHelper extends Helper {
       source = this.masterKp
     }
     const response = await this.submit(operation, source)
-    return getSuccessResultFromXDR(response.resultXdr, 'createKycRecoveryRequestResult')
+    return getRequestIdFromResultXdr(response.resultXdr, 'createKycRecoveryRequestResult')
   }
   /**
    * @param {object} opts
@@ -106,10 +105,7 @@ export class KYCRecoveryHelper extends Helper {
       return data
     })
   }
-  /**
-   * @param {string} recoveryTasks
-  */
-  putKeyValuePairs (recoveryTasks) {
+  putKeyValuePairs () {
     let ops = []
     ops.push(ManageKeyValueBuilder.putKeyValue({
       key: KEY_VALUE_KEYS.kycRecoveryEnabled,
@@ -120,11 +116,6 @@ export class KYCRecoveryHelper extends Helper {
       key: KEY_VALUE_KEYS.kycRecoverySignerRole,
       value: '1',
       entryType: 3
-    }))
-    ops.push(ManageKeyValueBuilder.putKeyValue({
-      key: KEY_VALUE_KEYS.createKycRecoveryTasks,
-      value: recoveryTasks,
-      entryType: 1
     }))
     return this.submit(ops)
   }

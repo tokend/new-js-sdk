@@ -1,6 +1,6 @@
-// revision: e249bfd09fffe75b27dacee4014fb26c67d0fbc9
-// branch:   feature/kyc-recovery
-// Automatically generated on 2019-05-20T11:00:05+00:00
+// revision: 151b0f11c3fea164176a7afc83a5b3d993b71977
+// branch:   master
+// Automatically generated on 2019-05-23T11:03:29+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1843,7 +1843,8 @@ xdr.struct("ScpQuorumSet", [
 //       FIX_NOT_CHECKING_SET_TASKS_PERMISSIONS = 8,
 //       UNLIMITED_ADMIN_COUNT = 9,
 //       FIX_AML_ALERT_ERROR_CODES = 10,
-//       FIX_EXT_SYS_ACC_EXPIRATION_TIME = 11
+//       FIX_EXT_SYS_ACC_EXPIRATION_TIME = 11,
+//       FIX_CHANGE_ROLE_REJECT_TASKS = 12
 //   };
 //
 // ===========================================================================
@@ -1860,6 +1861,7 @@ xdr.enum("LedgerVersion", {
   unlimitedAdminCount: 9,
   fixAmlAlertErrorCode: 10,
   fixExtSysAccExpirationTime: 11,
+  fixChangeRoleRejectTask: 12,
 });
 
 // === xdr source ============================================================
@@ -5868,11 +5870,15 @@ xdr.struct("SignerRuleResourceVote", [
 //       {
 //           //: Role id
 //           uint64 roleID;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
 //       }
 //
 // ===========================================================================
 xdr.struct("SignerRuleResourceInitiateKycRecovery", [
   ["roleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -6007,6 +6013,9 @@ xdr.struct("SignerRuleResourceInitiateKycRecovery", [
 //       {
 //           //: Role id
 //           uint64 roleID;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
 //       } initiateKYCRecovery;
 //   default:
 //       //: reserved for future extension
@@ -6070,7 +6079,9 @@ xdr.union("SignerRuleResource", {
 //       UPDATE_MAX_ISSUANCE = 13,
 //       CHECK = 14,
 //       CLOSE = 15,
-//       UPDATE_END_TIME = 16
+//       UPDATE_END_TIME = 16,
+//       CREATE_WITH_TASKS = 17,
+//       CREATE_FOR_OTHER_WITH_TASKS = 18
 //   };
 //
 // ===========================================================================
@@ -6091,6 +6102,8 @@ xdr.enum("SignerRuleAction", {
   check: 14,
   close: 15,
   updateEndTime: 16,
+  createWithTask: 17,
+  createForOtherWithTask: 18,
 });
 
 // === xdr source ============================================================
@@ -7518,6 +7531,23 @@ xdr.struct("AccountRuleResourceVote", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Role id
+//           uint64 roleID;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceInitiateKycRecovery", [
+  ["roleId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
@@ -7613,6 +7643,15 @@ xdr.struct("AccountRuleResourceVote", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } vote;
+//   case INITIATE_KYC_RECOVERY:
+//       struct
+//       {
+//           //: Role id
+//           uint64 roleID;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } initiateKYCRecovery;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -7632,6 +7671,7 @@ xdr.union("AccountRuleResource", {
     ["keyValue", "keyValue"],
     ["poll", "poll"],
     ["vote", "vote"],
+    ["initiateKycRecovery", "initiateKycRecovery"],
   ],
   arms: {
     asset: xdr.lookup("AccountRuleResourceAsset"),
@@ -7642,6 +7682,7 @@ xdr.union("AccountRuleResource", {
     keyValue: xdr.lookup("AccountRuleResourceKeyValue"),
     poll: xdr.lookup("AccountRuleResourcePoll"),
     vote: xdr.lookup("AccountRuleResourceVote"),
+    initiateKycRecovery: xdr.lookup("AccountRuleResourceInitiateKycRecovery"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -12200,20 +12241,17 @@ xdr.struct("InitiateKycRecoveryOp", [
 //       //: Means that KYC recovery was successfully initiated
 //       SUCCESS = 0,
 //   
-//       //: KYC target account not found
-//       NOT_FOUND = -1,
 //       //: System configuration forbids KYC recovery
-//       RECOVERY_NOT_ALLOWED = -2,
+//       RECOVERY_NOT_ALLOWED = -1,
 //       //: Either, there is no entry by key `kyc_recovery_signer_role`, or such role does not exists
-//       RECOVERY_SIGNER_ROLE_NOT_FOUND = -3
+//       RECOVERY_SIGNER_ROLE_NOT_FOUND = -2
 //   };
 //
 // ===========================================================================
 xdr.enum("InitiateKycRecoveryResultCode", {
   success: 0,
-  notFound: -1,
-  recoveryNotAllowed: -2,
-  recoverySignerRoleNotFound: -3,
+  recoveryNotAllowed: -1,
+  recoverySignerRoleNotFound: -2,
 });
 
 // === xdr source ============================================================
@@ -12664,7 +12702,7 @@ xdr.union("CreateKycRecoveryRequestOpExt", {
 //        //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
 //       longstring creatorDetails; // details set by requester
 //   
-//       //: (optional) Bit mask whose flags must be cleared in order for PreIssuanceRequest to be approved, which will be used by key `preissuance_tasks`
+//       //: (optional) Bit mask whose flags must be cleared in order for KYC recovery request to be approved, which will be used by key `create_kyc_recovery_tasks`
 //       //: instead of key-value
 //       uint32* allTasks;
 //   

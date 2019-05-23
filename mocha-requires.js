@@ -8,6 +8,8 @@ chai.use(sinonChai)
 chai.use(jsonEqual)
 
 global.expect = chai.expect
+chai.should()
+
 global.catchPromise = catchPromise
 global.expectThrow = expectThrow
 global.expectNoThrow = expectNoThrow
