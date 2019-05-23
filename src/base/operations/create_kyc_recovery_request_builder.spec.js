@@ -12,7 +12,7 @@ describe('Create kyc recovery', function () {
       targetAccount: account,
       creatorDetails: {},
       allTasks: allTasks,
-      signersData: [
+      signers: [
         {
           publicKey: signer,
           weight: '1000',
@@ -27,7 +27,7 @@ describe('Create kyc recovery', function () {
     let obj = Operation.operationToObject(operation)
     expect(obj.type).to.be.equal('createKycRecoveryRequest')
     expect('0').to.be.equal(obj.requestID)
-    expect(signer).to.be.equal(obj.signersData[0].publicKey)
+    expect(signer).to.be.equal(obj.signers[0].publicKey)
     expect(account).to.be.equal(obj.targetAccount)
     expect(allTasks).to.be.equal(obj.allTasks)
   })

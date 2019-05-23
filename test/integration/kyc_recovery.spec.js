@@ -6,7 +6,7 @@ import {
 import { Keypair } from '../../src/base'
 import { accountHelper } from '../helpers'
 import { logger } from '../logger'
-import { shouldNotBeRejected, shouldNotThrow } from '../../src/test_helpers/utils'
+import { shouldNotBeRejected } from '../../src/test_helpers/utils'
 
 describe('KYC recovery', () => {
   it('Init kyc recovery', async () => {

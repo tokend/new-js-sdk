@@ -49,7 +49,7 @@ export async function createKycRecovery (opts, source) {
   })
   const requestId = await kycRecoveryHelper.createKycRecoveryRequest({
     signers: signers,
-    targetAccount: {"sldkfksdjhf": 1} //   opts.targetAccount
+    targetAccount: opts.targetAccount
   }, source)
 
   log.info(`KYC recovery request has been created: ${requestId}`)
