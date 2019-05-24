@@ -6,7 +6,6 @@ import {
 import { Keypair } from '../../src/base'
 import { accountHelper } from '../helpers'
 import { logger } from '../logger'
-import { shouldNotBeRejected } from '../../src/test_helpers/utils'
 
 describe('KYC recovery', () => {
   it('Init kyc recovery', async () => {
@@ -23,9 +22,9 @@ describe('KYC recovery', () => {
     await initiateKycRecovery(targetAccount.accountId(), recoverySigner.accountId())
     log.info('Successfully initiated kyc recovery request')
 
-    await shouldNotBeRejected(createKycRecovery({
+    await expectPromiseNoThrow(createKycRecovery({
       signers: [Keypair.random().accountId()],
       targetAccount: targetAccount.accountId(),
-    }), "fail")
+    }))
   })
 })

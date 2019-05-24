@@ -11,12 +11,12 @@ export class CreateKYCRecoveryRequestBuilder {
    * @param {object} opts
    * @param {string} opts.requestID - set to zero to create new request
    * @param {string} opts.targetAccount
-   * @param {array} opts.signers - new signers for the target account
-   * @param {string} opts.signers.publicKey - public key of new signer
-   * @param {string} opts.signers.roleID - id of role for signer
-   * @param {string} opts.signers.weight - weight of signer up to 1000
-   * @param {string} opts.signers.identity - identity of signer
-   * @param {object} opts.signers.details - json object with details
+   * @param {object[]} opts.signers - new signers for the target account
+   * @param {string} opts.signers[].publicKey - public key of new signer
+   * @param {string} opts.signers[].roleID - id of role for signer
+   * @param {string} opts.signers[].weight - weight of signer up to 1000
+   * @param {string} opts.signers[].identity - identity of signer
+   * @param {object} opts.signers[].details - json object with details
    * @param {object} opts.creatorDetails
    * @param {number|string} opts.allTasks
    * @param {string} opts.creatorDetails - request details set by creator
@@ -80,11 +80,11 @@ export class CreateKYCRecoveryRequestBuilder {
    * @param {object} opts
    * @param {string} opts.targetAccount
    * @param {object[]} opts.signers - new signers for the target account
-   * @param {string} opts.signers.publicKey - public key of new signer
-   * @param {string} opts.signers.roleID - id of role for signer
-   * @param {string} opts.signers.weight - weight of signer up to 1000
-   * @param {string} opts.signers.identity - identity of signer
-   * @param {object} opts.signers.details - json object with details
+   * @param {string} opts.signers[].publicKey - public key of new signer
+   * @param {string} opts.signers[].roleID - id of role for signer
+   * @param {string} opts.signers[].weight - weight of signer up to 1000
+   * @param {string} opts.signers[].identity - identity of signer
+   * @param {object} opts.signers[].details - json object with details
    * @param {object} opts.creatorDetails
    * @param {number|string} opts.allTasks
    * @param {string} [opts.source] - The source account for the operation.
@@ -102,11 +102,11 @@ export class CreateKYCRecoveryRequestBuilder {
    * @param {object} opts
    * @param {string} opts.targetAccount
    * @param {object[]} opts.signers - new signers for the target account
-   * @param {string} opts.signers.publicKey - public key of new signer
-   * @param {string} opts.signers.roleID - id of role for signer
-   * @param {string} opts.signers.weight - weight of signer up to 1000
-   * @param {string} opts.signers.identity - identity of signer
-   * @param {object} opts.signers.details - json object with details
+   * @param {string} opts.signers[].publicKey - public key of new signer
+   * @param {string} opts.signers[].roleID - id of role for signer
+   * @param {string} opts.signers[].weight - weight of signer up to 1000
+   * @param {string} opts.signers[].identity - identity of signer
+   * @param {object} opts.signers[].details - json object with details
    * @param {object} opts.creatorDetails
    * @param {string} [opts.source] - The source account for the operation.
    * Defaults to the transaction's source account.

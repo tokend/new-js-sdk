@@ -26,12 +26,10 @@ export function expectNoThrow (func) {
   }
 }
 
-/**
- * @param promise - promise to check
- * @param [err] - can be provided to check rejection for specific error type. Leave blank
- * to ensure that promise was not rejected
- * @return {*}
- */
-export function shouldNotBeRejected (promise, err) {
-  return promise.should.not.be.rejectedWith(err)
+export function expectPromiseNoThrow (promise) {
+  return promise
+    .catch((err) => {
+      expect.fail('no throw', 'throw', 'the promise expected to not throw')
+      return err
+    })
 }
