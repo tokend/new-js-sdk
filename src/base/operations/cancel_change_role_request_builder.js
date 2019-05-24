@@ -14,7 +14,8 @@ export class CancelChangeRoleRequestBuilder {
    * @returns {xdr.CancelChangeRoleRequestOp}
    */
   static cancelChangeRoleRequest (opts) {
-    this.validateChangeRoleRequest(opts)
+    this._validateChangeRoleRequest(opts)
+
     let cancelChangeRoleRequestOp = new xdr.CancelChangeRoleRequestOp({
       requestId: UnsignedHyper.fromString(opts.requestID),
       ext: new xdr.CancelChangeRoleRequestOpExt(
@@ -26,6 +27,11 @@ export class CancelChangeRoleRequestBuilder {
     return new xdr.Operation(opAttributes)
   }
 
+  static cancelChangeRoleRequestToObject (result, attrs) {
+    result.requestID = attrs.requestId().toString()
+  }
+
+  // Helpers
   /**
    * Validates cancel change role params,
    * trows error in case of invalid params
@@ -34,11 +40,7 @@ export class CancelChangeRoleRequestBuilder {
    * @param {string} opts.requestID - ID of the request
    * @param {string} [opts.source] - The source account for the operation.
    */
-  static validateChangeRoleRequest (opts) {
+  static _validateChangeRoleRequest (opts) {
     validateUint64({ value: opts.requestID, fieldName: 'opts.requestID' })
-  }
-
-  static cancelChangeRoleRequestToObject (result, attrs) {
-    result.requestID = attrs.requestId().toString()
   }
 }

@@ -1,6 +1,7 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
+import { validateArray, validateUint64 } from '../../utils/validators'
 
 export class ManageAccountRoleBuilder {
   /**
@@ -8,10 +9,13 @@ export class ManageAccountRoleBuilder {
    *
    * @param {object} opts
    * @param {object} [opts.details] - create role details
-   * @param {array} [opts.ruleIDs] - rules that should be assigned to this account
+   * @param {string[]} [opts.ruleIDs] - rules that should be assigned to this account
+   * @param {string} [opts.source] - The source account for the operation.
    * @returns {xdr.Operation}
    */
   static create (opts) {
+    this._validateCreate(opts)
+
     let attrs = {
       details: JSON.stringify(opts.details),
       ext: new xdr.CreateAccountRoleDataExt(xdr.LedgerVersion.emptyVersion())
@@ -24,7 +28,7 @@ export class ManageAccountRoleBuilder {
     let createData = new xdr.CreateAccountRoleData(attrs)
     let opData = new xdr.ManageAccountRoleOpData.create(createData)
 
-    return this.manageAccountRoleOp(opData, opts)
+    return this._manageAccountRoleOp(opData, opts)
   }
 
   /**
@@ -33,10 +37,13 @@ export class ManageAccountRoleBuilder {
    * @param {object} opts
    * @param {string} [opts.roleId] - id of role to be modified
    * @param {object} [opts.details] - create role details
-   * @param {array} [opts.ruleIDs] - rules that should be assigned to this account
+   * @param {string[]} [opts.ruleIDs] - rules that should be assigned to this account
+   * @param {string} [opts.source] - The source account for the operation.
    * @returns {xdr.Operation}
    */
   static update (opts) {
+    this._validateUpdate(opts)
+
     let attrs = {
       roleId: UnsignedHyper.fromString(opts.roleId),
       details: JSON.stringify(opts.details),
@@ -50,7 +57,7 @@ export class ManageAccountRoleBuilder {
     let updateData = new xdr.UpdateAccountRoleData(attrs)
     let opData = new xdr.ManageAccountRoleOpData.update(updateData)
 
-    return this.manageAccountRoleOp(opData, opts)
+    return this._manageAccountRoleOp(opData, opts)
   }
 
   /**
@@ -58,28 +65,19 @@ export class ManageAccountRoleBuilder {
    *
    * @param {object} opts
    * @param {string} [opts.roleId] - id of role to be removed
+   * @param {string} [opts.source] - The source account for the operation.
    * @returns {xdr.Operation}
    */
   static remove (opts) {
+    this._validateRemove(opts)
+
     let updateData = new xdr.RemoveAccountRoleData({
       roleId: UnsignedHyper.fromString(opts.roleId),
       ext: new xdr.RemoveAccountRoleDataExt(xdr.LedgerVersion.emptyVersion())
     })
     let opData = new xdr.ManageAccountRoleOpData.remove(updateData)
 
-    return this.manageAccountRoleOp(opData, opts)
-  }
-
-  static manageAccountRoleOp (opData, opts) {
-    let op = new xdr.ManageAccountRoleOp({
-      data: opData,
-      ext: new xdr.ManageAccountRoleOpExt(xdr.LedgerVersion.emptyVersion())
-    })
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.manageAccountRole(op)
-    BaseOperation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
+    return this._manageAccountRoleOp(opData, opts)
   }
 
   static manageAccountRoleToObject (result, attrs) {
@@ -109,5 +107,38 @@ export class ManageAccountRoleBuilder {
         break
       }
     }
+  }
+
+  // Helpers
+  static _validateCreate (opts) {
+    this._validateRuleIds(opts.ruleIDs)
+  }
+
+  static _validateUpdate (opts) {
+    validateUint64({ value: opts.roleId, fieldName: 'opts.roleId' })
+    this._validateRuleIds(opts.ruleIDs)
+  }
+
+  static _validateRemove (opts) {
+    validateUint64({ value: opts.roleId, fieldName: 'opts.roleId' })
+  }
+
+  static _validateRuleIds (ids) {
+    validateArray({ value: ids, fieldName: 'opts.ruleIDs' })
+    for (let i = 0; i < ids.length; i++) {
+      validateUint64({ value: ids[i], fieldName: `opts.ruleIDs[${i}]` })
+    }
+  }
+
+  static _manageAccountRoleOp (opData, opts) {
+    let op = new xdr.ManageAccountRoleOp({
+      data: opData,
+      ext: new xdr.ManageAccountRoleOpExt(xdr.LedgerVersion.emptyVersion())
+    })
+
+    let opAttributes = {}
+    opAttributes.body = xdr.OperationBody.manageAccountRole(op)
+    BaseOperation.setSourceAccount(opAttributes, opts)
+    return new xdr.Operation(opAttributes)
   }
 }
