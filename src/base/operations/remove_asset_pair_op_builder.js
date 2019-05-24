@@ -13,8 +13,8 @@ export class RemoveAssetPairOpBuilder {
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @returns {xdr.RemoveAssetPairOp}
    */
-  static createRemoveAssetPairOp (opts) {
-    this.validateRemoveAssetPairOp(opts)
+  static removeAssetPairOp (opts) {
+    this._validateRemoveAssetPairOp(opts)
 
     let removeAssetPairOp = new xdr.RemoveAssetPairOp({
       base: opts.base,
@@ -27,6 +27,12 @@ export class RemoveAssetPairOpBuilder {
     return new xdr.Operation(opAttributes)
   }
 
+  static removeAssetPairOpToObject (result, attrs) {
+    result.base = attrs.base().toString()
+    result.quote = attrs.quote().toString()
+  }
+
+  // Helpers
   /**
    * Validates params for asset pair remove operation throws error in case of invalid param
    *
@@ -34,13 +40,8 @@ export class RemoveAssetPairOpBuilder {
    * @param {string} opts.base - asset pair base asset
    * @param {string} opts.quote - asset pair quote asset
    */
-  static validateRemoveAssetPairOp (opts) {
+  static _validateRemoveAssetPairOp (opts) {
     validateAssetCode({ value: opts.base, fieldName: 'opts.base' })
     validateAssetCode({ value: opts.quote, fieldName: 'opts.quote' })
-  }
-
-  static removeAssetPairOpToObject (result, attrs) {
-    result.base = attrs.base().toString()
-    result.quote = attrs.quote().toString()
   }
 }

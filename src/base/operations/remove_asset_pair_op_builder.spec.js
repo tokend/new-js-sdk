@@ -8,7 +8,7 @@ describe('RemoveAssetPairOpBuilder', () => {
       base: 'BTC',
       quote: 'USD'
     }
-    let op = RemoveAssetPairOpBuilder.createRemoveAssetPairOp(opt)
+    let op = RemoveAssetPairOpBuilder.removeAssetPairOp(opt)
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)

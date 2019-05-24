@@ -28,10 +28,10 @@ describe('Asset pair', () => {
     })
     log.info(`Created tradeable asset pair, base: ${baseAssetCode}, quote: ${quoteAssetCode}`)
 
-    await assetPairHelper.remove({
+    await expectPromiseNoThrow(assetPairHelper.remove({
       base: baseAssetCode,
       quote: quoteAssetCode
-    })
+    }))
     log.info(`Removed asset pair, base: ${baseAssetCode}, quote: ${quoteAssetCode}`)
   })
 })

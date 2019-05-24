@@ -34,7 +34,7 @@ export class AssetPair extends Helper {
    * @param opts.quote
    */
   remove (opts) {
-    let op = RemoveAssetPairOpBuilder.createRemoveAssetPairOp(opts)
+    let op = RemoveAssetPairOpBuilder.removeAssetPairOp(opts)
     return this.submit(op)
   }
 }
