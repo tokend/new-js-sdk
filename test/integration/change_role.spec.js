@@ -23,6 +23,6 @@ describe('Change role request', () => {
       accountRoleToSet: roleId
     }, account)
 
-    await changeRoleHelper.cancel(requestId, account)
+    await expectPromiseNoThrow(changeRoleHelper.cancel(requestId, account))
   })
 })

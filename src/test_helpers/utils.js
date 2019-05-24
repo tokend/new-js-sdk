@@ -24,3 +24,11 @@ export function expectNoThrow (func) {
     expect.fail('no throw', 'throw', 'The function is expected to not throw.')
   }
 }
+
+export function expectPromiseNoThrow (promise) {
+  return promise
+    .catch((err) => {
+      expect.fail('no throw', 'throw', 'the promise expected to not throw')
+      return err
+    })
+}
