@@ -21,7 +21,7 @@ export class SignersManager {
   }
 
   /**
-   * Creates change signers transacIDENTITYtion envelope
+   * Creates change signers transaction envelope
    *
    * @param {object} opts
    * @param {string} opts.newPublicKey New master signer ID of account
