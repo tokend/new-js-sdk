@@ -2,10 +2,14 @@ import axios from 'axios'
 
 import { Network, TransactionBuilder } from '../base'
 import { Wallet } from '../wallet'
-
 import middlewares from './middlewares'
 import { toCamelCaseDeep } from '../utils/case_converter'
 import { isEmpty } from 'lodash'
+
+/**
+ * @typedef {import('../base/operations/base_operation').BaseOperation} BaseOperation
+ * @typedef {import('../wallet').Wallet} Wallet
+ */
 
 const SUBMIT_TRANSACTION_TIMEOUT = 60 * 10000
 
@@ -18,20 +22,29 @@ const methods = Object.freeze({
 })
 
 /**
- * ApiCaller performs the request to the API, with the following
+ * Represents ApiCaller that performs requests to TokenD servers
+ *
+ * @see {@link https://docs.tokend.io}
+ * @see {@link /docs/README.md}
  */
 export class ApiCaller {
   /**
-   * @param {object} opts
-   * @param {AxiosInstance} opts.axios
-   * @param {string} opts.baseURL
+   * Creates an `ApiCaller` instance
    *
-   * @param {Wallet} [opts.wallet] - the initialized {@link Wallet} instance for signing requests/transactions
-   * @param {string} [opts.passphrase] - the passphrase of current TokenD network (is used internally when signing transactions)
+   * @param {object} opts
+   * @param {AxiosInstance} opts.axios - axios instance to use
+   * @param {string} opts.baseURL - URL to a Horizon server to use
+   *
+   * @param {Wallet} [opts.wallet] - the initialized {@link Wallet} instance for
+   * signing requests and transactions
+   * @param {string} [opts.passphrase] - the passphrase of current TokenD
+   * network (is used internally when signing transactions)
    */
-  constructor (opts) {
-    this._axios = opts.axios
-    this._baseURL = opts.baseURL
+  constructor (opts = {}) {
+    this._axios = axios.create()
+    if (opts.baseURL) {
+      this.useBaseURL(opts.baseURL)
+    }
 
     this._wallet = null
     this._networkDetails = {}
@@ -47,13 +60,36 @@ export class ApiCaller {
     }
   }
 
+  withWallet (wallet) {
+    const newCaller = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+    newCaller.useWallet(wallet)
+    return newCaller
+  }
+
+  /**
+   * Creates an `ApiCaller` instance with the provided `baseURL` set as default
+   * Horizon server endpoint. It also * required network passphrase and wallet
+   * provided to authorize transactions * and requests. Also check for
+   * `usePassphrase()`, `useWallet()` and * `getInstanceWithPassphrase()`
+   *
+   * @param {string} baseURL - URL to a Horizon server to use
+   * @returns {ApiCaller} - The initialized API caller instance
+   */
   static getInstance (baseURL) {
     return new ApiCaller({
-      baseURL,
-      axios: axios.create()
+      baseURL
     })
   }
 
+  /**
+   * Creates an `ApiCaller` instance with the provided `baseURL` set as default
+   * Horizon server endpoint but also * retrieves and sets network passphrase.
+   * Fetches and assigns network details. * Check also for `networkDetails`
+   * getter.
+   *
+   * @param {string} baseURL - URL to a Horizon server to use
+   * @returns {ApiCaller} - The initialized API caller instance
+   */
   static async getInstanceWithPassphrase (baseURL) {
     const caller = this.getInstance(baseURL)
     const { data: networkDetails } = await caller.getRaw('/')
@@ -64,14 +100,36 @@ export class ApiCaller {
     return caller
   }
 
+  /**
+   * Returns network details fetched from Horizon’s root.
+   *
+   * @returns {Object} - Object with network details
+   */
   get networkDetails () {
     return this._networkDetails
   }
 
+  /**
+   * Returns current wallet
+   *
+   * @returns {Wallet}
+   */
   get wallet () {
     return this._wallet
   }
 
+  /**
+   * Makes a `GET` to a target `endpoint` with the provided `query` params.
+   * Signing can be enabled with `needSign` argument. Parses the response in
+   * JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} query - query params. query parameters should not contain
+   * no more than 1 level of nesting.
+   * @param {boolean} [needSign=false] - set `true` to sign the request, also
+   * check for `.getWithSignature()`
+   * @returns {Object} - the parsed response.
+   */
   get (endpoint, query, needSign = false) {
     return this._call({
       method: methods.GET,
@@ -81,6 +139,15 @@ export class ApiCaller {
     })
   }
 
+  /**
+   * Makes a `GET` to a target `endpoint` with the provided `query` params.
+   * _Cannot_ sign request. _Does_ not parse the * response
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} query - query params. query parameters should not contain
+   * no more than 1 level of nesting.
+   * @returns {Object} - the response.
+   */
   getRaw (endpoint, query) {
     return this._call({
       method: methods.GET,
@@ -90,10 +157,30 @@ export class ApiCaller {
     })
   }
 
+  /**
+   * Makes a `GET` to a target `endpoint` with the provided `query` params.
+   * Signs the request. Parses the response in JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} query - query params. query parameters should not contain
+   * no more than 1 level of nesting.
+   * @returns {Object} - the parsed response.
+   */
   getWithSignature (endpoint, query) {
     return this.get(endpoint, query, true)
   }
 
+  /**
+   * Makes a `POST` to a target `endpoint` with the provided `data` as body.
+   * Signing can be enabled with `needSign` argument. Parses the response in
+   * JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} data - body to include
+   * @param {boolean} [needSign=false] - set `true` to sign the request, also
+   * check for `.postWithSignature()`
+   * @returns {Object} - the parsed response.
+   */
   post (endpoint, data, needSign = false) {
     return this._call({
       method: methods.POST,
@@ -103,10 +190,29 @@ export class ApiCaller {
     })
   }
 
+  /**
+   * Makes a `POST` to a target `endpoint` with the provided `data` as body.
+   * Signs the request. Parses the response in JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} data - body to include
+   * @returns {Object} - the parsed response.
+   */
   postWithSignature (endpoint, data) {
     return this.post(endpoint, data, true)
   }
 
+  /**
+   * Makes a `PATCH` to a target `endpoint` with the provided `data` as body.
+   * Signing can be enabled with `needSign` argument. Parses the response in
+   * JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} data - body to include
+   * @param {boolean} [needSign=false] - set `true` to sign the request, also
+   * check for `.patchWithSignature()`
+   * @returns {Object} - the parsed response.
+   */
   patch (endpoint, data, needSign = false) {
     return this._call({
       method: methods.PATCH,
@@ -116,10 +222,29 @@ export class ApiCaller {
     })
   }
 
+  /**
+   * Makes a `PATCH` to a target `endpoint` with the provided `data` as body.
+   * Signs the request. Parses the response in JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} data - body to include
+   * @returns {Object} - the parsed response.
+   */
   patchWithSignature (endpoint, data) {
     return this.patch(endpoint, data, true)
   }
 
+  /**
+   * Makes a `PUT` to a target `endpoint` with the provided `data` as body.
+   * Signing can be enabled with `needSign` argument. Parses the response in
+   * JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} data - body to include
+   * @param {boolean} [needSign=false] - set `true` to sign the request, also
+   * check for `.putWithSignature()`
+   * @returns {Object} - the parsed response.
+   */
   put (endpoint, data, needSign = false) {
     return this._call({
       method: methods.PUT,
@@ -129,27 +254,58 @@ export class ApiCaller {
     })
   }
 
+  /**
+   * Makes a `PUT` to a target `endpoint` with the provided `data` as body.
+   * Signs the request. Parses the response in JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} data - body to include
+   * @returns {Object} - the parsed response.
+   */
   putWithSignature (endpoint, data) {
     return this.put(endpoint, data, true)
   }
 
-  delete (endpoint, needSign = false) {
+  /**
+   * Makes a `DELETE` to a target `endpoint` with the provided `data` as body.
+   * Signing can be enabled with `needSign` argument. Parses the response in
+   * JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} data - body to include
+   * @param {boolean} [needSign=false] - set `true` to sign the request, also
+   * check for `.deleteWithSignature()`
+   * @returns {Object} - the parsed response.
+   */
+  delete (endpoint, data, needSign = false) {
     return this._call({
       method: methods.DELETE,
       needSign,
-      endpoint
+      endpoint,
+      data
     })
   }
 
+  /**
+   * Makes a `DELETE` to a target `endpoint` with the provided `data` as body.
+   * Signs the request. Parses the response in JsonApi format.
+   *
+   * @param {string} endpoint - target endpoint _with_ starting slash
+   * @param {object} data - body to include
+   * @returns {Object} - the parsed response.
+   */
   deleteWithSignature (endpoint, data) {
     return this.delete(endpoint, data, true)
   }
 
   /**
-   * Craft the transaction, sign it and make the post request with it's
-   * enveloper to the backend
-   * @param operations
-   * @returns {Promise<*>}
+   * Crafts a transaction envelope with the provided operations, signs it and
+   * makes the post request with the envelope
+   *
+   * @see {@link BaseOperation}
+   * @param {...BaseOperation} operations - operations to be included.
+   * @returns {Promise} - Promise with response, keys data will be camel cased,
+   * does not do any other actions on the response
    */
   postOperations (...operations) {
     if (!this._wallet) {
@@ -168,9 +324,11 @@ export class ApiCaller {
   }
 
   /**
-   * Post a transaction envelope.
+   * Posts a transaction envelope.
    *
    * @param {string} envelope - a transaction envelope to be submitted.
+   * @returns {Promise} - Promise with response, keys data will be camel cased,
+   * does not do any other actions on the response
    */
   async postTxEnvelope (envelope) {
     // using raw axios because we don't need most of middleware, but need custom
@@ -264,7 +422,8 @@ export class ApiCaller {
   /**
    * Use a wallet to sign requests and transactions.
    *
-   * @param {Wallet} wallet User's wallet.
+   * @param {Wallet} wallet - A wallet to use
+   * @see {@link /docs/README.md#wallets}
    */
   useWallet (wallet) {
     if (!(wallet instanceof Wallet)) {
@@ -274,7 +433,22 @@ export class ApiCaller {
     this._wallet = wallet
   }
 
+  /**
+   * Use a passphrase to sign transactions.
+   *
+   * @param {Wallet} wallet - A wallet to use
+   * @see {@link /docs/README.md#wallets}
+   */
   usePassphrase (networkPassphrase) {
     Network.use(new Network(networkPassphrase))
+  }
+
+  useBaseURL (baseURL) {
+    this._baseURL = baseURL
+  }
+
+  useNetworkDetails (networkDetails) {
+    this._networkDetails = networkDetails
+    this.usePassphrase(networkDetails.networkPassphrase)
   }
 }
