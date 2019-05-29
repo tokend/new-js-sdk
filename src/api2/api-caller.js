@@ -60,6 +60,17 @@ export class ApiCaller {
     }
   }
 
+  /**
+   * Returns a copy of the current instance but with a new wallet provided.
+   * Use if you want to perform an operation with the same environment
+   * config but another wallet should be used
+   *
+   * @example
+   * await api.withWallet(newWallet).postOperations(operation)
+   *
+   * @param {Wallet} wallet - new wallet to use
+   * @returns {ApiCaller} - Copy of the current instance but with a new wallet
+   */
   withWallet (wallet) {
     const newCaller = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
     newCaller.useWallet(wallet)
@@ -94,8 +105,7 @@ export class ApiCaller {
     const caller = this.getInstance(baseURL)
     const { data: networkDetails } = await caller.getRaw('/')
 
-    caller._networkDetails = networkDetails
-    caller.usePassphrase(networkDetails.networkPassphrase)
+    caller.useNetworkDetails(networkDetails)
 
     return caller
   }
@@ -443,10 +453,22 @@ export class ApiCaller {
     Network.use(new Network(networkPassphrase))
   }
 
+  /**
+   * Assigns new baseURL to the current instance.
+   *
+   * @param {string} baseURL - URL to horizon server
+   */
   useBaseURL (baseURL) {
     this._baseURL = baseURL
   }
 
+  /**
+   * Assigns new network details to the instance. Network details can be
+   * retrieved by calling root endpoint of you horizon, for example:
+   * https://api.your.tokend.io/
+   *
+   * @param {Object} networkDetails - network details to use
+   */
   useNetworkDetails (networkDetails) {
     this._networkDetails = networkDetails
     this.usePassphrase(networkDetails.networkPassphrase)
