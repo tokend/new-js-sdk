@@ -38,7 +38,6 @@ describe('ReviewRequest', () => {
       requestHash: 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9',
       action: xdr.ReviewRequestOpAction.reject().value,
       reason: 'Something is invalid',
-      requestDetails: 'some details',
       reviewDetails: {
         tasksToAdd: 1,
         tasksToRemove: 1,
@@ -55,7 +54,7 @@ describe('ReviewRequest', () => {
     expect(obj.action).to.be.equal(opts.action)
     expect(obj.reason).to.be.equal(opts.reason)
     expect(JSON.stringify(obj.withdrawal.externalDetails))
-      .to.be.equal(JSON.stringify(opts.requestDetails))
+      .to.be.equal(JSON.stringify('{}')) // cez deprecated
     expect(obj.reviewDetails.tasksToAdd).to.be.equal(opts.reviewDetails.tasksToAdd)
     expect(obj.reviewDetails.tasksToRemove).to.be.equal(opts.reviewDetails.tasksToRemove)
     expect(obj.reviewDetails.externalDetails)

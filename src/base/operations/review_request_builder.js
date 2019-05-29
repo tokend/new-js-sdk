@@ -109,7 +109,6 @@ export class ReviewRequestBuilder {
    * @param {string} opts.requestHash - Hash of the request to be reviewed
    * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
    * @param {string} opts.reason - Reject reason
-   * @param {string} opts.request
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @param {object} opts.reviewDetails
    * @param {number|string} opts.reviewDetails.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
@@ -127,7 +126,7 @@ export class ReviewRequestBuilder {
     attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.createWithdraw(
       new xdr.WithdrawalDetails({
         ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion()),
-        externalDetails: opts.requestDetails
+        externalDetails: '{}'
       })
     )
 
