@@ -54,7 +54,7 @@ describe('ReviewRequest', () => {
     expect(obj.action).to.be.equal(opts.action)
     expect(obj.reason).to.be.equal(opts.reason)
     expect(JSON.stringify(obj.withdrawal.externalDetails))
-      .to.be.equal(JSON.stringify('{}')) // cez deprecated
+      .to.be.equal(JSON.stringify('{}')) // cuz deprecated
     expect(obj.reviewDetails.tasksToAdd).to.be.equal(opts.reviewDetails.tasksToAdd)
     expect(obj.reviewDetails.tasksToRemove).to.be.equal(opts.reviewDetails.tasksToRemove)
     expect(obj.reviewDetails.externalDetails)
