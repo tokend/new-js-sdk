@@ -2,22 +2,22 @@ import { default as xdr } from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
 
-export class CancelAtomicSwapBidBuilder {
+export class CancelAtomicSwapAskBuilder {
   /**
-     * Cancel atomic swap bid
+     * Cancel atomic swap ask
      * @param {object} opts
-     * @param {string} opts.bidID - id of bid which will be canceled.
+     * @param {string} opts.askID - id of ask which will be canceled.
      * @param {string} [opts.source] - The source account for the operation.
      * Defaults to the transaction's source account.
      *
      * @returns {xdr.Operation}
      */
-  static cancelAtomicSwapBid (opts) {
+  static cancelAtomicSwapAsk (opts) {
     let opAttributes = {}
-    opAttributes.body = new xdr.OperationBody.cancelAtomicSwapBid(
-      new xdr.CancelAtomicSwapBidOp({
-        bidId: UnsignedHyper.fromString(opts.bidID),
-        ext: new xdr.CancelAtomicSwapBidOpExt(
+    opAttributes.body = new xdr.OperationBody.cancelAtomicSwapAsk(
+      new xdr.CancelAtomicSwapAskOp({
+        askId: UnsignedHyper.fromString(opts.askID),
+        ext: new xdr.CancelAtomicSwapAskOpExt(
           xdr.LedgerVersion.emptyVersion())
       }))
 
@@ -25,7 +25,7 @@ export class CancelAtomicSwapBidBuilder {
     return new xdr.Operation(opAttributes)
   }
 
-  static cancelAtomicSwapBidToObject (result, attrs) {
-    result.bidID = attrs.bidId().toString()
+  static cancelAtomicSwapAskToObject (result, attrs) {
+    result.askID = attrs.askId().toString()
   }
 }

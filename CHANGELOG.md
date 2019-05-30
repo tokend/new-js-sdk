@@ -9,14 +9,23 @@ for further information about branching and tagging conventions.
 
 ## [Unreleased]
 ### Added
-
 - integration test for atomic swap
 
-### Fixed
+### Changed
+- xdr, related to https://github.com/tokend/xdr/pull/44/files
 
+### Fixed
 - operation builders related to atomic swap
 
-### Updated
+## [1.7.0-rc.2] - 2019-05-30
+### Fixed
+- Transaction error parsing if no messages are provided
+- Bug with deprecated `requestDetails` field of
+  `ReviewRequestBuilder#reviewWithdrawRequest`. Now this field be set
+  automatically under the hood
+
+## [1.7.0-rc.1] - 2019-05-21
+### Changed
 - Now an empty object on creator details validator is allowed
 
 ## [1.7.0-rc.0] - 2019-05-21
@@ -152,7 +161,9 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.2...HEAD
+[1.7.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.1...1.7.0-rc.2
+[1.7.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.0...1.7.0-rc.1
 [1.7.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.2...1.7.0-rc.0
 [1.7.0-x.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.1...1.7.0-x.2
 [1.7.0-x.1]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.0...1.7.0-x.1

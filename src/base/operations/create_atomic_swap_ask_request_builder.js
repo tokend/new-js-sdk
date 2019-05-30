@@ -1,17 +1,21 @@
 import { default as xdr } from '../generated/xdr_generated'
-import { BaseOperation } from './base_operation'
-import { UnsignedHyper } from 'js-xdr'
 import isUndefined from 'lodash/isUndefined'
+import { BaseOperation } from './base_operation'
+import { Keypair } from '../keypair'
 
 export class CreateAtomicSwapAskRequestBuilder {
   /**
-     * Creates atomic swap request
+     * Creates atomic swap ask creation request
      * @param {object} opts
      *
-     * @param {string} opts.bidID - id of bid for which request will be created.
-     * @param {string} opts.baseAmount - amount which will be bought
-     * @param {string} opts.quoteAsset - accepted assets
-     * @param {object} opts.creatorDetails - request details set by creator
+     * @param {string} opts.balanceID - balance from which specified amount
+     * will be used in atomic swap
+     * @param {string} opts.amount - amount which will used in swap (will be locked)
+     * @param {object} opts.creatorDetails - details about atomic swap ask
+     * @param {array} opts.quoteAssets - accepted assets
+     * @param {object} opts.quoteAssets.price - price for 1 baseAsset in terms of quote asset
+     * @param {object} opts.quoteAssets.asset - asset code of the quote asset
+     * @param {string} [opts.allTasks] - tasks which will be used instead of tasks from key value
      * @param {string} [opts.source] - The source account for the operation.
      * Defaults to the transaction's source account.
      *
@@ -19,30 +23,56 @@ export class CreateAtomicSwapAskRequestBuilder {
      */
   static createAtomicSwapAskRequest (opts) {
     let rawRequest = {}
-    if (!BaseOperation.isValidAmount(opts.baseAmount)) {
+    if (!BaseOperation.isValidAmount(opts.amount)) {
       throw new Error('opts.amount is invalid')
     }
-    rawRequest.baseAmount = BaseOperation._toUnsignedXDRAmount(
-      opts.baseAmount)
+    rawRequest.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
 
-    if (!BaseOperation.isValidAsset(opts.quoteAsset)) {
+    if (!Keypair.isValidBalanceKey(opts.balanceID)) {
+      console.log(opts.balanceID + 'kek')
+      throw new Error('opts.balanceID is invalid ' + opts.balanceID)
+    }
+    rawRequest.baseBalance = Keypair.fromBalanceId(opts.balanceID)
+      .xdrBalanceId()
+
+    if (isUndefined(opts.quoteAssets) || opts.quoteAssets.length === 0) {
       throw new Error('opts.quoteAssets is invalid')
     }
 
-    if (isUndefined(opts.creatorDetails)) {
-      throw new Error('opts.creatorDetails is undefined')
+    rawRequest.quoteAssets = []
+    for (let i = 0; i < opts.quoteAssets.length; i++) {
+      let quoteAsset = opts.quoteAssets[i]
+
+      if (!BaseOperation.isValidAmount(quoteAsset.price)) {
+        throw new Error('opts.quoteAssets[' + i + '].price is invalid: ' +
+                    quoteAsset.price)
+      }
+
+      if (!BaseOperation.isValidAsset(quoteAsset.asset)) {
+        throw new Error('opts.quoteAssets[i].asset is invalid')
+      }
+
+      rawRequest.quoteAssets.push(new xdr.AtomicSwapAskQuoteAsset({
+        price: BaseOperation._toUnsignedXDRAmount(quoteAsset.price),
+        quoteAsset: quoteAsset.asset,
+        ext: new xdr.AtomicSwapAskQuoteAssetExt(xdr.LedgerVersion.emptyVersion())
+      }))
     }
 
-    rawRequest.quoteAsset = opts.quoteAsset
     rawRequest.creatorDetails = JSON.stringify(opts.creatorDetails)
-    rawRequest.bidId = UnsignedHyper.fromString(opts.bidID)
     rawRequest.ext = new xdr.CreateAtomicSwapAskRequestExt(
       xdr.LedgerVersion.emptyVersion())
+
+    let tasks
+    if (!isUndefined(opts.allTasks)) {
+      tasks = BaseOperation._checkUnsignedIntValue('opts.allTasks', opts.allTasks)
+    }
 
     let opAttributes = {}
     opAttributes.body = new xdr.OperationBody.createAtomicSwapAskRequest(
       new xdr.CreateAtomicSwapAskRequestOp({
         request: new xdr.CreateAtomicSwapAskRequest(rawRequest),
+        allTasks: tasks,
         ext: new xdr.CreateAtomicSwapAskRequestOpExt(
           xdr.LedgerVersion.emptyVersion())
       }))
@@ -52,10 +82,23 @@ export class CreateAtomicSwapAskRequestBuilder {
   }
 
   static createAtomicSwapAskRequestToObject (result, attrs) {
-    result.bidID = attrs.request().bidId().toString()
-    result.baseAmount = BaseOperation._fromXDRAmount(
-      attrs.request().baseAmount())
-    result.quoteAsset = attrs.request().quoteAsset().toString()
-    result.creatorDetails = JSON.parse(attrs.request().creatorDetails().toString())
+    result.balanceID = BaseOperation.balanceIdtoString(
+      attrs.request().baseBalance())
+    result.amount = BaseOperation._fromXDRAmount(
+      attrs.request().amount())
+    result.creatorDetails = JSON.parse(attrs.request().creatorDetails())
+
+    if (!isUndefined(attrs.allTasks())){
+      result.allTasks = attrs.allTasks().toString()
+    }
+
+    result.quoteAssets = []
+    let rawQuoteAssets = attrs.request().quoteAssets()
+    for (let i = 0; i < rawQuoteAssets.length; i++) {
+      result.quoteAssets.push({
+        price: BaseOperation._fromXDRAmount(rawQuoteAssets[i].price()),
+        asset: rawQuoteAssets[i].quoteAsset().toString()
+      })
+    }
   }
 }

@@ -19,9 +19,9 @@ import { ManageSaleBuilder } from './operations/manage_sale_builder'
 import { PaymentBuilder } from './operations/payment_builder'
 import { BindExternalSystemAccountIdBuilder } from './operations/bind_external_system_account_id_builder'
 import { CreateManageLimitsRequestBuilder } from './operations/create_manage_limits_request_builder'
-import { CreateAtomicSwapBidRequestBuilder } from './operations/create_atomic_swap_bid_request_builder'
-import { CancelAtomicSwapBidBuilder } from './operations/cancel_atomic_swap_bid_builder'
 import { CreateAtomicSwapAskRequestBuilder } from './operations/create_atomic_swap_ask_request_builder'
+import { CancelAtomicSwapAskBuilder } from './operations/cancel_atomic_swap_ask_builder'
+import { CreateAtomicSwapBidRequestBuilder } from './operations/create_atomic_swap_bid_request_builder'
 import { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
 import { ManageLimitsBuilder } from './operations/manage_limits_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
@@ -431,8 +431,8 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.createAtomicSwapBidRequest():
         CreateAtomicSwapBidRequestBuilder.createAtomicSwapBidRequestToObject(result, attrs)
         break
-      case xdr.OperationType.cancelAtomicSwapBid():
-        CancelAtomicSwapBidBuilder.cancelAtomicSwapBidToObject(result, attrs)
+      case xdr.OperationType.cancelAtomicSwapAsk():
+        CancelAtomicSwapAskBuilder.cancelAtomicSwapAskToObject(result, attrs)
         break
       case xdr.OperationType.createAtomicSwapAskRequest():
         CreateAtomicSwapAskRequestBuilder.createAtomicSwapAskRequestToObject(result, attrs)

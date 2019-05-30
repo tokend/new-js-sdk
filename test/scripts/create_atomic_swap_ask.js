@@ -11,7 +11,7 @@ import { fundAccount } from './create_account'
 import {
   sdk,
   requestHelper,
-  atomicSwapBidHelper, balanceHelper,
+  atomicSwapAskHelper, balanceHelper,
 } from '../helpers'
 
 import { logger } from '../logger'
@@ -23,8 +23,8 @@ import { getKvEntryWithFallback } from './get_task_from_kv'
  * @param {string} opts.baseAsset
  * @param {Keypair} ownerKp
  */
-export async function createAtomicSwapBid (opts, ownerKp) {
-  const log = logger.new('createAtomicSwapBid')
+export async function createAtomicSwapAsk (opts, ownerKp) {
+  const log = logger.new('createAtomicSwapAsk')
 
   await fundAccount(ownerKp.accountId(), { [opts.baseAsset]: '10' }, ownerKp)
 
@@ -38,26 +38,26 @@ export async function createAtomicSwapBid (opts, ownerKp) {
   log.info(`Created the quote assets, codes: ${quoteAssetCodes}`)
 
   const tasksToRemove = await getKvEntryWithFallback(
-    KEY_VALUE_KEYS.atomicSwapBidTasks, 1
+    KEY_VALUE_KEYS.atomicSwapAskTasks, 1
   )
-  log.info('tasks to remove for atomic swap bid request defined, value: ' + tasksToRemove)
+  log.info('tasks to remove for atomic swap ask request defined, value: ' + tasksToRemove)
 
   const balanceID = await balanceHelper.mustLoad(ownerKp.accountId(), opts.baseAsset)
   log.info(`Got to balance with id ${balanceID.balanceId}`)
 
-  const requestId = await atomicSwapBidHelper.create({
+  const requestId = await atomicSwapAskHelper.create({
     balanceID: balanceID.balanceId,
     amount: '10',
     quoteAssets: quoteAssetCodes.map(asset => ({ price: '1', asset }))
   }, ownerKp)
-  log.info(`Created the atomic swap bid creation request, id: ${requestId}`)
+  log.info(`Created the atomic swap ask creation request, id: ${requestId}`)
 
   await requestHelper.approve(requestId, { tasksToRemove: tasksToRemove })
-  log.info('Approved the atomic swap bid creation request')
+  log.info('Approved the atomic swap ask creation request')
 
-  const bid = await atomicSwapBidHelper.mustLoadByBaseAsset(opts.baseAsset)
+  const ask = await atomicSwapAskHelper.mustLoadByBaseAsset(opts.baseAsset)
   return {
-    bid,
+    ask,
     ownerKp,
     ownerId: ownerKp.accountId()
   }
