@@ -1,6 +1,6 @@
-// revision: 040cabaa604c8b2eb0d875d0bdce69c307d458d5
+// revision: f837ba578b958da1f984e6a47f78cdd781e60c49
 // branch:   feature/atomic_swap_returning
-// Automatically generated on 2019-05-30T13:05:15+00:00
+// Automatically generated on 2019-05-31T12:48:15+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -15961,7 +15961,7 @@ xdr.struct("ReviewableRequestResourceCreateAtomicSwapAskExtCreateAtomicSwapAsk",
 //       case EMPTY_VERSION:
 //           void;
 //       case ATOMIC_SWAP_RETURNING:
-//           //: is used to restrict the usage of a reviewable request with create_atomic_swap_bid type
+//           //: is used to restrict the usage of a reviewable request with create_atomic_swap_ask type
 //           struct
 //           {
 //               //: code of asset
@@ -16103,7 +16103,7 @@ xdr.struct("ReviewableRequestResourceCreatePoll", [
 //       case EMPTY_VERSION:
 //           void;
 //       case ATOMIC_SWAP_RETURNING:
-//           //: is used to restrict the usage of a reviewable request with create_atomic_swap_bid type
+//           //: is used to restrict the usage of a reviewable request with create_atomic_swap_ask type
 //           struct
 //           {
 //               //: code of asset
