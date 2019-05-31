@@ -226,6 +226,16 @@ import { WalletsManager } from '@tokend/js-sdk'
 const walletsManager = new WalletsManager(apiCaller)
 ```
 
+### Wallets manager
+
+To interact with wallets you should create `WalletsManager` instance:
+
+```js
+import { WalletsManager } from '@tokend/js-sdk'
+
+const walletsManager = new WalletsManager(apiCaller)
+```
+
 ### Create a wallet
 
 ```js
@@ -481,14 +491,32 @@ instance. You will need several modules described here:
 ```js
 import {
   ApiCaller, // the module for sending requests to API server
-  base // the module for crafting transactions
+  DocumentsManager, // the module for uploading documents
+  base, // the module for crafting transactions
+  Wallet // the wrapper for managing user's key pair
 } from '@tokend/js-sdk'
 
 const apiCaller = await ApiCaller
   .getInstanceWithPassphrase('https://<tokend-backend-url>')
+const documentsManager = new DocumentsManager({
+  apiCaller,
+  storageURL: 'https://<tokend-storage-url>',
+})
 ```
 
-2. Your asset may need the logotype. Let's suppose that your app have the file field, where user can upload the image:
+2. Use your wallet by API caller to sign request:
+```js
+// Just an example, replace it with the actual ones
+const seed = 'SA4CAMSMX6CRAC4XPUPUDAC5VYSFQRWEEFDBVBEDIIRWNEHDYAX5OHMC'
+const email = 'example@mail.com'
+
+const keypair = base.Keypair.fromSecret()
+const accountId = keypair.accountId()
+
+apiCaller.useWallet(new Wallet(email, keypair, accountId))
+```
+
+3. Your asset may need the logotype. Let's suppose that your app have the file field, where user can upload the image:
 
 ```html
 <input type="file" id="#token-logo">
@@ -501,7 +529,7 @@ const field = document.getElementById('token-logo')
 field.addEventListener('change', handleImageUpload)
 ```
 
-3. Now to save the image in TokenD storage you need some magic:
+4. Now to save the image in TokenD storage you need some magic:
 
 After simply deriving raw file from field event
 
@@ -511,37 +539,24 @@ async function handleImageUpload (event) {
 }
 ```
 
-<!-- TODO: Update this section after moving file uploading to the SDK -->
-
-tell the API you need the space for new image and get needed params for the file upload:
+use `DocumentsManager` instance created before to upload a file:
 
 ```js
 async function handleImageUpload (event) {
   const file = event.target.files[0]
-  const { url, formData } = await api.documents.create('general_public', file.type)
+  const documentKey = await documentsManager.uploadDocument({
+    // document policy, may be public or private
+    type: 'general_public',
+    // MIME-type of the file to upload
+    mimeType: file.type,
+    // The file itself
+    file,
+  })
+
+  return documentKey
 }
 ```
-
-`formData` object will look like described in [Identity Service docs](https://docs.tokend.io/identity/#tag/Document). You will need it for two things: uploading the file
-itself and saving it's storage key in the blockchain.
-
-Now you've got all the necessary data for uploading your asset logotype. You can use any http-client
-(we'll use `axios` here) to upload it to the storage using `POST` request
-
-```js
-import { axios } from 'axios'
-
-async function handleImageUpload (event) {
-  const file = event.target.files[0]
-  const { url, formData } = await api.documents.create('general_public', file.type)
-  await axios.post(url, Object.assign(formData, {
-    file: new Blob([file], { type: file.type })
-  }))
-  return formData.key
-}
-```
-
-3. Now you can create the asset itself. For doing this, create the operation:
+5. Now you can create the asset itself. For doing this, create the operation:
 
 ```js
 const operation = base.ManageAssetBuilder.assetCreationRequest({
@@ -564,29 +579,15 @@ const operation = base.ManageAssetBuilder.assetCreationRequest({
     // Asset name
     name: 'My first asset',
     logo: {
-      // The key you've derived before
-      key: key
+      // The document key you've derived before
+      key: documentKey
     }
   }
 })
 ```
 
-Craft the transaction and sign it:
+5. Post operation using `ApiCaller` instance:
 
 ```js
-// Just an example, replace it with the actual one
-const seed = 'SA4CAMSMX6CRAC4XPUPUDAC5VYSFQRWEEFDBVBEDIIRWNEHDYAX5OHMC'
-
-const keypair = base.Keypair.fromSecret()
-const accountId = keypair.accountId()
-
-const tx = new base.TransactionBuilder(accountId)
-  .addOperation(operation)
-  .addSigner(keypair)
-  .build()
-  .toEnvelope()
-  .toXDR()
-  .toString('base64')
-
-const txResponse = await apiCaller.postTxEnvelope(tx)
+const txResponse = await apiCaller.postOperations(operation)
 ```
