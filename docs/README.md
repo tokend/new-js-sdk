@@ -205,6 +205,7 @@ managers:
 - `WalletsManager` - to manipulate over wallets
 - `SignersManager` - to manipulate over account signers
 - `FactorsManager` - to manipulate over authentication factors
+- `DocumentsManager` - to upload and get files
 
 Managers use `ApiCaller` instance to perform their requests but they do not
 update its instance. So if you change anything state using a manager, i.e.
@@ -219,16 +220,6 @@ the backend services and sign the blockchain transactions.
 ### Wallets manager
 
 Creating a `WalletsManager` instance:
-
-```js
-import { WalletsManager } from '@tokend/js-sdk'
-
-const walletsManager = new WalletsManager(apiCaller)
-```
-
-### Wallets manager
-
-To interact with wallets you should create `WalletsManager` instance:
 
 ```js
 import { WalletsManager } from '@tokend/js-sdk'
