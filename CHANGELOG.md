@@ -7,11 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## Unreleased
-
+## [Unreleased]
 ### Added
-
+- integration test for atomic swap
+- start using utils/validators
 - Operation to remove asset pair
+
+### Changed
+- xdr, version 3.4.0-x.0
+
+### Fixed
+- operation builders related to atomic swap
 
 ## [1.7.0-rc.2] - 2019-05-30
 ### Fixed

@@ -1,6 +1,6 @@
 // revision: 4018ff7236cc39f12906ff7532aa7532b952e9ec
 // branch:   feature/remove-asset-pair
-// Automatically generated on 2019-06-03T13:42:50+00:00
+// Automatically generated on 2019-06-03T15:52:30+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
