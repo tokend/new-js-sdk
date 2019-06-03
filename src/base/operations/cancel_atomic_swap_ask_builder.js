@@ -1,6 +1,7 @@
 import { default as xdr } from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
+import { validateUint64 } from '../../utils/validators'
 
 export class CancelAtomicSwapAskBuilder {
   /**
@@ -13,6 +14,8 @@ export class CancelAtomicSwapAskBuilder {
      * @returns {xdr.Operation}
      */
   static cancelAtomicSwapAsk (opts) {
+    this._validateCancelAtomicSwapAskOp(opts)
+
     let opAttributes = {}
     opAttributes.body = new xdr.OperationBody.cancelAtomicSwapAsk(
       new xdr.CancelAtomicSwapAskOp({
@@ -27,5 +30,9 @@ export class CancelAtomicSwapAskBuilder {
 
   static cancelAtomicSwapAskToObject (result, attrs) {
     result.askID = attrs.askId().toString()
+  }
+
+  static _validateCancelAtomicSwapAskOp (opts) {
+    validateUint64({ value: opts.askID, fieldName: 'opts.askID' })
   }
 }

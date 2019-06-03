@@ -14,7 +14,7 @@ export class AtomicSwapBid extends ResourceGroupBase {
    * @param [query] - request query
    * @return {Promise}
    */
-  getPage (query = {}) {
+  getPage (query) {
     return this._makeCallBuilder()
       .get(query)
   }

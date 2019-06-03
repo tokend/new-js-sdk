@@ -2,6 +2,12 @@ import { default as xdr } from '../generated/xdr_generated'
 import isUndefined from 'lodash/isUndefined'
 import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
+import {
+  validateAmount,
+  validateArray,
+  validateBalanceKey,
+  validateCreatorDetails
+} from '../../utils/validators'
 
 export class CreateAtomicSwapAskRequestBuilder {
   /**
@@ -22,22 +28,12 @@ export class CreateAtomicSwapAskRequestBuilder {
      * @returns {xdr.Operation}
      */
   static createAtomicSwapAskRequest (opts) {
-    let rawRequest = {}
-    if (!BaseOperation.isValidAmount(opts.amount)) {
-      throw new Error('opts.amount is invalid')
-    }
-    rawRequest.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
+    this._validateCreateAtomicSwapAskOp(opts)
 
-    if (!Keypair.isValidBalanceKey(opts.balanceID)) {
-      console.log(opts.balanceID + 'kek')
-      throw new Error('opts.balanceID is invalid ' + opts.balanceID)
-    }
+    let rawRequest = {}
+    rawRequest.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
     rawRequest.baseBalance = Keypair.fromBalanceId(opts.balanceID)
       .xdrBalanceId()
-
-    if (isUndefined(opts.quoteAssets) || opts.quoteAssets.length === 0) {
-      throw new Error('opts.quoteAssets is invalid')
-    }
 
     rawRequest.quoteAssets = []
     for (let i = 0; i < opts.quoteAssets.length; i++) {
@@ -49,7 +45,7 @@ export class CreateAtomicSwapAskRequestBuilder {
       }
 
       if (!BaseOperation.isValidAsset(quoteAsset.asset)) {
-        throw new Error('opts.quoteAssets[i].asset is invalid')
+        throw new Error('opts.quoteAssets[' + i + '].asset is invalid')
       }
 
       rawRequest.quoteAssets.push(new xdr.AtomicSwapAskQuoteAsset({
@@ -88,7 +84,7 @@ export class CreateAtomicSwapAskRequestBuilder {
       attrs.request().amount())
     result.creatorDetails = JSON.parse(attrs.request().creatorDetails())
 
-    if (!isUndefined(attrs.allTasks())){
+    if (!isUndefined(attrs.allTasks())) {
       result.allTasks = attrs.allTasks().toString()
     }
 
@@ -100,5 +96,12 @@ export class CreateAtomicSwapAskRequestBuilder {
         asset: rawQuoteAssets[i].quoteAsset().toString()
       })
     }
+  }
+
+  static _validateCreateAtomicSwapAskOp (opts) {
+    validateBalanceKey({ value: opts.balanceID, fieldName: 'opts.balanceID' })
+    validateAmount({ value: opts.amount, fieldName: 'opts.amount' })
+    validateCreatorDetails({ value: opts.creatorDetails, fieldName: 'opts.creatorDetails' })
+    validateArray({ value: opts.quoteAssets, fieldName: 'opts.quoteAssets', minLength: 1, maxLength: 100 })
   }
 }

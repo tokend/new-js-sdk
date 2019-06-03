@@ -10,6 +10,7 @@ for further information about branching and tagging conventions.
 ## [Unreleased]
 ### Added
 - integration test for atomic swap
+- start using utils/validators
 
 ### Changed
 - xdr, related to https://github.com/tokend/xdr/pull/44/files
