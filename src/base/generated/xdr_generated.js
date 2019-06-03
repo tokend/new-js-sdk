@@ -1,6 +1,6 @@
-// revision: f837ba578b958da1f984e6a47f78cdd781e60c49
-// branch:   feature/atomic_swap_returning
-// Automatically generated on 2019-05-31T12:48:15+00:00
+// revision: 9536ea0a28e631e6a86726b7467a1eba6657119e
+// branch:   master
+// Automatically generated on 2019-06-03T15:29:59+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -19001,7 +19001,8 @@ xdr.struct("TransactionResult", [
 //       FIX_EXT_SYS_ACC_EXPIRATION_TIME = 11,
 //       FIX_CHANGE_ROLE_REJECT_TASKS = 12,
 //       FIX_SAME_ASSET_PAIR = 13,
-//       ATOMIC_SWAP_RETURNING = 14
+//       ATOMIC_SWAP_RETURNING = 14,
+//       FIX_INVEST_FEE = 15
 //   };
 //
 // ===========================================================================
@@ -19021,6 +19022,7 @@ xdr.enum("LedgerVersion", {
   fixChangeRoleRejectTask: 12,
   fixSameAssetPair: 13,
   atomicSwapReturning: 14,
+  fixInvestFee: 15,
 });
 
 // === xdr source ============================================================

@@ -13,7 +13,7 @@ for further information about branching and tagging conventions.
 - start using utils/validators
 
 ### Changed
-- xdr, related to https://github.com/tokend/xdr/pull/44/files
+- xdr, version 3.4.0-x.0
 
 ### Fixed
 - operation builders related to atomic swap
