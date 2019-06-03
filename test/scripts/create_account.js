@@ -10,6 +10,8 @@ import {
   sdk
 } from '../helpers'
 
+import { ensureAndGetBalanceId } from './create_sale_offer'
+
 /**
  * Creates an account, creates balances for given assets and populates them with
  * given amounts
@@ -41,15 +43,16 @@ export async function createFundedAccount (roleID, balances) {
   }
 }
 
-export async function fundAccount (accountId, balances) {
+export async function fundAccount (accountId, balances, assetOwnerKp = this.masterKp) {
   const log = logger.new('fundAccount')
+
+  const { data: prevAccount } = await sdk.horizon.account.get(accountId)
+
   await Promise.all(
     Object
       .keys(balances)
-      .map(assetCode => balanceHelper.create(
-        accountId,
-        assetCode
-      ))
+      .map(assetCode => ensureAndGetBalanceId(prevAccount, assetCode)
+      )
   )
   log.info(`Balances for ${accountId} created`)
 
@@ -74,7 +77,7 @@ export async function fundAccount (accountId, balances) {
           balanceId: balance.balanceId,
           amount,
           asset
-        })
+        }, assetOwnerKp)
       })
   )
   log.info(`Account ${accountId} funded`)
