@@ -11,6 +11,7 @@ for further information about branching and tagging conventions.
 ### Added
 - integration test for atomic swap
 - start using utils/validators
+- Operation to remove asset pair
 - Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
 - Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
 - Integration tests for `CreateKYCRecoveryRequest`, `CreateKYCRecoveryRequest`

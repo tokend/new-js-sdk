@@ -31,6 +31,7 @@ import { ManageCreatePollRequestBuilder } from './operations/manage_create_poll_
 import { ManageVoteBuilder } from './operations/manage_vote_builder'
 import { ManagePollBuilder } from './operations/manage_poll_builder'
 import { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
+import { RemoveAssetPairOpBuilder } from './operations/remove_asset_pair_op_builder'
 import { InitiateKYCRecoveryBuilder } from './operations/initiate_kyc_recovery_builder'
 import { CreateKYCRecoveryRequestBuilder } from './operations/create_kyc_recovery_request_builder'
 
@@ -457,6 +458,8 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.manageAccountSpecificRule():
         ManageAccountSpecificRuleBuilder.manageAccountSpecificRuleToObject(result, attrs)
         break
+      case xdr.OperationType.removeAssetPair():
+        RemoveAssetPairOpBuilder.removeAssetPairOpToObject(result, attrs)
       case xdr.OperationType.initiateKycRecovery():
         InitiateKYCRecoveryBuilder.initiateKYCRecoveryToObject(result, attrs)
         break

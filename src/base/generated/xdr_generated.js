@@ -1,6 +1,6 @@
-// revision: 9536ea0a28e631e6a86726b7467a1eba6657119e
-// branch:   master
-// Automatically generated on 2019-06-03T15:29:59+00:00
+// revision: 4018ff7236cc39f12906ff7532aa7532b952e9ec
+// branch:   feature/remove-asset-pair
+// Automatically generated on 2019-06-03T15:52:30+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -14373,6 +14373,138 @@ xdr.union("PayoutResult", {
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveAssetPairOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: `RemoveAssetPairOp` removes specified asset pair
+//   struct RemoveAssetPairOp
+//   {
+//       //: Defines a base asset of an asset pair
+//       AssetCode base;
+//       //: Defines a base asset of an asset pair
+//       AssetCode quote;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveAssetPairOp", [
+  ["base", xdr.lookup("AssetCode")],
+  ["quote", xdr.lookup("AssetCode")],
+  ["ext", xdr.lookup("RemoveAssetPairOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for `RemoveAssetPairOp`
+//   enum RemoveAssetPairResultCode
+//   {
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//       //: Asset pair not found
+//       NOT_FOUND = -1,
+//       //: Asset pair can't be deleted as it has active orders
+//       HAS_ACTIVE_OFFERS = -2,
+//       //: Asset pair can't be deleted as it has active sales
+//       HAS_ACTIVE_SALES = -3,
+//       //: Base or Quote asset is invalid
+//       INVALID_ASSET_CODE = -4
+//   };
+//
+// ===========================================================================
+xdr.enum("RemoveAssetPairResultCode", {
+  success: 0,
+  notFound: -1,
+  hasActiveOffer: -2,
+  hasActiveSale: -3,
+  invalidAssetCode: -4,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveAssetPairSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `RemoveAssetPairOp` application
+//   struct RemoveAssetPairSuccess
+//   {
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveAssetPairSuccess", [
+  ["ext", xdr.lookup("RemoveAssetPairSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of RemoveAssetPair operation application along with the result code
+//   union RemoveAssetPairResult switch (RemoveAssetPairResultCode code) {
+//       case SUCCESS:
+//           RemoveAssetPairSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("RemoveAssetPairResult", {
+  switchOn: xdr.lookup("RemoveAssetPairResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("RemoveAssetPairSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   //: Actions that can be performed on request that is being reviewed
 //   enum ReviewRequestOpAction {
 //       //: Approve request
@@ -18084,6 +18216,8 @@ xdr.struct("WithdrawalRequest", [
 //           ManageAccountSpecificRuleOp manageAccountSpecificRuleOp;
 //       case CANCEL_CHANGE_ROLE_REQUEST:
 //           CancelChangeRoleRequestOp cancelChangeRoleRequestOp;
+//       case REMOVE_ASSET_PAIR:
+//           RemoveAssetPairOp removeAssetPairOp;
 //       case INITIATE_KYC_RECOVERY:
 //           InitiateKYCRecoveryOp initiateKYCRecoveryOp;
 //       case CREATE_KYC_RECOVERY_REQUEST:
@@ -18136,6 +18270,7 @@ xdr.union("OperationBody", {
     ["manageVote", "manageVoteOp"],
     ["manageAccountSpecificRule", "manageAccountSpecificRuleOp"],
     ["cancelChangeRoleRequest", "cancelChangeRoleRequestOp"],
+    ["removeAssetPair", "removeAssetPairOp"],
     ["initiateKycRecovery", "initiateKycRecoveryOp"],
     ["createKycRecoveryRequest", "createKycRecoveryRequestOp"],
   ],
@@ -18181,6 +18316,7 @@ xdr.union("OperationBody", {
     manageVoteOp: xdr.lookup("ManageVoteOp"),
     manageAccountSpecificRuleOp: xdr.lookup("ManageAccountSpecificRuleOp"),
     cancelChangeRoleRequestOp: xdr.lookup("CancelChangeRoleRequestOp"),
+    removeAssetPairOp: xdr.lookup("RemoveAssetPairOp"),
     initiateKycRecoveryOp: xdr.lookup("InitiateKycRecoveryOp"),
     createKycRecoveryRequestOp: xdr.lookup("CreateKycRecoveryRequestOp"),
   },
@@ -18280,6 +18416,8 @@ xdr.union("OperationBody", {
 //           ManageAccountSpecificRuleOp manageAccountSpecificRuleOp;
 //       case CANCEL_CHANGE_ROLE_REQUEST:
 //           CancelChangeRoleRequestOp cancelChangeRoleRequestOp;
+//       case REMOVE_ASSET_PAIR:
+//           RemoveAssetPairOp removeAssetPairOp;
 //       case INITIATE_KYC_RECOVERY:
 //           InitiateKYCRecoveryOp initiateKYCRecoveryOp;
 //       case CREATE_KYC_RECOVERY_REQUEST:
@@ -18592,6 +18730,8 @@ xdr.struct("AccountRuleRequirement", [
 //           ManageAccountSpecificRuleResult manageAccountSpecificRuleResult;
 //       case CANCEL_CHANGE_ROLE_REQUEST:
 //           CancelChangeRoleRequestResult cancelChangeRoleRequestResult;
+//       case REMOVE_ASSET_PAIR:
+//           RemoveAssetPairResult removeAssetPairResult;
 //       case CREATE_KYC_RECOVERY_REQUEST:
 //           CreateKYCRecoveryRequestResult createKYCRecoveryRequestResult;
 //       case INITIATE_KYC_RECOVERY:
@@ -18644,6 +18784,7 @@ xdr.union("OperationResultTr", {
     ["manageVote", "manageVoteResult"],
     ["manageAccountSpecificRule", "manageAccountSpecificRuleResult"],
     ["cancelChangeRoleRequest", "cancelChangeRoleRequestResult"],
+    ["removeAssetPair", "removeAssetPairResult"],
     ["createKycRecoveryRequest", "createKycRecoveryRequestResult"],
     ["initiateKycRecovery", "initiateKycRecoveryResult"],
   ],
@@ -18689,6 +18830,7 @@ xdr.union("OperationResultTr", {
     manageVoteResult: xdr.lookup("ManageVoteResult"),
     manageAccountSpecificRuleResult: xdr.lookup("ManageAccountSpecificRuleResult"),
     cancelChangeRoleRequestResult: xdr.lookup("CancelChangeRoleRequestResult"),
+    removeAssetPairResult: xdr.lookup("RemoveAssetPairResult"),
     createKycRecoveryRequestResult: xdr.lookup("CreateKycRecoveryRequestResult"),
     initiateKycRecoveryResult: xdr.lookup("InitiateKycRecoveryResult"),
   },
@@ -18783,6 +18925,8 @@ xdr.union("OperationResultTr", {
 //           ManageAccountSpecificRuleResult manageAccountSpecificRuleResult;
 //       case CANCEL_CHANGE_ROLE_REQUEST:
 //           CancelChangeRoleRequestResult cancelChangeRoleRequestResult;
+//       case REMOVE_ASSET_PAIR:
+//           RemoveAssetPairResult removeAssetPairResult;
 //       case CREATE_KYC_RECOVERY_REQUEST:
 //           CreateKYCRecoveryRequestResult createKYCRecoveryRequestResult;
 //       case INITIATE_KYC_RECOVERY:
@@ -19439,7 +19583,8 @@ xdr.struct("Fee", [
 //       MANAGE_ACCOUNT_SPECIFIC_RULE = 46,
 //       CANCEL_CHANGE_ROLE_REQUEST = 47,
 //       INITIATE_KYC_RECOVERY = 48,
-//       CREATE_KYC_RECOVERY_REQUEST = 49
+//       CREATE_KYC_RECOVERY_REQUEST = 49,
+//       REMOVE_ASSET_PAIR = 50
 //   };
 //
 // ===========================================================================
@@ -19487,6 +19632,7 @@ xdr.enum("OperationType", {
   cancelChangeRoleRequest: 47,
   initiateKycRecovery: 48,
   createKycRecoveryRequest: 49,
+  removeAssetPair: 50,
 });
 
 // === xdr source ============================================================
