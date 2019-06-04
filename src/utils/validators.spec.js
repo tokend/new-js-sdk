@@ -474,8 +474,9 @@ describe('validateXdrEnumType', () => {
 })
 
 describe('validateCreatorDetails', () => {
-  it('should not throw error for non-empty objects with snake_cased keys', () => {
+  it('should not throw error for objects with snake_cased keys', () => {
     const validCreatorDetails = [
+      {},
       { foo: 'bar' },
       { fizz: { buzz: 'Some value' } },
       { foo_bar: { foo: 'foo', bar: 'bar' } }
@@ -490,7 +491,6 @@ describe('validateCreatorDetails', () => {
 
   it('should throw TypeError for invalid creator details', () => {
     const invalidCreatorDetails = [
-      {},
       '',
       undefined,
       null,

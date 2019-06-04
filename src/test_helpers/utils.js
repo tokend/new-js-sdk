@@ -14,7 +14,8 @@ export function expectThrow (func) {
   try {
     func()
     expect.fail('throw', 'no throw', 'The function is expected to throw.')
-  } catch (err) {}
+  } catch (err) {
+  }
 }
 
 export function expectNoThrow (func) {

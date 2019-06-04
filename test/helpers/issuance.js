@@ -16,7 +16,7 @@ export class Issuance extends Helper {
       receiver: opts.balanceId,
       reference: Keypair.random().accountId(),
       creatorDetails: {
-        'test': 'test'
+        'short_description': 'Some short description'
       }
     })
 

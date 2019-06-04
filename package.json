@@ -1,6 +1,6 @@
 {
   "name": "@tokend/js-sdk",
-  "version": "1.7.0-x.2",
+  "version": "1.7.0-rc.2",
   "description": "js-sdk is a client-side SDK for TokenD asset tokenization platform.",
   "main": "lib/index.js",
   "scripts": {
@@ -104,7 +104,8 @@
     "moment": "2.24.0",
     "sjcl-tokend": "1.0.6",
     "tweetnacl": "0.13.3",
-    "urijs": "1.19.1"
+    "urijs": "1.19.1",
+    "yarn": "^1.16.0"
   },
   "optionalDependencies": {
     "ed25519": "0.0.4"
