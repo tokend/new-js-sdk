@@ -28,12 +28,12 @@ export async function closeSale (saleId, ownerKp, withBlacklist) {
   log.info(`Investor created and funded`)
 
   if (config.use_sale_rules) {
-    const ruleID0 = saleHelper.createSaleRule({
+    const ruleID0 = await saleHelper.createSaleRule({
       saleID: sale.id, accountID: accountKp0.accountId(), forbids: true
     }, ownerKp)
     log.info(`Sale rule successfully created with id #${ruleID0}`)
 
-    const ruleID1 = saleHelper.createSaleRule({
+    const ruleID1 = await saleHelper.createSaleRule({
       saleID: sale.id, accountID: accountKp1.accountId()
     }, ownerKp)
     log.info(`Sale rule successfully created with id #${ruleID1}`)
@@ -54,7 +54,7 @@ export async function closeSale (saleId, ownerKp, withBlacklist) {
     log.info(`Sale rule successfully created with id #${ruleID3}`)
   }
 
-  createSaleOffer({
+  await createSaleOffer({
     saleId: sale.id,
     amount: amountToCloseSale,
     quoteAsset: assetToInvestIn.asset

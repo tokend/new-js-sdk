@@ -11,6 +11,9 @@ for further information about branching and tagging conventions.
 ### Added
 - integration test for atomic swap
 - start using utils/validators
+- Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
+- Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
+- Integration tests for `CreateKYCRecoveryRequest`, `CreateKYCRecoveryRequest`
 
 ### Changed
 - xdr, version 3.4.0-x.0

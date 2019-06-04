@@ -52,7 +52,7 @@ export class Request extends Helper {
       reviewDetails: {
         tasksToAdd: opts.tasksToAdd || 0,
         tasksToRemove: opts.tasksToRemove || 0,
-        externalDetails: opts.externalDetails || ''
+        externalDetails: opts.externalDetails || {}
       }
     })
     return this.submit(operation)
