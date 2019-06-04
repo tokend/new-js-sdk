@@ -7,12 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## Unreleased
+## [Unreleased]
 ### Added
+- integration test for atomic swap
+- start using utils/validators
 - Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
 - Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
 - Integration tests for `CreateKYCRecoveryRequest`, `CreateKYCRecoveryRequest`
-- Use XDR revision 3.4.0-x.0
+
+### Changed
+- xdr, version 3.4.0-x.0
+
+### Fixed
+- operation builders related to atomic swap
+
+## [1.7.0-rc.2] - 2019-05-30
+### Fixed
+- Transaction error parsing if no messages are provided
+- Bug with deprecated `requestDetails` field of
+  `ReviewRequestBuilder#reviewWithdrawRequest`. Now this field be set
+  automatically under the hood
+
 ## [1.7.0-rc.1] - 2019-05-21
 ### Changed
 - Now an empty object on creator details validator is allowed
@@ -150,7 +165,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.1...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.2...HEAD
+[1.7.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.1...1.7.0-rc.2
 [1.7.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.0...1.7.0-rc.1
 [1.7.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.2...1.7.0-rc.0
 [1.7.0-x.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.1...1.7.0-x.2

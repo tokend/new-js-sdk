@@ -17,6 +17,8 @@ import { Withdraw } from './withdraw'
 import { Payment } from './payment'
 import { StampHelper } from './stamp'
 import { LicenseHelper } from './license'
+import { AtomicSwapAsk } from './atomic_swap_ask'
+import { AtomicSwapBid } from './atomic_swap_bid'
 import { Poll } from './poll'
 import { Vote } from './vote'
 import { KYCRecoveryHelper } from './kyc_recovery'
@@ -50,6 +52,8 @@ export const withdrawHelper = new Withdraw(DEFAULTS)
 export const amlAlertHelper = new AmlAlert(DEFAULTS)
 export const stampHelper = new StampHelper(DEFAULTS)
 export const licenseHelper = new LicenseHelper(DEFAULTS)
+export const atomicSwapAskHelper = new AtomicSwapAsk(DEFAULTS)
+export const atomicSwapBidHelper = new AtomicSwapBid(DEFAULTS)
 export const pollHelper = new Poll(DEFAULTS)
 export const voteHelper = new Vote(DEFAULTS)
 export const kycRecoveryHelper = new KYCRecoveryHelper(DEFAULTS)
