@@ -21,6 +21,7 @@ import { AtomicSwapAsk } from './atomic_swap_ask'
 import { AtomicSwapBid } from './atomic_swap_bid'
 import { Poll } from './poll'
 import { Vote } from './vote'
+import { KYCRecoveryHelper } from './kyc_recovery'
 
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
@@ -55,3 +56,4 @@ export const atomicSwapAskHelper = new AtomicSwapAsk(DEFAULTS)
 export const atomicSwapBidHelper = new AtomicSwapBid(DEFAULTS)
 export const pollHelper = new Poll(DEFAULTS)
 export const voteHelper = new Vote(DEFAULTS)
+export const kycRecoveryHelper = new KYCRecoveryHelper(DEFAULTS)

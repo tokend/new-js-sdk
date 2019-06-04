@@ -11,7 +11,7 @@ export class ManageKeyValueBuilder {
    *
    * @param {string} opts.key
    * @param {number|string} opts.value
-   *
+   * @param {number} opts.entryType
    * @param {string} [opts.source] - The source account for the creation. Defaults to the transaction's source account.
    *
    * @returns {xdr.ManageKeyValueOp}

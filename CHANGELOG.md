@@ -12,6 +12,9 @@ for further information about branching and tagging conventions.
 - integration test for atomic swap
 - start using utils/validators
 - Operation to remove asset pair
+- Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
+- Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
+- Integration tests for `CreateKYCRecoveryRequest`, `CreateKYCRecoveryRequest`
 
 ### Changed
 - xdr, version 3.4.0-x.0
