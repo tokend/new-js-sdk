@@ -12,6 +12,7 @@ for further information about branching and tagging conventions.
 - Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
 - Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
 - Integration tests for `CreateKYCRecoveryRequest`, `CreateKYCRecoveryRequest`
+- Use XDR revision 3.4.0-x.0
 ## [1.7.0-rc.1] - 2019-05-21
 ### Changed
 - Now an empty object on creator details validator is allowed
