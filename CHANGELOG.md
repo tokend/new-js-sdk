@@ -15,6 +15,7 @@ for further information about branching and tagging conventions.
 - Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
 - Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
 - Integration tests for `CreateKYCRecoveryRequest`, `CreateKYCRecoveryRequest`
+- `withBaseURL`
 
 ### Changed
 - xdr, version 3.4.0-x.0

@@ -55,6 +55,12 @@ export class ApiCaller {
     return newCaller
   }
 
+  withBaseURL (baseURL) {
+    const newCaller = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+    newCaller.useBaseURL(baseURL)
+    return newCaller
+  }
+
   static getInstance (baseURL) {
     return new ApiCaller({
       baseURL
