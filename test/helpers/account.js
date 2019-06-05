@@ -27,15 +27,7 @@ export class Account extends Helper {
     return this.submit(operation)
   }
 
-  createGeneral (id) {
-    return this.create({ id, accountType: base.xdr.AccountType.general().value })
-  }
-
   createSyndicate (id) {
     return this.create({ id, roleID: '1' })
-  }
-
-  createNotVerified (id) {
-    return this.create({ id, accountType: base.xdr.AccountType.notVerified().value })
   }
 }

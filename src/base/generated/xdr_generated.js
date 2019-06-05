@@ -1,6 +1,6 @@
-// revision: 4018ff7236cc39f12906ff7532aa7532b952e9ec
-// branch:   feature/remove-asset-pair
-// Automatically generated on 2019-06-03T15:52:30+00:00
+// revision: 744e82c8f3e8226b222b1af3a45aaaeebd345216
+// branch:   master
+// Automatically generated on 2019-06-04T18:04:43+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -15221,6 +15221,8 @@ xdr.struct("ReviewRequestOp", [
 //       INSUFFICIENT_PREISSUED_FOR_HARD_CAP = -520,
 //       //: Trying to create a sale for a base asset that cannot be found
 //       BASE_ASSET_NOT_FOUND = -530,
+//       //: There is no asset pair between default quote asset and quote asset
+//       ASSET_PAIR_NOT_FOUND = -540,
 //       //: Trying to create a sale with one of the quote assets that doesn't exist
 //       QUOTE_ASSET_NOT_FOUND = -550,
 //   
@@ -15313,6 +15315,7 @@ xdr.enum("ReviewRequestResultCode", {
   hardCapWillExceedMaxIssuance: -510,
   insufficientPreissuedForHardCap: -520,
   baseAssetNotFound: -530,
+  assetPairNotFound: -540,
   quoteAssetNotFound: -550,
   nonZeroTasksToRemoveNotAllowed: -600,
   accountRoleToSetDoesNotExist: -610,
@@ -16482,6 +16485,55 @@ xdr.struct("AccountRuleResourceInitiateKycRecovery", [
 
 // === xdr source ============================================================
 //
+//   struct
+//           {
+//               //: Describes properties of some ledger key that
+//               //: can be used to restrict the usage of account specific rules
+//               LedgerKey ledgerKey;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceAccountSpecificRuleExtAccountSpecificRule", [
+  ["ledgerKey", xdr.lookup("LedgerKey")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch(LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case ADD_ACC_SPECIFIC_RULE_RESOURCE:
+//           struct
+//           {
+//               //: Describes properties of some ledger key that
+//               //: can be used to restrict the usage of account specific rules
+//               LedgerKey ledgerKey;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           } accountSpecificRule;
+//       }
+//
+// ===========================================================================
+xdr.union("AccountRuleResourceAccountSpecificRuleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+    ["addAccSpecificRuleResource", "accountSpecificRule"],
+  ],
+  arms: {
+    accountSpecificRule: xdr.lookup("AccountRuleResourceAccountSpecificRuleExtAccountSpecificRule"),
+  },
+});
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
@@ -16586,6 +16638,22 @@ xdr.struct("AccountRuleResourceInitiateKycRecovery", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } initiateKYCRecovery;
+//   case ACCOUNT_SPECIFIC_RULE:
+//       union switch(LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case ADD_ACC_SPECIFIC_RULE_RESOURCE:
+//           struct
+//           {
+//               //: Describes properties of some ledger key that
+//               //: can be used to restrict the usage of account specific rules
+//               LedgerKey ledgerKey;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           } accountSpecificRule;
+//       } accountSpecificRuleExt;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -16606,6 +16674,7 @@ xdr.union("AccountRuleResource", {
     ["poll", "poll"],
     ["vote", "vote"],
     ["initiateKycRecovery", "initiateKycRecovery"],
+    ["accountSpecificRule", "accountSpecificRuleExt"],
   ],
   arms: {
     asset: xdr.lookup("AccountRuleResourceAsset"),
@@ -16617,6 +16686,7 @@ xdr.union("AccountRuleResource", {
     poll: xdr.lookup("AccountRuleResourcePoll"),
     vote: xdr.lookup("AccountRuleResourceVote"),
     initiateKycRecovery: xdr.lookup("AccountRuleResourceInitiateKycRecovery"),
+    accountSpecificRuleExt: xdr.lookup("AccountRuleResourceAccountSpecificRuleExt"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -16902,6 +16972,55 @@ xdr.struct("SignerRuleResourceInitiateKycRecovery", [
 
 // === xdr source ============================================================
 //
+//   struct
+//           {
+//               //: Describes properties of some ledger key that
+//               //: can be used to restrict the usage of account specific rules
+//               LedgerKey ledgerKey;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceAccountSpecificRuleExtAccountSpecificRule", [
+  ["ledgerKey", xdr.lookup("LedgerKey")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch(LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case ADD_ACC_SPECIFIC_RULE_RESOURCE:
+//           struct
+//           {
+//               //: Describes properties of some ledger key that
+//               //: can be used to restrict the usage of account specific rules
+//               LedgerKey ledgerKey;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           } accountSpecificRule;
+//       }
+//
+// ===========================================================================
+xdr.union("SignerRuleResourceAccountSpecificRuleExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+    ["addAccSpecificRuleResource", "accountSpecificRule"],
+  ],
+  arms: {
+    accountSpecificRule: xdr.lookup("SignerRuleResourceAccountSpecificRuleExtAccountSpecificRule"),
+  },
+});
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union SignerRuleResource switch (LedgerEntryType type)
 //   {
@@ -17036,6 +17155,23 @@ xdr.struct("SignerRuleResourceInitiateKycRecovery", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } initiateKYCRecovery;
+//   case ACCOUNT_SPECIFIC_RULE:
+//       //: reserved for future extension
+//       union switch(LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case ADD_ACC_SPECIFIC_RULE_RESOURCE:
+//           struct
+//           {
+//               //: Describes properties of some ledger key that
+//               //: can be used to restrict the usage of account specific rules
+//               LedgerKey ledgerKey;
+//   
+//               //: reserved for future extension
+//               EmptyExt ext;
+//           } accountSpecificRule;
+//       } accountSpecificRuleExt;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -17059,6 +17195,7 @@ xdr.union("SignerRuleResource", {
     ["poll", "poll"],
     ["vote", "vote"],
     ["initiateKycRecovery", "initiateKycRecovery"],
+    ["accountSpecificRule", "accountSpecificRuleExt"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -17073,6 +17210,7 @@ xdr.union("SignerRuleResource", {
     poll: xdr.lookup("SignerRuleResourcePoll"),
     vote: xdr.lookup("SignerRuleResourceVote"),
     initiateKycRecovery: xdr.lookup("SignerRuleResourceInitiateKycRecovery"),
+    accountSpecificRuleExt: xdr.lookup("SignerRuleResourceAccountSpecificRuleExt"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -19146,7 +19284,8 @@ xdr.struct("TransactionResult", [
 //       FIX_CHANGE_ROLE_REJECT_TASKS = 12,
 //       FIX_SAME_ASSET_PAIR = 13,
 //       ATOMIC_SWAP_RETURNING = 14,
-//       FIX_INVEST_FEE = 15
+//       FIX_INVEST_FEE = 15,
+//       ADD_ACC_SPECIFIC_RULE_RESOURCE = 16
 //   };
 //
 // ===========================================================================
@@ -19167,6 +19306,7 @@ xdr.enum("LedgerVersion", {
   fixSameAssetPair: 13,
   atomicSwapReturning: 14,
   fixInvestFee: 15,
+  addAccSpecificRuleResource: 16,
 });
 
 // === xdr source ============================================================
