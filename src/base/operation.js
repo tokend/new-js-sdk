@@ -460,6 +460,7 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.removeAssetPair():
         RemoveAssetPairOpBuilder.removeAssetPairOpToObject(result, attrs)
+        break
       case xdr.OperationType.initiateKycRecovery():
         InitiateKYCRecoveryBuilder.initiateKYCRecoveryToObject(result, attrs)
         break
