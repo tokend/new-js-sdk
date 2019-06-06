@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { CreateAccountBuilder } from './create_account_builder'
 

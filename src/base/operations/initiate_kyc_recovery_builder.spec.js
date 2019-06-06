@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { Keypair } from '../keypair'
 import { InitiateKYCRecoveryBuilder } from './initiate_kyc_recovery_builder'

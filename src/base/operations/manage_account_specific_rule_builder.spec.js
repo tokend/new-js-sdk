@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { ManageAccountSpecificRuleBuilder } from './manage_account_specific_rule_builder'
 

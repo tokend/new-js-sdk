@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { Keypair } from '../keypair'
 import { CreateAMLRequestBuilder } from './create_aml_request_builder'

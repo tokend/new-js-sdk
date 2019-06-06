@@ -1,4 +1,4 @@
-import { default as xdr } from './generated/xdr_generated'
+import xdr from './generated/xdr_generated'
 import { hash } from './hashing'
 import { Keypair } from './keypair'
 import { Operation } from './operation'

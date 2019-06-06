@@ -1,5 +1,5 @@
 import { BaseOperation } from './base_operation'
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import isUndefined from 'lodash/isUndefined'
 import isString from 'lodash/isString'
 import { UnsignedHyper } from 'js-xdr'

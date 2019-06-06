@@ -2,7 +2,7 @@ import isEqual from 'lodash/isEqual'
 import { CreateAtomicSwapAskRequestBuilder } from './create_atomic_swap_ask_request_builder'
 import { Operation } from '../operation'
 import { Keypair } from '../keypair'
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 
 describe('Create ASwapBidCreation request', function () {
   it('Success', function () {

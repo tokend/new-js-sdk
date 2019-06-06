@@ -13,7 +13,7 @@ import {
   validateUint64
 } from './validators'
 
-import { default as xdr } from '../base/generated/xdr_generated'
+import xdr from '../base/generated/xdr_generated'
 
 describe('validateNotUndefined', () => {
   it('should not throw error for defined values', () => {

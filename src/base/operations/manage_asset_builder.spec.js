@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { ManageAssetBuilder } from './manage_asset_builder'
 import { Keypair } from '../keypair'

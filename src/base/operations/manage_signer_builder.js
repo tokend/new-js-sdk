@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Keypair } from '../keypair'
 import isUndefined from 'lodash/isUndefined'
 import { UnsignedHyper } from 'js-xdr'

@@ -19,6 +19,7 @@ for further information about branching and tagging conventions.
 
 ### Changed
 - xdr, version 3.4.0-x.0
+- Updated package.json dependencies
 
 ### Fixed
 - operation builders related to atomic swap

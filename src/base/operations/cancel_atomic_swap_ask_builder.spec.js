@@ -1,6 +1,6 @@
 import { CancelAtomicSwapAskBuilder } from './cancel_atomic_swap_ask_builder'
 import { Operation } from '../operation'
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 
 describe('cancel atomic swap ask ', function () {
   it('Success', function () {

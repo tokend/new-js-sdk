@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { CreateManageLimitsRequestBuilder } from './create_manage_limits_request_builder'
 

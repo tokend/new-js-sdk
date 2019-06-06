@@ -2,7 +2,7 @@ import { Network } from './network'
 import { sign, verify } from './signing'
 import * as base58 from './base58'
 import * as strkey from './strkey'
-import { default as xdr } from './generated/xdr_generated'
+import xdr from './generated/xdr_generated'
 import nacl from 'tweetnacl'
 
 export class Keypair {

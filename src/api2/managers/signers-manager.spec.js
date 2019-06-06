@@ -4,7 +4,7 @@ import { SignersManager } from './signers-manager'
 import { ApiCaller } from '../api-caller'
 
 import { Keypair } from '../../base'
-import { default as xdr } from '../../base/generated/xdr_generated'
+import xdr from '../../base/generated/xdr_generated'
 import { Operation } from '../../base/operation'
 
 function parseTransactionEnvelope (envelope) {

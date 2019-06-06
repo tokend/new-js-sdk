@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { isEqual } from 'lodash'
 import { Operation } from '../operation'
 import { Keypair } from '../keypair'

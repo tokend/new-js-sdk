@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { isEqual } from 'lodash'
 import { ManageSignerBuilder } from './manage_signer_builder'

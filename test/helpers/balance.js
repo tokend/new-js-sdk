@@ -1,4 +1,4 @@
-import { default as xdr } from '../../src/base/generated/xdr_generated'
+import xdr from '../../src/base/generated/xdr_generated'
 import { Helper } from './_helper'
 import { Operation } from '../../src/base'
 import { Running } from './_running'

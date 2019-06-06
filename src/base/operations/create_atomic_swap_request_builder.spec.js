@@ -1,6 +1,6 @@
 import { Operation } from '../operation'
 import { CreateAtomicSwapBidRequestBuilder } from './create_atomic_swap_bid_request_builder'
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { isEqual } from 'lodash'
 
 describe('Create ASwapBid request', function () {
