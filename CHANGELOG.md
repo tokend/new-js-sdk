@@ -7,19 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.8.0-rc.0] - 2019-06-06
 ### Added
-- integration test for atomic swap
-- start using utils/validators
-- Operation to remove asset pair
-- Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
-- Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`
+- Integration test for atomic swap
+- Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`,
+  `RemoveAssetPairOp`
+- Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`,
+  `RemoveAssetPairOp`
 - Integration tests for `CreateKYCRecoveryRequest`, `CreateKYCRecoveryRequest`
-- `withBaseURL`
+- `ApiCaller#withBaseURL` method
 
 ### Changed
-- xdr, version 3.4.0-x.0
-- Updated package.json dependencies
+- Now using xdr version 3.4.0-x.0
+- Updated package.json dependencies to the latest, except of `bignumber`
 
 ### Fixed
 - operation builders related to atomic swap
@@ -170,7 +170,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.8.0-rc.0...HEAD
+[1.8.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0...1.8.0-rc.0
 [1.7.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.2...1.7.0
 [1.7.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.1...1.7.0-rc.2
 [1.7.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.0...1.7.0-rc.1
