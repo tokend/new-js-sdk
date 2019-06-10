@@ -303,6 +303,76 @@ export class WalletsManager {
   }
 
   /**
+   * Recover a wallet using the recovery seed.
+   *
+   * @param {string} email User's email.
+   * @param {string} newPassword Desired password.
+   *
+   * @return {Promise.<Wallet>} New wallet.
+   */
+  async kycRecovery (email, newPassword) {
+    const { data: kdfParams } = await this.getKdfParams(email, true)
+
+    const newMainWallet = Wallet.generate(email)
+    const encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
+
+    const newSecondFactorWallet = Wallet.generate(email)
+    const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
+      kdfParams, newPassword
+    )
+
+    const newSigner = Keypair.random()
+
+    this._apiCaller.useWallet(newMainWallet)
+
+    const endpoint = `/wallets/${encryptedNewMainWallet.id}`
+    await this._apiCaller.putWithSignature(endpoint, {
+      data: {
+        type: 'recovery-wallet',
+        id: encryptedNewMainWallet.id,
+        attributes: {
+          email,
+          salt: encryptedNewMainWallet.salt,
+          keychain_data: encryptedNewMainWallet.keychainData
+        },
+        relationships: {
+          kdf: {
+            data: {
+              type: kdfParams.type,
+              id: kdfParams.id
+            }
+          },
+          factor: {
+            data: {
+              type: 'password',
+              id: encryptedNewMainWallet.id
+            }
+          },
+          signer: {
+            data: {
+              type: 'signer',
+              id: newSigner.accountId()
+            }
+          }
+        }
+      },
+      included: [
+        {
+          id: encryptedNewMainWallet.id,
+          type: 'password',
+          attributes: {
+            account_id: encryptedSecondFactorWallet.accountId,
+            keychain_data: encryptedSecondFactorWallet.keychainData,
+            salt: encryptedSecondFactorWallet.salt
+          }
+        }
+      ]
+    })
+
+    return newMainWallet
+  }
+
+  /**
    * Change password.
    *
    * @param {string} newPassword Desired password.
