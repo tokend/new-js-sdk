@@ -5,7 +5,7 @@ import { Wallet } from '../wallet'
 
 import middlewares from './middlewares'
 import { toCamelCaseDeep } from '../utils/case_converter'
-import { isEmpty } from 'lodash'
+import { get, isEmpty } from 'lodash'
 
 const SUBMIT_TRANSACTION_TIMEOUT = 60 * 10000
 
@@ -151,7 +151,8 @@ export class ApiCaller {
       method: methods.DELETE,
       needSign,
       endpoint,
-      data
+      data,
+      isEmptyBodyAllowed: true
     })
   }
 
@@ -222,6 +223,7 @@ export class ApiCaller {
    * @param {string} opts.method - the http method of request
    * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
    * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
+   * @param {bool} opts.isEmptyBodyAllowed - defines if empty body is allowed, `false` by default
    *
    * @private
    */
@@ -234,7 +236,7 @@ export class ApiCaller {
           .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
           .join('&')
       },
-      data: opts.data || {},
+      data: opts.isEmptyBodyAllowed ? undefined : get(opts, 'data', {}),
       method: opts.method,
       url: opts.endpoint // TODO: smartly build url
     }
