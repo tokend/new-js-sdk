@@ -321,8 +321,6 @@ export class WalletsManager {
       kdfParams, newPassword
     )
 
-    const newSigner = Keypair.random()
-
     this._apiCaller.useWallet(newMainWallet)
 
     const endpoint = `/wallets/${encryptedNewMainWallet.id}`
@@ -351,7 +349,7 @@ export class WalletsManager {
           signer: {
             data: {
               type: 'signer',
-              id: newSigner.accountId()
+              id: encryptedNewMainWallet.accountId
             }
           }
         }
