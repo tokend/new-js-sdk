@@ -236,7 +236,9 @@ export class ApiCaller {
           .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
           .join('&')
       },
-      data: opts.isEmptyBodyAllowed ? undefined : get(opts, 'data', {}),
+      data: (opts.isEmptyBodyAllowed && !opts.data)
+        ? undefined
+        : get(opts, 'data', {}),
       method: opts.method,
       url: opts.endpoint // TODO: smartly build url
     }
