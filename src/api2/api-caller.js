@@ -151,7 +151,8 @@ export class ApiCaller {
       method: methods.DELETE,
       needSign,
       endpoint,
-      data
+      data,
+      isEmptyBodyAllowed: true
     })
   }
 
@@ -222,6 +223,7 @@ export class ApiCaller {
    * @param {string} opts.method - the http method of request
    * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
    * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
+   * @param {bool} opts.isEmptyBodyAllowed - defines if empty body is allowed, `false` by default
    *
    * @private
    */
@@ -234,7 +236,9 @@ export class ApiCaller {
           .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
           .join('&')
       },
-      data: opts.data || {},
+      data: (opts.isEmptyBodyAllowed && !opts.data)
+        ? undefined
+        : opts.data || {},
       method: opts.method,
       url: opts.endpoint // TODO: smartly build url
     }
