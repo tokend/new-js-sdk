@@ -5,7 +5,7 @@ import { Wallet } from '../wallet'
 
 import middlewares from './middlewares'
 import { toCamelCaseDeep } from '../utils/case_converter'
-import { get, isEmpty } from 'lodash'
+import { isEmpty } from 'lodash'
 
 const SUBMIT_TRANSACTION_TIMEOUT = 60 * 10000
 
@@ -238,7 +238,7 @@ export class ApiCaller {
       },
       data: (opts.isEmptyBodyAllowed && !opts.data)
         ? undefined
-        : get(opts, 'data', {}),
+        : opts.data || {},
       method: opts.method,
       url: opts.endpoint // TODO: smartly build url
     }
