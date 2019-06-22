@@ -11,6 +11,8 @@ for further information about branching and tagging conventions.
 #### Added
 - `validateWithoutSnakeCased` flag for validators `validateCreatorDetails` method
 
+## [1.8.0] - 2019-06-22
+
 ## [1.8.0-rc.1] - 2019-06-17
 #### Added
 - `isEmptyBodyAllowed` flag for api-caller `_call` method
@@ -178,7 +180,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.8.0-rc.1...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.8.0...HEAD
+[1.8.0]: https://github.com/tokend/new-js-sdk/compare/1.8.0-rc.1...1.8.0
 [1.8.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.8.0-rc.0...1.8.0-rc.1
 [1.8.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0...1.8.0-rc.0
 [1.7.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.2...1.7.0
