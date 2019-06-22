@@ -101,7 +101,7 @@ export class CreateAtomicSwapAskRequestBuilder {
   static _validateCreateAtomicSwapAskOp (opts) {
     validateBalanceKey({ value: opts.balanceID, fieldName: 'opts.balanceID' })
     validateAmount({ value: opts.amount, fieldName: 'opts.amount' })
-    validateCreatorDetails({ value: opts.creatorDetails, fieldName: 'opts.creatorDetails' })
+    validateCreatorDetails({ value: opts.creatorDetails, fieldName: 'opts.creatorDetails', validateWithoutSnakeCased: true })
     validateArray({ value: opts.quoteAssets, fieldName: 'opts.quoteAssets', minLength: 1, maxLength: 100 })
   }
 }

@@ -489,6 +489,22 @@ describe('validateCreatorDetails', () => {
     }).to.not.throw()
   })
 
+  it('should not throw error for objects withouth snake_cased keys', () => {
+    const validCreatorDetails = [
+      {},
+      { BTC: '3Np23VinPrh9tDFuDKpf1p9uBCD977Q2av' },
+      { addresses: { BTC: 'BTC_ADDRESS' } },
+      { addresses: { BTC: 'address1', USD: 'address2' } },
+      { addresses: { ASSEt: 'ASSEt-address' } }
+    ]
+
+    expect(() => {
+      for (const value of validCreatorDetails) {
+        validateCreatorDetails({ value, validateWithoutSnakeCased: true })
+      }
+    }).to.not.throw()
+  })
+
   it('should throw TypeError for invalid creator details', () => {
     const invalidCreatorDetails = [
       '',
