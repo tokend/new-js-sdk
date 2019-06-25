@@ -68,7 +68,7 @@ export class WalletsManager {
 
     let walletResponse
     try {
-      walletResponse = await this._apiCaller.get(`/wallets/${walletId}`)
+      walletResponse = await this._apiCaller.getWithCookies(`/wallets/${walletId}`)
     } catch (err) {
       // HACK: expose wallet Id to allow resend email
       if (err instanceof VerificationRequiredError) {
@@ -77,14 +77,15 @@ export class WalletsManager {
 
       throw err
     }
-
     return Wallet.fromEncrypted({
       keychainData: walletResponse.data.keychainData,
       kdfParams,
       salt: kdfParams.salt,
       email,
       password,
-      accountId: walletResponse.data.accountId
+      accountId: walletResponse.data.accountId,
+      sessionId: walletResponse.data.session.id,
+      sessionKey: walletResponse.data.session.encryptionKey
     })
   }
 

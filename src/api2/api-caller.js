@@ -85,12 +85,13 @@ export class ApiCaller {
     return this._wallet
   }
 
-  get (endpoint, query, needSign = false) {
+  get (endpoint, query, needSign = false, cookie = false) {
     return this._call({
       method: methods.GET,
       needSign,
       endpoint,
-      query
+      query,
+      cookie
     })
   }
 
@@ -105,6 +106,10 @@ export class ApiCaller {
 
   getWithSignature (endpoint, query) {
     return this.get(endpoint, query, true)
+  }
+
+  getWithCookies (endpoint, query) {
+    return this.get(endpoint, query, false, true)
   }
 
   post (endpoint, data, needSign = false) {
@@ -252,6 +257,11 @@ export class ApiCaller {
 
     if (opts.needSign) {
       config = middlewares.signRequest(config, this._wallet.keypair)
+    }
+
+    if (opts.cookie) {
+      config.withCredentials = true
+      config.headers['Access-Control-Allow-Credentials'] = true
     }
 
     let response

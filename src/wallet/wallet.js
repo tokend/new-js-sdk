@@ -18,8 +18,10 @@ export class Wallet {
    * @param {Keypair|string} keypair User's key pair or a secret seed.
    * @param {string} accountId User's account ID.
    * @param {string} [walletId] Wallet ID.
+   * @param {string} [sessionId] Session ID.
+   * @param {string} [sessionKey] Session key.
    */
-  constructor (email, keypair, accountId, walletId) {
+  constructor (email, keypair, accountId, walletId, sessionId = '', sessionKey = '') {
     if (isNil(email)) {
       throw new Error('Email is required.')
     }
@@ -47,6 +49,8 @@ export class Wallet {
     this._keypair = keypair
     this._accountId = accountId
     this._id = walletId
+    this._sessionId = sessionId
+    this._sessionKey = sessionKey
   }
 
   /**
@@ -96,7 +100,9 @@ export class Wallet {
       opts.email,
       Keypair.fromSecret(decryptedKeychain.seed),
       opts.accountId || Keypair.fromSecret(decryptedKeychain.seed).accountId(),
-      sjcl.codec.hex.fromBits(rawWalletId)
+      sjcl.codec.hex.fromBits(rawWalletId),
+      opts.sessionId,
+      opts.sessionKey
     )
   }
 
@@ -174,6 +180,20 @@ export class Wallet {
    */
   get keypair () {
     return this._keypair
+  }
+
+  /**
+   * Get session ID.
+   */
+  get sessionId () {
+    return this._sessionId
+  }
+
+  /**
+   * Get session key.
+   */
+  get sessionKey () {
+    return this._sessionKey
   }
 
   /**
