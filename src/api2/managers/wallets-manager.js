@@ -77,6 +77,7 @@ export class WalletsManager {
 
       throw err
     }
+    console.log(walletResponse)
     return Wallet.fromEncrypted({
       keychainData: walletResponse.data.keychainData,
       kdfParams,
