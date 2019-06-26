@@ -68,7 +68,7 @@ export class WalletsManager {
 
     let walletResponse
     try {
-      walletResponse = await this._apiCaller.getWithCookies(`/wallets/${walletId}`)
+      walletResponse = await this._apiCaller.get(`/wallets/${walletId}`)
     } catch (err) {
       // HACK: expose wallet Id to allow resend email
       if (err instanceof VerificationRequiredError) {

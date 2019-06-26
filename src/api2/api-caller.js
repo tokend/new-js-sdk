@@ -90,8 +90,7 @@ export class ApiCaller {
       method: methods.GET,
       needSign,
       endpoint,
-      query,
-      cookie
+      query
     })
   }
 
@@ -106,10 +105,6 @@ export class ApiCaller {
 
   getWithSignature (endpoint, query) {
     return this.get(endpoint, query, true)
-  }
-
-  getWithCookies (endpoint, query) {
-    return this.get(endpoint, query, false, true)
   }
 
   post (endpoint, data, needSign = false) {
@@ -245,7 +240,8 @@ export class ApiCaller {
         ? undefined
         : opts.data || {},
       method: opts.method,
-      url: opts.endpoint // TODO: smartly build url
+      url: opts.endpoint, // TODO: smartly build url
+      withCredentials: true
     }
 
     config = middlewares.flattenToAxiosJsonApiQuery(config)
@@ -257,11 +253,6 @@ export class ApiCaller {
 
     if (opts.needSign) {
       config = middlewares.signRequest(config, this._wallet.keypair)
-    }
-
-    if (opts.cookie) {
-      config.withCredentials = true
-      config.headers['Access-Control-Allow-Credentials'] = true
     }
 
     let response

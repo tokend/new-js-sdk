@@ -59,7 +59,7 @@ describe('Wallets manager', () => {
     describe('get', () => {
       it('returns decrypted wallet received from response of _apiCaller.get method called with derived wallet ID', async () => {
         sandbox.stub(Wallet, 'deriveId').returns('some-wallet-id')
-        walletsManagerInstance._apiCaller.getWithCookies
+        walletsManagerInstance._apiCaller.get
           .withArgs('/wallets/some-wallet-id')
           .resolves({
             data: {
@@ -72,9 +72,7 @@ describe('Wallets manager', () => {
             'foo@bar.com',
             'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
             'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-            'some-wallet-id',
-            'some-session-id',
-            'some-session-key'
+            'some-wallet-id'
           )
         )
 
