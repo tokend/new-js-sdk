@@ -12,7 +12,7 @@ export function deriveWalletKey (masterKey) {
   return deriveFromKeyFunction('WALLET_KEY', masterKey)
 }
 
-function deriveSessionKey (sessionKey) {
+export function deriveSessionKey (sessionKey) {
   return deriveFromKeyFunction('SESSION_KEY', sessionKey)
 }
 
