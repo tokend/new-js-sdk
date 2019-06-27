@@ -12,6 +12,10 @@ export function deriveWalletKey (masterKey) {
   return deriveFromKeyFunction('WALLET_KEY', masterKey)
 }
 
+function deriveSessionKey (sessionKey) {
+  return deriveFromKeyFunction('SESSION_KEY', sessionKey)
+}
+
 function deriveFromKeyFunction (token, masterKey) {
   // eslint-disable-next-line new-cap
   let hmac = new sjcl.misc.hmac(masterKey, sjcl.hash.sha256)
@@ -99,4 +103,14 @@ function base64Encode (str) {
 
 function base64Decode (str) {
   return (Buffer.from(str, 'base64')).toString()
+}
+
+export function encryptSecretSeed (seed, key) {
+  const sesionKey = deriveSessionKey(key)
+  return encryptData(seed, sesionKey)
+}
+
+export function decryptSecretSeed (seed, key) {
+  const sesionKey = deriveSessionKey(key)
+  return decryptData(seed, sesionKey)
 }
