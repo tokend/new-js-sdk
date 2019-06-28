@@ -21,7 +21,7 @@ export class Wallet {
    * @param {string} [sessionId] Session ID.
    * @param {string} [sessionKey] Session key.
    */
-  constructor (email, keypair, accountId, walletId, sessionId = '', sessionKey = '') {
+  constructor (email, keypair, accountId, walletId, sessionId, sessionKey) {
     if (isNil(email)) {
       throw new Error('Email is required.')
     }
@@ -43,6 +43,14 @@ export class Wallet {
 
     if (walletId && !isString(walletId)) {
       throw new Error('Hex encoded wallet ID expected.')
+    }
+
+    if (sessionId && !isString(sessionId)) {
+      throw new Error('Hex encoded session ID expected.')
+    }
+
+    if (sessionKey && !isString(sessionKey)) {
+      throw new Error('Hex encoded session key expected.')
     }
 
     this._email = email
