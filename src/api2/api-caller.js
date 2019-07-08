@@ -85,7 +85,7 @@ export class ApiCaller {
     return this._wallet
   }
 
-  get (endpoint, query, needSign = false, cookie = false) {
+  get (endpoint, query, needSign = false) {
     return this._call({
       method: methods.GET,
       needSign,
