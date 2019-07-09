@@ -76,7 +76,7 @@ describe('wallet/crypto', () => {
     it('Should derive session key.', () => {
       const encryptedKey = '8fba16b1342cecd011f6cf9bdfe8426ffc0cedae083c8fb28e1f02388d1a744d'
       let sessionKey = crypto.deriveSessionKey(fromBase64(encryptedKey))
-      expect(toBase64(sessionKey)).equal('C/ldj8M8kNwJCeOyyYNZQ8KkQhkEPlP4gyAKi7GXGU0=')
+      expect(toBase64(sessionKey)).equal('Ya7uo4SrnANRiCFyzLSiS1/Oe1dTB0RFuHm4EqFu2XI=')
     })
   })
 
