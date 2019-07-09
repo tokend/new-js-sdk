@@ -64,7 +64,11 @@ describe('Wallets manager', () => {
           .resolves({
             data: {
               accountId: 'SOME_ACCOUNT_ID',
-              keychainData: 'SOME_KEYCHAIN_DATA'
+              keychainData: 'SOME_KEYCHAIN_DATA',
+              session: {
+                id: 'SOME_SESSION_ID',
+                encryptionKey: 'SOME_SESSION_KEY'
+              }
             }
           })
         sandbox.stub(Wallet, 'fromEncrypted').returns(
@@ -72,19 +76,14 @@ describe('Wallets manager', () => {
             'foo@bar.com',
             'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
             'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-            'some-wallet-id'
+            'some-wallet-id',
+            'some-session-id',
+            'some-session-key'
           )
         )
 
         const result = await walletsManagerInstance.get(
           'foo@bar.com', 'qwe123'
-        )
-
-        expect(Wallet.deriveId).calledOnceWithExactly(
-          'foo@bar.com',
-          'qwe123',
-          { bits: 256, n: 8, p: 1, r: 8, salt: '/1dwsCq6f1zdpIObxLBOiQ==' },
-          '/1dwsCq6f1zdpIObxLBOiQ=='
         )
 
         expect(walletsManagerInstance._apiCaller.get
@@ -97,7 +96,9 @@ describe('Wallets manager', () => {
           salt: '/1dwsCq6f1zdpIObxLBOiQ==',
           email: 'foo@bar.com',
           password: 'qwe123',
-          accountId: 'SOME_ACCOUNT_ID'
+          accountId: 'SOME_ACCOUNT_ID',
+          sessionId: 'SOME_SESSION_ID',
+          sessionKey: 'SOME_SESSION_KEY'
         })
 
         expect(result).to.deep.equal(
@@ -105,7 +106,9 @@ describe('Wallets manager', () => {
             'foo@bar.com',
             'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
             'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-            'some-wallet-id'
+            'some-wallet-id',
+            'some-session-id',
+            'some-session-key'
           )
         )
       })

@@ -10,6 +10,8 @@ for further information about branching and tagging conventions.
 ## [Unreleased]
 ### Added
 - `kycRecovery` to `WalletsManager`
+- `encryptSecretSeed`,`decryptSecretSeed` and `deriveSessionKey` methods to crypto.js
+- `sessionId` and `sessionKey` arguments for constructor in Wallet class
 
 ## [1.9.0-x.0] - 2019-07-01
 ### Added

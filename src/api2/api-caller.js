@@ -240,7 +240,8 @@ export class ApiCaller {
         ? undefined
         : opts.data || {},
       method: opts.method,
-      url: opts.endpoint // TODO: smartly build url
+      url: opts.endpoint, // TODO: smartly build url
+      withCredentials: true
     }
 
     config = middlewares.flattenToAxiosJsonApiQuery(config)

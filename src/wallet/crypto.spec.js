@@ -72,6 +72,14 @@ describe('wallet/crypto', () => {
     })
   })
 
+  describe('.deriveSessionKey', () => {
+    it('Should derive session key.', () => {
+      const encryptedKey = '8fba16b1342cecd011f6cf9bdfe8426ffc0cedae083c8fb28e1f02388d1a744d'
+      let sessionKey = crypto.deriveSessionKey(fromBase64(encryptedKey))
+      expect(toBase64(sessionKey)).equal('Ya7uo4SrnANRiCFyzLSiS1/Oe1dTB0RFuHm4EqFu2XI=')
+    })
+  })
+
   describe('.randomBytes', () => {
     it('Should generate random bytes.', () => {
       const length = 32
@@ -79,6 +87,17 @@ describe('wallet/crypto', () => {
       let generated = crypto.randomBytes(length)
       expect(generated).to.be.an.instanceOf(Buffer)
       expect(generated).to.have.lengthOf(length)
+    })
+  })
+
+  describe('.encryptSecretSeed', () => {
+    it('Should correctly encrypt/decrypt secret seed', () => {
+      const encryptedKey = '8fba16b1342cecd011f6cf9bdfe8426ffc0cedae083c8fb28e1f02388d1a744d'
+      let secret = 'this is secret data'
+      let key = crypto.deriveSessionKey(encryptedKey)
+      let encrypted = crypto.encryptData(secret, key)
+      let decrypted = crypto.decryptData(encrypted, key)
+      expect(decrypted).to.be.equal(secret)
     })
   })
 

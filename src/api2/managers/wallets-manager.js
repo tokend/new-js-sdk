@@ -77,14 +77,15 @@ export class WalletsManager {
 
       throw err
     }
-
     return Wallet.fromEncrypted({
       keychainData: walletResponse.data.keychainData,
       kdfParams,
       salt: kdfParams.salt,
       email,
       password,
-      accountId: walletResponse.data.accountId
+      accountId: walletResponse.data.accountId,
+      sessionId: walletResponse.data.session.id,
+      sessionKey: walletResponse.data.session.encryptionKey
     })
   }
 
