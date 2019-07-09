@@ -89,6 +89,8 @@ export class Wallet {
    * @param {string} opts.salt Salt used for encryption.
    * @param {string} opts.email User's email.
    * @param {string} opts.password User's password.
+   * @param {string} opts.sessionId Session id.
+   * @param {string} opts.sessionKey Session key.
    * @param {string} [opts.accountId] User's account ID.
    */
   static fromEncrypted (opts) {
