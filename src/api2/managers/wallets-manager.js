@@ -173,8 +173,17 @@ export class WalletsManager {
       ]
     })
 
+    const walletWithSession = new Wallet(
+      mainWallet.email,
+      mainWallet.keypair,
+      mainWallet.accountId,
+      mainWallet.id,
+      response.data.session.id,
+      response.data.session.encryptionKey
+    )
+
     return {
-      wallet: mainWallet,
+      wallet: walletWithSession,
       response: response,
       recoverySeed: walletRecoveryKeypair.secret()
     }
