@@ -134,13 +134,11 @@ describe('Wallets manager', () => {
               }
             }
           })
-        console.log(WalletsManager)
         const result = await walletsManagerInstance.create(
           'foo@bar.com',
           'qwe123',
           Keypair.fromSecret('SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3')
         )
-        console.log(result.response)
 
         expect(Wallet.generate).to.have.been.calledWithExactly('foo@bar.com')
         expect(walletsManagerInstance._apiCaller.post)
