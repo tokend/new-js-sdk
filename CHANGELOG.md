@@ -8,12 +8,8 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
-<<<<<<< HEAD
-#### Added
-=======
 ### Added
 - `kycRecovery` to `WalletsManager`
->>>>>>> master
 - `encryptSecretSeed`,`decryptSecretSeed` and `deriveSessionKey` methods to crypto.js
 - `sessionId` and `sessionKey` arguments for constructor in Wallet class
 
