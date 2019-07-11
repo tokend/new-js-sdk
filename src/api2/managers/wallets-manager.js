@@ -1,4 +1,5 @@
 import _set from 'lodash/set'
+import _get from 'lodash/get'
 
 import { Wallet } from '../../wallet'
 import { Keypair } from '../../base/keypair'
@@ -173,8 +174,17 @@ export class WalletsManager {
       ]
     })
 
+    const walletWithSession = new Wallet(
+      mainWallet.email,
+      mainWallet.keypair,
+      mainWallet.accountId,
+      mainWallet.id,
+      _get(response, 'data.session.id'),
+      _get(response, 'data.session.encryptionKey')
+    )
+
     return {
-      wallet: mainWallet,
+      wallet: walletWithSession,
       response: response,
       recoverySeed: walletRecoveryKeypair.secret()
     }

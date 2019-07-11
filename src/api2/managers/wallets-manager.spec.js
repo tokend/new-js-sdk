@@ -126,8 +126,14 @@ describe('Wallets manager', () => {
         )
         sandbox.stub(walletsManagerInstance._apiCaller, 'post')
           .withArgs('/wallets')
-          .resolves('SOME_RESPONSE')
-
+          .resolves({
+            data: {
+              session: {
+                id: 'some-session-id',
+                encryptionKey: 'some-session-key'
+              }
+            }
+          })
         const result = await walletsManagerInstance.create(
           'foo@bar.com',
           'qwe123',
@@ -138,7 +144,14 @@ describe('Wallets manager', () => {
         expect(walletsManagerInstance._apiCaller.post)
           .to.have.been.calledOnceWith('/wallets')
 
-        expect(result.response).to.equal('SOME_RESPONSE')
+        expect(result.response).to.deep.equal({
+          data: {
+            session: {
+              id: 'some-session-id',
+              encryptionKey: 'some-session-key'
+            }
+          }
+        })
         expect(result.recoverySeed).to.equal('SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3')
         expect(result.wallet.email).to.equal('foo@bar.com')
         expect(result.wallet.accountId).to.equal('GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S')
