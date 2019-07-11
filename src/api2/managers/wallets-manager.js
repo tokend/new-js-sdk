@@ -1,4 +1,5 @@
 import _set from 'lodash/set'
+import _get from 'lodash/get'
 
 import { Wallet } from '../../wallet'
 import { Keypair } from '../../base/keypair'
@@ -178,8 +179,8 @@ export class WalletsManager {
       mainWallet.keypair,
       mainWallet.accountId,
       mainWallet.id,
-      response.data.session.id,
-      response.data.session.encryptionKey
+      _get(response, 'data.session.id'),
+      _get(response, 'data.session.encryptionKey')
     )
 
     return {
