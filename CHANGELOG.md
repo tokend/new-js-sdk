@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.9.0-rc.1] - 2019-07-16
+#### Security
+- Resolved an issue with outdated lodash version
+
 ## [1.9.0-rc.0] - 2019-07-11
 ### Added
 - `kycRecovery` to `WalletsManager`
@@ -187,7 +191,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.9.0-rc.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.9.0-rc.1...HEAD
+[1.9.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.9.0-rc.0...1.9.0-rc.1
 [1.9.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.9.0-x.0...1.9.0-rc.0
 [1.9.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.8.0...1.9.0-x.0
 [1.8.0]: https://github.com/tokend/new-js-sdk/compare/1.8.0-rc.1...1.8.0
