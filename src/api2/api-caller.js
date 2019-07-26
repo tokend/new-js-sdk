@@ -187,16 +187,17 @@ export class ApiCaller {
    *
    * @param {string} envelope - a transaction envelope to be submitted.
    */
-  async postTxEnvelope (envelope) {
+  async postTxEnvelope (envelope, waitForIngest = true) {
     // using raw axios because we don't need most of middleware, but need custom
     // request timeout here
     let config = {
       timeout: SUBMIT_TRANSACTION_TIMEOUT,
       data: {
-        tx: envelope
+        tx: envelope,
+        wait_for_ingest: waitForIngest
       },
       method: methods.POST,
-      url: `${this._baseURL}/transactions`
+      url: `${this._baseURL}/v3/transactions`
     }
     config = middlewares.setJsonapiHeaders(config)
 
