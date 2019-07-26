@@ -19,11 +19,12 @@ const STATUS_CODES = {
 export function parseJsonapiError (error, axiosInstance) {
   const status = get(error, 'response.status')
   const data = get(error, 'response.data')
-  let errCode = get(data, 'errors[0].code')
+  let errCode = get(data, 'errors[0].code') ||
+    get(data, 'errors[0].meta.result_codes.transaction')
 
   switch (status) {
     case STATUS_CODES.badRequest:
-      if (errCode === 'transaction_failed') {
+      if (errCode === 'tx_failed') {
         error = new errors.TransactionError(error, axiosInstance)
       } else {
         error = new errors.BadRequestError(error, axiosInstance)
