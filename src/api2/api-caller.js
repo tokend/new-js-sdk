@@ -172,14 +172,30 @@ export class ApiCaller {
     }
 
     return this.postTxEnvelope(
-      new TransactionBuilder(this._wallet.accountId)
-        .addOperations(operations)
-        .addSigner(this._wallet.keypair)
-        .build()
-        .toEnvelope()
-        .toXDR()
-        .toString('base64')
+      this.getTransaction(...operations)
     )
+  }
+
+  postOperationsToSpecificEndpoint (endpoint, ...operations) {
+    if (!this._wallet) {
+      throw new Error('No wallet found to sign the transaction')
+    }
+
+    return this.postTxEnvelope(
+      this.getTransaction(...operations),
+      true,
+      endpoint
+    )
+  }
+
+  getTransaction (...operations) {
+    return new TransactionBuilder(this._wallet.accountId)
+      .addOperations(operations)
+      .addSigner(this._wallet.keypair)
+      .build()
+      .toEnvelope()
+      .toXDR()
+      .toString('base64')
   }
 
   /**
@@ -187,7 +203,7 @@ export class ApiCaller {
    *
    * @param {string} envelope - a transaction envelope to be submitted.
    */
-  async postTxEnvelope (envelope, waitForIngest = true) {
+  async postTxEnvelope (envelope, waitForIngest = true, endpoint = `/v3/transactions`) {
     // using raw axios because we don't need most of middleware, but need custom
     // request timeout here
     let config = {
@@ -197,7 +213,7 @@ export class ApiCaller {
         wait_for_ingest: waitForIngest
       },
       method: methods.POST,
-      url: `${this._baseURL}/v3/transactions`
+      url: `${this._baseURL}${endpoint}`
     }
     config = middlewares.setJsonapiHeaders(config)
 
