@@ -1,6 +1,6 @@
-// revision: 744e82c8f3e8226b222b1af3a45aaaeebd345216
-// branch:   master
-// Automatically generated on 2019-06-04T18:04:43+00:00
+// revision: be194d6153bc1e7fe66b4bb6a6bb0f0bc7265389
+// branch:   feature/remove-asset
+// Automatically generated on 2019-08-23T16:27:25+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -5169,7 +5169,7 @@ xdr.struct("CancelChangeRoleSuccess", [
 //   union CancelChangeRoleRequestResult switch (CancelChangeRoleRequestResultCode code)
 //   {
 //       case SUCCESS:
-//           CancelSaleCreationSuccess success;
+//           CancelChangeRoleSuccess success;
 //       default:
 //           void;
 //   };
@@ -5182,7 +5182,7 @@ xdr.union("CancelChangeRoleRequestResult", {
     ["success", "success"],
   ],
   arms: {
-    success: xdr.lookup("CancelSaleCreationSuccess"),
+    success: xdr.lookup("CancelChangeRoleSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -14505,6 +14505,132 @@ xdr.union("RemoveAssetPairResult", {
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveAssetOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: `RemoveAssetOp` removes specified asset pair
+//   struct RemoveAssetOp
+//   {
+//       //: Defines an asset
+//       AssetCode code;
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveAssetOp", [
+  ["code", xdr.lookup("AssetCode")],
+  ["ext", xdr.lookup("RemoveAssetOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for `RemoveAssetOp`
+//   enum RemoveAssetResultCode
+//   {
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//       //: Asset not found
+//       //: Asset can't be deleted as there exist asset pairs with it
+//       HAS_PAIR = -1,
+//       //: Asset can't be deleted as it has active offers
+//       HAS_ACTIVE_OFFERS = -2,
+//       //: Asset can't be deleted as it has active sales
+//       HAS_ACTIVE_SALES = -3
+//   };
+//
+// ===========================================================================
+xdr.enum("RemoveAssetResultCode", {
+  success: 0,
+  hasPair: -1,
+  hasActiveOffer: -2,
+  hasActiveSale: -3,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveAssetSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `RemoveAssetOp` application
+//   struct RemoveAssetSuccess
+//   {
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveAssetSuccess", [
+  ["ext", xdr.lookup("RemoveAssetSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of RemoveAsset operation application along with the result code
+//   union RemoveAssetResult switch (RemoveAssetResultCode code) {
+//       case SUCCESS:
+//           RemoveAssetSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("RemoveAssetResult", {
+  switchOn: xdr.lookup("RemoveAssetResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("RemoveAssetSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   //: Actions that can be performed on request that is being reviewed
 //   enum ReviewRequestOpAction {
 //       //: Approve request
@@ -18019,7 +18145,7 @@ xdr.union("SaleCreationRequestQuoteAssetExt", {
 //
 //   //: SaleCreationRequestQuoteAsset is a structure that contains an asset code with price
 //   struct SaleCreationRequestQuoteAsset {
-//       //: AssetCode of quote asset 
+//       //: AssetCode of quote asset
 //       AssetCode quoteAsset; // asset in which participation will be accepted
 //       //: Price of sale base asset in relation to a quote asset
 //       uint64 price; // price for 1 baseAsset in relation to a quote asset
@@ -18090,7 +18216,7 @@ xdr.struct("CreateAccountSaleRuleData", [
 //       case EMPTY_VERSION:
 //           void;
 //       case ADD_SALE_WHITELISTS:
-//           //: array of rules that define participation rules. One global rule must be specified. 
+//           //: array of rules that define participation rules. One global rule must be specified.
 //           CreateAccountSaleRuleData saleRules<>;
 //       }
 //
@@ -18111,11 +18237,8 @@ xdr.union("SaleCreationRequestExt", {
 //
 //   //: SaleCreationRequest is used to create a sale with provided parameters
 //   struct SaleCreationRequest
-//   {   
-//       //: Type of sale
-//       //: 1: basic sale
-//       //: 2: crowdfunding sale
-//       //: 3: fixed price sale
+//   {
+//       //: Some custom sale type that can be used while setting account rules 
 //       uint64 saleType;
 //       //: Asset code of an asset to sell on sale
 //       AssetCode baseAsset; // asset for which sale will be performed
@@ -18133,7 +18256,7 @@ xdr.union("SaleCreationRequestExt", {
 //       longstring creatorDetails; // details set by requester
 //       //: Parameters specific to a particular sale type
 //       SaleTypeExt saleTypeExt;
-//       //: 
+//       //:
 //       uint64 requiredBaseAssetForHardCap;
 //       //: Used to keep track of rejected requests updates. `SequenceNumber` increases after each rejected SaleCreationRequest update.
 //       uint32 sequenceNumber;
@@ -18146,7 +18269,7 @@ xdr.union("SaleCreationRequestExt", {
 //       case EMPTY_VERSION:
 //           void;
 //       case ADD_SALE_WHITELISTS:
-//           //: array of rules that define participation rules. One global rule must be specified. 
+//           //: array of rules that define participation rules. One global rule must be specified.
 //           CreateAccountSaleRuleData saleRules<>;
 //       }
 //       ext;
@@ -18360,6 +18483,8 @@ xdr.struct("WithdrawalRequest", [
 //           InitiateKYCRecoveryOp initiateKYCRecoveryOp;
 //       case CREATE_KYC_RECOVERY_REQUEST:
 //           CreateKYCRecoveryRequestOp createKYCRecoveryRequestOp;
+//       case REMOVE_ASSET:
+//           RemoveAssetOp removeAssetOp;
 //       }
 //
 // ===========================================================================
@@ -18411,6 +18536,7 @@ xdr.union("OperationBody", {
     ["removeAssetPair", "removeAssetPairOp"],
     ["initiateKycRecovery", "initiateKycRecoveryOp"],
     ["createKycRecoveryRequest", "createKycRecoveryRequestOp"],
+    ["removeAsset", "removeAssetOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -18457,6 +18583,7 @@ xdr.union("OperationBody", {
     removeAssetPairOp: xdr.lookup("RemoveAssetPairOp"),
     initiateKycRecoveryOp: xdr.lookup("InitiateKycRecoveryOp"),
     createKycRecoveryRequestOp: xdr.lookup("CreateKycRecoveryRequestOp"),
+    removeAssetOp: xdr.lookup("RemoveAssetOp"),
   },
 });
 
@@ -18560,6 +18687,8 @@ xdr.union("OperationBody", {
 //           InitiateKYCRecoveryOp initiateKYCRecoveryOp;
 //       case CREATE_KYC_RECOVERY_REQUEST:
 //           CreateKYCRecoveryRequestOp createKYCRecoveryRequestOp;
+//       case REMOVE_ASSET:
+//           RemoveAssetOp removeAssetOp;
 //       }
 //       body;
 //   };
@@ -18874,6 +19003,8 @@ xdr.struct("AccountRuleRequirement", [
 //           CreateKYCRecoveryRequestResult createKYCRecoveryRequestResult;
 //       case INITIATE_KYC_RECOVERY:
 //           InitiateKYCRecoveryResult initiateKYCRecoveryResult;
+//       case REMOVE_ASSET:
+//           RemoveAssetResult removeAssetResult;
 //       }
 //
 // ===========================================================================
@@ -18925,6 +19056,7 @@ xdr.union("OperationResultTr", {
     ["removeAssetPair", "removeAssetPairResult"],
     ["createKycRecoveryRequest", "createKycRecoveryRequestResult"],
     ["initiateKycRecovery", "initiateKycRecoveryResult"],
+    ["removeAsset", "removeAssetResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -18971,6 +19103,7 @@ xdr.union("OperationResultTr", {
     removeAssetPairResult: xdr.lookup("RemoveAssetPairResult"),
     createKycRecoveryRequestResult: xdr.lookup("CreateKycRecoveryRequestResult"),
     initiateKycRecoveryResult: xdr.lookup("InitiateKycRecoveryResult"),
+    removeAssetResult: xdr.lookup("RemoveAssetResult"),
   },
 });
 
@@ -19069,6 +19202,8 @@ xdr.union("OperationResultTr", {
 //           CreateKYCRecoveryRequestResult createKYCRecoveryRequestResult;
 //       case INITIATE_KYC_RECOVERY:
 //           InitiateKYCRecoveryResult initiateKYCRecoveryResult;
+//       case REMOVE_ASSET:
+//           RemoveAssetResult removeAssetResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -19285,7 +19420,11 @@ xdr.struct("TransactionResult", [
 //       FIX_SAME_ASSET_PAIR = 13,
 //       ATOMIC_SWAP_RETURNING = 14,
 //       FIX_INVEST_FEE = 15,
-//       ADD_ACC_SPECIFIC_RULE_RESOURCE = 16
+//       ADD_ACC_SPECIFIC_RULE_RESOURCE = 16,
+//       FIX_SIGNER_CHANGES_REMOVE = 17,
+//       FIX_DEPOSIT_STATS = 18,
+//       FIX_CREATE_KYC_RECOVERY_PERMISSIONS = 19,
+//       CLEAR_DATABASE_CACHE = 20
 //   };
 //
 // ===========================================================================
@@ -19307,6 +19446,10 @@ xdr.enum("LedgerVersion", {
   atomicSwapReturning: 14,
   fixInvestFee: 15,
   addAccSpecificRuleResource: 16,
+  fixSignerChangesRemove: 17,
+  fixDepositStat: 18,
+  fixCreateKycRecoveryPermission: 19,
+  clearDatabaseCache: 20,
 });
 
 // === xdr source ============================================================
@@ -19724,7 +19867,8 @@ xdr.struct("Fee", [
 //       CANCEL_CHANGE_ROLE_REQUEST = 47,
 //       INITIATE_KYC_RECOVERY = 48,
 //       CREATE_KYC_RECOVERY_REQUEST = 49,
-//       REMOVE_ASSET_PAIR = 50
+//       REMOVE_ASSET_PAIR = 50,
+//       REMOVE_ASSET = 51
 //   };
 //
 // ===========================================================================
@@ -19773,6 +19917,7 @@ xdr.enum("OperationType", {
   initiateKycRecovery: 48,
   createKycRecoveryRequest: 49,
   removeAssetPair: 50,
+  removeAsset: 51,
 });
 
 // === xdr source ============================================================
