@@ -5,8 +5,8 @@ import { createAndApproveAsset } from '../scripts/create_asset'
 import { logger } from '../logger'
 
 describe('Asset', () => {
-  it('Create asset pair and remove it', async () => {
-    const log = logger.new('asset pair')
+  it('Create asset and remove it', async () => {
+    const log = logger.new('asset')
 
     const ownerKp = Keypair.random()
     await accountHelper.createSyndicate(ownerKp.accountId())
