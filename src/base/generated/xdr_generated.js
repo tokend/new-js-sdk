@@ -1,6 +1,6 @@
-// revision: be194d6153bc1e7fe66b4bb6a6bb0f0bc7265389
+// revision: 9a6375ef68a58ee2ca3d8e634c0ff531e493f131
 // branch:   feature/remove-asset
-// Automatically generated on 2019-08-23T16:27:25+00:00
+// Automatically generated on 2019-08-26T16:08:00+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -670,12 +670,19 @@ xdr.struct("AssetPairEntry", [
 //
 //   enum AssetPolicy
 //   {
+//       //: Defines whether or not asset can be transfered using payments
 //   	TRANSFERABLE = 1,
+//   	//: Defines whether or not asset is considered base
 //   	BASE_ASSET = 2,
+//   	//: [[Deprecated]]
 //   	STATS_QUOTE_ASSET = 4,
+//   	//: Defines whether or not asset can be withdrawed from the system
 //   	WITHDRAWABLE = 8,
+//   	//: Defines whether or not manual review for issuance of asset is required
 //   	ISSUANCE_MANUAL_REVIEW_REQUIRED = 16,
+//   	//: Defines whether or not asset can be base in atomic swap
 //   	CAN_BE_BASE_IN_ATOMIC_SWAP = 32,
+//   	//: Defines whether or not asset can be quote in atomic swap
 //   	CAN_BE_QUOTE_IN_ATOMIC_SWAP = 64
 //   };
 //
@@ -692,46 +699,33 @@ xdr.enum("AssetPolicy", {
 
 // === xdr source ============================================================
 //
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("AssetEntryExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
 //   struct AssetEntry
 //   {
+//       //: Code of the asset
 //       AssetCode code;
+//       //: Owner(creator) of the asset
 //   	AccountID owner;
-//   	AccountID preissuedAssetSigner; // signer of pre issuance tokens
+//   	//: Account responsible for preissuance of the asset
+//   	AccountID preissuedAssetSigner;
+//       //: Arbitrary stringified JSON object that can be used to attach data to asset
 //   	longstring details;
-//   	uint64 maxIssuanceAmount; // max number of tokens to be issued
-//   	uint64 availableForIssueance; // pre issued tokens available for issuance
-//   	uint64 issued; // number of issued tokens
-//   	uint64 pendingIssuance; // number of tokens locked for entries like token sale. lockedIssuance + issued can not be > maxIssuanceAmount
+//   	//: Maximal amount of tokens that can be issued
+//   	uint64 maxIssuanceAmount;
+//   	//: Amount of tokens available for issuance
+//   	uint64 availableForIssueance;
+//   	//: Amount of tokens issued already
+//   	uint64 issued;
+//   	//: Amount of tokens to be issued which is locked. `pendingIssuance+issued <= maxIssuanceAmount`
+//   	uint64 pendingIssuance;
+//   	//: Policies of the asset
 //       uint32 policies;
-//       uint64 type; // use instead policies that limit usage, use in account rules
+//       //: Used to restrict usage. Used in account rules
+//       uint64 type;
+//       //: Number of decimal places. Must be <= 6
 //       uint32 trailingDigitsCount;
 //   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
+//       //: Reserved for future use
+//       EmptyExt ext;
 //   };
 //
 // ===========================================================================
@@ -747,7 +741,7 @@ xdr.struct("AssetEntry", [
   ["policies", xdr.lookup("Uint32")],
   ["type", xdr.lookup("Uint64")],
   ["trailingDigitsCount", xdr.lookup("Uint32")],
-  ["ext", xdr.lookup("AssetEntryExt")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -16841,7 +16835,8 @@ xdr.union("AccountRuleResource", {
 //       CLOSE = 16,
 //       REMOVE = 17,
 //       UPDATE_END_TIME = 18,
-//       CREATE_FOR_OTHER_WITH_TASKS = 19
+//       CREATE_FOR_OTHER_WITH_TASKS = 19,
+//       REMOVE_FOR_OTHER = 20
 //   };
 //
 // ===========================================================================
@@ -16865,6 +16860,7 @@ xdr.enum("AccountRuleAction", {
   remove: 17,
   updateEndTime: 18,
   createForOtherWithTask: 19,
+  removeForOther: 20,
 });
 
 // === xdr source ============================================================
