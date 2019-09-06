@@ -7,7 +7,7 @@ export const KEY_VALUE_KEYS = Object.freeze({
   amlAlertTasks: 'aml_alert_tasks',
   atomicSwapBidTasks: 'atomic_swap_bid_tasks:*',
   atomicSwapAskTasks: 'atomic_swap_ask_tasks',
-  paymentCreateTasks: 'payment_create_tasks:*',
+  paymentCreateTasks: 'payment_tasks:*',
   createPollTasks: 'create_poll_tasks:*',
   change_role_tasks: 'change_role_tasks:*:*',
   kycRecoveryEnabled: 'kyc_recovery_enabled',

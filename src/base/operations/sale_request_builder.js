@@ -139,6 +139,12 @@ export class SaleRequestBuilder {
         saleTypeExt = xdr.SaleTypeExt.fixedPrice(fixedPriceSale)
         break
       }
+      case xdr.SaleType.immediate().value: {
+        let immediateSale = new xdr.ImmediateSale({
+          ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
+        })
+        saleTypeExt = xdr.SaleTypeExt.immediate(immediateSale)
+      }
     }
 
     if (!BaseOperation.isValidAmount(opts.requiredBaseAssetForHardCap, true)) {
