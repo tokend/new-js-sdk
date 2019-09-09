@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## [1.10.1] - 2019-09-09
+
 ## [1.10.1-rc.0] - 2019-09-03
 ### Fixed
 - Empty body in get request
@@ -206,7 +208,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.10.1-rc.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.10.1...HEAD
+[1.10.1]: https://github.com/tokend/new-js-sdk/compare/1.10.1-rc.0...1.10.1
 [1.10.1-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.0...1.10.1-rc.0
 [1.10.0]: https://github.com/tokend/new-js-sdk/compare/1.10.0-rc.0...1.10.0
 [1.10.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.9.0...1.10.0-rc.0
