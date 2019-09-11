@@ -33,7 +33,7 @@ export async function createKycRecovery (opts, source) {
   const log = logger.new('create-kyc-recovery')
 
   const tasksToRemove = await getKvEntryWithFallback(
-    KEY_VALUE_KEYS.createPollTasks, 1
+    KEY_VALUE_KEYS.createKycRecoveryTasks, 1
   )
   log.info('tasks to remove for create kyc recovery request defined, value: ' + tasksToRemove)
 

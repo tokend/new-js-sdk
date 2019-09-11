@@ -1,6 +1,6 @@
 import { Helper } from './_helper'
 import { ManageOfferBuilder } from '../../src/base'
-import { CreateManageOfferRequestBuilder } from '../../src/base/operations/create_manage_offer_request_builder';
+import { CreateManageOfferRequestBuilder } from '../../src/base/operations/create_manage_offer_request_builder'
 
 export class Offer extends Helper {
   /**
@@ -30,7 +30,8 @@ export class Offer extends Helper {
    * @param {number} opts.allTasks
    * @param {Keypair} signerKp
    */
-  createRequest(opts, signerKp) {
-    return this.submit(CreateManageOfferRequestBuilder.createManageOfferRequest(opts), signerKp)
+  createRequest (opts, signerKp) {
+    return this
+      .submit(CreateManageOfferRequestBuilder.createManageOfferRequest(opts), signerKp)
   }
 }

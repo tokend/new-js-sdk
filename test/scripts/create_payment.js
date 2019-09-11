@@ -65,7 +65,7 @@ export async function createPayment () {
   const log = logger.new('createPayment')
 
   let opts = await preparePayment()
-  
+
   let response = await paymentHelper.create(opts, opts.fromAccount.accountKp)
   log.info(`Created payment request, response: ${response}`)
   return response
@@ -76,7 +76,7 @@ export async function createPaymentRequest () {
 
   let opts = await preparePayment()
   opts.allTasks = 0
-  
+
   let response = await paymentHelper.createRequest(opts, opts.fromAccount.accountKp)
   log.info(`Created payment request, response: ${response}`)
   return response

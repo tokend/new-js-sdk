@@ -1,6 +1,6 @@
-// revision: 8c1985d0a97f37f2979ab2006790382259c4dad7
+// revision: 86df6e229b25ab950af81ed2b1004b5be77d4f07
 // branch:   feature/reviewable_requests_for_movements
-// Automatically generated on 2019-09-04T09:15:15+00:00
+// Automatically generated on 2019-09-11T11:37:40+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -7135,6 +7135,8 @@ xdr.enum("CreateManageOfferRequestResultCode", {
 //       uint64 requestID;
 //       bool fulfilled;
 //   
+//       ManageOfferResult* manageOfferResult;
+//   
 //       EmptyExt ext;
 //   };
 //
@@ -7142,6 +7144,7 @@ xdr.enum("CreateManageOfferRequestResultCode", {
 xdr.struct("CreateManagerOfferRequestSuccessResult", [
   ["requestId", xdr.lookup("Uint64")],
   ["fulfilled", xdr.bool()],
+  ["manageOfferResult", xdr.option(xdr.lookup("ManageOfferResult"))],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -7214,6 +7217,8 @@ xdr.enum("CreatePaymentRequestResultCode", {
 //       uint64 requestID;
 //       bool fulfilled;
 //   
+//       PaymentResult* paymentResult;
+//   
 //       EmptyExt ext;
 //   };
 //
@@ -7221,6 +7226,7 @@ xdr.enum("CreatePaymentRequestResultCode", {
 xdr.struct("CreatePaymentRequestSuccessResult", [
   ["requestId", xdr.lookup("Uint64")],
   ["fulfilled", xdr.bool()],
+  ["paymentResult", xdr.option(xdr.lookup("PaymentResult"))],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
