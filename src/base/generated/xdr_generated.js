@@ -1,6 +1,6 @@
-// revision: 86df6e229b25ab950af81ed2b1004b5be77d4f07
+// revision: d12bfbbe00535e6a3a310a8ef950495be490cd4a
 // branch:   feature/reviewable_requests_for_movements
-// Automatically generated on 2019-09-11T11:37:40+00:00
+// Automatically generated on 2019-09-12T10:20:25+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -7097,10 +7097,14 @@ xdr.union("CreateManageLimitsRequestResult", {
 //
 //   struct CreateManageOfferRequestOp
 //   {
+//       //: ManageOfferRequest details    
 //       ManageOfferRequest request;
 //   
+//       //: (optional) Bit mask whose flags must be cleared in order for CreateSale request to be approved, which will be used by key sale_create_tasks:<asset_code>
+//       //: instead of key-value
 //       uint32* allTasks;
 //   
+//       //: reserved for future extension
 //       EmptyExt ext;
 //   };
 //
@@ -7115,9 +7119,12 @@ xdr.struct("CreateManageOfferRequestOp", [
 //
 //   enum CreateManageOfferRequestResultCode 
 //   {
+//       //: CreateManageOfferRequestOp was successfully applied
 //       SUCCESS = 0,
 //   
+//       //: Offer is invalid
 //       INVALID_OFFER = -1,
+//       //: Tasks for the manage offer request were neither provided in the request nor loaded through KeyValue
 //       MANAGE_OFFER_TASKS_NOT_FOUND = -2
 //   };
 //
@@ -7132,11 +7139,15 @@ xdr.enum("CreateManageOfferRequestResultCode", {
 //
 //   struct CreateManagerOfferRequestSuccessResult 
 //   {
+//       //: ID of the ManageOfferRequest
 //       uint64 requestID;
+//       //: Indicates whether or not the manage offer request was auto approved    
 //       bool fulfilled;
 //   
+//       //: Result of manage offer application
 //       ManageOfferResult* manageOfferResult;
 //   
+//       //: Reserved for future extension
 //       EmptyExt ext;
 //   };
 //
@@ -7179,10 +7190,14 @@ xdr.union("CreateManageOfferRequestResult", {
 //
 //   struct CreatePaymentRequestOp
 //   {
+//       //: Payment request details
 //       CreatePaymentRequest request;
 //   
+//       //: (optional) Bit mask whose flags must be cleared in order for CreateSale request to be approved, which will be used by key sale_create_tasks:<asset_code>
+//       //: instead of key-value
 //       uint32* allTasks;
 //   
+//       //: reserved for future extension
 //       EmptyExt ext;
 //   };
 //
@@ -7197,9 +7212,12 @@ xdr.struct("CreatePaymentRequestOp", [
 //
 //   enum CreatePaymentRequestResultCode 
 //   {
+//       //: CreatePaymentRequestOp was successfully applied
 //       SUCCESS = 0,
 //   
+//       //: Payment is invalid
 //       INVALID_PAYMENT = -1,
+//       //: Tasks for the payment request were neither provided in the request nor loaded through KeyValue
 //       PAYMENT_TASKS_NOT_FOUND = -2
 //   };
 //
@@ -7212,13 +7230,18 @@ xdr.enum("CreatePaymentRequestResultCode", {
 
 // === xdr source ============================================================
 //
+//   //: Result of the successful payment request creation
 //   struct CreatePaymentRequestSuccessResult 
 //   {
+//       //: ID of the Payment request
 //       uint64 requestID;
+//       //: Indicates whether or not the payment request was auto approved
 //       bool fulfilled;
 //   
+//       //: Result of the payment application
 //       PaymentResult* paymentResult;
 //   
+//       //: reserved for future extension
 //       EmptyExt ext;
 //   };
 //
@@ -7232,6 +7255,7 @@ xdr.struct("CreatePaymentRequestSuccessResult", [
 
 // === xdr source ============================================================
 //
+//   //: Result of CreatePaymentRequestOp application
 //   union CreatePaymentRequestResult switch (CreatePaymentRequestResultCode code) 
 //   {
 //   case SUCCESS:
@@ -16439,6 +16463,9 @@ xdr.struct("ReviewableRequestResourceCreatePoll", [
 //           //: UINT32_MAX means any action.
 //           uint32 manageAction;
 //   
+//           //: ID of the order book.
+//           uint64 orderBookID;
+//   
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       }
@@ -16451,6 +16478,7 @@ xdr.struct("ReviewableRequestResourceManageOffer", [
   ["quoteAssetCode", xdr.lookup("AssetCode")],
   ["isBuy", xdr.bool()],
   ["manageAction", xdr.lookup("Uint32")],
+  ["orderBookId", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -16458,9 +16486,12 @@ xdr.struct("ReviewableRequestResourceManageOffer", [
 //
 //   struct 
 //       {
+//           //: Code of asset in which payment is being made
 //           AssetCode assetCode;
+//           //: Type of asset in which payment is being made
 //           uint64 assetType;
 //   
+//           //: reserved for future extension
 //           EmptyExt ext;
 //       }
 //
@@ -16578,15 +16609,21 @@ xdr.struct("ReviewableRequestResourceCreatePayment", [
 //           //: UINT32_MAX means any action.
 //           uint32 manageAction;
 //   
+//           //: ID of the order book.
+//           uint64 orderBookID;
+//   
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } manageOffer;
 //   case CREATE_PAYMENT:
 //       struct 
 //       {
+//           //: Code of asset in which payment is being made
 //           AssetCode assetCode;
+//           //: Type of asset in which payment is being made
 //           uint64 assetType;
 //   
+//           //: reserved for future extension
 //           EmptyExt ext;
 //       } createPayment;
 //   default:
