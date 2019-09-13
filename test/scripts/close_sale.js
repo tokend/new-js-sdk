@@ -1,5 +1,5 @@
 import { createFundedGeneral } from './create_account'
-import { createSaleOffer } from './create_sale_offer'
+import { createSaleOffer, createSaleOfferRequest } from './create_sale_offer'
 import { saleHelper } from '../helpers'
 import { logger } from '../logger'
 import config from '../config'
@@ -67,6 +67,33 @@ export async function closeSale (saleId, ownerKp, withBlacklist) {
     quoteAsset: assetToInvestIn.asset
   }, accountKp2)
   log.info(`Invested is sale #${sale.id}, now the hard cap should be reached`)
+
+  await saleHelper.checkSaleState(sale.id)
+  log.info(`Checked sale state, looking for results`)
+
+  return saleHelper.mustLoadClosed(saleId)
+}
+
+export async function closeSaleWithRequest(saleId, ownerKp) {
+  const log = logger.new('closeSale')
+
+  let sale = await saleHelper.mustLoadById(saleId)
+  // TODO: create multiple accounts and invest in multiple assets
+  const assetToInvestIn = sale.quoteAssets.quoteAssets[0] // because of reasons
+  const amountToCloseSale = String(sale.hardCap * assetToInvestIn.price)
+
+  const { accountKp: accountKp1 } = await createFundedGeneral({
+    [assetToInvestIn.asset]: amountToCloseSale
+  })
+  log.info(`Investor created and funded`)
+
+  await createSaleOfferRequest({
+    saleId: sale.id,
+    amount: amountToCloseSale,
+    quoteAsset: assetToInvestIn.asset,
+    allTasks: 0
+  }, accountKp1)
+  log.info(`Invested is sale #${sale.id}`)
 
   await saleHelper.checkSaleState(sale.id)
   log.info(`Checked sale state, looking for results`)

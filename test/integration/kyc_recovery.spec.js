@@ -10,6 +10,8 @@ import { logger } from '../logger'
 describe('KYC recovery', () => {
   it('Init kyc recovery', async () => {
 
+
+
     const log = logger.new('kyc-recovery')
 
     const targetAccount = Keypair.random()

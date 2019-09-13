@@ -70,3 +70,47 @@ export async function ensureAndGetBalanceId (account, assetCode) {
   const newBalance = await balanceHelper.mustLoad(account.id, assetCode)
   return newBalance.balanceId
 }
+
+/**
+ * @param {object} opts
+ * @param {string} opts.saleId
+ * @param {string} opts.quoteAsset
+ * @param {string} opts.amount
+ * @param {number} opts.allTasks
+ * @param {Keypair} signerKp
+ * @returns {Promise<void>}
+ */
+export async function createSaleOfferRequest (opts, signerKp) {
+  const sale = await saleHelper.mustLoadById(opts.saleId)
+  const price = sale
+    .quoteAssets
+    .quoteAssets
+    .find(asset => asset.asset === opts.quoteAsset)
+    .price
+
+  return createOfferRequest({
+    baseAsset: sale.baseAsset,
+    quoteAsset: opts.quoteAsset,
+    orderBookID: sale.id,
+    amount: opts.amount,
+    isBuy: true,
+    allTasks: opts.allTasks,
+    price
+  }, signerKp)
+}
+
+export async function createOfferRequest (opts, signerKp) {
+  const { data: account } = await sdk.horizon.account.get(signerKp.accountId())
+
+  const [baseBalance, quoteBalance] = await Promise.all([
+    ensureAndGetBalanceId(account, opts.baseAsset),
+    ensureAndGetBalanceId(account, opts.quoteAsset)
+  ])
+
+  const {resultXdr} = await offerHelper.createRequest({
+    fee: '0.000000', // TODO: load from horizon,
+    baseBalance,
+    quoteBalance,
+    ...opts
+  }, signerKp)
+}

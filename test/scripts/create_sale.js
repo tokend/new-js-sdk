@@ -69,6 +69,7 @@ export async function createSale (opts, ownerKp) {
     defaultQuoteAsset,
     requiredBaseAssetForHardCap: maxAmountToBeSold,
     baseAsset: opts.baseAsset,
+    saleEnumType: opts.saleEnumType,
     quoteAssets: quoteAssetCodes.map(asset => ({ price: '1', asset }))
   }, ownerKp)
   log.info(`Created the sale creation request, id: ${requestId}`)

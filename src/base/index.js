@@ -40,6 +40,8 @@ export { ManageVoteBuilder } from './operations/manage_vote_builder'
 export { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
 export { RemoveAssetPairOpBuilder } from './operations/remove_asset_pair_op_builder'
 export { CreateKYCRecoveryRequestBuilder } from './operations/create_kyc_recovery_request_builder'
+export { CreateManageOfferRequestBuilder } from './operations/create_manage_offer_request_builder'
+export { CreatePaymentRequestBuilder } from './operations/create_payment_request_builder'
 
 export * from './strkey'
 
