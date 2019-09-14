@@ -1,6 +1,6 @@
-// revision: d12bfbbe00535e6a3a310a8ef950495be490cd4a
-// branch:   feature/reviewable_requests_for_movements
-// Automatically generated on 2019-09-12T10:20:25+00:00
+// revision: 47ee60cab248c2e15b099c8e7d6fb46cf4f2d388
+// branch:   (HEAD
+// Automatically generated on 2019-09-14T12:40:24+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -670,12 +670,19 @@ xdr.struct("AssetPairEntry", [
 //
 //   enum AssetPolicy
 //   {
+//       //: Defines whether or not asset can be transfered using payments
 //   	TRANSFERABLE = 1,
+//   	//: Defines whether or not asset is considered base
 //   	BASE_ASSET = 2,
+//   	//: [[Deprecated]]
 //   	STATS_QUOTE_ASSET = 4,
+//   	//: Defines whether or not asset can be withdrawed from the system
 //   	WITHDRAWABLE = 8,
+//   	//: Defines whether or not manual review for issuance of asset is required
 //   	ISSUANCE_MANUAL_REVIEW_REQUIRED = 16,
+//   	//: Defines whether or not asset can be base in atomic swap
 //   	CAN_BE_BASE_IN_ATOMIC_SWAP = 32,
+//   	//: Defines whether or not asset can be quote in atomic swap
 //   	CAN_BE_QUOTE_IN_ATOMIC_SWAP = 64
 //   };
 //
@@ -692,46 +699,33 @@ xdr.enum("AssetPolicy", {
 
 // === xdr source ============================================================
 //
-//   union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//
-// ===========================================================================
-xdr.union("AssetEntryExt", {
-  switchOn: xdr.lookup("LedgerVersion"),
-  switchName: "v",
-  switches: [
-    ["emptyVersion", xdr.void()],
-  ],
-  arms: {
-  },
-});
-
-// === xdr source ============================================================
-//
 //   struct AssetEntry
 //   {
+//       //: Code of the asset
 //       AssetCode code;
+//       //: Owner(creator) of the asset
 //   	AccountID owner;
-//   	AccountID preissuedAssetSigner; // signer of pre issuance tokens
+//   	//: Account responsible for preissuance of the asset
+//   	AccountID preissuedAssetSigner;
+//       //: Arbitrary stringified JSON object that can be used to attach data to asset
 //   	longstring details;
-//   	uint64 maxIssuanceAmount; // max number of tokens to be issued
-//   	uint64 availableForIssueance; // pre issued tokens available for issuance
-//   	uint64 issued; // number of issued tokens
-//   	uint64 pendingIssuance; // number of tokens locked for entries like token sale. lockedIssuance + issued can not be > maxIssuanceAmount
+//   	//: Maximal amount of tokens that can be issued
+//   	uint64 maxIssuanceAmount;
+//   	//: Amount of tokens available for issuance
+//   	uint64 availableForIssueance;
+//   	//: Amount of tokens issued already
+//   	uint64 issued;
+//   	//: Amount of tokens to be issued which is locked. `pendingIssuance+issued <= maxIssuanceAmount`
+//   	uint64 pendingIssuance;
+//   	//: Policies of the asset
 //       uint32 policies;
-//       uint64 type; // use instead policies that limit usage, use in account rules
+//       //: Used to restrict usage. Used in account rules
+//       uint64 type;
+//       //: Number of decimal places. Must be <= 6
 //       uint32 trailingDigitsCount;
 //   
-//       // reserved for future use
-//       union switch (LedgerVersion v)
-//       {
-//       case EMPTY_VERSION:
-//           void;
-//       }
-//       ext;
+//       //: Reserved for future use
+//       EmptyExt ext;
 //   };
 //
 // ===========================================================================
@@ -747,7 +741,7 @@ xdr.struct("AssetEntry", [
   ["policies", xdr.lookup("Uint32")],
   ["type", xdr.lookup("Uint64")],
   ["trailingDigitsCount", xdr.lookup("Uint32")],
-  ["ext", xdr.lookup("AssetEntryExt")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -14727,6 +14721,135 @@ xdr.union("RemoveAssetPairResult", {
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveAssetOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: `RemoveAssetOp` removes specified asset pair
+//   struct RemoveAssetOp
+//   {
+//       //: Defines an asset
+//       AssetCode code;
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveAssetOp", [
+  ["code", xdr.lookup("AssetCode")],
+  ["ext", xdr.lookup("RemoveAssetOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for `RemoveAssetOp`
+//   enum RemoveAssetResultCode
+//   {
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//       //: Asset code is invalid
+//       INVALID_ASSET_CODE = -1,    
+//       //: Asset can't be deleted as there exist asset pairs with it
+//       HAS_PAIR = -2,
+//       //: Asset can't be deleted as it has active offers
+//       HAS_ACTIVE_OFFERS = -3,
+//       //: Asset can't be deleted as it has active sales
+//       HAS_ACTIVE_SALES = -4
+//   
+//   };
+//
+// ===========================================================================
+xdr.enum("RemoveAssetResultCode", {
+  success: 0,
+  invalidAssetCode: -1,
+  hasPair: -2,
+  hasActiveOffer: -3,
+  hasActiveSale: -4,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RemoveAssetSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `RemoveAssetOp` application
+//   struct RemoveAssetSuccess
+//   {
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveAssetSuccess", [
+  ["ext", xdr.lookup("RemoveAssetSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of RemoveAsset operation application along with the result code
+//   union RemoveAssetResult switch (RemoveAssetResultCode code) {
+//       case SUCCESS:
+//           RemoveAssetSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("RemoveAssetResult", {
+  switchOn: xdr.lookup("RemoveAssetResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("RemoveAssetSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   //: Actions that can be performed on request that is being reviewed
 //   enum ReviewRequestOpAction {
 //       //: Approve request
@@ -17067,7 +17190,8 @@ xdr.union("AccountRuleResource", {
 //       CLOSE = 16,
 //       REMOVE = 17,
 //       UPDATE_END_TIME = 18,
-//       CREATE_FOR_OTHER_WITH_TASKS = 19
+//       CREATE_FOR_OTHER_WITH_TASKS = 19,
+//       REMOVE_FOR_OTHER = 20
 //   };
 //
 // ===========================================================================
@@ -17091,6 +17215,7 @@ xdr.enum("AccountRuleAction", {
   remove: 17,
   updateEndTime: 18,
   createForOtherWithTask: 19,
+  removeForOther: 20,
 });
 
 // === xdr source ============================================================
@@ -17590,7 +17715,8 @@ xdr.union("SignerRuleResource", {
 //       CLOSE = 15,
 //       UPDATE_END_TIME = 16,
 //       CREATE_WITH_TASKS = 17,
-//       CREATE_FOR_OTHER_WITH_TASKS = 18
+//       CREATE_FOR_OTHER_WITH_TASKS = 18,
+//       REMOVE_FOR_OTHER = 19
 //   };
 //
 // ===========================================================================
@@ -17613,6 +17739,7 @@ xdr.enum("SignerRuleAction", {
   updateEndTime: 16,
   createWithTask: 17,
   createForOtherWithTask: 18,
+  removeForOther: 19,
 });
 
 // === xdr source ============================================================
@@ -18743,6 +18870,8 @@ xdr.struct("WithdrawalRequest", [
 //           CreateManageOfferRequestOp createManageOfferRequestOp;
 //       case CREATE_PAYMENT_REQUEST:
 //           CreatePaymentRequestOp createPaymentRequestOp;
+//       case REMOVE_ASSET:
+//           RemoveAssetOp removeAssetOp;
 //       }
 //
 // ===========================================================================
@@ -18796,6 +18925,7 @@ xdr.union("OperationBody", {
     ["createKycRecoveryRequest", "createKycRecoveryRequestOp"],
     ["createManageOfferRequest", "createManageOfferRequestOp"],
     ["createPaymentRequest", "createPaymentRequestOp"],
+    ["removeAsset", "removeAssetOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -18844,6 +18974,7 @@ xdr.union("OperationBody", {
     createKycRecoveryRequestOp: xdr.lookup("CreateKycRecoveryRequestOp"),
     createManageOfferRequestOp: xdr.lookup("CreateManageOfferRequestOp"),
     createPaymentRequestOp: xdr.lookup("CreatePaymentRequestOp"),
+    removeAssetOp: xdr.lookup("RemoveAssetOp"),
   },
 });
 
@@ -18951,6 +19082,8 @@ xdr.union("OperationBody", {
 //           CreateManageOfferRequestOp createManageOfferRequestOp;
 //       case CREATE_PAYMENT_REQUEST:
 //           CreatePaymentRequestOp createPaymentRequestOp;
+//       case REMOVE_ASSET:
+//           RemoveAssetOp removeAssetOp;
 //       }
 //       body;
 //   };
@@ -19269,6 +19402,8 @@ xdr.struct("AccountRuleRequirement", [
 //           CreateManageOfferRequestResult createManageOfferRequestResult;
 //       case CREATE_PAYMENT_REQUEST:
 //           CreatePaymentRequestResult createPaymentRequestResult;
+//       case REMOVE_ASSET:
+//           RemoveAssetResult removeAssetResult;
 //       }
 //
 // ===========================================================================
@@ -19322,6 +19457,7 @@ xdr.union("OperationResultTr", {
     ["initiateKycRecovery", "initiateKycRecoveryResult"],
     ["createManageOfferRequest", "createManageOfferRequestResult"],
     ["createPaymentRequest", "createPaymentRequestResult"],
+    ["removeAsset", "removeAssetResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -19370,6 +19506,7 @@ xdr.union("OperationResultTr", {
     initiateKycRecoveryResult: xdr.lookup("InitiateKycRecoveryResult"),
     createManageOfferRequestResult: xdr.lookup("CreateManageOfferRequestResult"),
     createPaymentRequestResult: xdr.lookup("CreatePaymentRequestResult"),
+    removeAssetResult: xdr.lookup("RemoveAssetResult"),
   },
 });
 
@@ -19472,6 +19609,8 @@ xdr.union("OperationResultTr", {
 //           CreateManageOfferRequestResult createManageOfferRequestResult;
 //       case CREATE_PAYMENT_REQUEST:
 //           CreatePaymentRequestResult createPaymentRequestResult;
+//       case REMOVE_ASSET:
+//           RemoveAssetResult removeAssetResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -20137,7 +20276,8 @@ xdr.struct("Fee", [
 //       CREATE_KYC_RECOVERY_REQUEST = 49,
 //       REMOVE_ASSET_PAIR = 50,
 //       CREATE_MANAGE_OFFER_REQUEST = 51,
-//       CREATE_PAYMENT_REQUEST = 52
+//       CREATE_PAYMENT_REQUEST = 52,
+//       REMOVE_ASSET = 53
 //   };
 //
 // ===========================================================================
@@ -20188,6 +20328,7 @@ xdr.enum("OperationType", {
   removeAssetPair: 50,
   createManageOfferRequest: 51,
   createPaymentRequest: 52,
+  removeAsset: 53,
 });
 
 // === xdr source ============================================================

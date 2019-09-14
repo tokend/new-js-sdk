@@ -38,6 +38,7 @@ import { InitiateKYCRecoveryBuilder } from './operations/initiate_kyc_recovery_b
 import { CreateKYCRecoveryRequestBuilder } from './operations/create_kyc_recovery_request_builder'
 import { CreateManageOfferRequestBuilder } from './operations/create_manage_offer_request_builder'
 import { CreatePaymentRequestBuilder } from './operations/create_payment_request_builder'
+import { RemoveAssetOpBuilder } from './operations/remove_asset_op_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -482,6 +483,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.createPaymentRequest():
         CreatePaymentRequestBuilder.createPaymentRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.removeAsset():
+        RemoveAssetOpBuilder.removeAssetOpToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

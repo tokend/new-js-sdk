@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## Unreleased
+
+## Added 
+-  Builder for `RemoveAssetOp`
+- Unit tests for `RemoveAssetOp`
+- Integration tests for `RemoveAssetOp`
+
 ## [1.10.1] - 2019-09-09
 
 ## [1.10.1-rc.0] - 2019-09-03
