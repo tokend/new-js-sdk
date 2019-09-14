@@ -5,5 +5,5 @@
   "network_passphrase": "TokenD Developer Network",
   "log_level": "trace",
   "retry_delay_ms": 1500,
-  "use_sale_rules": true
+  "use_sale_rules": false
 }

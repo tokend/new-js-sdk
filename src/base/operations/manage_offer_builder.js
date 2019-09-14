@@ -21,6 +21,15 @@ export class ManageOfferBuilder {
      * @returns {xdr.ManageBalanceOp}
      */
   static manageOffer (opts) {
+    let manageOfferOp = ManageOfferBuilder.prepareManageOfferOp(opts)
+
+    let opAttributes = {}
+    opAttributes.body = xdr.OperationBody.manageOffer(manageOfferOp)
+    BaseOperation.setSourceAccount(opAttributes, opts)
+    return new xdr.Operation(opAttributes)
+  }
+
+  static prepareManageOfferOp (opts) {
     let attributes = {
       ext: new xdr.ManageOfferOpExt(xdr.LedgerVersion.emptyVersion())
     }
@@ -78,12 +87,7 @@ export class ManageOfferBuilder {
       .xdrBalanceId()
     attributes.isBuy = opts.isBuy
 
-    let manageOfferOp = new xdr.ManageOfferOp(attributes)
-
-    let opAttributes = {}
-    opAttributes.body = xdr.OperationBody.manageOffer(manageOfferOp)
-    BaseOperation.setSourceAccount(opAttributes, opts)
-    return new xdr.Operation(opAttributes)
+    return new xdr.ManageOfferOp(attributes)
   }
 
   /**

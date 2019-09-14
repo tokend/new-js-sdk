@@ -1,6 +1,6 @@
-// revision: 9a6375ef68a58ee2ca3d8e634c0ff531e493f131
-// branch:   feature/remove-asset
-// Automatically generated on 2019-08-26T16:08:00+00:00
+// revision: 47ee60cab248c2e15b099c8e7d6fb46cf4f2d388
+// branch:   (HEAD
+// Automatically generated on 2019-09-14T12:40:24+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1702,7 +1702,9 @@ xdr.struct("ReferenceEntry", [
 //   	CREATE_POLL = 14,
 //   	CREATE_ATOMIC_SWAP_ASK = 16,
 //   	CREATE_ATOMIC_SWAP_BID = 17,
-//   	KYC_RECOVERY = 18
+//   	KYC_RECOVERY = 18,
+//   	MANAGE_OFFER = 19,
+//   	CREATE_PAYMENT = 20
 //   };
 //
 // ===========================================================================
@@ -1725,6 +1727,8 @@ xdr.enum("ReviewableRequestType", {
   createAtomicSwapAsk: 16,
   createAtomicSwapBid: 17,
   kycRecovery: 18,
+  manageOffer: 19,
+  createPayment: 20,
 });
 
 // === xdr source ============================================================
@@ -1808,6 +1812,10 @@ xdr.struct("TasksExt", [
 //               CreatePollRequest createPollRequest;
 //           case KYC_RECOVERY:
 //               KYCRecoveryRequest kycRecoveryRequest;
+//   		case MANAGE_OFFER:
+//   			ManageOfferRequest manageOfferRequest;
+//   		case CREATE_PAYMENT:
+//   			CreatePaymentRequest createPaymentRequest;
 //   	}
 //
 // ===========================================================================
@@ -1831,6 +1839,8 @@ xdr.union("ReviewableRequestEntryBody", {
     ["createAtomicSwapBid", "createAtomicSwapBidRequest"],
     ["createPoll", "createPollRequest"],
     ["kycRecovery", "kycRecoveryRequest"],
+    ["manageOffer", "manageOfferRequest"],
+    ["createPayment", "createPaymentRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -1849,6 +1859,8 @@ xdr.union("ReviewableRequestEntryBody", {
     createAtomicSwapBidRequest: xdr.lookup("CreateAtomicSwapBidRequest"),
     createPollRequest: xdr.lookup("CreatePollRequest"),
     kycRecoveryRequest: xdr.lookup("KycRecoveryRequest"),
+    manageOfferRequest: xdr.lookup("ManageOfferRequest"),
+    createPaymentRequest: xdr.lookup("CreatePaymentRequest"),
   },
 });
 
@@ -1915,6 +1927,10 @@ xdr.union("ReviewableRequestEntryExt", {
 //               CreatePollRequest createPollRequest;
 //           case KYC_RECOVERY:
 //               KYCRecoveryRequest kycRecoveryRequest;
+//   		case MANAGE_OFFER:
+//   			ManageOfferRequest manageOfferRequest;
+//   		case CREATE_PAYMENT:
+//   			CreatePaymentRequest createPaymentRequest;
 //   	} body;
 //   
 //   	TasksExt tasks;
@@ -1948,7 +1964,9 @@ xdr.struct("ReviewableRequestEntry", [
 //   	BASIC_SALE = 1, // sale creator specifies price for each quote asset
 //   	CROWD_FUNDING = 2, // sale creator does not specify price,
 //   	                  // price is defined on sale close based on amount of base asset to be sold and amount of quote assets collected
-//       FIXED_PRICE=3
+//       FIXED_PRICE=3,
+//   
+//       IMMEDIATE=4
 //   };
 //
 // ===========================================================================
@@ -1956,6 +1974,7 @@ xdr.enum("SaleType", {
   basicSale: 1,
   crowdFunding: 2,
   fixedPrice: 3,
+  immediate: 4,
 });
 
 // === xdr source ============================================================
@@ -2065,6 +2084,17 @@ xdr.struct("BasicSale", [
 
 // === xdr source ============================================================
 //
+//   struct ImmediateSale {
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ImmediateSale", [
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union SaleTypeExt switch (SaleType saleType)
 //   {
 //   	case BASIC_SALE:
@@ -2073,6 +2103,8 @@ xdr.struct("BasicSale", [
 //   		CrowdFundingSale crowdFundingSale;
 //   	case FIXED_PRICE:
 //   		FixedPriceSale fixedPriceSale;
+//       case IMMEDIATE:
+//           ImmediateSale immediateSale;
 //   };
 //
 // ===========================================================================
@@ -2083,11 +2115,13 @@ xdr.union("SaleTypeExt", {
     ["basicSale", "basicSale"],
     ["crowdFunding", "crowdFundingSale"],
     ["fixedPrice", "fixedPriceSale"],
+    ["immediate", "immediateSale"],
   ],
   arms: {
     basicSale: xdr.lookup("BasicSale"),
     crowdFundingSale: xdr.lookup("CrowdFundingSale"),
     fixedPriceSale: xdr.lookup("FixedPriceSale"),
+    immediateSale: xdr.lookup("ImmediateSale"),
   },
 });
 
@@ -7049,6 +7083,194 @@ xdr.union("CreateManageLimitsRequestResult", {
   ],
   arms: {
     success: xdr.lookup("CreateManageLimitsRequestResultSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateManageOfferRequestOp
+//   {
+//       //: ManageOfferRequest details    
+//       ManageOfferRequest request;
+//   
+//       //: (optional) Bit mask whose flags must be cleared in order for CreateSale request to be approved, which will be used by key sale_create_tasks:<asset_code>
+//       //: instead of key-value
+//       uint32* allTasks;
+//   
+//       //: reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateManageOfferRequestOp", [
+  ["request", xdr.lookup("ManageOfferRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreateManageOfferRequestResultCode 
+//   {
+//       //: CreateManageOfferRequestOp was successfully applied
+//       SUCCESS = 0,
+//   
+//       //: Offer is invalid
+//       INVALID_OFFER = -1,
+//       //: Tasks for the manage offer request were neither provided in the request nor loaded through KeyValue
+//       MANAGE_OFFER_TASKS_NOT_FOUND = -2
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateManageOfferRequestResultCode", {
+  success: 0,
+  invalidOffer: -1,
+  manageOfferTasksNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateManagerOfferRequestSuccessResult 
+//   {
+//       //: ID of the ManageOfferRequest
+//       uint64 requestID;
+//       //: Indicates whether or not the manage offer request was auto approved    
+//       bool fulfilled;
+//   
+//       //: Result of manage offer application
+//       ManageOfferResult* manageOfferResult;
+//   
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateManagerOfferRequestSuccessResult", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["manageOfferResult", xdr.option(xdr.lookup("ManageOfferResult"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union CreateManageOfferRequestResult switch (CreateManageOfferRequestResultCode code) 
+//   {
+//   case SUCCESS:
+//       CreateManagerOfferRequestSuccessResult success;
+//   case INVALID_OFFER:
+//       ManageOfferResultCode manageOfferCode;
+//   default: 
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateManageOfferRequestResult", {
+  switchOn: xdr.lookup("CreateManageOfferRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+    ["invalidOffer", "manageOfferCode"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateManagerOfferRequestSuccessResult"),
+    manageOfferCode: xdr.lookup("ManageOfferResultCode"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CreatePaymentRequestOp
+//   {
+//       //: Payment request details
+//       CreatePaymentRequest request;
+//   
+//       //: (optional) Bit mask whose flags must be cleared in order for CreateSale request to be approved, which will be used by key sale_create_tasks:<asset_code>
+//       //: instead of key-value
+//       uint32* allTasks;
+//   
+//       //: reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePaymentRequestOp", [
+  ["request", xdr.lookup("CreatePaymentRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreatePaymentRequestResultCode 
+//   {
+//       //: CreatePaymentRequestOp was successfully applied
+//       SUCCESS = 0,
+//   
+//       //: Payment is invalid
+//       INVALID_PAYMENT = -1,
+//       //: Tasks for the payment request were neither provided in the request nor loaded through KeyValue
+//       PAYMENT_TASKS_NOT_FOUND = -2
+//   };
+//
+// ===========================================================================
+xdr.enum("CreatePaymentRequestResultCode", {
+  success: 0,
+  invalidPayment: -1,
+  paymentTasksNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of the successful payment request creation
+//   struct CreatePaymentRequestSuccessResult 
+//   {
+//       //: ID of the Payment request
+//       uint64 requestID;
+//       //: Indicates whether or not the payment request was auto approved
+//       bool fulfilled;
+//   
+//       //: Result of the payment application
+//       PaymentResult* paymentResult;
+//   
+//       //: reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePaymentRequestSuccessResult", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["paymentResult", xdr.option(xdr.lookup("PaymentResult"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CreatePaymentRequestOp application
+//   union CreatePaymentRequestResult switch (CreatePaymentRequestResultCode code) 
+//   {
+//   case SUCCESS:
+//       CreatePaymentRequestSuccessResult success;
+//   case INVALID_PAYMENT:
+//       PaymentResultCode paymentCode;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreatePaymentRequestResult", {
+  switchOn: xdr.lookup("CreatePaymentRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+    ["invalidPayment", "paymentCode"],
+  ],
+  arms: {
+    success: xdr.lookup("CreatePaymentRequestSuccessResult"),
+    paymentCode: xdr.lookup("PaymentResultCode"),
   },
   defaultArm: xdr.void(),
 });
@@ -14545,21 +14767,24 @@ xdr.struct("RemoveAssetOp", [
 //   {
 //       //: Operation is successfully applied
 //       SUCCESS = 0,
-//       //: Asset not found
+//       //: Asset code is invalid
+//       INVALID_ASSET_CODE = -1,    
 //       //: Asset can't be deleted as there exist asset pairs with it
-//       HAS_PAIR = -1,
+//       HAS_PAIR = -2,
 //       //: Asset can't be deleted as it has active offers
-//       HAS_ACTIVE_OFFERS = -2,
+//       HAS_ACTIVE_OFFERS = -3,
 //       //: Asset can't be deleted as it has active sales
-//       HAS_ACTIVE_SALES = -3
+//       HAS_ACTIVE_SALES = -4
+//   
 //   };
 //
 // ===========================================================================
 xdr.enum("RemoveAssetResultCode", {
   success: 0,
-  hasPair: -1,
-  hasActiveOffer: -2,
-  hasActiveSale: -3,
+  invalidAssetCode: -1,
+  hasPair: -2,
+  hasActiveOffer: -3,
+  hasActiveSale: -4,
 });
 
 // === xdr source ============================================================
@@ -15099,6 +15324,10 @@ xdr.struct("AtomicSwapBidExtended", [
 //           AtomicSwapAskExtended atomicSwapAskExtended;
 //       case CREATE_POLL:
 //           CreatePollExtended createPoll;
+//       case MANAGE_OFFER:
+//           ManageOfferResult manageOfferResult;
+//       case CREATE_PAYMENT:
+//           PaymentResult paymentResult;
 //       }
 //
 // ===========================================================================
@@ -15111,12 +15340,16 @@ xdr.union("ExtendedResultTypeExt", {
     ["createAtomicSwapBid", "atomicSwapBidExtended"],
     ["createAtomicSwapAsk", "atomicSwapAskExtended"],
     ["createPoll", "createPoll"],
+    ["manageOffer", "manageOfferResult"],
+    ["createPayment", "paymentResult"],
   ],
   arms: {
     saleExtended: xdr.lookup("SaleExtended"),
     atomicSwapBidExtended: xdr.lookup("AtomicSwapBidExtended"),
     atomicSwapAskExtended: xdr.lookup("AtomicSwapAskExtended"),
     createPoll: xdr.lookup("CreatePollExtended"),
+    manageOfferResult: xdr.lookup("ManageOfferResult"),
+    paymentResult: xdr.lookup("PaymentResult"),
   },
 });
 
@@ -15157,6 +15390,10 @@ xdr.union("ExtendedResultExt", {
 //           AtomicSwapAskExtended atomicSwapAskExtended;
 //       case CREATE_POLL:
 //           CreatePollExtended createPoll;
+//       case MANAGE_OFFER:
+//           ManageOfferResult manageOfferResult;
+//       case CREATE_PAYMENT:
+//           PaymentResult paymentResult;
 //       } typeExt;
 //   
 //       //: Reserved for future use
@@ -15407,8 +15644,13 @@ xdr.struct("ReviewRequestOp", [
 //   
 //       //KYC
 //       //:Signer data is invalid - either weight is wrong or details are invalid
-//       INVALID_SIGNER_DATA = -1600
+//       INVALID_SIGNER_DATA = -1600,
 //   
+//       // offer
+//       MANAGE_OFFER_FAILED = -1700,
+//       
+//       // payment
+//       PAYMENT_FAILED = -1800
 //   };
 //
 // ===========================================================================
@@ -15474,6 +15716,8 @@ xdr.enum("ReviewRequestResultCode", {
   quoteAssetCannotBeSwapped: -1501,
   atomicSwapBidOwnerFullLine: -1504,
   invalidSignerDatum: -1600,
+  manageOfferFailed: -1700,
+  paymentFailed: -1800,
 });
 
 // === xdr source ============================================================
@@ -15483,6 +15727,10 @@ xdr.enum("ReviewRequestResultCode", {
 //   {
 //   case SUCCESS:
 //       ExtendedResult success;
+//   case MANAGE_OFFER_FAILED:
+//       ManageOfferResultCode manageOfferCode;
+//   case PAYMENT_FAILED:
+//       PaymentResultCode paymentCode;
 //   default:
 //       void;
 //   };
@@ -15493,9 +15741,13 @@ xdr.union("ReviewRequestResult", {
   switchName: "code",
   switches: [
     ["success", "success"],
+    ["manageOfferFailed", "manageOfferCode"],
+    ["paymentFailed", "paymentCode"],
   ],
   arms: {
     success: xdr.lookup("ExtendedResult"),
+    manageOfferCode: xdr.lookup("ManageOfferResultCode"),
+    paymentCode: xdr.lookup("PaymentResultCode"),
   },
   defaultArm: xdr.void(),
 });
@@ -16314,6 +16566,67 @@ xdr.struct("ReviewableRequestResourceCreatePoll", [
 
 // === xdr source ============================================================
 //
+//   struct 
+//       {
+//           //: type of base asset
+//           uint64 baseAssetType;
+//           //: type of quote asset
+//           uint64 quoteAssetType;
+//   
+//           //: code of base asset
+//           AssetCode baseAssetCode;
+//           //: code of quote asset
+//           AssetCode quoteAssetCode;
+//   
+//           bool isBuy;
+//           //: 0 means creation, 
+//           //: 1 means removing,
+//           //: 2 means participate in sale,
+//           //: 3 means remove participation in sale, 
+//           //: UINT32_MAX means any action.
+//           uint32 manageAction;
+//   
+//           //: ID of the order book.
+//           uint64 orderBookID;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceManageOffer", [
+  ["baseAssetType", xdr.lookup("Uint64")],
+  ["quoteAssetType", xdr.lookup("Uint64")],
+  ["baseAssetCode", xdr.lookup("AssetCode")],
+  ["quoteAssetCode", xdr.lookup("AssetCode")],
+  ["isBuy", xdr.bool()],
+  ["manageAction", xdr.lookup("Uint32")],
+  ["orderBookId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct 
+//       {
+//           //: Code of asset in which payment is being made
+//           AssetCode assetCode;
+//           //: Type of asset in which payment is being made
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCreatePayment", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some reviewable request types that
 //   //: can be used to restrict the usage of reviewable requests
 //   union ReviewableRequestResource switch (ReviewableRequestType requestType)
@@ -16398,6 +16711,44 @@ xdr.struct("ReviewableRequestResourceCreatePoll", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } createPoll;
+//   case MANAGE_OFFER:
+//       struct 
+//       {
+//           //: type of base asset
+//           uint64 baseAssetType;
+//           //: type of quote asset
+//           uint64 quoteAssetType;
+//   
+//           //: code of base asset
+//           AssetCode baseAssetCode;
+//           //: code of quote asset
+//           AssetCode quoteAssetCode;
+//   
+//           bool isBuy;
+//           //: 0 means creation, 
+//           //: 1 means removing,
+//           //: 2 means participate in sale,
+//           //: 3 means remove participation in sale, 
+//           //: UINT32_MAX means any action.
+//           uint32 manageAction;
+//   
+//           //: ID of the order book.
+//           uint64 orderBookID;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } manageOffer;
+//   case CREATE_PAYMENT:
+//       struct 
+//       {
+//           //: Code of asset in which payment is being made
+//           AssetCode assetCode;
+//           //: Type of asset in which payment is being made
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } createPayment;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -16414,6 +16765,8 @@ xdr.union("ReviewableRequestResource", {
     ["createAtomicSwapAsk", "createAtomicSwapAskExt"],
     ["createAtomicSwapBid", "createAtomicSwapBidExt"],
     ["createPoll", "createPoll"],
+    ["manageOffer", "manageOffer"],
+    ["createPayment", "createPayment"],
   ],
   arms: {
     createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
@@ -16422,6 +16775,8 @@ xdr.union("ReviewableRequestResource", {
     createAtomicSwapAskExt: xdr.lookup("ReviewableRequestResourceCreateAtomicSwapAskExt"),
     createAtomicSwapBidExt: xdr.lookup("ReviewableRequestResourceCreateAtomicSwapBidExt"),
     createPoll: xdr.lookup("ReviewableRequestResourceCreatePoll"),
+    manageOffer: xdr.lookup("ReviewableRequestResourceManageOffer"),
+    createPayment: xdr.lookup("ReviewableRequestResourceCreatePayment"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -17360,7 +17715,8 @@ xdr.union("SignerRuleResource", {
 //       CLOSE = 15,
 //       UPDATE_END_TIME = 16,
 //       CREATE_WITH_TASKS = 17,
-//       CREATE_FOR_OTHER_WITH_TASKS = 18
+//       CREATE_FOR_OTHER_WITH_TASKS = 18,
+//       REMOVE_FOR_OTHER = 19
 //   };
 //
 // ===========================================================================
@@ -17383,6 +17739,7 @@ xdr.enum("SignerRuleAction", {
   updateEndTime: 16,
   createWithTask: 17,
   createForOtherWithTask: 18,
+  removeForOther: 19,
 });
 
 // === xdr source ============================================================
@@ -18120,6 +18477,36 @@ xdr.struct("LimitsUpdateRequest", [
 
 // === xdr source ============================================================
 //
+//   struct ManageOfferRequest 
+//   {
+//       ManageOfferOp op;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("ManageOfferRequest", [
+  ["op", xdr.lookup("ManageOfferOp")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct CreatePaymentRequest 
+//   {
+//       PaymentOp paymentOp;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreatePaymentRequest", [
+  ["paymentOp", xdr.lookup("PaymentOp")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -18479,6 +18866,10 @@ xdr.struct("WithdrawalRequest", [
 //           InitiateKYCRecoveryOp initiateKYCRecoveryOp;
 //       case CREATE_KYC_RECOVERY_REQUEST:
 //           CreateKYCRecoveryRequestOp createKYCRecoveryRequestOp;
+//       case CREATE_MANAGE_OFFER_REQUEST:
+//           CreateManageOfferRequestOp createManageOfferRequestOp;
+//       case CREATE_PAYMENT_REQUEST:
+//           CreatePaymentRequestOp createPaymentRequestOp;
 //       case REMOVE_ASSET:
 //           RemoveAssetOp removeAssetOp;
 //       }
@@ -18532,6 +18923,8 @@ xdr.union("OperationBody", {
     ["removeAssetPair", "removeAssetPairOp"],
     ["initiateKycRecovery", "initiateKycRecoveryOp"],
     ["createKycRecoveryRequest", "createKycRecoveryRequestOp"],
+    ["createManageOfferRequest", "createManageOfferRequestOp"],
+    ["createPaymentRequest", "createPaymentRequestOp"],
     ["removeAsset", "removeAssetOp"],
   ],
   arms: {
@@ -18579,6 +18972,8 @@ xdr.union("OperationBody", {
     removeAssetPairOp: xdr.lookup("RemoveAssetPairOp"),
     initiateKycRecoveryOp: xdr.lookup("InitiateKycRecoveryOp"),
     createKycRecoveryRequestOp: xdr.lookup("CreateKycRecoveryRequestOp"),
+    createManageOfferRequestOp: xdr.lookup("CreateManageOfferRequestOp"),
+    createPaymentRequestOp: xdr.lookup("CreatePaymentRequestOp"),
     removeAssetOp: xdr.lookup("RemoveAssetOp"),
   },
 });
@@ -18683,6 +19078,10 @@ xdr.union("OperationBody", {
 //           InitiateKYCRecoveryOp initiateKYCRecoveryOp;
 //       case CREATE_KYC_RECOVERY_REQUEST:
 //           CreateKYCRecoveryRequestOp createKYCRecoveryRequestOp;
+//       case CREATE_MANAGE_OFFER_REQUEST:
+//           CreateManageOfferRequestOp createManageOfferRequestOp;
+//       case CREATE_PAYMENT_REQUEST:
+//           CreatePaymentRequestOp createPaymentRequestOp;
 //       case REMOVE_ASSET:
 //           RemoveAssetOp removeAssetOp;
 //       }
@@ -18999,6 +19398,10 @@ xdr.struct("AccountRuleRequirement", [
 //           CreateKYCRecoveryRequestResult createKYCRecoveryRequestResult;
 //       case INITIATE_KYC_RECOVERY:
 //           InitiateKYCRecoveryResult initiateKYCRecoveryResult;
+//       case CREATE_MANAGE_OFFER_REQUEST:
+//           CreateManageOfferRequestResult createManageOfferRequestResult;
+//       case CREATE_PAYMENT_REQUEST:
+//           CreatePaymentRequestResult createPaymentRequestResult;
 //       case REMOVE_ASSET:
 //           RemoveAssetResult removeAssetResult;
 //       }
@@ -19052,6 +19455,8 @@ xdr.union("OperationResultTr", {
     ["removeAssetPair", "removeAssetPairResult"],
     ["createKycRecoveryRequest", "createKycRecoveryRequestResult"],
     ["initiateKycRecovery", "initiateKycRecoveryResult"],
+    ["createManageOfferRequest", "createManageOfferRequestResult"],
+    ["createPaymentRequest", "createPaymentRequestResult"],
     ["removeAsset", "removeAssetResult"],
   ],
   arms: {
@@ -19099,6 +19504,8 @@ xdr.union("OperationResultTr", {
     removeAssetPairResult: xdr.lookup("RemoveAssetPairResult"),
     createKycRecoveryRequestResult: xdr.lookup("CreateKycRecoveryRequestResult"),
     initiateKycRecoveryResult: xdr.lookup("InitiateKycRecoveryResult"),
+    createManageOfferRequestResult: xdr.lookup("CreateManageOfferRequestResult"),
+    createPaymentRequestResult: xdr.lookup("CreatePaymentRequestResult"),
     removeAssetResult: xdr.lookup("RemoveAssetResult"),
   },
 });
@@ -19198,6 +19605,10 @@ xdr.union("OperationResultTr", {
 //           CreateKYCRecoveryRequestResult createKYCRecoveryRequestResult;
 //       case INITIATE_KYC_RECOVERY:
 //           InitiateKYCRecoveryResult initiateKYCRecoveryResult;
+//       case CREATE_MANAGE_OFFER_REQUEST:
+//           CreateManageOfferRequestResult createManageOfferRequestResult;
+//       case CREATE_PAYMENT_REQUEST:
+//           CreatePaymentRequestResult createPaymentRequestResult;
 //       case REMOVE_ASSET:
 //           RemoveAssetResult removeAssetResult;
 //       }
@@ -19864,7 +20275,9 @@ xdr.struct("Fee", [
 //       INITIATE_KYC_RECOVERY = 48,
 //       CREATE_KYC_RECOVERY_REQUEST = 49,
 //       REMOVE_ASSET_PAIR = 50,
-//       REMOVE_ASSET = 51
+//       CREATE_MANAGE_OFFER_REQUEST = 51,
+//       CREATE_PAYMENT_REQUEST = 52,
+//       REMOVE_ASSET = 53
 //   };
 //
 // ===========================================================================
@@ -19913,7 +20326,9 @@ xdr.enum("OperationType", {
   initiateKycRecovery: 48,
   createKycRecoveryRequest: 49,
   removeAssetPair: 50,
-  removeAsset: 51,
+  createManageOfferRequest: 51,
+  createPaymentRequest: 52,
+  removeAsset: 53,
 });
 
 // === xdr source ============================================================

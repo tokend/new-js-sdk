@@ -90,7 +90,8 @@ export class ApiCaller {
       method: methods.GET,
       needSign,
       endpoint,
-      query
+      query,
+      isEmptyBodyAllowed: true
     })
   }
 
