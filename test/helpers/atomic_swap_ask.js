@@ -51,7 +51,7 @@ export class AtomicSwapAsk extends Helper {
         'anyRandomStringWeDoNotCareNow'
       )
 
-      const { data } = await api.get('/v3/atomic_swap_asks/' + id)
+      const { data } = await api.get('/v3/atomic_swap_asks/' + id + '?include=quote_assets')
       return data
     })
   }

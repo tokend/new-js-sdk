@@ -45,15 +45,12 @@ export class Helper {
       const { data } = await this.api.postTxEnvelope(envelope)
       return data.data.attributes
     } catch (e) {
-      if (e instanceof BadRequestError) {
+      if ((e instanceof BadRequestError) || (e instanceof TransactionError)) {
         const errorString = this.tryGetTxErrorString(e)
         if (errorString) {
           throw new Error(errorString)
         }
         throw e
-      }
-      if (e instanceof TransactionError) {
-        throw new Error(e.errorResults())
       }
       throw e
     }
