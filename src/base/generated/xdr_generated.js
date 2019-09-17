@@ -1,6 +1,6 @@
-// revision: a56b2b2224be942764d8a4380f11233a24f0953f
+// revision: e570d50a9507f8945b92f370dc2ded632bee9120
 // branch:   feature/swap
-// Automatically generated on 2019-09-15T17:08:13+00:00
+// Automatically generated on 2019-09-17T13:27:39+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -2560,7 +2560,7 @@ xdr.struct("StatisticsEntry", [
 //
 //   struct SwapEntry
 //   {
-//       uint64 swapID;
+//       uint64 id;
 //   
 //       Hash secretHash;
 //   
@@ -2583,7 +2583,7 @@ xdr.struct("StatisticsEntry", [
 //
 // ===========================================================================
 xdr.struct("SwapEntry", [
-  ["swapId", xdr.lookup("Uint64")],
+  ["id", xdr.lookup("Uint64")],
   ["secretHash", xdr.lookup("Hash")],
   ["source", xdr.lookup("AccountId")],
   ["sourceBalance", xdr.lookup("BalanceId")],
@@ -3978,12 +3978,12 @@ xdr.struct("LedgerKeyAccountSpecificRule", [
 //
 //   struct
 //       {
-//           uint64 swapID;
+//           uint64 id;
 //       }
 //
 // ===========================================================================
 xdr.struct("LedgerKeySwap", [
-  ["swapId", xdr.lookup("Uint64")],
+  ["id", xdr.lookup("Uint64")],
 ]);
 
 // === xdr source ============================================================
@@ -4289,7 +4289,7 @@ xdr.struct("LedgerKeySwap", [
 //   case SWAP:
 //       struct
 //       {
-//           uint64 swapID;
+//           uint64 id;
 //       } swap;
 //   };
 //
@@ -5795,9 +5795,7 @@ xdr.struct("CloseSwapOp", [
 //       INVALID_SECRET = -2,
 //       //: After the swap fulfillment, the destination balance will exceed the limit (total amount on the balance will be greater than UINT64_MAX)
 //       LINE_FULL = -3,
-//       NOT_AUTHORIZED = -4,
-//       NOT_READY = -5
-//   
+//       NOT_AUTHORIZED = -4
 //   };
 //
 // ===========================================================================
@@ -5807,7 +5805,6 @@ xdr.enum("CloseSwapResultCode", {
   invalidSecret: -2,
   lineFull: -3,
   notAuthorized: -4,
-  notReady: -5,
 });
 
 // === xdr source ============================================================
@@ -14328,24 +14325,22 @@ xdr.struct("OpenSwapOp", [
 //       //: Not enough funds in the source account
 //       UNDERFUNDED = -2,
 //       //: There is no balance found with an ID provided in `destinations.balanceID`
-//       DESTINATION_BALANCE_NOT_FOUND = -3,
 //       //: Sender balance asset and receiver balance asset are not equal
-//       BALANCE_ASSETS_MISMATCHED = -4,
+//       BALANCE_ASSETS_MISMATCHED = -3,
 //       //: There is no balance found with ID provided in `sourceBalanceID`
-//       SRC_BALANCE_NOT_FOUND = -5,
+//       SRC_BALANCE_NOT_FOUND = -4,
 //       //: Payment asset does not have a `SWAPPABLE` policy set
-//       NOT_ALLOWED_BY_ASSET_POLICY = -6,
+//       NOT_ALLOWED_BY_ASSET_POLICY = -5,
 //       //: Overflow during total fee calculation
-//       INVALID_DESTINATION_FEE = -7,
+//       INVALID_DESTINATION_FEE = -6,
 //       //: Payment fee amount is insufficient
-//       INSUFFICIENT_FEE_AMOUNT = -8,
+//       INSUFFICIENT_FEE_AMOUNT = -7,
 //       //: Fee charged from destination balance is greater than the amount
-//       AMOUNT_IS_LESS_THAN_DEST_FEE = -9,
+//       AMOUNT_IS_LESS_THAN_DEST_FEE = -8,
 //       //: There is no account found with an ID provided in `destination.accountID`
-//       DESTINATION_ACCOUNT_NOT_FOUND = -10,
 //       //: Amount precision and asset precision are mismatched
-//       INCORRECT_AMOUNT_PRECISION = -11,
-//       INVALID_DETAILS = -12
+//       INCORRECT_AMOUNT_PRECISION = -9,
+//       INVALID_DETAILS = -10
 //   
 //   };
 //
@@ -14354,16 +14349,14 @@ xdr.enum("OpenSwapResultCode", {
   success: 0,
   malformed: -1,
   underfunded: -2,
-  destinationBalanceNotFound: -3,
-  balanceAssetsMismatched: -4,
-  srcBalanceNotFound: -5,
-  notAllowedByAssetPolicy: -6,
-  invalidDestinationFee: -7,
-  insufficientFeeAmount: -8,
-  amountIsLessThanDestFee: -9,
-  destinationAccountNotFound: -10,
-  incorrectAmountPrecision: -11,
-  invalidDetail: -12,
+  balanceAssetsMismatched: -3,
+  srcBalanceNotFound: -4,
+  notAllowedByAssetPolicy: -5,
+  invalidDestinationFee: -6,
+  insufficientFeeAmount: -7,
+  amountIsLessThanDestFee: -8,
+  incorrectAmountPrecision: -9,
+  invalidDetail: -10,
 });
 
 // === xdr source ============================================================
