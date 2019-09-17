@@ -19,19 +19,22 @@ export async function soldAtomicSwapAsk (opts, signerKp) {
   const ask = await atomicSwapAskHelper.mustLoadById(opts.askID)
 
   let baseAmount = '5'
+  const quoteAsset0 = ask.quoteAssets[0].quoteAsset
+  const quoteAsset1 = ask.quoteAssets[1].quoteAsset
+  log.info('create accounts and fund them with ' + quoteAsset0 + ' and ' + quoteAsset1)
 
   const [account1, account2] = await Promise.all([
-    createFundedGeneral({ [ask.quoteAssets[0].id]: baseAmount }),
-    createFundedGeneral({ [ask.quoteAssets[1].id]: baseAmount })
+    createFundedGeneral({ [quoteAsset0]: baseAmount }),
+    createFundedGeneral({ [quoteAsset1]: baseAmount })
   ])
   log.info('New accounts created and funded')
 
   await Promise.all([
     createAndApproveAtomicSwapRequest(
-      { baseAmount: baseAmount, askID: ask.id, quoteAsset: ask.quoteAssets[0].id },
+      { baseAmount: baseAmount, askID: ask.id, quoteAsset: quoteAsset0 },
       account1.accountKp),
     createAndApproveAtomicSwapRequest(
-      { baseAmount: baseAmount, askID: ask.id, quoteAsset: ask.quoteAssets[1].id },
+      { baseAmount: baseAmount, askID: ask.id, quoteAsset: quoteAsset1 },
       account2.accountKp)
   ])
 }
