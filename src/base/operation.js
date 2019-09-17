@@ -227,6 +227,7 @@ export class Operation extends BaseOperation {
       throw new TypeError('action argument should be value of xdr.ManageBalanceAction enum')
     }
     if (!Operation.isValidAsset(opts.asset)) {
+      console.log(opts.asset)
       throw new TypeError('asset is invalid')
     }
 

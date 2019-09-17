@@ -24,7 +24,7 @@ export class Poll extends Helper {
   async create (opts, ownerKp = this.masterKp) {
     const DEFAULTS = {
       startTime: '' + moment().add(5, 's').format('X'),
-      endTime: '' + moment().add(30, 's').format('X'),
+      endTime: '' + moment().add(60, 's').format('X'),
       allTasks: 1,
       creatorDetails: {
         name: 'poll',
@@ -120,7 +120,8 @@ export class Poll extends Helper {
       const { data } = await api.get('/v3/polls/' + id)
       // 2 means poll closed
       if (data.pollState.value !== 2) {
-        return undefined
+        await this.delay(1500)
+        return this.mustLoadClosed(id)
       }
 
       return data

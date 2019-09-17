@@ -12,7 +12,7 @@ import moment from 'moment'
 export async function updatePollEndTime (pollID, newEndTime) {
   const log = logger.new('updatePollEndTime')
   if (isUndefined(newEndTime)) {
-    newEndTime = '' + moment().add(30, 's').format('X')
+    newEndTime = '' + moment().add(50, 's').format('X')
   }
 
   await pollHelper.mustLoadById(pollID)
