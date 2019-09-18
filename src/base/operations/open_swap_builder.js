@@ -5,6 +5,12 @@ import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
 import { Hyper } from 'js-xdr'
 import { Hasher } from '../util/hasher'
+import {
+  validateAmount,
+  validateBalanceKey,
+  validateCreatorDetails,
+  validateUint64
+} from '../../utils/validators'
 
 export class OpenSwapBuilder {
   static prepareAttrs (opts) {
@@ -24,10 +30,6 @@ export class OpenSwapBuilder {
       )
     } else {
       throw new TypeError('opts.destination is invalid')
-    }
-
-    if (!BaseOperation.isValidAmount(opts.amount)) {
-      throw new TypeError('amount argument must be of type String and represent a positive number')
     }
 
     if (isUndefined(opts.feeData)) {
@@ -65,10 +67,6 @@ export class OpenSwapBuilder {
       sourcePaysForDest: opts.feeData.sourcePaysForDest,
       ext: new xdr.PaymentFeeDataExt(xdr.LedgerVersion.emptyVersion())
     })
-
-    if (isUndefined(opts.details)) {
-      throw new Error('details is invalid')
-    }
 
     attrs.details = JSON.stringify(opts.details)
     attrs.sourceBalance = Keypair.fromBalanceId(opts.sourceBalance).xdrBalanceId()
@@ -112,6 +110,11 @@ export class OpenSwapBuilder {
    * @returns {xdr.OpenSwapOp}
    */
   static openSwap (opts) {
+    validateBalanceKey({ value: opts.sourceBalance, fieldName: 'opts.sourceBalance' })
+    validateCreatorDetails({ value: opts.details, fieldName: 'opts.details' })
+    validateUint64({ value: opts.lockTime, fieldName: 'opts.lockTime' })
+    validateAmount({ value: opts.amount, fieldName: 'opts.amount' })
+
     let attrs = OpenSwapBuilder.prepareAttrs(opts)
     let openSwapOp = new xdr.OpenSwapOp(attrs)
     let opAttrs = {}

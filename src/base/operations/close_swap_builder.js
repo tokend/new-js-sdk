@@ -3,6 +3,7 @@ import xdr from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
 import { Hasher } from '../util/hasher'
+import { validateUint64 } from '../../utils/validators'
 
 export class CloseSwapBuilder {
   static prepareAttrs (opts) {
@@ -26,6 +27,8 @@ export class CloseSwapBuilder {
    * @returns {xdr.CloseSwapOp}
    */
   static closeSwap (opts) {
+    validateUint64({ value: opts.swapId, fieldName: 'opts.swapId' })
+
     let attrs = CloseSwapBuilder.prepareAttrs(opts)
     let closeSwapOp = new xdr.CloseSwapOp(attrs)
     let opAttrs = {}

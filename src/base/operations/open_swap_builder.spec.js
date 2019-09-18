@@ -9,7 +9,9 @@ describe('OpenSwap op', function () {
   let destinationAccountId = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
   let amount = '100'
   let secretHash = 'bc7adbde0e435e79ceaca3cf1b4956267e6aedfefec318e80a52fdad4eb16a9d'
-
+  let details = {
+    very: 'important'
+  }
   it('OpenSwap for balance success', function () {
     let op = OpenSwapBuilder.openSwap({
       sourceBalance: sourceBalance,
@@ -26,7 +28,7 @@ describe('OpenSwap op', function () {
         },
         sourcePaysForDest: true
       },
-      details: '{"very": "important"}',
+      details: details,
       secretHash: 'bc7adbde0e435e79ceaca3cf1b4956267e6aedfefec318e80a52fdad4eb16a9d',
       lockTime: '4123421'
     })
@@ -42,7 +44,7 @@ describe('OpenSwap op', function () {
     expect(obj.feeData.sourceFee.percent).to.be.equal('120')
     expect(obj.feeData.destinationFee.fixed).to.be.equal('10')
     expect(obj.feeData.destinationFee.percent).to.be.equal('20')
-    expect(obj.details).to.be.equal('{"very": "important"}')
+    expect(JSON.stringify(obj.details)).to.be.equal(JSON.stringify(details))
     expect(obj.secretHash).to.be.equal(secretHash)
   })
   it('OpenSwap for account success', function () {
@@ -61,7 +63,7 @@ describe('OpenSwap op', function () {
         },
         sourcePaysForDest: true
       },
-      details: '{"very": "important"}',
+      details: details,
       secretHash: 'bc7adbde0e435e79ceaca3cf1b4956267e6aedfefec318e80a52fdad4eb16a9d',
       lockTime: '4123421'
     })
@@ -77,7 +79,7 @@ describe('OpenSwap op', function () {
     expect(obj.feeData.sourceFee.percent).to.be.equal('120')
     expect(obj.feeData.destinationFee.fixed).to.be.equal('10')
     expect(obj.feeData.destinationFee.percent).to.be.equal('20')
-    expect(obj.details).to.be.equal('{"very": "important"}')
+    expect(JSON.stringify(obj.details)).to.be.equal(JSON.stringify(details))
     expect(obj.secretHash).to.be.equal(secretHash)
   })
 })
