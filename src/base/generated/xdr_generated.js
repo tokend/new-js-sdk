@@ -1,6 +1,6 @@
-// revision: 518344935267df8a5c409d5abd84bc5a00ba909c
+// revision: dcb0962ff5cc056c96c54b6678f34278a66eeddd
 // branch:   feature/swap
-// Automatically generated on 2019-09-18T07:44:30+00:00
+// Automatically generated on 2019-09-18T10:58:21+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -14346,7 +14346,8 @@ xdr.struct("OpenSwapOp", [
 //       //: Amount precision and asset precision are mismatched
 //       INCORRECT_AMOUNT_PRECISION = -9,
 //       INVALID_DETAILS = -10,
-//       INVALID_LOCK_TIME = -11
+//       INVALID_LOCK_TIME = -11,
+//       INVALID_AMOUNT = -12
 //   
 //   };
 //
@@ -14364,6 +14365,7 @@ xdr.enum("OpenSwapResultCode", {
   incorrectAmountPrecision: -9,
   invalidDetail: -10,
   invalidLockTime: -11,
+  invalidAmount: -12,
 });
 
 // === xdr source ============================================================
