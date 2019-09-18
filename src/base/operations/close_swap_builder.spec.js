@@ -7,7 +7,7 @@ describe('CloseSwap op', function () {
 
   it('Close swap', function () {
     let op = CloseSwapBuilder.closeSwap({
-      secretHash: 'bc7adbde0e435e79ceaca3cf1b4956267e6aedfefec318e80a52fdad4eb16a9d',
+      secret: 'bc7adbde0e435e79ceaca3cf1b4956267e6aedfefec318e80a52fdad4eb16a9d',
       swapId: '4123421'
     })
     let xdrOp = op.toXDR('hex')

@@ -4,6 +4,7 @@ import xdr from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
 import { Hyper } from 'js-xdr'
+import { Hasher } from '../util/hasher'
 
 export class OpenSwapBuilder {
   static prepareAttrs (opts) {
@@ -69,10 +70,10 @@ export class OpenSwapBuilder {
       throw new Error('details is invalid')
     }
 
+    attrs.details = JSON.stringify(opts.details)
     attrs.sourceBalance = Keypair.fromBalanceId(opts.sourceBalance).xdrBalanceId()
     attrs.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
-    attrs.details = opts.details
-    attrs.secretHash = Buffer.from(opts.secretHash, 'hex')
+    attrs.secretHash = Hasher.hash(opts.secretHash)
     attrs.lockTime = Hyper.fromString(opts.lockTime)
 
     attrs.ext = new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
@@ -106,7 +107,8 @@ export class OpenSwapBuilder {
    * * @param {bool} opts.feeData.sourcePaysForDest
    * @param {string} opts.secretHash
    * @param {string} opts.lockTime
-   * @param {string} opts.details
+   * @param {object} opts.details
+   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @returns {xdr.OpenSwapOp}
    */
   static openSwap (opts) {
@@ -150,8 +152,8 @@ export class OpenSwapBuilder {
       },
       sourcePaysForDest: attrs.feeData().sourcePaysForDest()
     }
-    result.details = attrs.details().toString()
-    result.secretHash = Buffer.from(attrs.secretHash()).toString('hex')
+    result.details = JSON.parse(attrs.details())
+    result.secretHash = attrs.secretHash().toString('hex')
     result.lockTime = attrs.lockTime().toString()
 
     return result

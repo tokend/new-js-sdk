@@ -1,6 +1,6 @@
-// revision: e570d50a9507f8945b92f370dc2ded632bee9120
+// revision: 518344935267df8a5c409d5abd84bc5a00ba909c
 // branch:   feature/swap
-// Automatically generated on 2019-09-17T13:27:39+00:00
+// Automatically generated on 2019-09-18T07:44:30+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -3979,11 +3979,14 @@ xdr.struct("LedgerKeyAccountSpecificRule", [
 //   struct
 //       {
 //           uint64 id;
+//   
+//           EmptyExt ext;
 //       }
 //
 // ===========================================================================
 xdr.struct("LedgerKeySwap", [
   ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -4290,6 +4293,8 @@ xdr.struct("LedgerKeySwap", [
 //       struct
 //       {
 //           uint64 id;
+//   
+//           EmptyExt ext;
 //       } swap;
 //   };
 //
@@ -14340,7 +14345,8 @@ xdr.struct("OpenSwapOp", [
 //       //: There is no account found with an ID provided in `destination.accountID`
 //       //: Amount precision and asset precision are mismatched
 //       INCORRECT_AMOUNT_PRECISION = -9,
-//       INVALID_DETAILS = -10
+//       INVALID_DETAILS = -10,
+//       INVALID_LOCK_TIME = -11
 //   
 //   };
 //
@@ -14357,6 +14363,7 @@ xdr.enum("OpenSwapResultCode", {
   amountIsLessThanDestFee: -8,
   incorrectAmountPrecision: -9,
   invalidDetail: -10,
+  invalidLockTime: -11,
 });
 
 // === xdr source ============================================================

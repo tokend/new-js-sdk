@@ -42,6 +42,8 @@ export { RemoveAssetPairOpBuilder } from './operations/remove_asset_pair_op_buil
 export { CreateKYCRecoveryRequestBuilder } from './operations/create_kyc_recovery_request_builder'
 export { CreateManageOfferRequestBuilder } from './operations/create_manage_offer_request_builder'
 export { CreatePaymentRequestBuilder } from './operations/create_payment_request_builder'
+export { OpenSwapBuilder } from './operations/open_swap_builder'
+export { CloseSwapBuilder } from './operations/close_swap_builder'
 
 export * from './strkey'
 
