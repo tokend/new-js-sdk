@@ -1,6 +1,6 @@
-// revision: 47ee60cab248c2e15b099c8e7d6fb46cf4f2d388
-// branch:   (HEAD
-// Automatically generated on 2019-09-14T12:40:24+00:00
+// revision: dcb0962ff5cc056c96c54b6678f34278a66eeddd
+// branch:   feature/swap
+// Automatically generated on 2019-09-18T10:58:21+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -683,7 +683,8 @@ xdr.struct("AssetPairEntry", [
 //   	//: Defines whether or not asset can be base in atomic swap
 //   	CAN_BE_BASE_IN_ATOMIC_SWAP = 32,
 //   	//: Defines whether or not asset can be quote in atomic swap
-//   	CAN_BE_QUOTE_IN_ATOMIC_SWAP = 64
+//   	CAN_BE_QUOTE_IN_ATOMIC_SWAP = 64,
+//       SWAPPABLE = 128
 //   };
 //
 // ===========================================================================
@@ -695,6 +696,7 @@ xdr.enum("AssetPolicy", {
   issuanceManualReviewRequired: 16,
   canBeBaseInAtomicSwap: 32,
   canBeQuoteInAtomicSwap: 64,
+  swappable: 128,
 });
 
 // === xdr source ============================================================
@@ -1096,7 +1098,8 @@ xdr.struct("ExternalSystemAccountId", [
 //       OPERATION_FEE = 6,
 //       PAYOUT_FEE = 7,
 //       ATOMIC_SWAP_SALE_FEE = 8,
-//       ATOMIC_SWAP_PURCHASE_FEE = 9
+//       ATOMIC_SWAP_PURCHASE_FEE = 9,
+//       SWAP_FEE = 10
 //   };
 //
 // ===========================================================================
@@ -1111,6 +1114,7 @@ xdr.enum("FeeType", {
   payoutFee: 7,
   atomicSwapSaleFee: 8,
   atomicSwapPurchaseFee: 9,
+  swapFee: 10,
 });
 
 // === xdr source ============================================================
@@ -2554,6 +2558,46 @@ xdr.struct("StatisticsEntry", [
 
 // === xdr source ============================================================
 //
+//   struct SwapEntry
+//   {
+//       uint64 id;
+//   
+//       Hash secretHash;
+//   
+//       AccountID source;
+//       BalanceID sourceBalance;
+//   
+//       BalanceID destinationBalance;
+//   
+//       longstring details;
+//   
+//       uint64 amount;
+//   
+//       int64 createdAt;
+//       int64 lockTime;
+//   
+//   	uint64 fee;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("SwapEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["secretHash", xdr.lookup("Hash")],
+  ["source", xdr.lookup("AccountId")],
+  ["sourceBalance", xdr.lookup("BalanceId")],
+  ["destinationBalance", xdr.lookup("BalanceId")],
+  ["details", xdr.lookup("Longstring")],
+  ["amount", xdr.lookup("Uint64")],
+  ["createdAt", xdr.lookup("Int64")],
+  ["lockTime", xdr.lookup("Int64")],
+  ["fee", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   struct SingleChoiceVote
 //   {
 //       uint32 choice;
@@ -2691,6 +2735,8 @@ xdr.enum("ThresholdIndices", {
 //           VoteEntry vote;
 //       case ACCOUNT_SPECIFIC_RULE:
 //           AccountSpecificRuleEntry accountSpecificRule;
+//       case SWAP:
+//           SwapEntry swap;
 //       }
 //
 // ===========================================================================
@@ -2728,6 +2774,7 @@ xdr.union("LedgerEntryData", {
     ["poll", "poll"],
     ["vote", "vote"],
     ["accountSpecificRule", "accountSpecificRule"],
+    ["swap", "swap"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
@@ -2760,6 +2807,7 @@ xdr.union("LedgerEntryData", {
     poll: xdr.lookup("PollEntry"),
     vote: xdr.lookup("VoteEntry"),
     accountSpecificRule: xdr.lookup("AccountSpecificRuleEntry"),
+    swap: xdr.lookup("SwapEntry"),
   },
 });
 
@@ -2850,6 +2898,8 @@ xdr.union("LedgerEntryExt", {
 //           VoteEntry vote;
 //       case ACCOUNT_SPECIFIC_RULE:
 //           AccountSpecificRuleEntry accountSpecificRule;
+//       case SWAP:
+//           SwapEntry swap;
 //       }
 //       data;
 //   
@@ -3926,6 +3976,21 @@ xdr.struct("LedgerKeyAccountSpecificRule", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeySwap", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union LedgerKey switch (LedgerEntryType type)
 //   {
 //   case ACCOUNT:
@@ -4224,6 +4289,13 @@ xdr.struct("LedgerKeyAccountSpecificRule", [
 //   
 //           EmptyExt ext;
 //       } accountSpecificRule;
+//   case SWAP:
+//       struct
+//       {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       } swap;
 //   };
 //
 // ===========================================================================
@@ -4261,6 +4333,7 @@ xdr.union("LedgerKey", {
     ["poll", "poll"],
     ["vote", "vote"],
     ["accountSpecificRule", "accountSpecificRule"],
+    ["swap", "swap"],
   ],
   arms: {
     account: xdr.lookup("LedgerKeyAccount"),
@@ -4293,6 +4366,7 @@ xdr.union("LedgerKey", {
     poll: xdr.lookup("LedgerKeyPoll"),
     vote: xdr.lookup("LedgerKeyVote"),
     accountSpecificRule: xdr.lookup("LedgerKeyAccountSpecificRule"),
+    swap: xdr.lookup("LedgerKeySwap"),
   },
 });
 
@@ -5692,6 +5766,103 @@ xdr.union("CheckSaleStateResult", {
   ],
   arms: {
     success: xdr.lookup("CheckSaleStateSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CloseSwapOp
+//   {
+//       uint64 swapID;
+//   
+//       Hash* secret;
+//   
+//       //: reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CloseSwapOp", [
+  ["swapId", xdr.lookup("Uint64")],
+  ["secret", xdr.option(xdr.lookup("Hash"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CloseSwapResultCode
+//   {
+//       //: CloseSwap was successful 
+//       SUCCESS = 0,
+//   
+//       SWAP_EXPIRED = -1,
+//       INVALID_SECRET = -2,
+//       //: After the swap fulfillment, the destination balance will exceed the limit (total amount on the balance will be greater than UINT64_MAX)
+//       LINE_FULL = -3,
+//       NOT_AUTHORIZED = -4
+//   };
+//
+// ===========================================================================
+xdr.enum("CloseSwapResultCode", {
+  success: 0,
+  swapExpired: -1,
+  invalidSecret: -2,
+  lineFull: -3,
+  notAuthorized: -4,
+});
+
+// === xdr source ============================================================
+//
+//   enum CloseSwapEffect
+//   {
+//       //: Swap closed
+//       CLOSED = 0,
+//       //: Swap cancelled updated
+//       CANCELLED = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("CloseSwapEffect", {
+  closed: 0,
+  cancelled: 1,
+});
+
+// === xdr source ============================================================
+//
+//   //: CloseSwapSuccess is used to pass saved ledger hash and license hash
+//   struct CloseSwapSuccess {
+//       CloseSwapEffect effect;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CloseSwapSuccess", [
+  ["effect", xdr.lookup("CloseSwapEffect")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: CloseSwapResult is a result of CloseSwap operation application
+//   union CloseSwapResult switch (CloseSwapResultCode code)
+//   {
+//   case SUCCESS:
+//       CloseSwapSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CloseSwapResult", {
+  switchOn: xdr.lookup("CloseSwapResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CloseSwapSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -14087,6 +14258,176 @@ xdr.union("ManageVoteResult", {
 
 // === xdr source ============================================================
 //
+//   union switch (PaymentDestinationType type) {
+//          case ACCOUNT:
+//              AccountID accountID;
+//          case BALANCE:
+//              BalanceID balanceID;
+//      }
+//
+// ===========================================================================
+xdr.union("OpenSwapOpDestination", {
+  switchOn: xdr.lookup("PaymentDestinationType"),
+  switchName: "type",
+  switches: [
+    ["account", "accountId"],
+    ["balance", "balanceId"],
+  ],
+  arms: {
+    accountId: xdr.lookup("AccountId"),
+    balanceId: xdr.lookup("BalanceId"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct OpenSwapOp
+//   {
+//       BalanceID sourceBalance;
+//   
+//       uint64 amount;
+//   
+//      //: `destination` defines the type of instance that receives the payment based on given PaymentDestinationType
+//      union switch (PaymentDestinationType type) {
+//          case ACCOUNT:
+//              AccountID accountID;
+//          case BALANCE:
+//              BalanceID balanceID;
+//      } destination;
+//   
+//       PaymentFeeData feeData;
+//   
+//       longstring details;
+//   
+//       Hash secretHash;
+//   
+//       int64 lockTime;
+//   
+//       //: reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("OpenSwapOp", [
+  ["sourceBalance", xdr.lookup("BalanceId")],
+  ["amount", xdr.lookup("Uint64")],
+  ["destination", xdr.lookup("OpenSwapOpDestination")],
+  ["feeData", xdr.lookup("PaymentFeeData")],
+  ["details", xdr.lookup("Longstring")],
+  ["secretHash", xdr.lookup("Hash")],
+  ["lockTime", xdr.lookup("Int64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum OpenSwapResultCode
+//   {
+//       //: OpenSwap was successful 
+//       SUCCESS = 0,
+//   
+//       MALFORMED = -1,
+//       //: Not enough funds in the source account
+//       UNDERFUNDED = -2,
+//       //: There is no balance found with an ID provided in `destinations.balanceID`
+//       //: Sender balance asset and receiver balance asset are not equal
+//       BALANCE_ASSETS_MISMATCHED = -3,
+//       //: There is no balance found with ID provided in `sourceBalanceID`
+//       SRC_BALANCE_NOT_FOUND = -4,
+//       //: Payment asset does not have a `SWAPPABLE` policy set
+//       NOT_ALLOWED_BY_ASSET_POLICY = -5,
+//       //: Overflow during total fee calculation
+//       INVALID_DESTINATION_FEE = -6,
+//       //: Payment fee amount is insufficient
+//       INSUFFICIENT_FEE_AMOUNT = -7,
+//       //: Fee charged from destination balance is greater than the amount
+//       AMOUNT_IS_LESS_THAN_DEST_FEE = -8,
+//       //: There is no account found with an ID provided in `destination.accountID`
+//       //: Amount precision and asset precision are mismatched
+//       INCORRECT_AMOUNT_PRECISION = -9,
+//       INVALID_DETAILS = -10,
+//       INVALID_LOCK_TIME = -11,
+//       INVALID_AMOUNT = -12
+//   
+//   };
+//
+// ===========================================================================
+xdr.enum("OpenSwapResultCode", {
+  success: 0,
+  malformed: -1,
+  underfunded: -2,
+  balanceAssetsMismatched: -3,
+  srcBalanceNotFound: -4,
+  notAllowedByAssetPolicy: -5,
+  invalidDestinationFee: -6,
+  insufficientFeeAmount: -7,
+  amountIsLessThanDestFee: -8,
+  incorrectAmountPrecision: -9,
+  invalidDetail: -10,
+  invalidLockTime: -11,
+  invalidAmount: -12,
+});
+
+// === xdr source ============================================================
+//
+//   //: OpenSwapSuccess is used to pass saved ledger hash and license hash
+//   struct OpenSwapSuccess {
+//       uint64 swapID;
+//   
+//       //: ID of the destination account
+//       AccountID destination;
+//       //: ID of the destination balance
+//       BalanceID destinationBalance;
+//   
+//       //: Code of an asset used in swap
+//       AssetCode asset;
+//   
+//       //: Fee to be charged from the source balance
+//       Fee actualSourceFee;
+//       //: Fee to be charged from the destination balance
+//       Fee actualDestinationFee;
+//   
+//       //: reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("OpenSwapSuccess", [
+  ["swapId", xdr.lookup("Uint64")],
+  ["destination", xdr.lookup("AccountId")],
+  ["destinationBalance", xdr.lookup("BalanceId")],
+  ["asset", xdr.lookup("AssetCode")],
+  ["actualSourceFee", xdr.lookup("Fee")],
+  ["actualDestinationFee", xdr.lookup("Fee")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: OpenSwapResult is a result of OpenSwap operation application
+//   union OpenSwapResult switch (OpenSwapResultCode code)
+//   {
+//   case SUCCESS:
+//       OpenSwapSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("OpenSwapResult", {
+  switchOn: xdr.lookup("OpenSwapResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("OpenSwapSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -16566,7 +16907,7 @@ xdr.struct("ReviewableRequestResourceCreatePoll", [
 
 // === xdr source ============================================================
 //
-//   struct 
+//   struct
 //       {
 //           //: type of base asset
 //           uint64 baseAssetType;
@@ -16579,10 +16920,10 @@ xdr.struct("ReviewableRequestResourceCreatePoll", [
 //           AssetCode quoteAssetCode;
 //   
 //           bool isBuy;
-//           //: 0 means creation, 
+//           //: 0 means creation,
 //           //: 1 means removing,
 //           //: 2 means participate in sale,
-//           //: 3 means remove participation in sale, 
+//           //: 3 means remove participation in sale,
 //           //: UINT32_MAX means any action.
 //           uint32 manageAction;
 //   
@@ -16607,7 +16948,7 @@ xdr.struct("ReviewableRequestResourceManageOffer", [
 
 // === xdr source ============================================================
 //
-//   struct 
+//   struct
 //       {
 //           //: Code of asset in which payment is being made
 //           AssetCode assetCode;
@@ -16712,7 +17053,7 @@ xdr.struct("ReviewableRequestResourceCreatePayment", [
 //           EmptyExt ext;
 //       } createPoll;
 //   case MANAGE_OFFER:
-//       struct 
+//       struct
 //       {
 //           //: type of base asset
 //           uint64 baseAssetType;
@@ -16725,10 +17066,10 @@ xdr.struct("ReviewableRequestResourceCreatePayment", [
 //           AssetCode quoteAssetCode;
 //   
 //           bool isBuy;
-//           //: 0 means creation, 
+//           //: 0 means creation,
 //           //: 1 means removing,
 //           //: 2 means participate in sale,
-//           //: 3 means remove participation in sale, 
+//           //: 3 means remove participation in sale,
 //           //: UINT32_MAX means any action.
 //           uint32 manageAction;
 //   
@@ -16739,7 +17080,7 @@ xdr.struct("ReviewableRequestResourceCreatePayment", [
 //           EmptyExt ext;
 //       } manageOffer;
 //   case CREATE_PAYMENT:
-//       struct 
+//       struct
 //       {
 //           //: Code of asset in which payment is being made
 //           AssetCode assetCode;
@@ -17009,6 +17350,26 @@ xdr.union("AccountRuleResourceAccountSpecificRuleExt", {
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: code of the asset
+//           AssetCode assetCode;
+//           //: type of asset
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceSwap", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
@@ -17129,6 +17490,17 @@ xdr.union("AccountRuleResourceAccountSpecificRuleExt", {
 //               EmptyExt ext;
 //           } accountSpecificRule;
 //       } accountSpecificRuleExt;
+//   case SWAP:
+//       struct
+//       {
+//           //: code of the asset
+//           AssetCode assetCode;
+//           //: type of asset
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } swap;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -17150,6 +17522,7 @@ xdr.union("AccountRuleResource", {
     ["vote", "vote"],
     ["initiateKycRecovery", "initiateKycRecovery"],
     ["accountSpecificRule", "accountSpecificRuleExt"],
+    ["swap", "swap"],
   ],
   arms: {
     asset: xdr.lookup("AccountRuleResourceAsset"),
@@ -17162,6 +17535,7 @@ xdr.union("AccountRuleResource", {
     vote: xdr.lookup("AccountRuleResourceVote"),
     initiateKycRecovery: xdr.lookup("AccountRuleResourceInitiateKycRecovery"),
     accountSpecificRuleExt: xdr.lookup("AccountRuleResourceAccountSpecificRuleExt"),
+    swap: xdr.lookup("AccountRuleResourceSwap"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -17191,7 +17565,8 @@ xdr.union("AccountRuleResource", {
 //       REMOVE = 17,
 //       UPDATE_END_TIME = 18,
 //       CREATE_FOR_OTHER_WITH_TASKS = 19,
-//       REMOVE_FOR_OTHER = 20
+//       REMOVE_FOR_OTHER = 20,
+//       EXCHANGE = 21
 //   };
 //
 // ===========================================================================
@@ -17216,6 +17591,7 @@ xdr.enum("AccountRuleAction", {
   updateEndTime: 18,
   createForOtherWithTask: 19,
   removeForOther: 20,
+  exchange: 21,
 });
 
 // === xdr source ============================================================
@@ -17498,6 +17874,26 @@ xdr.union("SignerRuleResourceAccountSpecificRuleExt", {
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: code of the asset
+//           AssetCode assetCode;
+//           //: type of the asset
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceSwap", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union SignerRuleResource switch (LedgerEntryType type)
 //   {
@@ -17649,6 +18045,17 @@ xdr.union("SignerRuleResourceAccountSpecificRuleExt", {
 //               EmptyExt ext;
 //           } accountSpecificRule;
 //       } accountSpecificRuleExt;
+//   case SWAP:
+//       struct
+//       {
+//           //: code of the asset
+//           AssetCode assetCode;
+//           //: type of the asset
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } swap;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -17673,6 +18080,7 @@ xdr.union("SignerRuleResource", {
     ["vote", "vote"],
     ["initiateKycRecovery", "initiateKycRecovery"],
     ["accountSpecificRule", "accountSpecificRuleExt"],
+    ["swap", "swap"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -17688,6 +18096,7 @@ xdr.union("SignerRuleResource", {
     vote: xdr.lookup("SignerRuleResourceVote"),
     initiateKycRecovery: xdr.lookup("SignerRuleResourceInitiateKycRecovery"),
     accountSpecificRuleExt: xdr.lookup("SignerRuleResourceAccountSpecificRuleExt"),
+    swap: xdr.lookup("SignerRuleResourceSwap"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -17716,7 +18125,8 @@ xdr.union("SignerRuleResource", {
 //       UPDATE_END_TIME = 16,
 //       CREATE_WITH_TASKS = 17,
 //       CREATE_FOR_OTHER_WITH_TASKS = 18,
-//       REMOVE_FOR_OTHER = 19
+//       REMOVE_FOR_OTHER = 19,
+//       EXCHANGE = 20
 //   };
 //
 // ===========================================================================
@@ -17740,6 +18150,7 @@ xdr.enum("SignerRuleAction", {
   createWithTask: 17,
   createForOtherWithTask: 18,
   removeForOther: 19,
+  exchange: 20,
 });
 
 // === xdr source ============================================================
@@ -18872,6 +19283,10 @@ xdr.struct("WithdrawalRequest", [
 //           CreatePaymentRequestOp createPaymentRequestOp;
 //       case REMOVE_ASSET:
 //           RemoveAssetOp removeAssetOp;
+//       case OPEN_SWAP:
+//           OpenSwapOp openSwapOp;
+//       case CLOSE_SWAP:
+//           CloseSwapOp closeSwapOp;
 //       }
 //
 // ===========================================================================
@@ -18926,6 +19341,8 @@ xdr.union("OperationBody", {
     ["createManageOfferRequest", "createManageOfferRequestOp"],
     ["createPaymentRequest", "createPaymentRequestOp"],
     ["removeAsset", "removeAssetOp"],
+    ["openSwap", "openSwapOp"],
+    ["closeSwap", "closeSwapOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -18975,6 +19392,8 @@ xdr.union("OperationBody", {
     createManageOfferRequestOp: xdr.lookup("CreateManageOfferRequestOp"),
     createPaymentRequestOp: xdr.lookup("CreatePaymentRequestOp"),
     removeAssetOp: xdr.lookup("RemoveAssetOp"),
+    openSwapOp: xdr.lookup("OpenSwapOp"),
+    closeSwapOp: xdr.lookup("CloseSwapOp"),
   },
 });
 
@@ -19084,6 +19503,10 @@ xdr.union("OperationBody", {
 //           CreatePaymentRequestOp createPaymentRequestOp;
 //       case REMOVE_ASSET:
 //           RemoveAssetOp removeAssetOp;
+//       case OPEN_SWAP:
+//           OpenSwapOp openSwapOp;
+//       case CLOSE_SWAP:
+//           CloseSwapOp closeSwapOp;
 //       }
 //       body;
 //   };
@@ -19404,6 +19827,10 @@ xdr.struct("AccountRuleRequirement", [
 //           CreatePaymentRequestResult createPaymentRequestResult;
 //       case REMOVE_ASSET:
 //           RemoveAssetResult removeAssetResult;
+//       case OPEN_SWAP:
+//           OpenSwapResult openSwapResult;
+//       case CLOSE_SWAP:
+//           CloseSwapResult closeSwapResult;
 //       }
 //
 // ===========================================================================
@@ -19458,6 +19885,8 @@ xdr.union("OperationResultTr", {
     ["createManageOfferRequest", "createManageOfferRequestResult"],
     ["createPaymentRequest", "createPaymentRequestResult"],
     ["removeAsset", "removeAssetResult"],
+    ["openSwap", "openSwapResult"],
+    ["closeSwap", "closeSwapResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -19507,6 +19936,8 @@ xdr.union("OperationResultTr", {
     createManageOfferRequestResult: xdr.lookup("CreateManageOfferRequestResult"),
     createPaymentRequestResult: xdr.lookup("CreatePaymentRequestResult"),
     removeAssetResult: xdr.lookup("RemoveAssetResult"),
+    openSwapResult: xdr.lookup("OpenSwapResult"),
+    closeSwapResult: xdr.lookup("CloseSwapResult"),
   },
 });
 
@@ -19611,6 +20042,10 @@ xdr.union("OperationResultTr", {
 //           CreatePaymentRequestResult createPaymentRequestResult;
 //       case REMOVE_ASSET:
 //           RemoveAssetResult removeAssetResult;
+//       case OPEN_SWAP:
+//           OpenSwapResult openSwapResult;
+//       case CLOSE_SWAP:
+//           CloseSwapResult closeSwapResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -20002,7 +20437,8 @@ xdr.union("PublicKey", {
 //       POLL = 34,
 //       VOTE = 35,
 //       ACCOUNT_SPECIFIC_RULE = 36,
-//       INITIATE_KYC_RECOVERY = 37
+//       INITIATE_KYC_RECOVERY = 37,
+//       SWAP = 38
 //   };
 //
 // ===========================================================================
@@ -20042,6 +20478,7 @@ xdr.enum("LedgerEntryType", {
   vote: 35,
   accountSpecificRule: 36,
   initiateKycRecovery: 37,
+  swap: 38,
 });
 
 // === xdr source ============================================================
@@ -20277,7 +20714,9 @@ xdr.struct("Fee", [
 //       REMOVE_ASSET_PAIR = 50,
 //       CREATE_MANAGE_OFFER_REQUEST = 51,
 //       CREATE_PAYMENT_REQUEST = 52,
-//       REMOVE_ASSET = 53
+//       REMOVE_ASSET = 53,
+//       OPEN_SWAP = 54,
+//       CLOSE_SWAP = 55
 //   };
 //
 // ===========================================================================
@@ -20329,6 +20768,8 @@ xdr.enum("OperationType", {
   createManageOfferRequest: 51,
   createPaymentRequest: 52,
   removeAsset: 53,
+  openSwap: 54,
+  closeSwap: 55,
 });
 
 // === xdr source ============================================================

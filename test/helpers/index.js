@@ -20,11 +20,11 @@ import { LicenseHelper } from './license'
 import { AtomicSwapAsk } from './atomic_swap_ask'
 import { AtomicSwapBid } from './atomic_swap_bid'
 import { Poll } from './poll'
+import { Swap } from './swap'
 import { Vote } from './vote'
 import { ManageAccountRole } from './manage_account_role'
 import { ChangeRole } from './change_role'
 import { KYCRecoveryHelper } from './kyc_recovery'
-
 
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
@@ -62,3 +62,4 @@ export const voteHelper = new Vote(DEFAULTS)
 export const manageAccountRoleHelper = new ManageAccountRole(DEFAULTS)
 export const changeRoleHelper = new ChangeRole(DEFAULTS)
 export const kycRecoveryHelper = new KYCRecoveryHelper(DEFAULTS)
+export const swapHelper = new Swap(DEFAULTS)
