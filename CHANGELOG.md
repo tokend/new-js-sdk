@@ -10,6 +10,7 @@ for further information about branching and tagging conventions.
 ## Unreleased 
 ### Fixed
 - tests for atomic swaps
+- tests for swaps
 
 ## [1.10.2-rc.1] - 2019-09-19
 ### Added

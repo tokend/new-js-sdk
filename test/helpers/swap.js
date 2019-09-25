@@ -37,7 +37,7 @@ export class Swap extends Helper {
 
   close (id, secret, source = this.masterKp) {
     let opts = {
-      id: id,
+      swapId: id,
       secret: secret,
       source: source.accountId()
     }
