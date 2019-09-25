@@ -43,7 +43,7 @@ export class AtomicSwapAsk extends Helper {
   }
   mustLoadById (id) {
     return Running.untilFound(async () => {
-      let api = ApiCaller.getInstance('http://localhost:8000')
+      let api = ApiCaller.getInstance(config.api_url)
       api._wallet = new Wallet(
         'qqq123@mail.com',
         Keypair.random(),
@@ -77,7 +77,7 @@ export class AtomicSwapAsk extends Helper {
 
   async mustLoadByBaseAsset (baseAsset) {
     return Running.untilGotReturnValue(async () => {
-      let api = ApiCaller.getInstance('http://localhost:8000')
+      let api = ApiCaller.getInstance(config.api_url)
       api._wallet = new Wallet(
         'qqq123@mail.com',
         Keypair.random(),
