@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.10.3-rc.0] - 2019-10-01
+### Added
+- Export `RemoveAssetOpBuilder`
+
 ## [1.10.2] - 2019-09-26
 ### Fixed
 - tests for atomic swaps
@@ -231,7 +235,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.10.2...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.10.3-rc.0...HEAD
+[1.10.3-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.2...1.10.3-rc.0
 [1.10.2]: https://github.com/tokend/new-js-sdk/compare/1.10.2-rc.1...1.10.2
 [1.10.2-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.10.2-rc.0...1.10.2-rc.1
 [1.10.2-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.1...1.10.2-rc.0
