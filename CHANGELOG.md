@@ -10,12 +10,15 @@ for further information about branching and tagging conventions.
 ## Unreleased
 ### Fixed
 - Integration tests
+
 ### Added
 - Builder for `OpenSwapOp`
 - Unit tests for `OpenSwapOp`
 - Builder for `CloseSwapOp`
 - Unit tests for `CloseSwapOp`
 - Integration tests for `Swap`
+- `getBuildedTransaction` method in to api-caller
+- `needSetSourceAccount` attribute in to payment method(Payment builder)
 
 ## [1.10.2-rc.0] - 2019-09-16
 ### Added 
