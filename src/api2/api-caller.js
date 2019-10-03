@@ -214,7 +214,8 @@ export class ApiCaller {
         wait_for_ingest: waitForIngest
       },
       method: methods.POST,
-      url: `${this._baseURL}${endpoint}`
+      url: `${this._baseURL}${endpoint}`,
+      needSign: true
     }
     config = middlewares.setJsonapiHeaders(config)
 
