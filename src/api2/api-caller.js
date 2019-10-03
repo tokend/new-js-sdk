@@ -199,6 +199,13 @@ export class ApiCaller {
       .toString('base64')
   }
 
+  getBuildedTransaction (operations, opts = {}) {
+    return new TransactionBuilder(this._wallet.accountId, opts)
+      .addOperations(operations)
+      .addSigner(this._wallet.keypair)
+      .build()
+  }
+
   /**
    * Post a transaction envelope.
    *

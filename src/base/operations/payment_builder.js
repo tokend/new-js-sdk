@@ -109,12 +109,14 @@ export class PaymentBuilder {
    * @param {string} opts.reference
    * @returns {xdr.PaymentOpV2}
    */
-  static payment (opts) {
+  static payment (opts, needSetSourceAccount = true) {
     let attrs = PaymentBuilder.prepareAttrs(opts)
     let paymentV2 = new xdr.PaymentOp(attrs)
     let opAttrs = {}
     opAttrs.body = xdr.OperationBody.payment(paymentV2)
-    BaseOperation.setSourceAccount(opAttrs, opts)
+    if (needSetSourceAccount) {
+      BaseOperation.setSourceAccount(opAttrs, opts)
+    }
     return new xdr.Operation(opAttrs)
   }
 
