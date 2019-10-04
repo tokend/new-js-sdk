@@ -26,18 +26,17 @@ import { ManageAccountRole } from './manage_account_role'
 import { ChangeRole } from './change_role'
 import { KYCRecoveryHelper } from './kyc_recovery'
 
+const masterKP = base.Keypair.fromSecret(config.master_seed)
+const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
+
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
 })
-
-const masterKP = base.Keypair.fromSecret(config.master_seed)
+sdk._useNetworkPassphrase(config.network_passphrase)
+sdk.useWallet(masterWallet)
 
 export const api = ApiCaller.getInstance(config.api_url)
-
-sdk._useNetworkPassphrase(config.network_passphrase)
-sdk.useWallet(
-  new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
-)
+api.useWallet(masterWallet)
 
 const DEFAULTS = {
   masterKp: masterKP,
