@@ -1,6 +1,6 @@
 import config from '../config'
 
-import { ApiCaller, TokenD, base } from '../../src'
+import { ApiCaller, TokenD, base, Wallet } from '../../src'
 
 import { Account } from './account'
 import { Signer } from './signer'
@@ -30,12 +30,17 @@ export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
 })
 
+const masterKP = base.Keypair.fromSecret(config.master_seed)
+
 export const api = ApiCaller.getInstance(config.api_url)
 
 sdk._useNetworkPassphrase(config.network_passphrase)
+sdk.useWallet(
+  new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
+)
 
 const DEFAULTS = {
-  masterKp: base.Keypair.fromSecret(config.master_seed),
+  masterKp: masterKP,
   sdk,
   api
 }
