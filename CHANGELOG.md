@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## [Unreleased]
+### Added
+- Create wallet with signers
+- Integration test for create and recovery wallet
+
 ## [1.10.3] - 2019-10-12
 
 ## [1.10.3-rc.1] - 2019-10-03
