@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
-## [Unreleased]
+## [1.11.0-rc.0] - 2019-10-24
 ### Added
 - Create wallet with signers
 - Integration test for create and recovery wallet
@@ -246,7 +246,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.10.3...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.11.0-rc.0...HEAD
+[1.11.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.3...1.11.0-rc.0
 [1.10.3]: https://github.com/tokend/new-js-sdk/compare/1.10.3-rc.1...1.10.3
 [1.10.3-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.10.3-rc.0...1.10.3-rc.1
 [1.10.3-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.2...1.10.3-rc.0
