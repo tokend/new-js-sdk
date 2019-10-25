@@ -280,7 +280,7 @@ export class WalletsManager {
     )
 
     const tx = await this._signersManager.createChangeSignerTransaction({
-      newPublicKey: newMainWallet.accountId,
+      newPublicKey: newMainWallet.keypair.accountId(),
       signingKeypair: recoveryWallet.keypair,
       sourceAccount: accountId
     })

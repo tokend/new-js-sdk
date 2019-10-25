@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## [1.11.1] - 2019-10-25
+### Fixed
+- A bug with seed recovery flow
+
 ## [1.11.0] - 2019-10-24
 
 ## [1.11.0-rc.0] - 2019-10-24
@@ -248,7 +252,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.11.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.11.1...HEAD
+[1.11.1]: https://github.com/tokend/new-js-sdk/compare/1.11.0...1.11.1
 [1.11.0]: https://github.com/tokend/new-js-sdk/compare/1.11.0-rc.0...1.11.0
 [1.11.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.3...1.11.0-rc.0
 [1.10.3]: https://github.com/tokend/new-js-sdk/compare/1.10.3-rc.1...1.10.3
