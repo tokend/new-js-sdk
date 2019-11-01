@@ -1,6 +1,6 @@
 import config from '../config'
 
-import { ApiCaller, TokenD, base } from '../../src'
+import { ApiCaller, TokenD, base, Wallet } from '../../src'
 
 import { Account } from './account'
 import { Signer } from './signer'
@@ -26,16 +26,20 @@ import { ManageAccountRole } from './manage_account_role'
 import { ChangeRole } from './change_role'
 import { KYCRecoveryHelper } from './kyc_recovery'
 
+const masterKP = base.Keypair.fromSecret(config.master_seed)
+const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
+
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
 })
+sdk._useNetworkPassphrase(config.network_passphrase)
+sdk.useWallet(masterWallet)
 
 export const api = ApiCaller.getInstance(config.api_url)
-
-sdk._useNetworkPassphrase(config.network_passphrase)
+api.useWallet(masterWallet)
 
 const DEFAULTS = {
-  masterKp: base.Keypair.fromSecret(config.master_seed),
+  masterKp: masterKP,
   sdk,
   api
 }
