@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import uri from 'urijs'
+import axios from 'axios'
 import { hash, Keypair } from '../../base'
 
 const HEADER_SIGNATURE = 'signature'
@@ -31,13 +31,9 @@ export function signRequest (requestConfig, signerKp) {
 }
 
 function getRequestUrl (config) {
-  let fullUrl = uri(config.url)
-
-  if (config.params) {
-    fullUrl = fullUrl.addQuery(config.params)
-  }
-
-  return decodeURI(fullUrl.toString())
+  // when axios making request, it replaces space to '%20' in query, but
+  // `getUri` method replace space to '+' and this bug crashed signature
+  return axios.getUri(config).replace('+', '%20')
 }
 
 function getRequestDigest (url, config, headersToSign) {
