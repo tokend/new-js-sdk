@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## Unreleased
+### Changed
+- Regerate xdr, based on github.com/tokend/xdr/pull/91
+
 ## [1.11.2] - 2019-11-18
 ### Fixed
 - A bug with getting requestUrl in `sign-request`

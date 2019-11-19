@@ -1,6 +1,6 @@
-// revision: dcb0962ff5cc056c96c54b6678f34278a66eeddd
-// branch:   feature/swap
-// Automatically generated on 2019-09-18T10:58:21+00:00
+// revision: 9d9573a54ca216fec769215e9647ba770211dccb
+// branch:   fix/max-signs
+// Automatically generated on 2019-11-19T15:55:02+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -5774,8 +5774,9 @@ xdr.union("CheckSaleStateResult", {
 //
 //   struct CloseSwapOp
 //   {
+//       //: ID of the swap to close
 //       uint64 swapID;
-//   
+//       //: (optional) Secret of the swap. Must be provided in order for destination of the swap to receive funds
 //       Hash* secret;
 //   
 //       //: reserved for future extension
@@ -5795,11 +5796,13 @@ xdr.struct("CloseSwapOp", [
 //   {
 //       //: CloseSwap was successful 
 //       SUCCESS = 0,
-//   
+//       //: Too late to close swap
 //       SWAP_EXPIRED = -1,
+//       //: Provided secret is invalid
 //       INVALID_SECRET = -2,
 //       //: After the swap fulfillment, the destination balance will exceed the limit (total amount on the balance will be greater than UINT64_MAX)
 //       LINE_FULL = -3,
+//       //: Source account is not authorized to close swap
 //       NOT_AUTHORIZED = -4
 //   };
 //
@@ -5818,7 +5821,7 @@ xdr.enum("CloseSwapResultCode", {
 //   {
 //       //: Swap closed
 //       CLOSED = 0,
-//       //: Swap cancelled updated
+//       //: Swap cancelled
 //       CANCELLED = 1
 //   };
 //
@@ -5832,6 +5835,7 @@ xdr.enum("CloseSwapEffect", {
 //
 //   //: CloseSwapSuccess is used to pass saved ledger hash and license hash
 //   struct CloseSwapSuccess {
+//       //: Effect of CloseSwap application
 //       CloseSwapEffect effect;
 //   
 //       EmptyExt ext;
@@ -12010,7 +12014,9 @@ xdr.struct("ManageLimitsOp", [
 //       //: Limits cannot be created for account ID and account role simultaneously
 //       CANNOT_CREATE_FOR_ACC_ID_AND_ACC_TYPE = -4, // FIXME ACC_ROLE ?
 //       //: Limits entry is invalid (e.g. weeklyOut is less than dailyOut)
-//       INVALID_LIMITS = -5
+//       INVALID_LIMITS = -5,
+//       //: Asset with provided asset code does not exist
+//       ASSET_NOT_FOUND = -6
 //   };
 //
 // ===========================================================================
@@ -12021,6 +12027,7 @@ xdr.enum("ManageLimitsResultCode", {
   roleNotFound: -3,
   cannotCreateForAccIdAndAccType: -4,
   invalidLimit: -5,
+  assetNotFound: -6,
 });
 
 // === xdr source ============================================================
@@ -14283,11 +14290,12 @@ xdr.union("OpenSwapOpDestination", {
 //
 //   struct OpenSwapOp
 //   {
+//       //: Source balance of the swap
 //       BalanceID sourceBalance;
-//   
+//       //: Amount to send in swap
 //       uint64 amount;
 //   
-//      //: `destination` defines the type of instance that receives the payment based on given PaymentDestinationType
+//      //: `destination` defines the type of instance that receives amount based on given PaymentDestinationType
 //      union switch (PaymentDestinationType type) {
 //          case ACCOUNT:
 //              AccountID accountID;
@@ -14295,12 +14303,14 @@ xdr.union("OpenSwapOpDestination", {
 //              BalanceID balanceID;
 //      } destination;
 //   
+//       //: Fee data for the swap
 //       PaymentFeeData feeData;
-//   
+//       //: Arbitrary stringified json object provided by swap source
 //       longstring details;
 //   
+//       //: Hash of the secret
 //       Hash secretHash;
-//   
+//       //: Time till which swapped funds can be received by destination if valid secret is provided
 //       int64 lockTime;
 //   
 //       //: reserved for future extension
@@ -14326,6 +14336,7 @@ xdr.struct("OpenSwapOp", [
 //       //: OpenSwap was successful 
 //       SUCCESS = 0,
 //   
+//       //: Source and destination balances are the same
 //       MALFORMED = -1,
 //       //: Not enough funds in the source account
 //       UNDERFUNDED = -2,
@@ -14345,8 +14356,11 @@ xdr.struct("OpenSwapOp", [
 //       //: There is no account found with an ID provided in `destination.accountID`
 //       //: Amount precision and asset precision are mismatched
 //       INCORRECT_AMOUNT_PRECISION = -9,
+//       //: Not allowed to create swap with invalid json details
 //       INVALID_DETAILS = -10,
+//       //: Lock time is in the past
 //       INVALID_LOCK_TIME = -11,
+//       //: Zero amount is not allowed
 //       INVALID_AMOUNT = -12
 //   
 //   };
@@ -14613,7 +14627,9 @@ xdr.struct("PaymentOp", [
 //       //: There is no account found with an ID provided in `destination.accountID`
 //       DESTINATION_ACCOUNT_NOT_FOUND = -14,
 //       //: Amount precision and asset precision are mismatched
-//       INCORRECT_AMOUNT_PRECISION = -15
+//       INCORRECT_AMOUNT_PRECISION = -15,
+//       //: Too much signs in subject
+//       INVALID_SUBJECT = -16
 //   };
 //
 // ===========================================================================
@@ -14634,6 +14650,7 @@ xdr.enum("PaymentResultCode", {
   paymentAmountIsLessThanDestFee: -13,
   destinationAccountNotFound: -14,
   incorrectAmountPrecision: -15,
+  invalidSubject: -16,
 });
 
 // === xdr source ============================================================
@@ -15109,14 +15126,21 @@ xdr.struct("RemoveAssetOp", [
 //       //: Operation is successfully applied
 //       SUCCESS = 0,
 //       //: Asset code is invalid
-//       INVALID_ASSET_CODE = -1,    
+//       INVALID_ASSET_CODE = -1,
 //       //: Asset can't be deleted as there exist asset pairs with it
 //       HAS_PAIR = -2,
 //       //: Asset can't be deleted as it has active offers
 //       HAS_ACTIVE_OFFERS = -3,
 //       //: Asset can't be deleted as it has active sales
-//       HAS_ACTIVE_SALES = -4
-//   
+//       HAS_ACTIVE_SALES = -4,
+//       //: Asset can't be deleted as it has active atomic swaps
+//       HAS_ACTIVE_ATOMIC_SWAPS = -5,
+//       //: Asset can't be deleted as it has active swaps
+//       HAS_ACTIVE_SWAPS = -6,
+//       //: Asset can't be deleted as it is stats quote asset
+//       CANNOT_REMOVE_STATS_QUOTE_ASSET = -7,
+//       //: Cannot delete asset, as some balances in target asset have non-empty locked amount
+//       HAS_PENDING_MOVEMENTS = -8
 //   };
 //
 // ===========================================================================
@@ -15126,6 +15150,10 @@ xdr.enum("RemoveAssetResultCode", {
   hasPair: -2,
   hasActiveOffer: -3,
   hasActiveSale: -4,
+  hasActiveAtomicSwap: -5,
+  hasActiveSwap: -6,
+  cannotRemoveStatsQuoteAsset: -7,
+  hasPendingMovement: -8,
 });
 
 // === xdr source ============================================================
@@ -20266,7 +20294,10 @@ xdr.struct("TransactionResult", [
 //       FIX_SIGNER_CHANGES_REMOVE = 17,
 //       FIX_DEPOSIT_STATS = 18,
 //       FIX_CREATE_KYC_RECOVERY_PERMISSIONS = 19,
-//       CLEAR_DATABASE_CACHE = 20
+//       CLEAR_DATABASE_CACHE = 20,
+//       FIX_ISSUANCE_REVIEWER = 21,
+//       MARK_ASSET_AS_DELETED = 22,
+//       FIX_MAX_SUBJECT_SIZE = 23
 //   };
 //
 // ===========================================================================
@@ -20292,6 +20323,9 @@ xdr.enum("LedgerVersion", {
   fixDepositStat: 18,
   fixCreateKycRecoveryPermission: 19,
   clearDatabaseCache: 20,
+  fixIssuanceReviewer: 21,
+  markAssetAsDeleted: 22,
+  fixMaxSubjectSize: 23,
 });
 
 // === xdr source ============================================================
