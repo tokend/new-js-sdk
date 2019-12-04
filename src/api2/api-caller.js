@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { Network, TransactionBuilder } from '../base'
+import { Network, TransactionBuilder, Transaction } from '../base'
 import { Wallet } from '../wallet'
 
 import middlewares from './middlewares'
@@ -204,6 +204,21 @@ export class ApiCaller {
       .addOperations(operations)
       .addSigner(this._wallet.keypair)
       .build()
+  }
+
+  signAndSendTransaction (tx) {
+    if (!this._wallet) {
+      throw new Error('No wallet found to sign the transaction')
+    }
+
+    const transaction = new Transaction(tx)
+    transaction.sign(this._wallet.keypair)
+    const envelopeTx = transaction
+      .toEnvelope()
+      .toXDR()
+      .toString('base64')
+
+    return this.postTxEnvelope(envelopeTx)
   }
 
   /**
