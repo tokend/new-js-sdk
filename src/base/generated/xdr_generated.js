@@ -1,6 +1,6 @@
-// revision: 9d9573a54ca216fec769215e9647ba770211dccb
-// branch:   fix/max-signs
-// Automatically generated on 2019-11-19T15:55:02+00:00
+// revision: 5cf21644b65d3e0119a7164d24e81e7f5ceefae3
+// branch:   feature/redemption-rr
+// Automatically generated on 2019-12-11T15:22:12+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1708,7 +1708,8 @@ xdr.struct("ReferenceEntry", [
 //   	CREATE_ATOMIC_SWAP_BID = 17,
 //   	KYC_RECOVERY = 18,
 //   	MANAGE_OFFER = 19,
-//   	CREATE_PAYMENT = 20
+//   	CREATE_PAYMENT = 20,
+//   	PERFORM_REDEMPTION = 21
 //   };
 //
 // ===========================================================================
@@ -1733,6 +1734,7 @@ xdr.enum("ReviewableRequestType", {
   kycRecovery: 18,
   manageOffer: 19,
   createPayment: 20,
+  performRedemption: 21,
 });
 
 // === xdr source ============================================================
@@ -1820,6 +1822,8 @@ xdr.struct("TasksExt", [
 //   			ManageOfferRequest manageOfferRequest;
 //   		case CREATE_PAYMENT:
 //   			CreatePaymentRequest createPaymentRequest;
+//           case PERFORM_REDEMPTION:
+//               RedemptionRequest redemptionRequest;
 //   	}
 //
 // ===========================================================================
@@ -1845,6 +1849,7 @@ xdr.union("ReviewableRequestEntryBody", {
     ["kycRecovery", "kycRecoveryRequest"],
     ["manageOffer", "manageOfferRequest"],
     ["createPayment", "createPaymentRequest"],
+    ["performRedemption", "redemptionRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -1865,6 +1870,7 @@ xdr.union("ReviewableRequestEntryBody", {
     kycRecoveryRequest: xdr.lookup("KycRecoveryRequest"),
     manageOfferRequest: xdr.lookup("ManageOfferRequest"),
     createPaymentRequest: xdr.lookup("CreatePaymentRequest"),
+    redemptionRequest: xdr.lookup("RedemptionRequest"),
   },
 });
 
@@ -1935,6 +1941,8 @@ xdr.union("ReviewableRequestEntryExt", {
 //   			ManageOfferRequest manageOfferRequest;
 //   		case CREATE_PAYMENT:
 //   			CreatePaymentRequest createPaymentRequest;
+//           case PERFORM_REDEMPTION:
+//               RedemptionRequest redemptionRequest;
 //   	} body;
 //   
 //   	TasksExt tasks;
@@ -7621,6 +7629,184 @@ xdr.union("CreatePreIssuanceRequestResult", {
   ],
   arms: {
     success: xdr.lookup("CreatePreIssuanceRequestResultSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateRedemptionRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CreateRedemptionRequest operation creates a reviewable request
+//   //: that will transfer the specified amount from current holder's balance to destination balance after the reviewer's approval
+//   struct CreateRedemptionRequestOp
+//   {
+//       //: Reference of RedemptionRequest
+//       string64 reference; // TODO longstring ?
+//       //: Parameters of RedemptionRequest
+//       RedemptionRequest redemptionRequest;
+//       //: (optional) Bit mask whose flags must be cleared in order for RedemptionRequest to be approved, which will be used by key redemption_tasks
+//       //: instead of key-value
+//       uint32* allTasks;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateRedemptionRequestOp", [
+  ["reference", xdr.lookup("String64")],
+  ["redemptionRequest", xdr.lookup("RedemptionRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("CreateRedemptionRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for CreateRedemption operation
+//   enum CreateRedemptionRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Operation has been successfully performed
+//       SUCCESS = 0,
+//   
+//       //codes considered as "failure" for the operation
+//       //: Redemption is invalid
+//       INVALID_REDEMPTION = -1,
+//       //: Tasks for the redemption request were neither provided in the request nor loaded through KeyValue
+//       REDEMPTION_TASKS_NOT_FOUND = -2,
+//       //: Creator details must not be empty
+//       INVALID_CREATOR_DETAILS = -3,
+//       //: Amount must be greater then 0
+//       INVALID_AMOUNT = -4,
+//       //: Reference must not be longer then 64 bytes
+//       INVALID_REFERENCE = -5,
+//       //: Source balance with provided balance ID does not exist
+//       SOURCE_BALANCE_NOT_EXIST = -6, // balance doesn't exist
+//       //: Amount has incorrect precision
+//       INCORRECT_PRECISION = -7,
+//       //: Balance underfunded
+//       UNDERFUNDED = -8,
+//       //: Duplicated references are not allowed
+//       REFERENCE_DUPLICATION = -9,
+//       //: No destination with provided account ID
+//       DST_ACCOUNT_NOT_FOUND = -10,
+//       //: Not allowed to set zero tasks for request
+//       REDEMPTION_ZERO_TASKS_NOT_ALLOWED = -11
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateRedemptionRequestResultCode", {
+  success: 0,
+  invalidRedemption: -1,
+  redemptionTasksNotFound: -2,
+  invalidCreatorDetail: -3,
+  invalidAmount: -4,
+  invalidReference: -5,
+  sourceBalanceNotExist: -6,
+  incorrectPrecision: -7,
+  underfunded: -8,
+  referenceDuplication: -9,
+  dstAccountNotFound: -10,
+  redemptionZeroTasksNotAllowed: -11,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("RedemptionRequestResponseExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful application of `CreateRedemptionRequest` operation
+//   struct RedemptionRequestResponse {
+//       //: ID of a newly created reviewable request
+//       uint64 requestID;
+//       //: Indicates  whether or not the Redemption request was auto approved and fulfilled
+//       bool fulfilled;
+//   
+//       //: ID of destination balance (may be freshly created)
+//       BalanceID destinationBalanceID;
+//       //: Code of an asset used in payment
+//       AssetCode asset;
+//       //: Amount sent by the sender
+//       uint64 sourceSentUniversal;
+//       //: Reserved for future use
+//        union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RedemptionRequestResponse", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["destinationBalanceId", xdr.lookup("BalanceId")],
+  ["asset", xdr.lookup("AssetCode")],
+  ["sourceSentUniversal", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("RedemptionRequestResponseExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of `CreateRedemptionRequest` operation application along with the result code
+//   union CreateRedemptionRequestResult switch (CreateRedemptionRequestResultCode code)
+//   {
+//       case SUCCESS:
+//           RedemptionRequestResponse redemptionResponse;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateRedemptionRequestResult", {
+  switchOn: xdr.lookup("CreateRedemptionRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "redemptionResponse"],
+  ],
+  arms: {
+    redemptionResponse: xdr.lookup("RedemptionRequestResponse"),
   },
   defaultArm: xdr.void(),
 });
@@ -15697,6 +15883,8 @@ xdr.struct("AtomicSwapBidExtended", [
 //           ManageOfferResult manageOfferResult;
 //       case CREATE_PAYMENT:
 //           PaymentResult paymentResult;
+//       case PERFORM_REDEMPTION:
+//           CreateRedemptionRequestResult createRedemptionResult;
 //       }
 //
 // ===========================================================================
@@ -15711,6 +15899,7 @@ xdr.union("ExtendedResultTypeExt", {
     ["createPoll", "createPoll"],
     ["manageOffer", "manageOfferResult"],
     ["createPayment", "paymentResult"],
+    ["performRedemption", "createRedemptionResult"],
   ],
   arms: {
     saleExtended: xdr.lookup("SaleExtended"),
@@ -15719,6 +15908,7 @@ xdr.union("ExtendedResultTypeExt", {
     createPoll: xdr.lookup("CreatePollExtended"),
     manageOfferResult: xdr.lookup("ManageOfferResult"),
     paymentResult: xdr.lookup("PaymentResult"),
+    createRedemptionResult: xdr.lookup("CreateRedemptionRequestResult"),
   },
 });
 
@@ -15763,6 +15953,8 @@ xdr.union("ExtendedResultExt", {
 //           ManageOfferResult manageOfferResult;
 //       case CREATE_PAYMENT:
 //           PaymentResult paymentResult;
+//       case PERFORM_REDEMPTION:
+//           CreateRedemptionRequestResult createRedemptionResult;
 //       } typeExt;
 //   
 //       //: Reserved for future use
@@ -15895,7 +16087,7 @@ xdr.struct("ReviewRequestOp", [
 //   enum ReviewRequestResultCode
 //   {
 //       //: Codes considered as "success" for an operation
-//       //: Operation is applied successfuly 
+//       //: Operation is applied successfully
 //       SUCCESS = 0,
 //   
 //       //: Codes considered as "failure" for an operation
@@ -16996,6 +17188,26 @@ xdr.struct("ReviewableRequestResourceCreatePayment", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Code of asset in which redemption is being made
+//           AssetCode assetCode;
+//           //: Type of asset in which redemption is being made
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourcePerformRedemption", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some reviewable request types that
 //   //: can be used to restrict the usage of reviewable requests
 //   union ReviewableRequestResource switch (ReviewableRequestType requestType)
@@ -17118,6 +17330,17 @@ xdr.struct("ReviewableRequestResourceCreatePayment", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } createPayment;
+//   case PERFORM_REDEMPTION:
+//       struct
+//       {
+//           //: Code of asset in which redemption is being made
+//           AssetCode assetCode;
+//           //: Type of asset in which redemption is being made
+//           uint64 assetType;
+//   
+//           //: reserved for future extension
+//           EmptyExt ext;
+//       } performRedemption;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -17136,6 +17359,7 @@ xdr.union("ReviewableRequestResource", {
     ["createPoll", "createPoll"],
     ["manageOffer", "manageOffer"],
     ["createPayment", "createPayment"],
+    ["performRedemption", "performRedemption"],
   ],
   arms: {
     createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
@@ -17146,6 +17370,7 @@ xdr.union("ReviewableRequestResource", {
     createPoll: xdr.lookup("ReviewableRequestResourceCreatePoll"),
     manageOffer: xdr.lookup("ReviewableRequestResourceManageOffer"),
     createPayment: xdr.lookup("ReviewableRequestResourceCreatePayment"),
+    performRedemption: xdr.lookup("ReviewableRequestResourcePerformRedemption"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -17594,7 +17819,8 @@ xdr.union("AccountRuleResource", {
 //       UPDATE_END_TIME = 18,
 //       CREATE_FOR_OTHER_WITH_TASKS = 19,
 //       REMOVE_FOR_OTHER = 20,
-//       EXCHANGE = 21
+//       EXCHANGE = 21,
+//       RECEIVE_REDEMPTION = 22
 //   };
 //
 // ===========================================================================
@@ -17620,6 +17846,7 @@ xdr.enum("AccountRuleAction", {
   createForOtherWithTask: 19,
   removeForOther: 20,
   exchange: 21,
+  receiveRedemption: 22,
 });
 
 // === xdr source ============================================================
@@ -18953,6 +19180,58 @@ xdr.struct("CreatePaymentRequest", [
 //       }
 //
 // ===========================================================================
+xdr.union("RedemptionRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Body of a reviewable RedemptionRequest, contains parameters regarding AML alert
+//   struct RedemptionRequest {
+//       //: Balance to charge assets from. Balance must be in asset owned by requester.
+//       BalanceID sourceBalanceID;
+//       //: Account to transfer funds
+//       AccountID destination;
+//   
+//       //: Amount of redemption
+//       uint64 amount;
+//   
+//       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RedemptionRequest", [
+  ["sourceBalanceId", xdr.lookup("BalanceId")],
+  ["destination", xdr.lookup("AccountId")],
+  ["amount", xdr.lookup("Uint64")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("RedemptionRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
 xdr.union("SaleCreationRequestQuoteAssetExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
@@ -19315,6 +19594,8 @@ xdr.struct("WithdrawalRequest", [
 //           OpenSwapOp openSwapOp;
 //       case CLOSE_SWAP:
 //           CloseSwapOp closeSwapOp;
+//       case CREATE_REDEMPTION_REQUEST:
+//           CreateRedemptionRequestOp createRedemptionRequestOp;
 //       }
 //
 // ===========================================================================
@@ -19371,6 +19652,7 @@ xdr.union("OperationBody", {
     ["removeAsset", "removeAssetOp"],
     ["openSwap", "openSwapOp"],
     ["closeSwap", "closeSwapOp"],
+    ["createRedemptionRequest", "createRedemptionRequestOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -19422,6 +19704,7 @@ xdr.union("OperationBody", {
     removeAssetOp: xdr.lookup("RemoveAssetOp"),
     openSwapOp: xdr.lookup("OpenSwapOp"),
     closeSwapOp: xdr.lookup("CloseSwapOp"),
+    createRedemptionRequestOp: xdr.lookup("CreateRedemptionRequestOp"),
   },
 });
 
@@ -19535,6 +19818,8 @@ xdr.union("OperationBody", {
 //           OpenSwapOp openSwapOp;
 //       case CLOSE_SWAP:
 //           CloseSwapOp closeSwapOp;
+//       case CREATE_REDEMPTION_REQUEST:
+//           CreateRedemptionRequestOp createRedemptionRequestOp;
 //       }
 //       body;
 //   };
@@ -19859,6 +20144,8 @@ xdr.struct("AccountRuleRequirement", [
 //           OpenSwapResult openSwapResult;
 //       case CLOSE_SWAP:
 //           CloseSwapResult closeSwapResult;
+//       case CREATE_REDEMPTION_REQUEST:
+//           CreateRedemptionRequestResult createRedemptionRequestResult;
 //       }
 //
 // ===========================================================================
@@ -19915,6 +20202,7 @@ xdr.union("OperationResultTr", {
     ["removeAsset", "removeAssetResult"],
     ["openSwap", "openSwapResult"],
     ["closeSwap", "closeSwapResult"],
+    ["createRedemptionRequest", "createRedemptionRequestResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -19966,6 +20254,7 @@ xdr.union("OperationResultTr", {
     removeAssetResult: xdr.lookup("RemoveAssetResult"),
     openSwapResult: xdr.lookup("OpenSwapResult"),
     closeSwapResult: xdr.lookup("CloseSwapResult"),
+    createRedemptionRequestResult: xdr.lookup("CreateRedemptionRequestResult"),
   },
 });
 
@@ -20074,6 +20363,8 @@ xdr.union("OperationResultTr", {
 //           OpenSwapResult openSwapResult;
 //       case CLOSE_SWAP:
 //           CloseSwapResult closeSwapResult;
+//       case CREATE_REDEMPTION_REQUEST:
+//           CreateRedemptionRequestResult createRedemptionRequestResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -20750,7 +21041,8 @@ xdr.struct("Fee", [
 //       CREATE_PAYMENT_REQUEST = 52,
 //       REMOVE_ASSET = 53,
 //       OPEN_SWAP = 54,
-//       CLOSE_SWAP = 55
+//       CLOSE_SWAP = 55,
+//       CREATE_REDEMPTION_REQUEST = 56
 //   };
 //
 // ===========================================================================
@@ -20804,6 +21096,7 @@ xdr.enum("OperationType", {
   removeAsset: 53,
   openSwap: 54,
   closeSwap: 55,
+  createRedemptionRequest: 56,
 });
 
 // === xdr source ============================================================
