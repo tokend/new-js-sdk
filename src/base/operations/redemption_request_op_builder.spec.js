@@ -2,7 +2,7 @@ import { RedemptionRequestBuilder } from './redemption_request_op_builder'
 import { Operation, xdr } from '../index'
 import { jsonStringify } from 'jsona/lib/cache'
 
-describe.only('RedemptionRequestBuilder', function () {
+describe('RedemptionRequestBuilder', function () {
   it('should create redemption request', function () {
     let opts = {
       sourceBalanceId: 'BA7WOL2UJL57LOAGXM4TDTZEA7YTVRSKSH5EHOEFTWYX77C672KZQID4',

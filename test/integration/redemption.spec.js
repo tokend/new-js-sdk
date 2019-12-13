@@ -8,9 +8,7 @@ describe('Redemption', () => {
 
     log.info(`created redemption request, id: ${requestID}`)
 
-    const response = await approveRedemption(requestID)
+    await approveRedemption(requestID)
     log.info(`approved redemption request with id ${requestID}`)
-
-    log.info(`approval response: ${response}`)
   })
 })
