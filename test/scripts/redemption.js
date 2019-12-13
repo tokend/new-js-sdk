@@ -5,7 +5,7 @@ import { createFundedGeneral } from './create_account'
 import {balanceHelper, redemptionHelper, requestHelper} from '../helpers'
 import { getKvEntryWithFallback } from './get_task_from_kv'
 import { KEY_VALUE_KEYS } from '../../src/const'
-import {getOpResultFromXDR } from '../helpers/_helper'
+import { getOpResultFromXDR } from '../helpers/_helper'
 
 async function prepareRedemption () {
   const log = logger.new('prepare redemption')
@@ -46,14 +46,6 @@ async function prepareRedemption () {
     creatorDetails: '{"creator": "details"}',
     fromAccount: fromAccount
   }
-  // return {
-  //   sourceBalanceId: 'BC4Z2OT54G6VA2T2LULMIEMM7CPJH7ZQDJ2UKNU2W3WJBUKCDIHDVBAW',
-  //   destination: 'GC6YSAVKQDDOC2NKAEJ72RQUPI4KLCUHS53TKWCN5BKBDM5MN7NVOZ5G',
-  //   amount: '1',
-  //   reference: randomBytes(10).toString(),
-  //   creatorDetails: '{"creator": "details"}',
-  //   fromAccount: 'GA2VHAW6YQELHLO6H27V37IUEO6AHEKLUFN2UCVZNN7IY4MVO4ZOIMYZ'
-  // }
 }
 
 const redemptionTasks = 1

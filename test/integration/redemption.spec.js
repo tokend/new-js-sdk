@@ -1,7 +1,7 @@
 import { initRedemption, approveRedemption } from '../scripts/redemption'
 import { logger } from '../logger'
 
-describe.only('Redemption', () => {
+describe('Redemption', () => {
   it('should create redemption request op and submit it', async () => {
     let log = logger.new('redemption')
     const requestID = await initRedemption()
