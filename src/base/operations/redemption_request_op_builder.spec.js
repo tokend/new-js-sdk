@@ -1,6 +1,6 @@
-import { RedemptionRequestOpBuilder } from './redemption_request_op_builder'
+import { RedemptionRequestBuilder } from './redemption_request_op_builder'
 import { Operation, xdr } from '../index'
-import { jsonStringify } from 'jsona/lib/cache';
+import { jsonStringify } from 'jsona/lib/cache'
 
 describe.only('RedemptionRequestBuilder', function () {
   it('should create redemption request', function () {
@@ -13,7 +13,7 @@ describe.only('RedemptionRequestBuilder', function () {
       creatorDetails: '{"creator":"details"}'
     }
 
-    let op = RedemptionRequestOpBuilder.redemptionRequest(opts)
+    let op = RedemptionRequestBuilder.redemptionRequest(opts)
     let xdrOp = op.toXDR('hex')
 
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))

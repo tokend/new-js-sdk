@@ -3,7 +3,7 @@ import xdr from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { Keypair } from '../keypair'
 
-export class RedemptionRequestOpBuilder {
+export class RedemptionRequestBuilder {
   static redemptionRequest (opts) {
     if (!Keypair.isValidBalanceKey(opts.sourceBalanceId)) {
       throw new TypeError('sourceBalanceId is invalid')

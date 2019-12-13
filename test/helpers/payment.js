@@ -1,6 +1,5 @@
-import { Helper } from './_helper'
+import { Helper, getSuccessResultFromXDR } from './_helper'
 import { base } from '../../src'
-import { getSuccessResultFromXDR } from './_helper'
 
 export class Payment extends Helper {
   /**
