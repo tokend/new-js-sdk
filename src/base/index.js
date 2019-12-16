@@ -45,6 +45,7 @@ export { CreateManageOfferRequestBuilder } from './operations/create_manage_offe
 export { CreatePaymentRequestBuilder } from './operations/create_payment_request_builder'
 export { OpenSwapBuilder } from './operations/open_swap_builder'
 export { CloseSwapBuilder } from './operations/close_swap_builder'
+export { RedemptionRequestBuilder } from './operations/redemption_request_op_builder'
 
 export * from './strkey'
 

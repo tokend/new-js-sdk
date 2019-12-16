@@ -14,5 +14,6 @@ export const KEY_VALUE_KEYS = Object.freeze({
   kycRecoverySignerRole: 'kyc_recovery_signer_role',
   createKycRecoveryTasks: 'create_kyc_recovery_tasks',
   createOfferTasks: 'create_offer_tasks',
-  removeOfferTasks: 'remove_offer_tasks'
+  removeOfferTasks: 'remove_offer_tasks',
+  redemptionTasks: 'redemption_tasks'
 })
