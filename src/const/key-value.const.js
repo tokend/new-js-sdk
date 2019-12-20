@@ -16,5 +16,6 @@ export const KEY_VALUE_KEYS = Object.freeze({
   createOfferTasks: 'create_offer_tasks',
   removeOfferTasks: 'remove_offer_tasks',
   redemptionTasks: 'redemption_tasks',
-  signerRoleDefault: 'signer_role:default'
+  signerRoleDefault: 'signer_role:default',
+  signerRoleIssuance: 'signer_role:issuance'
 })

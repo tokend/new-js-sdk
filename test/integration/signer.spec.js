@@ -22,6 +22,7 @@ describe.only('signer', () => {
 
     const signerRoleDefaultValue = await getKvEntryWithFallback(KEY_VALUE_KEYS.signerRoleDefault, 2)
     const signerRoleDefaultStrValue = `${signerRoleDefaultValue}`
+
     let randomSignerKp = Keypair.random()
     await signerHelper.create({
       id: randomSignerKp.accountId(),
@@ -46,9 +47,11 @@ describe.only('signer', () => {
     const providersDefaultSigner = providerDefaultSigners[0]
     log.info(`got provider's default signer: { id: ${providersDefaultSigner.id}, role: ${providersDefaultSigner.role.id} }`)
 
+    const signerRoleIssuance = `${await getKvEntryWithFallback(KEY_VALUE_KEYS.signerRoleIssuance, '5')}` // TODO if issuance signer role creation process will be changed - replace fallbackValue with new proper fallbackValue
+
     await signerHelper.create({
       id: providersDefaultSigner.id,
-      roleID: providersDefaultSigner.role.id // TODO [for testing operationally] create custom signer role & pass it here
+      roleID: signerRoleIssuance // TODO [for testing operationally] create custom signer role & pass it here
     }, kpSignerReceiver)
 
     const receiverSigners = (await sm._getSigners(kpSignerReceiver.accountId())).filter(signer => signer.id === providersDefaultSigner.id && signer.account.id === kpSignerReceiver.accountId())
