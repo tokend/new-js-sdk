@@ -182,7 +182,7 @@ export class WalletsManager {
     const walletWithSession = new Wallet(
       mainWallet.email,
       mainWallet.keypair,
-      mainWallet.accountId,
+      _get(response, 'data.accountId'),
       mainWallet.id,
       _get(response, 'data.session.id'),
       _get(response, 'data.session.encryptionKey')
