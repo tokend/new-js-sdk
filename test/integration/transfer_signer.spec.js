@@ -7,7 +7,7 @@ import { ApiCaller } from '../../src/api2/api-caller';
 import { SignersManager } from "../../src/api2/managers";
 import * as config from '../config'
 
-describe.only('signer', () => {
+describe('signer', () => {
   it('should create two accounts with signers and transfer signer from one to another account', async () => {
     const log = logger.new('transfer_signer')
 
