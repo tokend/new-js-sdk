@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+### Fixed
+- A bug when user with status 'unregistered' get other account id at registration
+
 ## [1.12.0] - 2019-12-16
 ### Added
 - Redemption reviewable request
