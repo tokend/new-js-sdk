@@ -16,6 +16,6 @@ describe('Initiate kyc recovery', function () {
     let obj = Operation.operationToObject(operation)
     expect(obj.type).to.be.equal('initiateKycRecovery')
     expect(signer).to.be.equal(obj.signer)
-    expect(account).to.be.equal(obj.account)
+    expect(account).to.be.equal(obj.targetAccount)
   })
 })

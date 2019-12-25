@@ -32,19 +32,19 @@ describe('Signers manager', () => {
       sandbox.stub(signersManagerInstance, '_getSigners').resolves([
         {
           id: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-          role: { id: '2' }
+          roles: ['2']
         },
         {
           id: 'GAJIMZYYBBU7XPXDLR2HUI6KIIV5LMUNJ2WOHY2FQ2Y5MCTDPMLOFLDY',
-          role: { id: '2' }
+          roles: ['2']
         },
         {
           id: 'GBEHGGVNR6I4J3KV4WP5VONSGALNXJIXI3QHLLGXYVSVBEETR3YHFYDF',
-          role: { id: '2' }
+          roles: ['2']
         },
         {
           id: 'GD2BSUAJPCN3UKRI64IJI53BJ22NKSVQ7OB6CM2D6OLAZU7U44GC23A7',
-          role: { id: '1' }
+          roles: ['1']
         }
       ])
       sandbox.stub(signersManagerInstance, '_getDefaultSignerRole')
@@ -63,19 +63,19 @@ describe('Signers manager', () => {
       expect(parseTransactionEnvelope(result))
         .to.deep.equal([
           {
-            type: 'manageSigner',
+            type: 'createSigner',
             publicKey: 'GABMN37HVQYAX4YCUMSKCCEJNFV4YOMNZOZDUMNEW5FAX5QESM7QO63Q',
-            roleID: '2',
+            roleIDs: ['2'],
             weight: '1000',
             identity: '0',
             details: {}
           },
           {
-            type: 'manageSigner',
+            type: 'removeSigner',
             publicKey: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
           },
           {
-            type: 'manageSigner',
+            type: 'removeSigner',
             publicKey: 'GAJIMZYYBBU7XPXDLR2HUI6KIIV5LMUNJ2WOHY2FQ2Y5MCTDPMLOFLDY'
           }
         ])
@@ -92,23 +92,23 @@ describe('Signers manager', () => {
       expect(parseTransactionEnvelope(result))
         .to.deep.equal([
           {
-            type: 'manageSigner',
+            type: 'createSigner',
             publicKey: 'GABMN37HVQYAX4YCUMSKCCEJNFV4YOMNZOZDUMNEW5FAX5QESM7QO63Q',
-            roleID: '2',
+            roleIDs: ['2'],
             weight: '1000',
             identity: '0',
             details: {}
           },
           {
-            type: 'manageSigner',
+            type: 'removeSigner',
             publicKey: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
           },
           {
-            type: 'manageSigner',
+            type: 'removeSigner',
             publicKey: 'GAJIMZYYBBU7XPXDLR2HUI6KIIV5LMUNJ2WOHY2FQ2Y5MCTDPMLOFLDY'
           },
           {
-            type: 'manageSigner',
+            type: 'removeSigner',
             publicKey: 'GBEHGGVNR6I4J3KV4WP5VONSGALNXJIXI3QHLLGXYVSVBEETR3YHFYDF'
           }
         ])

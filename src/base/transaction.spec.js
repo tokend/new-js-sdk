@@ -1,7 +1,7 @@
 import { Memo } from './memo'
 import { Keypair } from './keypair'
 import { TransactionBuilder } from './transaction_builder'
-import { Operation } from './operation'
+import { PaymentBuilder } from './operations/payment_builder'
 import { Transaction } from './transaction'
 
 describe('Transaction', () => {
@@ -15,11 +15,12 @@ describe('Transaction', () => {
       maxTime: '1455297545'
     }
     let input = new TransactionBuilder(source, { timebounds })
-      .addOperation(Operation.payment({
+      .addOperation(PaymentBuilder.payment({
         amount: amount,
         subject: 'test',
-        sourceBalanceId,
-        destinationBalanceId,
+        securityType: '1',
+        sourceBalanceId: sourceBalanceId,
+        destination: destinationBalanceId,
         feeData: {
           sourceFee: {
             percent: '0',
@@ -62,11 +63,12 @@ describe('Transaction', () => {
       maxTime: '1455297545'
     }
     let tx = new TransactionBuilder(source, { timebounds })
-      .addOperation(Operation.payment({
-        amount,
+      .addOperation(PaymentBuilder.payment({
+        amount: amount,
         subject: 'test',
-        sourceBalanceId,
-        destinationBalanceId,
+        securityType: '1',
+        sourceBalanceId: sourceBalanceId,
+        destination: destinationBalanceId,
         feeData: {
           sourceFee: {
             percent: '0',
@@ -100,11 +102,12 @@ describe('Transaction', () => {
     }
 
     let input = new TransactionBuilder(source, { fee: 0, timebounds })
-      .addOperation(Operation.payment({
+      .addOperation(PaymentBuilder.payment({
         amount: amount,
+        securityType: '1',
         subject: 'test',
-        sourceBalanceId,
-        destinationBalanceId,
+        sourceBalanceId: sourceBalanceId,
+        destination: destinationBalanceId,
         feeData: {
           sourceFee: {
             percent: '0',

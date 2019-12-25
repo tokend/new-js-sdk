@@ -4,7 +4,7 @@ import { ApiCaller } from '../../src/api2/api-caller'
 import { Wallet } from '../../src/wallet'
 import * as config from '../config'
 import { InitiateKYCRecoveryBuilder } from '../../src/base/operations/initiate_kyc_recovery_builder'
-import { CreateKYCRecoveryRequestBuilder } from '../../src/base/operations/create_kyc_recovery_request_builder'
+import { KYCRecoveryBuilder } from '../../src/base/operations/kyc_recovery_builder'
 import { Keypair, ManageKeyValueBuilder } from '../../src/base'
 import { KEY_VALUE_KEYS } from '../../src/const'
 import { isUndefined } from 'lodash'
@@ -49,7 +49,7 @@ export class KYCRecoveryHelper extends Helper {
       },
       requestID: '0'
     }
-    const operation = CreateKYCRecoveryRequestBuilder.create({
+    const operation = KYCRecoveryBuilder.create({
       ...DEFAULTS,
       ...opts
     })
@@ -80,7 +80,7 @@ export class KYCRecoveryHelper extends Helper {
         description: 'Need to recover my account'
       }
     }
-    const operation = CreateKYCRecoveryRequestBuilder.update({
+    const operation = KYCRecoveryBuilder.update({
       ...DEFAULTS,
       ...opts
     }, requestID)

@@ -77,7 +77,7 @@ export class SignersManager {
   async _getNonRecoverySigners (accountId) {
     const signers = await this._getSigners(accountId)
     return signers
-      .filter(signer => signer.role.id !== RECOVERY_SIGNER_ROLE_ID)
+      .filter(signer => !signer.roles.includes(RECOVERY_SIGNER_ROLE_ID))
   }
 
   async _getSigners (accountId) {
@@ -94,7 +94,7 @@ export class SignersManager {
       publicKey: newAccountId,
       weight: DEFAULT_SIGNER_WEIGHT,
       identity: DEFAULT_SIGNER_IDENTITY,
-      roleID: signerRoleId,
+      roleIDs: [signerRoleId],
       details: {}
     })
   }
@@ -119,7 +119,7 @@ export class SignersManager {
   }
 
   _makeRemoveSignerOp (signer) {
-    return ManageSignerBuilder.deleteSigner({
+    return ManageSignerBuilder.removeSigner({
       publicKey: signer.id
     })
   }

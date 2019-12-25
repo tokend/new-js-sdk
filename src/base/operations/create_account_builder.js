@@ -11,7 +11,7 @@ export class CreateAccountBuilder {
    * Create and fund a non existent account.
    * @param {object} opts
    * @param {string} opts.destination - Destination account ID to create an account for.
-   * @param {string} opts.roleID - id of the role for new account.
+   * @param {array} opts.roleIDs - id of the role for new account.
    * @param {array} opts.signersData - array of signers data
    * * @param {string} opts.signersData.publicKey - public key of new signer
    * * @param {string} opts.signersData.roleID - id of role for signer
@@ -39,11 +39,25 @@ export class CreateAccountBuilder {
       attrs.referrer = Keypair.fromAccountId(opts.referrer).xdrAccountId()
     }
 
-    if (isUndefined(opts.roleID)) {
-      throw new Error('roleID is undefined')
+    if (isUndefined(opts.roleIDs)) {
+      throw new Error('roleIDs of signer is undefined')
     }
 
-    attrs.roleId = UnsignedHyper.fromString(opts.roleID)
+    if (!isArray(opts.roleIDs)) {
+      throw new Error('roleIDs is not array')
+    }
+
+    if (opts.roleIDs.length === 0) {
+      throw new Error('roleIDs is empty')
+    }
+
+    let roles = []
+
+    for (let roleID of opts.roleIDs) {
+      roles.push(UnsignedHyper.fromString(roleID))
+    }
+
+    attrs.roleIDs = roles
 
     if (isUndefined(opts.signersData)) {
       throw new Error('signersData is undefined')
@@ -59,7 +73,7 @@ export class CreateAccountBuilder {
 
     attrs.signersData = []
     for (let signerData of opts.signersData) {
-      attrs.signersData.push(ManageSignerBuilder.prepareUpdateSignerData(signerData))
+      attrs.signersData.push(ManageSignerBuilder.prepareSignerData(signerData))
     }
 
     let op = new xdr.CreateAccountOp(attrs)
@@ -72,7 +86,13 @@ export class CreateAccountBuilder {
 
   static createAccountToObject (result, attrs) {
     result.destination = BaseOperation.accountIdtoAddress(attrs.destination())
-    result.roleID = attrs.roleId().toString()
+
+    let roles = []
+    for (let roleID of attrs.roleIDs()) {
+      roles.push(roleID.toString())
+    }
+
+    attrs.roleIDs = roles
 
     if (attrs.referrer()) {
       result.referrer = BaseOperation.accountIdtoAddress(attrs.referrer())

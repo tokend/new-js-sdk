@@ -439,36 +439,32 @@ describe('validateXdrEnumType', () => {
   it('should not throw error for valid types', () => {
     expect(() => {
       validateXdrEnumType({
-        value: xdr.FeeType.paymentFee(),
-        type: xdr.FeeType
+        value: xdr.OperationType.payment(),
+        type: xdr.OperationType
       })
       validateXdrEnumType({
-        value: xdr.PollType.singleChoice(),
-        type: xdr.PollType
-      })
-      validateXdrEnumType({
-        value: xdr.SaleType.basicSale(),
-        type: xdr.SaleType
+        value: xdr.RuleResourceType.any(),
+        type: xdr.RuleResourceType
       })
     }).to.not.throw()
   })
 
   it('should throw TypeError for invalid XDR types', () => {
-    expect(() => validateXdrEnumType({ value: null, type: xdr.PollType }))
+    expect(() => validateXdrEnumType({ value: null, type: xdr.OperationType }))
       .to.throw(TypeError)
-    expect(() => validateXdrEnumType({ value: 'SaleType', type: xdr.SaleType }))
+    expect(() => validateXdrEnumType({ value: 'OperationType', type: xdr.RuleResourceType }))
       .to.throw(TypeError)
     expect(() => validateXdrEnumType({
-      value: xdr.SaleType.basicSale(),
-      type: xdr.PollType
+      value: xdr.RuleResourceType.custom(),
+      type: xdr.DestinationType
     })).to.throw(TypeError)
     expect(() => validateXdrEnumType({
       value: undefined,
-      type: xdr.FeeType
+      type: xdr.DestinationType
     })).to.throw(TypeError)
     expect(() => validateXdrEnumType({
-      value: xdr.FeeType.paymentFee(),
-      type: xdr.SaleType
+      value: xdr.OperationType.payment(),
+      type: xdr.RuleResourceType
     })).to.throw(TypeError)
   })
 })

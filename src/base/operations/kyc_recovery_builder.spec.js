@@ -1,23 +1,21 @@
 import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { Keypair } from '../keypair'
-import { CreateKYCRecoveryRequestBuilder } from './create_kyc_recovery_request_builder'
+import { KYCRecoveryBuilder } from './kyc_recovery_builder'
 
 describe('Create kyc recovery', function () {
   it('Success', function () {
     let account = Keypair.random().accountId()
     let signer = Keypair.random().accountId()
-    let allTasks = 1
-    let op = CreateKYCRecoveryRequestBuilder.create({
+    let op = KYCRecoveryBuilder.kycRecovery({
       targetAccount: account,
       creatorDetails: {},
-      allTasks: allTasks,
       signers: [
         {
           publicKey: signer,
           weight: '1000',
           identity: '1',
-          roleID: '1',
+          roleIDs: ['1'],
           details: {}
         }
       ]
@@ -25,10 +23,8 @@ describe('Create kyc recovery', function () {
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)
-    expect(obj.type).to.be.equal('createKycRecoveryRequest')
-    expect('0').to.be.equal(obj.requestID)
+    expect(obj.type).to.be.equal('kycRecovery')
     expect(signer).to.be.equal(obj.signers[0].publicKey)
     expect(account).to.be.equal(obj.targetAccount)
-    expect(allTasks).to.be.equal(obj.allTasks)
   })
 })

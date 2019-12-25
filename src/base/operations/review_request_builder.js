@@ -4,8 +4,6 @@ import isString from 'lodash/isString'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
 import { Hasher } from '../util/hasher'
-import { PaymentBuilder } from './payment_builder'
-import { Keypair } from '../keypair'
 
 export class ReviewRequestBuilder {
   /**
@@ -16,7 +14,6 @@ export class ReviewRequestBuilder {
    * @param {number} opts.requestType - Type of the request to be reviewed (xdr.ReviewableRequestType)
    * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
    * @param {string} opts.reason - Reject reason
-   * @param {object} opts.reviewDetails - Review details for reviewable request (xdr.ReviewDetails)
    * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
    * @param {number|string} opts.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
    * @param {number|string} opts.tasksToRemove - tasks, which were done by the reviewer and should be removed
@@ -25,16 +22,6 @@ export class ReviewRequestBuilder {
    */
   static reviewRequest (opts) {
     let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-
-    let validRequestType = !isUndefined(opts.requestType) &&
-      xdr.ReviewableRequestType._byValue.has(opts.requestType)
-    if (!validRequestType) {
-      throw new Error('opts.requestType is invalid')
-    }
-
-    let requestType = xdr.ReviewableRequestType._byValue.get(opts.requestType)
-
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails(requestType)
 
     attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
 
@@ -72,282 +59,35 @@ export class ReviewRequestBuilder {
 
     attrs.reason = opts.reason
 
-    if (isUndefined(opts.reviewDetails)) {
-      opts.reviewDetails = {}
+    if (isUndefined(opts.tasksToAdd)) {
+      opts.tasksToAdd = '0'
     }
 
-    if (isUndefined(opts.reviewDetails.tasksToAdd)) {
-      opts.reviewDetails.tasksToAdd = 0
+    if (isUndefined(opts.tasksToRemove)) {
+      opts.tasksToRemove = '0'
     }
 
-    if (isUndefined(opts.reviewDetails.tasksToRemove)) {
-      opts.reviewDetails.tasksToRemove = 0
+    if (isUndefined(opts.externalDetails)) {
+      opts.externalDetails = ''
     }
 
-    if (isUndefined(opts.reviewDetails.externalDetails)) {
-      opts.reviewDetails.externalDetails = ''
-    }
-
-    attrs.reviewDetails = new xdr.ReviewDetails({
-      tasksToAdd: opts.reviewDetails.tasksToAdd,
-      tasksToRemove: opts.reviewDetails.tasksToRemove,
-      externalDetails: isString(opts.reviewDetails.externalDetails)
-        ? opts.reviewDetails.externalDetails
-        : JSON.stringify(opts.reviewDetails.externalDetails),
-      ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
-    })
+    attrs.tasksToAdd = UnsignedHyper.fromString(opts.tasksToAdd)
+    attrs.tasksToRemove = UnsignedHyper.fromString(opts.tasksToRemove)
+    attrs.externalDetails = isString(opts.externalDetails)
+      ? opts.externalDetails
+      : JSON.stringify(opts.externalDetails)
 
     attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
 
     return attrs
   }
 
-  /**
-   * Creates operation to review withdraw request
-   * @param {object} opts
-   * @param {string} opts.requestID - request ID
-   * @param {string} opts.requestHash - Hash of the request to be reviewed
-   * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
-   * @param {string} opts.reason - Reject reason
-   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-   * @param {object} opts.reviewDetails
-   * @param {number|string} opts.reviewDetails.tasksToAdd - new tasks for reviewable request to be accomplished before fulfill
-   * @param {number|string} opts.reviewDetails.tasksToRemove - tasks, which were done by the reviewer and should be removed
-   * @param {string} opts.reviewDetails.externalDetails - External System details
-   * @returns {xdr.ReviewRequestOp}
-   */
-  static reviewWithdrawRequest (opts) {
-    if (isUndefined(opts.reviewDetails.externalDetails)) {
-      throw new Error('opts.reviewDetails.externalDetails is invalid')
-    }
-
-    let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.createWithdraw(
-      new xdr.WithdrawalDetails({
-        ext: new xdr.WithdrawalDetailsExt(xdr.LedgerVersion.emptyVersion()),
-        externalDetails: '{}'
-      })
-    )
-
-    attrs.reviewDetails = new xdr.ReviewDetails({
-      tasksToAdd: opts.reviewDetails.tasksToAdd,
-      tasksToRemove: opts.reviewDetails.tasksToRemove,
-      externalDetails: JSON.stringify(opts.reviewDetails.externalDetails),
-      ext: new xdr.ReviewDetailsExt(xdr.LedgerVersion.emptyVersion())
-    })
-
-    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
-
-    return ReviewRequestBuilder._createOp(opts, attrs)
-  }
-
-  /**
-   * Creates operation to review aml alert request
-   * @param {object} opts
-   * @param {string} opts.requestID - request ID
-   * @param {string} opts.requestHash - Hash of the request to be reviewed
-   * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
-   * @param {string} opts.reason - Reject reason
-   * @param {string} opts.comment - Comment to review
-   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-   * @returns {xdr.ReviewRequestOp}
-   */
-  static reviewAmlAlertRequest (opts) {
-    if (isUndefined(opts.comment)) {
-      throw new Error('opts.comment is invalid')
-    }
-
-    let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.createAmlAlert(
-      new xdr.AmlAlertDetails({
-        ext: new xdr.AmlAlertDetailsExt(xdr.LedgerVersion.emptyVersion()),
-        comment: opts.comment
-      })
-    )
-    attrs.ext = new xdr.ReviewRequestOpExt(xdr.LedgerVersion.emptyVersion())
-
-    return ReviewRequestBuilder._createOp(opts, attrs)
-  }
-
-  static reviewLimitsUpdateRequest (opts) {
-    if (isUndefined(opts.newLimits)) {
-      throw new Error('opts.newLimits is invalid')
-    }
-
-    let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-
-    let rawLimitsV2Entry = {}
-
-    if (isUndefined(opts.newLimits.id)) {
-      throw new Error('opts.newLimits.id is not defined')
-    }
-    rawLimitsV2Entry.id = UnsignedHyper.fromString(opts.newLimits.id)
-
-    if (!isUndefined(opts.newLimits.accountID) &&
-        !isUndefined(opts.newLimits.accountRole)) {
-      throw new Error(
-        'opts.newLimits.accountID and opts.newLimits.accountRole cannot be set for same limits'
-      )
-    }
-
-    if (!isUndefined(opts.newLimits.accountID)) {
-      if (!Keypair.isValidPublicKey(opts.newLimits.accountID)) {
-        throw new Error('opts.newLimits.accountID is invalid')
-      }
-      rawLimitsV2Entry.accountId = Keypair.fromAccountId(
-        opts.newLimits.accountID
-      ).xdrAccountId()
-    }
-
-    if (!isUndefined(opts.newLimits.accountRole)) {
-      rawLimitsV2Entry.accountRole = BaseOperation
-        ._accountTypeFromNumber(opts.newLimits.accountRole)
-    }
-
-    if (isUndefined(opts.newLimits.statsOpType)) {
-      throw new Error('opts.newLimits.statsOpType is not defined')
-    }
-    rawLimitsV2Entry.statsOpType = BaseOperation
-      ._statsOpTypeFromNumber(opts.newLimits.statsOpType)
-
-    if (isUndefined(opts.newLimits.assetCode) ||
-      !BaseOperation.isValidAsset(opts.newLimits.assetCode)) {
-      throw new Error('opts.newLimits.assetCode is invalid')
-    }
-    rawLimitsV2Entry.assetCode = opts.newLimits.assetCode
-
-    if (isUndefined(opts.newLimits.isConvertNeeded)) {
-      throw new Error('opts.newLimits.isConvertNeeded is not defined')
-    }
-    rawLimitsV2Entry.isConvertNeeded = opts.newLimits.isConvertNeeded
-
-    rawLimitsV2Entry.dailyOut = BaseOperation._toUnsignedXDRAmount(
-      opts.newLimits.dailyOut
-    )
-    rawLimitsV2Entry.weeklyOut = BaseOperation._toUnsignedXDRAmount(
-      opts.newLimits.weeklyOut
-    )
-    rawLimitsV2Entry.monthlyOut = BaseOperation._toUnsignedXDRAmount(
-      opts.newLimits.monthlyOut
-    )
-    rawLimitsV2Entry.annualOut = BaseOperation._toUnsignedXDRAmount(
-      opts.newLimits.annualOut
-    )
-    rawLimitsV2Entry.ext = new xdr.LimitsV2EntryExt(
-      xdr.LedgerVersion.emptyVersion()
-    )
-
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails
-      .updateLimit(
-        new xdr.LimitsUpdateDetails({
-          newLimitsV2: new xdr.LimitsV2Entry(rawLimitsV2Entry),
-          ext: new xdr.LimitsUpdateDetailsExt(xdr.LedgerVersion.emptyVersion()),
-          tasksToAdd: opts.reviewDetails.tasksToAdd,
-          tasksToRemove: opts.reviewDetails.tasksToRemove
-        })
-      )
-
-    return ReviewRequestBuilder._createOp(opts, attrs)
-  }
-
-  /**
-   * Creates operation to review invoice request
-   * @param {object} opts
-   * @param {string} opts.requestID - request ID
-   * @param {string} opts.requestHash - Hash of the request to be reviewed
-   * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
-   * @param {string} opts.reason - Reject reason
-   * @param {object} opts.billPayDetails - invoice payment details (xdr.PaymentOpV2)
-   * @param {string} [opts.source] - The source account for the payment. Defaults to the transaction's source account.
-   * @returns {xdr.ReviewRequestOp}
-   */
-  static reviewInvoiceRequest (opts) {
-    let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-    let billPayDetails = PaymentBuilder.prepareAttrs(opts.billPayDetails)
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.invoice(
-      new xdr.BillPayDetails({
-        paymentDetails: new xdr.PaymentOpV2(billPayDetails),
-        ext: new xdr.BillPayDetailsExt(xdr.LedgerVersion.emptyVersion())
-      })
-    )
-    return ReviewRequestBuilder._createOp(opts, attrs)
-  }
-
-  /**
-   * Creates operation to review contract request
-   * @param {object} opts
-   * @param {string} opts.requestID - request ID
-   * @param {string} opts.requestHash - Hash of the request to be reviewed
-   * @param {number} opts.action - action to be performed over request (xdr.ReviewRequestOpAction)
-   * @param {string} opts.reason - Reject reason
-   * @param {object} opts.details - customer details about contract
-   * @param {string} [opts.source] - The source account for the review request. Defaults to the transaction's source account.
-   * @returns {xdr.ReviewRequestOp}
-   */
-  static reviewContractRequest (opts) {
-    let attrs = ReviewRequestBuilder._prepareAttrs(opts)
-    attrs.requestDetails = new xdr.ReviewRequestOpRequestDetails.contract(
-      new xdr.ContractDetails({
-        details: JSON.stringify(opts.details),
-        ext: new xdr.ContractDetailsExt(xdr.LedgerVersion.emptyVersion())
-      })
-    )
-    return ReviewRequestBuilder._createOp(opts, attrs)
-  }
-
   static reviewRequestToObject (result, attrs) {
     result.requestID = attrs.requestId().toString()
     result.requestHash = attrs.requestHash().toString('hex')
-    result.requestType = attrs.requestDetails().switch().value
-    switch (attrs.requestDetails().switch()) {
-      case xdr.ReviewableRequestType.createWithdraw(): {
-        result.withdrawal = {
-          externalDetails: attrs.requestDetails().withdrawal().externalDetails().toString()
-        }
-        break
-      }
-      case xdr.ReviewableRequestType.updateLimit(): {
-        let newLimitsV2 = attrs.requestDetails().limitsUpdate().newLimitsV2()
-
-        result.limitsUpdate = {
-          newLimits: {
-            id: newLimitsV2.id().toString(),
-            statsOpType: newLimitsV2.statsOpType().value,
-            assetCode: newLimitsV2.assetCode().toString(),
-            isConvertNeeded: newLimitsV2.isConvertNeeded(),
-            dailyOut: BaseOperation._fromXDRAmount(newLimitsV2.dailyOut()),
-            weeklyOut: BaseOperation._fromXDRAmount(newLimitsV2.weeklyOut()),
-            monthlyOut: BaseOperation._fromXDRAmount(newLimitsV2.monthlyOut()),
-            annualOut: BaseOperation._fromXDRAmount(newLimitsV2.annualOut())
-          }
-        }
-
-        if (newLimitsV2.accountId()) {
-          result.limitsUpdate.newLimits.accountID = BaseOperation
-            .accountIdtoAddress(newLimitsV2.accountId())
-        }
-
-        if (newLimitsV2.accountRole()) {
-          result.limitsUpdate.newLimits.accountRole = newLimitsV2
-            .accountRole().value
-        }
-
-        break
-      }
-      case xdr.ReviewableRequestType.createAmlAlert(): {
-        result.amlAlert = {
-          comment: attrs.requestDetails().amlAlertDetails().comment().toString()
-        }
-        break
-      }
-    }
-    result.reviewDetails = {
-      tasksToAdd: attrs.reviewDetails().tasksToAdd(),
-      tasksToRemove: attrs.reviewDetails().tasksToRemove(),
-      externalDetails: attrs.reviewDetails().externalDetails().toString('utf8')
-    }
+    result.tasksToAdd = attrs.tasksToAdd().toString()
+    result.tasksToRemove = attrs.tasksToRemove().toString()
+    result.externalDetails = attrs.externalDetails().toString('utf8')
     result.action = attrs.action().value
     result.reason = attrs.reason().toString()
   }

@@ -8,16 +8,20 @@ export class PaymentBuilder {
   static prepareAttrs (opts) {
     let attrs = {}
 
+    if (isUndefined(opts.securityType)) {
+      throw new TypeError('securityType is invalid')
+    }
+
     if (!Keypair.isValidBalanceKey(opts.sourceBalanceId)) {
       throw new TypeError('sourceBalanceId is invalid')
     }
 
     if (Keypair.isValidPublicKey(opts.destination)) {
-      attrs.destination = new xdr.PaymentOpDestination.account(
+      attrs.destination = new xdr.MovementDestination.account(
         Keypair.fromAccountId(opts.destination).xdrAccountId()
       )
     } else if (Keypair.isValidBalanceKey(opts.destination)) {
-      attrs.destination = new xdr.PaymentOpDestination.balance(
+      attrs.destination = new xdr.MovementDestination.balance(
         Keypair.fromBalanceId(opts.destination).xdrBalanceId()
       )
     } else {
@@ -72,6 +76,7 @@ export class PaymentBuilder {
       opts.reference = ''
     }
 
+    attrs.securityType = Number.parseInt(opts.securityType, 10)
     attrs.sourceBalanceId = Keypair.fromBalanceId(opts.sourceBalanceId).xdrBalanceId()
     attrs.amount = BaseOperation._toUnsignedXDRAmount(opts.amount)
     attrs.subject = opts.subject
@@ -92,8 +97,9 @@ export class PaymentBuilder {
   }
 
   /**
-   * Creates PaymentV2 operation where destination is AccountID or BalanceID
+   * Creates Payment operation where destination is AccountID or BalanceID
    * @param {object} opts
+   * @param {number|string} opts.securityType
    * @param {string} opts.sourceBalanceId
    * @param {string} opts.destination
    * @param {number|string} opts.amount
@@ -107,13 +113,13 @@ export class PaymentBuilder {
    * * @param {bool} opts.feeData.sourcePaysForDest
    * @param {string} opts.subject
    * @param {string} opts.reference
-   * @returns {xdr.PaymentOpV2}
+   * @returns {xdr.PaymentOp}
    */
   static payment (opts, needSetSourceAccount = true) {
     let attrs = PaymentBuilder.prepareAttrs(opts)
-    let paymentV2 = new xdr.PaymentOp(attrs)
+    let payment = new xdr.PaymentOp(attrs)
     let opAttrs = {}
-    opAttrs.body = xdr.OperationBody.payment(paymentV2)
+    opAttrs.body = xdr.OperationBody.payment(payment)
     if (needSetSourceAccount) {
       BaseOperation.setSourceAccount(opAttrs, opts)
     }
@@ -122,12 +128,14 @@ export class PaymentBuilder {
 
   static paymentToObject (result, attrs) {
     result.sourceBalanceId = BaseOperation.balanceIdtoString(attrs.sourceBalanceId())
+    result.securityType = attrs.securityType().toString()
+
     switch (attrs.destination().switch()) {
-      case xdr.PaymentDestinationType.account(): {
+      case xdr.DestinationType.account(): {
         result.destination = BaseOperation.accountIdtoAddress(attrs.destination().accountId())
         break
       }
-      case xdr.PaymentDestinationType.balance(): {
+      case xdr.DestinationType.balance(): {
         result.destination = BaseOperation.balanceIdtoString(attrs.destination().balanceId())
         break
       }

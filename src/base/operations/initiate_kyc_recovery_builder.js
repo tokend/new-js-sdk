@@ -26,7 +26,7 @@ export class InitiateKYCRecoveryBuilder {
       fieldName: 'opts.signer'
     })
 
-    attrs.account = Keypair
+    attrs.targetAccount = Keypair
       .fromAccountId(opts.targetAccount)
       .xdrAccountId()
     attrs.signer = Keypair
@@ -43,7 +43,7 @@ export class InitiateKYCRecoveryBuilder {
   }
 
   static initiateKYCRecoveryToObject (result, attrs) {
-    result.account = BaseOperation.accountIdtoAddress(attrs.account())
+    result.targetAccount = BaseOperation.accountIdtoAddress(attrs.targetAccount())
     result.signer = BaseOperation.accountIdtoAddress(attrs.signer())
   }
 }

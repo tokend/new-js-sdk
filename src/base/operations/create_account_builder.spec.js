@@ -1,21 +1,22 @@
 import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { CreateAccountBuilder } from './create_account_builder'
+import { isEqual } from 'lodash'
 
 describe('create Account', () => {
   it('success', () => {
     let destination = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
-    let roleID = '1'
+    let roleIDs = ['1', '2']
     let signersData = [
       {
-        roleID: roleID,
+        roleIDs: roleIDs,
         publicKey: 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ',
         weight: '8',
         identity: '2',
         details: {}
       },
       {
-        roleID: roleID,
+        roleIDs: roleIDs,
         publicKey: 'GDZXNSOUESYZMHRC3TZRN4VXSIOT47MDDUVD6U7CWXHTDLXVVGU64LVV',
         weight: '3',
         identity: '4',
@@ -24,7 +25,7 @@ describe('create Account', () => {
     ]
     let op = CreateAccountBuilder.createAccount({
       destination,
-      roleID,
+      roleIDs,
       signersData
     })
     let opXdr = op.toXDR('hex')
@@ -32,7 +33,7 @@ describe('create Account', () => {
     let obj = Operation.operationToObject(operation)
     expect(obj.type).to.be.equal('createAccount')
     expect(obj.destination).to.be.equal(destination)
-    expect(obj.roleID).to.be.equal(roleID)
+    expect(isEqual(obj.roleIDs, roleIDs)).to.be.true
   })
 
   it('fails to create createAccount operation with an invalid destination address', () => {

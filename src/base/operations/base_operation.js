@@ -27,13 +27,6 @@ export class BaseOperation {
     return MAX_INT64_AMOUNT
   }
 
-  static isPayment (op) {
-    if (!(op instanceof xdr.Operation)) {
-      throw new Error('should be used for operations')
-    }
-    return op.body().switch().name === 'payment'
-  }
-
   static isValidAsset (value) {
     return isString(value) && /^[a-z\d]{1,16}$/i.test(value)
   }

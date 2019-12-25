@@ -1,5 +1,5 @@
 import { Keypair } from './keypair'
-import { Operation } from './operation'
+import { PaymentBuilder } from './operations/payment_builder'
 import { Memo } from './memo'
 import { TransactionBuilder } from './transaction_builder'
 
@@ -24,11 +24,12 @@ describe('TransactionBuilder', () => {
       }
       let transactionOptions = { sourceBalance, timebounds }
       transaction = new TransactionBuilder(source, transactionOptions)
-        .addOperation(Operation.payment({
+        .addOperation(PaymentBuilder.payment({
           amount: amount,
           subject: 'test',
-          sourceBalanceId,
-          destinationBalanceId,
+          securityType: '1',
+          sourceBalanceId: sourceBalanceId,
+          destination: destinationBalanceId,
           feeData: {
             sourceFee: {
               percent: '0',
@@ -83,11 +84,12 @@ describe('TransactionBuilder', () => {
       let sourceBalance = sourceBalanceId
       let transactionOptions = { sourceBalance, timebounds }
       transaction = new TransactionBuilder(source, transactionOptions)
-        .addOperation(Operation.payment({
+        .addOperation(PaymentBuilder.payment({
           amount: amount1,
+          securityType: '1',
           subject: 'test',
-          sourceBalanceId,
-          destinationBalanceId: destinationBalanceId1,
+          sourceBalanceId: sourceBalanceId,
+          destination: destinationBalanceId1,
           feeData: {
             sourceFee: {
               percent: '0',
@@ -100,11 +102,12 @@ describe('TransactionBuilder', () => {
             sourcePaysForDest: true
           }
         }))
-        .addOperation(Operation.payment({
+        .addOperation(PaymentBuilder.payment({
           amount: amount2,
           subject: 'test',
-          sourceBalanceId,
-          destinationBalanceId: destinationBalanceId2,
+          securityType: '1',
+          sourceBalanceId: sourceBalanceId,
+          destination: destinationBalanceId2,
           feeData: {
             sourceFee: {
               percent: '0',
@@ -144,11 +147,12 @@ describe('TransactionBuilder', () => {
       let sourceBalanceId = Keypair.random().balanceId()
       let destinationBalanceId = Keypair.random().balanceId()
       let transaction = new TransactionBuilder(source, { timebounds })
-        .addOperation(Operation.payment({
+        .addOperation(PaymentBuilder.payment({
           amount: '1000',
           subject: 'test',
-          sourceBalanceId,
-          destinationBalanceId,
+          securityType: '1',
+          sourceBalanceId: sourceBalanceId,
+          destination: destinationBalanceId,
           feeData: {
             sourceFee: {
               percent: '0',
