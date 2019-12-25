@@ -8,6 +8,8 @@ import { InitiateKYCRecoveryBuilder } from './operations/initiate_kyc_recovery_b
 import { ManageSignerBuilder } from './operations/manage_signer_builder'
 import { IssuanceBuilder } from './operations/issuance_builder'
 import { KYCRecoveryBuilder } from './operations/kyc_recovery_builder'
+import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
+import { ChangeAccountRolesBuilder } from './operations/change_account_roles_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -55,6 +57,15 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.kycRecovery():
         KYCRecoveryBuilder.kycRecoveryOpToObject(result, attrs)
+        break
+      case xdr.OperationType.putKeyValue():
+        ManageKeyValueBuilder.putKeyValueOpToObject(result, attrs)
+        break
+      case xdr.OperationType.removeKeyValue():
+        ManageKeyValueBuilder.removeKeyValueOpToObject(result, attrs)
+        break
+      case xdr.OperationType.changeAccountRole():
+        ChangeAccountRolesBuilder.changeAccountRolesOpToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')
