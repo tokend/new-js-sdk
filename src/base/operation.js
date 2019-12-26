@@ -10,6 +10,7 @@ import { IssuanceBuilder } from './operations/issuance_builder'
 import { KYCRecoveryBuilder } from './operations/kyc_recovery_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 import { ChangeAccountRolesBuilder } from './operations/change_account_roles_builder'
+import { ManageDataBuilder } from './operations/manage_data_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -66,6 +67,15 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.changeAccountRole():
         ChangeAccountRolesBuilder.changeAccountRolesOpToObject(result, attrs)
+        break
+      case xdr.OperationType.createDatum():
+        ManageDataBuilder.createDataToObject(result, attrs)
+        break
+      case xdr.OperationType.updateDatum():
+        ManageDataBuilder.updateDataToObject(result, attrs)
+        break
+      case xdr.OperationType.removeDatum():
+        ManageDataBuilder.removeDataToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')
