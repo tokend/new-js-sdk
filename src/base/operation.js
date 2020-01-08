@@ -13,6 +13,7 @@ import { ChangeAccountRolesBuilder } from './operations/change_account_roles_bui
 import { ManageDataBuilder } from './operations/manage_data_builder'
 import { ReviewableRequestBuilder } from './operations/manage_reviewable_request_builder'
 import { ManageAssetBuilder } from './operations/manage_asset_builder'
+import { CreateBalanceBuilder } from './operations/create_balance_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -93,6 +94,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.updateAsset():
         ManageAssetBuilder.updateAssetToObject(result, attrs)
+        break
+      case xdr.OperationType.createBalance():
+        CreateBalanceBuilder.createBalanceToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')
