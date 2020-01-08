@@ -11,6 +11,8 @@ import { KYCRecoveryBuilder } from './operations/kyc_recovery_builder'
 import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 import { ChangeAccountRolesBuilder } from './operations/change_account_roles_builder'
 import { ManageDataBuilder } from './operations/manage_data_builder'
+import { ReviewableRequestBuilder } from './operations/manage_reviewable_request_builder'
+import { ManageAssetBuilder } from './operations/manage_asset_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -76,6 +78,21 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.removeDatum():
         ManageDataBuilder.removeDataToObject(result, attrs)
+        break
+      case xdr.OperationType.createReviewableRequest():
+        ReviewableRequestBuilder.createReviewableRequestOperationToObject(result, attrs)
+        break
+      case xdr.OperationType.updateReviewableRequest():
+        ReviewableRequestBuilder.updateReviewableRequestOperationToObject(result, attrs)
+        break
+      case xdr.OperationType.removeReviewableRequest():
+        ReviewableRequestBuilder.removeReviewableRequestOperationToObject(result, attrs)
+        break
+      case xdr.OperationType.createAsset():
+        ManageAssetBuilder.createAssetToObject(result, attrs)
+        break
+      case xdr.OperationType.updateAsset():
+        ManageAssetBuilder.updateAssetToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

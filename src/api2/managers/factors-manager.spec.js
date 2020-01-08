@@ -77,7 +77,7 @@ describe('Factors manager', () => {
         })
         expect(factorsManagerInstance._apiCaller.put)
           .to.have.been.calledOnceWith(
-            '/wallets/some-wallet-id/factors/1/verification'
+            '/api/wallets/some-wallet-id/factors/1/verification'
           )
       })
     })
@@ -106,7 +106,7 @@ describe('Factors manager', () => {
 
         expect(factorsManagerInstance._apiCaller.put)
           .to.have.been.calledOnceWithExactly(
-            '/wallets/some-wallet-id/factors/1/verification',
+            '/api/wallets/some-wallet-id/factors/1/verification',
             {
               data: {
                 attributes: {

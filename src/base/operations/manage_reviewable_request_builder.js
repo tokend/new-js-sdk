@@ -13,6 +13,7 @@ import { IssuanceBuilder } from './issuance_builder'
 import { KYCRecoveryBuilder } from './kyc_recovery_builder'
 import { ManageKeyValueBuilder } from './manage_key_value_builder'
 import { ChangeAccountRolesBuilder } from './change_account_roles_builder'
+import { UnsignedHyper } from 'js-xdr'
 
 export class ReviewableRequestBuilder {
   /**
@@ -48,7 +49,7 @@ export class ReviewableRequestBuilder {
     }
 
     let attributes = {
-      creatorDetails: opts.creatorDetails,
+      creatorDetails: JSON.stringify(opts.creatorDetails),
       securityType: opts.securityType,
       operations: rrOperations
     }
@@ -94,8 +95,8 @@ export class ReviewableRequestBuilder {
     }
 
     let attributes = {
-      creatorDetails: opts.creatorDetails,
-      requestID: opts.requestID,
+      creatorDetails: JSON.stringify(opts.creatorDetails),
+      requestId: UnsignedHyper.fromString(opts.requestID),
       operations: rrOperations,
       ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
     }
@@ -123,7 +124,7 @@ export class ReviewableRequestBuilder {
       min: 1
     })
     let attributes = {
-      requestID: opts.requestID,
+      requestId: UnsignedHyper.fromString(opts.requestID),
       ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
     }
 
@@ -191,6 +192,30 @@ export class ReviewableRequestBuilder {
     }
 
     return result
+  }
+
+  static createReviewableRequestOperationToObject (result, attrs) {
+    result.securityType = attrs.securityType().toString()
+    result.creatorDetails = JSON.parse(attrs.creatorDetails().toString())
+    let operations = []
+    for (let rrOp of attrs.operations()) {
+      operations.push(this.reviewableRequestOperationToObject(rrOp))
+    }
+    result.operations = operations
+  }
+
+  static updateReviewableRequestOperationToObject (result, attrs) {
+    result.requestID = attrs.requestId().toString()
+    result.creatorDetails = JSON.parse(attrs.creatorDetails().toString())
+    let operations = []
+    for (let rrOp of attrs.operations()) {
+      operations.push(this.reviewableRequestOperationToObject(rrOp))
+    }
+    result.operations = operations
+  }
+
+  static removeReviewableRequestOperationToObject (result, attrs) {
+    result.requestID = attrs.requestId().toString()
   }
 
   /**

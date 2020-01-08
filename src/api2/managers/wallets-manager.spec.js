@@ -18,7 +18,7 @@ describe('Wallets manager', () => {
     )
 
     let stubGet = sandbox.stub(walletsManagerInstance._apiCaller, 'get')
-      .withArgs('/v3/key_values/signer_role:default')
+      .withArgs('/horizon/key_values/signer_role:default')
       .resolves({
         data: {
           value: {
@@ -27,7 +27,7 @@ describe('Wallets manager', () => {
         }
       })
 
-    stubGet.withArgs('/kdf').resolves({
+    stubGet.withArgs('/api/kdf').resolves({
       data: {
         bits: 256,
         n: 8,
@@ -50,7 +50,7 @@ describe('Wallets manager', () => {
 
         expect(walletsManagerInstance._apiCaller.get)
           .to.have.been.calledOnceWithExactly(
-            '/kdf', { email: 'foo@bar.com', is_recovery: true }
+            '/api/kdf', { email: 'foo@bar.com', is_recovery: true }
           )
         expect(result).to.deep.equal({
           data: {
@@ -70,7 +70,7 @@ describe('Wallets manager', () => {
           .getSignerRoleId()
 
         expect(walletsManagerInstance._apiCaller.get)
-          .to.have.been.calledOnceWith('/v3/key_values/signer_role:default')
+          .to.have.been.calledOnceWith('/horizon/key_values/signer_role:default')
         expect(result).to.deep.equal({
           data: {
             value: {
@@ -85,7 +85,7 @@ describe('Wallets manager', () => {
       it('returns decrypted wallet received from response of _apiCaller.get method called with derived wallet ID', async () => {
         sandbox.stub(Wallet, 'deriveId').returns('some-wallet-id')
         walletsManagerInstance._apiCaller.get
-          .withArgs('/wallets/some-wallet-id')
+          .withArgs('/api/wallets/some-wallet-id')
           .resolves({
             data: {
               accountId: 'SOME_ACCOUNT_ID',
@@ -112,7 +112,7 @@ describe('Wallets manager', () => {
         )
 
         expect(walletsManagerInstance._apiCaller.get
-          .withArgs('/wallets/some-wallet-id')
+          .withArgs('/api/wallets/some-wallet-id')
         ).to.have.been.calledOnce
 
         expect(Wallet.fromEncrypted).calledOnceWithExactly({
@@ -150,7 +150,7 @@ describe('Wallets manager', () => {
           )
         )
         sandbox.stub(walletsManagerInstance._apiCaller, 'post')
-          .withArgs('/wallets')
+          .withArgs('/api/wallets')
           .resolves({
             data: {
               accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
@@ -168,7 +168,7 @@ describe('Wallets manager', () => {
 
         expect(Wallet.generate).to.have.been.calledWithExactly('foo@bar.com')
         expect(walletsManagerInstance._apiCaller.post)
-          .to.have.been.calledOnceWith('/wallets')
+          .to.have.been.calledOnceWith('/api/wallets')
 
         expect(result.response).to.deep.equal({
           data: {
@@ -195,7 +195,7 @@ describe('Wallets manager', () => {
           )
         )
         sandbox.stub(walletsManagerInstance._apiCaller, 'post')
-          .withArgs('/wallets')
+          .withArgs('/api/wallets')
           .resolves({
             data: {
               accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
@@ -213,7 +213,7 @@ describe('Wallets manager', () => {
 
         expect(Wallet.generate).to.have.been.calledWithExactly('foo@bar.com')
         expect(walletsManagerInstance._apiCaller.post)
-          .to.have.been.calledOnceWith('/wallets')
+          .to.have.been.calledOnceWith('/api/wallets')
 
         expect(result.response).to.deep.equal({
           data: {
@@ -242,14 +242,14 @@ describe('Wallets manager', () => {
           })
         )).toString('base64')
         sandbox.stub(walletsManagerInstance._apiCaller, 'put')
-          .withArgs('/wallets/some-wallet-id/verification')
+          .withArgs('/api/wallets/some-wallet-id/verification')
           .resolves()
 
         await walletsManagerInstance.verifyEmail(payload)
 
         expect(walletsManagerInstance._apiCaller.put)
           .to.have.been.calledOnceWithExactly(
-            '/wallets/some-wallet-id/verification',
+            '/api/wallets/some-wallet-id/verification',
             {
               data: {
                 type: 'wallet_verification',
@@ -263,14 +263,14 @@ describe('Wallets manager', () => {
     describe('resendEmail', () => {
       it('calls _apiCaller.post with derived verification wallet ID', async () => {
         sandbox.stub(walletsManagerInstance._apiCaller, 'post')
-          .withArgs('/wallets/some-wallet-id/verification')
+          .withArgs('/api/wallets/some-wallet-id/verification')
           .resolves()
 
         await walletsManagerInstance.resendEmail('some-wallet-id')
 
         expect(walletsManagerInstance._apiCaller.post)
           .to.have.been.calledOnceWithExactly(
-            '/wallets/some-wallet-id/verification'
+            '/api/wallets/some-wallet-id/verification'
           )
       })
     })

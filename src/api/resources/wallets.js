@@ -21,6 +21,7 @@ export class Wallets extends ResourceGroupBase {
    */
   getKdfParams (email, isRecovery = false) {
     return this._makeCallBuilder()
+      .appendUrlSegment('api')
       .appendUrlSegment('kdf')
       .get({ email, isRecovery })
   }

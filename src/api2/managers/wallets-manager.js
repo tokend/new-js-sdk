@@ -44,14 +44,14 @@ export class WalletsManager {
    * @return {Promise.<JsonapiResponse>} KDF params.
    */
   getKdfParams (email, isRecovery = false) {
-    return this._apiCaller.get('/kdf', {
+    return this._apiCaller.get('/api/kdf', {
       email,
       is_recovery: isRecovery
     })
   }
 
   getSignerRoleId () {
-    return this._apiCaller.get('/v3/key_values/signer_role:default')
+    return this._apiCaller.get('/horizon/key_values/signer_role:default')
   }
 
   /**
@@ -75,7 +75,7 @@ export class WalletsManager {
 
     let walletResponse
     try {
-      walletResponse = await this._apiCaller.get(`/wallets/${walletId}`)
+      walletResponse = await this._apiCaller.get(`/api/wallets/${walletId}`)
     } catch (err) {
       // HACK: expose wallet Id to allow resend email
       if (err instanceof VerificationRequiredError) {
@@ -137,7 +137,7 @@ export class WalletsManager {
       }
     })
 
-    const response = await this._apiCaller.post('/wallets', {
+    const response = await this._apiCaller.post('/api/wallets', {
       data: {
         type: 'wallet',
         id: encryptedMainWallet.id,
@@ -228,7 +228,7 @@ export class WalletsManager {
     const decodedPayload = Buffer.from(payload, 'base64').toString('utf8')
     const jsonPayload = JSON.parse(decodedPayload)
 
-    const endpoint = `/wallets/${jsonPayload.meta.wallet_id}/verification`
+    const endpoint = `/api/wallets/${jsonPayload.meta.wallet_id}/verification`
     return this._apiCaller.put(endpoint, {
       data: {
         type: 'wallet_verification',
@@ -247,7 +247,7 @@ export class WalletsManager {
   resendEmail (walletId) {
     const verificationWalletId = walletId || this._apiCaller.wallet.id
 
-    const endpoint = `/wallets/${verificationWalletId}/verification`
+    const endpoint = `/api/wallets/${verificationWalletId}/verification`
     return this._apiCaller.post(endpoint)
   }
 
@@ -287,7 +287,7 @@ export class WalletsManager {
 
     this._apiCaller.useWallet(recoveryWallet)
 
-    const endpoint = `/wallets/${recoveryWallet.id}`
+    const endpoint = `/api/wallets/${recoveryWallet.id}`
     await this._apiCaller.putWithSignature(endpoint, {
       data: {
         type: 'wallet',
@@ -361,7 +361,7 @@ export class WalletsManager {
 
     this._apiCaller.useWallet(newMainWallet)
 
-    const endpoint = `/wallets/${encryptedNewMainWallet.id}`
+    const endpoint = `/api/wallets/${encryptedNewMainWallet.id}`
     await this._apiCaller.putWithSignature(endpoint, {
       data: {
         type: 'recovery-wallet',
@@ -435,7 +435,7 @@ export class WalletsManager {
       signerToReplace: oldWallet.keypair.accountId()
     })
 
-    const endpoint = `/wallets/${oldWallet.id}`
+    const endpoint = `/api/wallets/${oldWallet.id}`
     await this._apiCaller.putWithSignature(endpoint, {
       data: {
         type: 'wallet',
@@ -496,7 +496,7 @@ export class WalletsManager {
    * @return {Promise.<string>} User's account ID.
    */
   async _getAccountIdByRecoveryId (recoveryWalletId) {
-    const endpoint = `/wallets/${recoveryWalletId}`
+    const endpoint = `/api/wallets/${recoveryWalletId}`
     const { data: wallet } = await this._apiCaller.get(endpoint)
 
     return wallet.accountId
@@ -510,7 +510,7 @@ export class WalletsManager {
    * @return {Promise.<string>} User's account ID.
    */
   async _getAccountIdByEmail (email) {
-    const { data } = await this._apiCaller.get('/identities', {
+    const { data } = await this._apiCaller.get('/api/identities', {
       filter: { identifier: email },
       page: { limit: 1 }
     })

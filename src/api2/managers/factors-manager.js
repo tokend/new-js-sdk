@@ -65,7 +65,7 @@ export class FactorsManager {
     const otp = factorWallet.keypair.sign(meta.token).toString('base64')
 
     const walletId = this._apiCaller.wallet.id
-    const endpoint = `/wallets/${walletId}/factors/${meta.factorId}/verification`
+    const endpoint = `/api/wallets/${walletId}/factors/${meta.factorId}/verification`
     return this._apiCaller.put(endpoint, {
       data: {
         attributes: {
@@ -101,7 +101,7 @@ export class FactorsManager {
     const walletId = tfaError.meta.walletId
     const factorId = tfaError.meta.factorId
 
-    const endpoint = `/wallets/${walletId}/factors/${factorId}/verification`
+    const endpoint = `/api/wallets/${walletId}/factors/${factorId}/verification`
     return this._apiCaller.put(endpoint, {
       data: {
         attributes: {
@@ -139,6 +139,6 @@ export class FactorsManager {
    * @return {Promise.<JsonapiResponse>} KDF request response.
    */
   _getKdfParams (email) {
-    return this._apiCaller.get('/kdf', { email })
+    return this._apiCaller.get('/api/kdf', { email })
   }
 }

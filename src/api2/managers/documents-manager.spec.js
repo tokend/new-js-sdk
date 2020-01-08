@@ -75,7 +75,7 @@ describe('documents-manager unit test', () => {
 
         expect(documentsManager._apiCaller.postWithSignature)
           .to.have.been.calledOnceWithExactly(
-            '/documents',
+            '/api/documents',
             {
               data: {
                 type: 'doc-type',

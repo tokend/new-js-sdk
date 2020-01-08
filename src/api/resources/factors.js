@@ -124,6 +124,7 @@ export class Factors extends ResourceGroupBase {
   _makeCallBuilder (walletId) {
     walletId = walletId || this._sdk.wallet.id
     return this._server._makeCallBuilder()
+      .appendUrlSegment('api')
       .appendUrlSegment('wallets')
       .appendUrlSegment(walletId)
       .appendUrlSegment('factors')

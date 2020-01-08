@@ -69,7 +69,7 @@ export class ApiCaller {
 
   static async getInstanceWithPassphrase (baseURL) {
     const caller = this.getInstance(baseURL)
-    const { data: networkDetails } = await caller.getRaw('/')
+    const { data: networkDetails } = await caller.getRaw('/horizon/info')
 
     caller._networkDetails = networkDetails
     caller.usePassphrase(networkDetails.networkPassphrase)
@@ -226,7 +226,7 @@ export class ApiCaller {
    *
    * @param {string} envelope - a transaction envelope to be submitted.
    */
-  async postTxEnvelope (envelope, waitForIngest = true, endpoint = `/v3/transactions`) {
+  async postTxEnvelope (envelope, waitForIngest = true, endpoint = `/horizon/transactions`) {
     // using raw axios because we don't need most of middleware, but need custom
     // request timeout here
     let config = {

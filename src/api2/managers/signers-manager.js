@@ -81,7 +81,7 @@ export class SignersManager {
   }
 
   async _getSigners (accountId) {
-    const endpoint = `/v3/accounts/${accountId}/signers`
+    const endpoint = `/horizon/accounts/${accountId}/signers`
     const { data: signers } = await this._apiCaller.get(endpoint)
 
     return signers
@@ -100,7 +100,7 @@ export class SignersManager {
   }
 
   async _getDefaultSignerRole () {
-    const endpoint = `/v3/key_values/${DEFAULT_SIGNER_ROLE_KEY}`
+    const endpoint = `/horizon/key_values/${DEFAULT_SIGNER_ROLE_KEY}`
     const { data } = await this._apiCaller.get(endpoint)
 
     return String(data.value.u32)

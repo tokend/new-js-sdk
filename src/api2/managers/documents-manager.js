@@ -98,7 +98,7 @@ export class DocumentsManager {
 
   async _createDocumentAnchorConfig ({ type, mimeType, accountId }) {
     const { data: config } = await this._apiCaller.postWithSignature(
-      '/documents',
+      '/api/documents',
       {
         data: {
           type,
