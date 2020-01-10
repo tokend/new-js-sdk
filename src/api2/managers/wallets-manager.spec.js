@@ -153,6 +153,7 @@ describe('Wallets manager', () => {
           .withArgs('/wallets')
           .resolves({
             data: {
+              accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
               session: {
                 id: 'some-session-id',
                 encryptionKey: 'some-session-key'
@@ -171,6 +172,7 @@ describe('Wallets manager', () => {
 
         expect(result.response).to.deep.equal({
           data: {
+            accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
             session: {
               id: 'some-session-id',
               encryptionKey: 'some-session-key'
@@ -196,6 +198,7 @@ describe('Wallets manager', () => {
           .withArgs('/wallets')
           .resolves({
             data: {
+              accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
               session: {
                 id: 'some-session-id',
                 encryptionKey: 'some-session-key'
@@ -214,6 +217,7 @@ describe('Wallets manager', () => {
 
         expect(result.response).to.deep.equal({
           data: {
+            accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
             session: {
               id: 'some-session-id',
               encryptionKey: 'some-session-key'

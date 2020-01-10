@@ -42,7 +42,7 @@ async function prepareRedemption () {
     sourceBalanceId: fromBalance.balanceId,
     destination: toAccount.accountId,
     amount: redemptionAmount,
-    reference: 'ref',
+    reference: Asset.randomCode(),
     creatorDetails: '{"creator": "details"}',
     fromAccount: fromAccount
   }
@@ -54,7 +54,7 @@ export async function initRedemption () {
   let opts = await prepareRedemption()
   opts.allTasks = redemptionTasks
 
-  let response = await redemptionHelper.createRequest(opts, opts.fromAccount.accountKp)
+  let response = await redemptionHelper.createRequest(opts)
 
   return getOpResultFromXDR(response.resultXdr, 'createRedemptionRequestResult')
     .redemptionResponse()
