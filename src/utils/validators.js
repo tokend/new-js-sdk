@@ -277,11 +277,19 @@ export function validateXdrEnumType ({ value, type, fieldName }) {
  * @param {object} opts
  * @param {*} opts.value The value to validate.
  * @param {string} opts.fieldName The name of the field, containing value.
+ * @param {Boolean} opts.validateWithoutSnakeCased Validate value with or without snake_cased.
  *
  * @throws {TypeError} Value should be non-empty object with snake_cased keys.
  */
-export function validateCreatorDetails ({ value, fieldName }) {
-  if (!_isObject(value) || !isObjectKeysSnakeCasedDeep(value)) {
+export function validateCreatorDetails ({
+  value,
+  fieldName,
+  validateWithoutSnakeCased = false
+}) {
+  const validateRule = validateWithoutSnakeCased
+    ? !_isObject(value)
+    : !_isObject(value) || !isObjectKeysSnakeCasedDeep(value)
+  if (validateRule) {
     throw new TypeError(
       `${fieldName} must be a non-empty object with snake_cased keys,
        got ${JSON.stringify(value)}`

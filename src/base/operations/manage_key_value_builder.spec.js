@@ -1,5 +1,5 @@
 import { ManageKeyValueBuilder } from './manage_key_value_builder'
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 
 describe('Manage Key Value', () => {

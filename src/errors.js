@@ -168,7 +168,7 @@ export class TransactionError extends ServerError {
 
     this._title = 'Transaction Failed'
     this._detail = 'Transaction failed because of some operations. Check "resultCodes"'
-    this._resultCodes = get(error, 'meta.extras.result_codes')
+    this._resultCodes = get(error, 'meta.result_codes')
   }
 
   includesOpCode (opCode) {
@@ -182,7 +182,7 @@ export class TransactionError extends ServerError {
    */
 
   get errorResults () {
-    if (this._resultCodes.operations) {
+    if (this._resultCodes.operations && this._resultCodes.messages) {
       return this._resultCodes.operations.reduce((resultCodes, item, index) => {
         if (item !== 'tx_success') {
           resultCodes.push({

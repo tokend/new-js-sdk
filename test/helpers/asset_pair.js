@@ -1,5 +1,7 @@
 import { Operation, xdr } from '../../src/base'
 import { Helper } from './_helper'
+import { RemoveAssetPairOpBuilder } from '../../src/base/operations/remove_asset_pair_op_builder'
+import { Running } from './_running'
 
 export class AssetPair extends Helper {
   /**
@@ -24,5 +26,15 @@ export class AssetPair extends Helper {
     })
 
     return this.submit(operation)
+  }
+
+  /**
+   * @param opts
+   * @param opts.base
+   * @param opts.quote
+   */
+  remove (opts) {
+    let op = RemoveAssetPairOpBuilder.removeAssetPairOp(opts)
+    return this.submit(op)
   }
 }

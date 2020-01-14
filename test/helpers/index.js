@@ -1,6 +1,6 @@
 import config from '../config'
 
-import { ApiCaller, TokenD, base } from '../../src'
+import { ApiCaller, TokenD, base, Wallet } from '../../src'
 
 import { Account } from './account'
 import { Signer } from './signer'
@@ -17,19 +17,30 @@ import { Withdraw } from './withdraw'
 import { Payment } from './payment'
 import { StampHelper } from './stamp'
 import { LicenseHelper } from './license'
+import { AtomicSwapAsk } from './atomic_swap_ask'
+import { AtomicSwapBid } from './atomic_swap_bid'
 import { Poll } from './poll'
+import { Swap } from './swap'
 import { Vote } from './vote'
+import { ManageAccountRole } from './manage_account_role'
+import { ChangeRole } from './change_role'
+import { KYCRecoveryHelper } from './kyc_recovery'
+import { Redemption } from './redemption'
+
+const masterKP = base.Keypair.fromSecret(config.master_seed)
+const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
 
 export const sdk = new TokenD(config.api_url, {
   allowHttp: config.allow_http
 })
+sdk._useNetworkPassphrase(config.network_passphrase)
+sdk.useWallet(masterWallet)
 
 export const api = ApiCaller.getInstance(config.api_url)
-
-sdk._useNetworkPassphrase(config.network_passphrase)
+api.useWallet(masterWallet)
 
 const DEFAULTS = {
-  masterKp: base.Keypair.fromSecret(config.master_seed),
+  masterKp: masterKP,
   sdk,
   api
 }
@@ -49,5 +60,12 @@ export const withdrawHelper = new Withdraw(DEFAULTS)
 export const amlAlertHelper = new AmlAlert(DEFAULTS)
 export const stampHelper = new StampHelper(DEFAULTS)
 export const licenseHelper = new LicenseHelper(DEFAULTS)
+export const atomicSwapAskHelper = new AtomicSwapAsk(DEFAULTS)
+export const atomicSwapBidHelper = new AtomicSwapBid(DEFAULTS)
 export const pollHelper = new Poll(DEFAULTS)
 export const voteHelper = new Vote(DEFAULTS)
+export const manageAccountRoleHelper = new ManageAccountRole(DEFAULTS)
+export const changeRoleHelper = new ChangeRole(DEFAULTS)
+export const kycRecoveryHelper = new KYCRecoveryHelper(DEFAULTS)
+export const swapHelper = new Swap(DEFAULTS)
+export const redemptionHelper = new Redemption(DEFAULTS)

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { Network, TransactionBuilder } from '../base'
+import { Network, TransactionBuilder, Transaction } from '../base'
 import { Wallet } from '../wallet'
 import middlewares from './middlewares'
 import { toCamelCaseDeep } from '../utils/case_converter'
@@ -76,7 +76,7 @@ export class ApiCaller {
     newCaller.useWallet(wallet)
     return newCaller
   }
-
+  
   /**
    * Creates an `ApiCaller` instance with the provided `baseURL` set as default
    * Horizon server endpoint. It also * required network passphrase and wallet
@@ -90,6 +90,12 @@ export class ApiCaller {
     return new ApiCaller({
       baseURL
     })
+  }
+
+  withBaseURL (baseURL) {
+    const newCaller = Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+    newCaller.useBaseURL(baseURL)
+    return newCaller
   }
 
   /**
@@ -145,7 +151,8 @@ export class ApiCaller {
       method: methods.GET,
       needSign,
       endpoint,
-      query
+      query,
+      isEmptyBodyAllowed: true
     })
   }
 
@@ -292,7 +299,8 @@ export class ApiCaller {
       method: methods.DELETE,
       needSign,
       endpoint,
-      data
+      data,
+      isEmptyBodyAllowed: true
     })
   }
 
@@ -323,14 +331,52 @@ export class ApiCaller {
     }
 
     return this.postTxEnvelope(
-      new TransactionBuilder(this._wallet.accountId)
-        .addOperations(operations)
-        .addSigner(this._wallet.keypair)
-        .build()
-        .toEnvelope()
-        .toXDR()
-        .toString('base64')
+      this.getTransaction(...operations)
     )
+  }
+
+  postOperationsToSpecificEndpoint (endpoint, ...operations) {
+    if (!this._wallet) {
+      throw new Error('No wallet found to sign the transaction')
+    }
+
+    return this.postTxEnvelope(
+      this.getTransaction(...operations),
+      true,
+      endpoint
+    )
+  }
+
+  getTransaction (...operations) {
+    return new TransactionBuilder(this._wallet.accountId)
+      .addOperations(operations)
+      .addSigner(this._wallet.keypair)
+      .build()
+      .toEnvelope()
+      .toXDR()
+      .toString('base64')
+  }
+
+  getBuildedTransaction (operations, opts = {}) {
+    return new TransactionBuilder(this._wallet.accountId, opts)
+      .addOperations(operations)
+      .addSigner(this._wallet.keypair)
+      .build()
+  }
+
+  signAndSendTransaction (tx) {
+    if (!this._wallet) {
+      throw new Error('No wallet found to sign the transaction')
+    }
+
+    const transaction = new Transaction(tx)
+    transaction.sign(this._wallet.keypair)
+    const envelopeTx = transaction
+      .toEnvelope()
+      .toXDR()
+      .toString('base64')
+
+    return this.postTxEnvelope(envelopeTx)
   }
 
   /**
@@ -340,16 +386,17 @@ export class ApiCaller {
    * @returns {Promise} - Promise with response, keys data will be camel cased,
    * does not do any other actions on the response
    */
-  async postTxEnvelope (envelope) {
+  async postTxEnvelope (envelope, waitForIngest = true, endpoint = `/v3/transactions`) {
     // using raw axios because we don't need most of middleware, but need custom
     // request timeout here
     let config = {
       timeout: SUBMIT_TRANSACTION_TIMEOUT,
       data: {
-        tx: envelope
+        tx: envelope,
+        wait_for_ingest: waitForIngest
       },
       method: methods.POST,
-      url: `${this._baseURL}/transactions`
+      url: `${this._baseURL}${endpoint}`
     }
     config = middlewares.setJsonapiHeaders(config)
 
@@ -376,6 +423,7 @@ export class ApiCaller {
    * @param {string} opts.method - the http method of request
    * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
    * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
+   * @param {bool} opts.isEmptyBodyAllowed - defines if empty body is allowed, `false` by default
    *
    * @private
    */
@@ -388,9 +436,12 @@ export class ApiCaller {
           .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
           .join('&')
       },
-      data: opts.data || {},
+      data: (opts.isEmptyBodyAllowed && !opts.data)
+        ? undefined
+        : opts.data || {},
       method: opts.method,
-      url: opts.endpoint // TODO: smartly build url
+      url: opts.endpoint, // TODO: smartly build url
+      withCredentials: true
     }
 
     config = middlewares.flattenToAxiosJsonApiQuery(config)

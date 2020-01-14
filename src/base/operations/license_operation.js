@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import isUndefined from 'lodash/isUndefined'
 import { BaseOperation } from './base_operation'
 import { hash } from '../hashing'

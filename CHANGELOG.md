@@ -7,6 +7,134 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.12.1] - 2019-12-23
+### Fixed
+- A bug when user with status 'unregistered' get other account id at registration
+
+## [1.12.0] - 2019-12-16
+### Added
+- Redemption reviewable request
+
+## [1.11.3] - 2019-12-04
+### Added
+- `signAndSendTransaction` method in to api-caller
+
+### Changed
+- Regerate xdr, based on github.com/tokend/xdr/pull/91
+
+## [1.11.2] - 2019-11-18
+### Fixed
+- A bug with getting requestUrl in `sign-request`
+
+## [1.11.1] - 2019-10-25
+### Fixed
+- A bug with seed recovery flow
+
+## [1.11.0] - 2019-10-24
+
+## [1.11.0-rc.0] - 2019-10-24
+### Added
+- Create wallet with signers
+- Integration test for create and recovery wallet
+
+## [1.10.3] - 2019-10-12
+
+## [1.10.3-rc.1] - 2019-10-03
+### Added
+- `getBuildedTransaction` method in to api-caller
+- `needSetSourceAccount` attribute in to payment method(Payment builder)
+
+## [1.10.3-rc.0] - 2019-10-01
+### Added
+- Export `RemoveAssetOpBuilder`
+
+## [1.10.2] - 2019-09-26
+### Fixed
+- tests for atomic swaps
+- tests for swaps
+
+## [1.10.2-rc.1] - 2019-09-19
+### Added
+- Builder for `OpenSwapOp`
+- Unit tests for `OpenSwapOp`
+- Builder for `CloseSwapOp`
+- Unit tests for `CloseSwapOp`
+- Integration tests for `Swap`
+
+### Fixed
+- Integration tests
+
+## [1.10.2-rc.0] - 2019-09-16
+### Added 
+- Builder for `RemoveAssetOp`
+- Unit tests for `RemoveAssetOp`
+- Integration tests for `RemoveAssetOp`
+
+## [1.10.1] - 2019-09-09
+
+## [1.10.1-rc.0] - 2019-09-03
+### Fixed
+- Empty body in get request
+
+## [1.10.0] - 2019-08-23
+
+## [1.10.0-rc.0] - 2019-08-16
+### Added
+- `postOperationsToSpecificEndpoint` in to api-caller
+
+## [1.9.0] - 2019-08-12
+
+## [1.9.0-rc.2] - 2019-07-26
+#### Added
+- v3 endpoint to transactions
+
+## [1.9.0-rc.1] - 2019-07-16
+#### Security
+- Resolved an issue with outdated lodash version
+
+## [1.9.0-rc.0] - 2019-07-11
+### Added
+- `kycRecovery` to `WalletsManager`
+- `encryptSecretSeed`,`decryptSecretSeed` and `deriveSessionKey` methods to
+  crypto.js
+- `sessionId` and `sessionKey` arguments for constructor of `Wallet` class
+
+## [1.9.0-x.0] - 2019-07-01
+### Added
+- `validateWithoutSnakeCased` flag for validators `validateCreatorDetails` method
+
+## [1.8.0] - 2019-06-22
+
+## [1.8.0-rc.1] - 2019-06-17
+### Added
+- `isEmptyBodyAllowed` flag for api-caller `_call` method
+
+## [1.8.0-rc.0] - 2019-06-06
+### Added
+- Integration test for atomic swap
+- Builders for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`,
+  `RemoveAssetPairOp`
+- Unit tests for for `InitiateKYCRecovery`, `CreateKYCRecoveryRequest`,
+  `RemoveAssetPairOp`
+- Integration tests for `CreateKYCRecoveryRequest`, `CreateKYCRecoveryRequest`
+- `ApiCaller#withBaseURL` method
+
+### Changed
+- Now using xdr version 3.4.0-x.0
+- Updated package.json dependencies to the latest, except of `bignumber`
+
+### Fixed
+- operation builders related to atomic swap
+
+## [1.7.0] - 2019-06-03
+
+## [1.7.0-rc.2] - 2019-05-30
+### Fixed
+- Transaction error parsing if no messages are provided
+- Bug with deprecated `requestDetails` field of
+  `ReviewRequestBuilder#reviewWithdrawRequest`. Now this field be set
+  automatically under the hood
+
 ## [1.7.0-rc.1] - 2019-05-21
 ### Changed
 - Now an empty object on creator details validator is allowed
@@ -144,7 +272,34 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.1...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.12.1...HEAD
+[1.12.1]: https://github.com/tokend/new-js-sdk/compare/1.12.0...1.12.1
+[1.12.0]: https://github.com/tokend/new-js-sdk/compare/1.11.3...1.12.0
+[1.11.3]: https://github.com/tokend/new-js-sdk/compare/1.11.2...1.11.3
+[1.11.2]: https://github.com/tokend/new-js-sdk/compare/1.11.1...1.11.2
+[1.11.1]: https://github.com/tokend/new-js-sdk/compare/1.11.0...1.11.1
+[1.11.0]: https://github.com/tokend/new-js-sdk/compare/1.11.0-rc.0...1.11.0
+[1.11.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.3...1.11.0-rc.0
+[1.10.3]: https://github.com/tokend/new-js-sdk/compare/1.10.3-rc.1...1.10.3
+[1.10.3-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.10.3-rc.0...1.10.3-rc.1
+[1.10.3-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.2...1.10.3-rc.0
+[1.10.2]: https://github.com/tokend/new-js-sdk/compare/1.10.2-rc.1...1.10.2
+[1.10.2-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.10.2-rc.0...1.10.2-rc.1
+[1.10.2-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.1...1.10.2-rc.0
+[1.10.1]: https://github.com/tokend/new-js-sdk/compare/1.10.1-rc.0...1.10.1
+[1.10.1-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.10.0...1.10.1-rc.0
+[1.10.0]: https://github.com/tokend/new-js-sdk/compare/1.10.0-rc.0...1.10.0
+[1.10.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.9.0...1.10.0-rc.0
+[1.9.0]: https://github.com/tokend/new-js-sdk/compare/1.9.0-rc.2...1.9.0
+[1.9.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.9.0-rc.1...1.9.0-rc.2
+[1.9.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.9.0-rc.0...1.9.0-rc.1
+[1.9.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.9.0-x.0...1.9.0-rc.0
+[1.9.0-x.0]: https://github.com/tokend/new-js-sdk/compare/1.8.0...1.9.0-x.0
+[1.8.0]: https://github.com/tokend/new-js-sdk/compare/1.8.0-rc.1...1.8.0
+[1.8.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.8.0-rc.0...1.8.0-rc.1
+[1.8.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0...1.8.0-rc.0
+[1.7.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.2...1.7.0
+[1.7.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.1...1.7.0-rc.2
 [1.7.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.7.0-rc.0...1.7.0-rc.1
 [1.7.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.2...1.7.0-rc.0
 [1.7.0-x.2]: https://github.com/tokend/new-js-sdk/compare/1.7.0-x.1...1.7.0-x.2

@@ -1,5 +1,5 @@
 import { BaseOperation } from './operations/base_operation'
-import { default as xdr } from './generated/xdr_generated'
+import xdr from './generated/xdr_generated'
 import { hash } from './hashing'
 import isUndefined from 'lodash/isUndefined'
 

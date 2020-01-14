@@ -1,6 +1,6 @@
 import { BindExternalSystemAccountIdBuilder } from './bind_external_system_account_id_builder'
 import { Operation } from '../operation'
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 
 describe('bind external system id', function () {
   it('Success', function () {

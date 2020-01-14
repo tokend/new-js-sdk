@@ -1,8 +1,5 @@
-import { Helper } from './_helper'
+import { Helper, getSuccessResultFromXDR } from './_helper'
 import { base } from '../../src'
-// import { Asset } from '../helpers/asset'
-// import { Keypair } from '../../src/base'
-// import { createAndApproveAsset } from '../scripts/create_asset'
 
 export class Payment extends Helper {
   /**
@@ -28,5 +25,11 @@ export class Payment extends Helper {
     const op = base.PaymentBuilder.payment(opts)
     const response = await this.submit(op, ownerKp)
     return response
+  }
+
+  async createRequest (opts, ownerKp = this.masterKp) {
+    const op = base.CreatePaymentRequestBuilder.createPaymentRequest(opts)
+    const response = await this.submit(op, ownerKp)
+    return getSuccessResultFromXDR(response.resultXdr, 'createPaymentRequestResult')
   }
 }

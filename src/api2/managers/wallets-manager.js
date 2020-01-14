@@ -1,7 +1,10 @@
 import _set from 'lodash/set'
+import _get from 'lodash/get'
 
 import { Wallet } from '../../wallet'
 import { Keypair } from '../../base/keypair'
+
+import { Signer } from './signer'
 
 import { SignersManager } from './signers-manager'
 import { ApiCaller } from '../api-caller'
@@ -47,6 +50,10 @@ export class WalletsManager {
     })
   }
 
+  getSignerRoleId () {
+    return this._apiCaller.get('/v3/key_values/signer_role:default')
+  }
+
   /**
    * Get an encrypted wallet.
    *
@@ -77,14 +84,15 @@ export class WalletsManager {
 
       throw err
     }
-
     return Wallet.fromEncrypted({
       keychainData: walletResponse.data.keychainData,
       kdfParams,
       salt: kdfParams.salt,
       email,
       password,
-      accountId: walletResponse.data.accountId
+      accountId: walletResponse.data.accountId,
+      sessionId: walletResponse.data.session.id,
+      sessionKey: walletResponse.data.session.encryptionKey
     })
   }
 
@@ -93,13 +101,18 @@ export class WalletsManager {
    *
    * @param {string} email User's email.
    * @param {string} password User's password.
-   * @param {Keypair} recoveryKeypair the keypair to later recover the account
-   * @param {string} [referrerId] public key of the referrer
+   * @param {Array} [signers] array of {@link Signer}
    *
-   * @return {Promise.<object>} User's wallet and a recovery seed.
+   * @return {Promise.<object>} User's wallet.
    */
-  async create (email, password, recoveryKeypair, referrerId = '') {
+  async createWithSigners (email, password, signers = []) {
+    signers.forEach(item => {
+      if (!(item instanceof Signer)) {
+        throw new TypeError('A signer instance expected.')
+      }
+    })
     const { data: kdfParams } = await this.getKdfParams('')
+    const { data: roleId } = await this.getSignerRoleId()
 
     const mainWallet = Wallet.generate(email)
     const encryptedMainWallet = mainWallet.encrypt(kdfParams, password)
@@ -109,14 +122,20 @@ export class WalletsManager {
       kdfParams, password
     )
 
-    const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
-    const encryptedRecoveryWallet = mainWallet.encryptRecoveryData(
-      kdfParams, walletRecoveryKeypair
-    )
+    const defaultSigner = new Signer({
+      id: mainWallet.accountId,
+      roleId: roleId.value.u32,
+      weight: 1000,
+      identity: 1
+    })
+    signers.push(defaultSigner)
 
-    const accountRefferer = referrerId
-      ? { referrer: { data: { id: referrerId } } }
-      : {}
+    const relationshipsSigners = signers.map(item => {
+      return {
+        type: item.type,
+        id: item.id
+      }
+    })
 
     const response = await this._apiCaller.post('/wallets', {
       data: {
@@ -135,19 +154,15 @@ export class WalletsManager {
               id: kdfParams.id
             }
           },
-          recovery: {
-            data: {
-              type: 'recovery',
-              id: encryptedRecoveryWallet.id
-            }
-          },
           factor: {
             data: {
               type: 'password',
               id: encryptedMainWallet.id
             }
           },
-          ...accountRefferer
+          signers: {
+            data: relationshipsSigners
+          }
         }
       },
       included: [
@@ -160,23 +175,46 @@ export class WalletsManager {
             salt: encryptedSecondFactorWallet.salt
           }
         },
-        {
-          type: 'recovery',
-          id: encryptedRecoveryWallet.id,
-          attributes: {
-            account_id: encryptedRecoveryWallet.accountId,
-            keychain_data: encryptedRecoveryWallet.keychainData,
-            salt: encryptedRecoveryWallet.salt
-          }
-        }
+        ...signers
       ]
     })
 
+    const walletWithSession = new Wallet(
+      mainWallet.email,
+      mainWallet.keypair,
+      _get(response, 'data.accountId'),
+      mainWallet.id,
+      _get(response, 'data.session.id'),
+      _get(response, 'data.session.encryptionKey')
+    )
+
     return {
-      wallet: mainWallet,
-      response: response,
-      recoverySeed: walletRecoveryKeypair.secret()
+      wallet: walletWithSession,
+      response: response
     }
+  }
+
+  /**
+   * Create a wallet.
+   *
+   * @param {string} email User's email.
+   * @param {string} password User's password.
+   * @param {Keypair} recoveryKeypair the keypair to later recover the account
+   * @param {string} [referrerId] public key of the referrer
+   *
+   * @return {Promise.<object>} User's wallet and a recovery seed.
+   */
+  async create (email, password, recoveryKeypair, referrerId = '') {
+    const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
+    const recoverySigner = new Signer({
+      id: walletRecoveryKeypair.accountId(),
+      roleId: 1,
+      weight: 1000,
+      identity: 1
+    })
+    const wallet = await this.createWithSigners(email, password, [recoverySigner])
+    wallet.recoverySeed = walletRecoveryKeypair.secret()
+    return wallet
   }
 
   /**
@@ -224,6 +262,7 @@ export class WalletsManager {
    */
   async recovery (email, recoverySeed, newPassword) {
     const { data: kdfParams } = await this.getKdfParams(email, true)
+    const accountId = await this._getAccountIdByEmail(email)
 
     const recoveryWallet = Wallet.fromRecoverySeed(
       kdfParams,
@@ -232,17 +271,16 @@ export class WalletsManager {
       recoverySeed
     )
 
-    const newMainWallet = Wallet.generate(email)
+    const newMainWallet = Wallet.generate(email, accountId)
     const encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
 
-    const newSecondFactorWallet = Wallet.generate(email)
+    const newSecondFactorWallet = Wallet.generate(email, accountId)
     const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
       kdfParams, newPassword
     )
 
-    const accountId = await this._getAccountIdByRecoveryId(recoveryWallet.id)
     const tx = await this._signersManager.createChangeSignerTransaction({
-      newPublicKey: newMainWallet.accountId,
+      newPublicKey: newMainWallet.keypair.accountId(),
       signingKeypair: recoveryWallet.keypair,
       sourceAccount: accountId
     })
@@ -287,6 +325,74 @@ export class WalletsManager {
           id: '1',
           attributes: { envelope: tx }
         },
+        {
+          id: encryptedNewMainWallet.id,
+          type: 'password',
+          attributes: {
+            account_id: encryptedSecondFactorWallet.accountId,
+            keychain_data: encryptedSecondFactorWallet.keychainData,
+            salt: encryptedSecondFactorWallet.salt
+          }
+        }
+      ]
+    })
+
+    return newMainWallet
+  }
+
+  /**
+   * Recover a wallet using the recovery seed.
+   *
+   * @param {string} email User's email.
+   * @param {string} newPassword Desired password.
+   *
+   * @return {Promise.<Wallet>} New wallet.
+   */
+  async kycRecovery (email, newPassword) {
+    const { data: kdfParams } = await this.getKdfParams(email, true)
+
+    const newMainWallet = Wallet.generate(email)
+    const encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
+
+    const newSecondFactorWallet = Wallet.generate(email)
+    const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
+      kdfParams, newPassword
+    )
+
+    this._apiCaller.useWallet(newMainWallet)
+
+    const endpoint = `/wallets/${encryptedNewMainWallet.id}`
+    await this._apiCaller.putWithSignature(endpoint, {
+      data: {
+        type: 'recovery-wallet',
+        id: encryptedNewMainWallet.id,
+        attributes: {
+          email,
+          salt: encryptedNewMainWallet.salt,
+          keychain_data: encryptedNewMainWallet.keychainData
+        },
+        relationships: {
+          kdf: {
+            data: {
+              type: kdfParams.type,
+              id: kdfParams.id
+            }
+          },
+          factor: {
+            data: {
+              type: 'password',
+              id: encryptedNewMainWallet.id
+            }
+          },
+          signer: {
+            data: {
+              type: 'signer',
+              id: encryptedNewMainWallet.accountId
+            }
+          }
+        }
+      },
+      included: [
         {
           id: encryptedNewMainWallet.id,
           type: 'password',
@@ -394,5 +500,21 @@ export class WalletsManager {
     const { data: wallet } = await this._apiCaller.get(endpoint)
 
     return wallet.accountId
+  }
+
+  /**
+   * Get user account ID by email.
+   *
+   * @param {string} email account email.
+   *
+   * @return {Promise.<string>} User's account ID.
+   */
+  async _getAccountIdByEmail (email) {
+    const { data } = await this._apiCaller.get('/identities', {
+      filter: { identifier: email },
+      page: { limit: 1 }
+    })
+
+    return _get(data[0], 'address')
   }
 }

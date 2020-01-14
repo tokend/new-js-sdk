@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import isUndefined from 'lodash/isUndefined'
 import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
@@ -138,6 +138,12 @@ export class SaleRequestBuilder {
         })
         saleTypeExt = xdr.SaleTypeExt.fixedPrice(fixedPriceSale)
         break
+      }
+      case xdr.SaleType.immediate().value: {
+        let immediateSale = new xdr.ImmediateSale({
+          ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
+        })
+        saleTypeExt = xdr.SaleTypeExt.immediate(immediateSale)
       }
     }
 

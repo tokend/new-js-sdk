@@ -1,4 +1,5 @@
 import { Helper, getRequestIdFromResultXdr } from './_helper'
+import { RemoveAssetOpBuilder } from '../../src/base/operations/remove_asset_op_builder'
 import { ASSET_POLICIES, base } from '../../src'
 import { Running } from './_running'
 
@@ -57,5 +58,14 @@ export class Asset extends Helper {
     return assets.find(
       asset => !!(asset.policy & ASSET_POLICIES.statsQuoteAsset)
     )
+  }
+
+  /**
+   * @param opts
+   * @param opts.code
+   */
+  remove (opts) {
+    let op = RemoveAssetOpBuilder.removeAssetOp(opts)
+    return this.submit(op)
   }
 }

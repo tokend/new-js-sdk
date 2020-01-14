@@ -6,8 +6,8 @@ import { getKvEntryWithFallback } from './get_task_from_kv'
 import { KEY_VALUE_KEYS } from '../../src/const'
 import { balanceHelper, paymentHelper } from '../helpers'
 
-export async function createPayment () {
-  const log = logger.new('createPayment')
+async function preparePayment () {
+  const log = logger.new('prepare payment')
 
   let assetCode = Asset.randomCode('USD')
   await createAndApproveAsset({
@@ -39,7 +39,8 @@ export async function createPayment () {
   log.info(`tasks to remove for payment_create request defined, value: ${tasksToRemove}`)
 
   const paymentAmount = '100'
-  let response = await paymentHelper.create({
+
+  return {
     sourceBalanceId: fromBalance.balanceId,
     destination: toBalance.balanceId,
     amount: paymentAmount,
@@ -55,8 +56,28 @@ export async function createPayment () {
       sourcePaysForDest: true
     },
     subject: 'subj',
-    reference: 'ref'
-  }, fromAccount.accountKp)
+    reference: 'ref',
+    fromAccount: fromAccount
+  }
+}
+
+export async function createPayment () {
+  const log = logger.new('createPayment')
+
+  let opts = await preparePayment()
+
+  let response = await paymentHelper.create(opts, opts.fromAccount.accountKp)
+  log.info(`Created payment request, response: ${response}`)
+  return response
+}
+
+export async function createPaymentRequest () {
+  const log = logger.new('createPayment')
+
+  let opts = await preparePayment()
+  opts.allTasks = 0
+
+  let response = await paymentHelper.createRequest(opts, opts.fromAccount.accountKp)
   log.info(`Created payment request, response: ${response}`)
   return response
 }

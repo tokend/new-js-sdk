@@ -1,9 +1,9 @@
 {
   "master_seed": "SAMJKTZVW5UOHCDK5INYJNORF2HRKYI72M5XSZCBYAHQHR34FFR4Z6G4",
-  "api_url": "http://localhost:8000",
+  "api_url": "http://localhost:8000/_/api",
   "allow_http": true,
   "network_passphrase": "TokenD Developer Network",
   "log_level": "trace",
   "retry_delay_ms": 1500,
-  "use_sale_rules": true
+  "use_sale_rules": false
 }

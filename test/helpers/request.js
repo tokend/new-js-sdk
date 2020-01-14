@@ -5,7 +5,7 @@ import { Running } from './_running'
 export class Request extends Helper {
   async mustLoad (requestId) {
     return Running.untilFound(async () => {
-      const {data} = await this.sdk.horizon.request.get(requestId)
+      const { data } = await this.sdk.horizon.request.get(requestId)
       return data
     })
   }
@@ -23,12 +23,12 @@ export class Request extends Helper {
 
   approve (requestId, opts) {
     const action = base.xdr.ReviewRequestOpAction.approve().value
-    return this.review(requestId, {...opts, action})
+    return this.review(requestId, { ...opts, action })
   }
 
   reject (requestId, opts) {
     const action = base.xdr.ReviewRequestOpAction.reject().value
-    return this.review(requestId, {...opts, action})
+    return this.review(requestId, { ...opts, action })
   }
 
   /**
@@ -52,7 +52,7 @@ export class Request extends Helper {
       reviewDetails: {
         tasksToAdd: opts.tasksToAdd || 0,
         tasksToRemove: opts.tasksToRemove || 0,
-        externalDetails: opts.externalDetails || ''
+        externalDetails: opts.externalDetails || {}
       }
     })
     return this.submit(operation)
@@ -92,7 +92,7 @@ export class Request extends Helper {
       requestHash: request.hash,
       action: opts.action,
       comment: 'Some comment',
-      reason: 'It\'s okay, sorry broh',
+      reason: 'It\'s okay, sorry broh'
     })
 
     return this.submit(operation)

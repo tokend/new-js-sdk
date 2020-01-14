@@ -3,7 +3,7 @@ import {
   testGetRequest
 } from './generic_test_cases.spec'
 
-describe('AtomicSwapBid', () => {
+describe('AtomicSwapAsk', () => {
   const sdk = mocks.tokenDSdk()
   const horizon = sdk.horizon
   const resourceGroup = horizon.atomicSwapBid

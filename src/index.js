@@ -4,7 +4,7 @@ import * as commonErrors from './errors'
 export * from './tokend_sdk'
 export * from './const'
 export { default as base } from './base'
-export { Wallet } from './wallet'
+export { Wallet, encryptSecretSeed, decryptSecretSeed } from './wallet'
 
 export { HorizonResponse } from './horizon'
 export { ApiResponse } from './api'

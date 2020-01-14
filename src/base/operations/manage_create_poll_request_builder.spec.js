@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash'
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { ManageCreatePollRequestBuilder } from './manage_create_poll_request_builder'
 

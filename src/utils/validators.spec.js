@@ -13,7 +13,7 @@ import {
   validateUint64
 } from './validators'
 
-import { default as xdr } from '../base/generated/xdr_generated'
+import xdr from '../base/generated/xdr_generated'
 
 describe('validateNotUndefined', () => {
   it('should not throw error for defined values', () => {
@@ -485,6 +485,22 @@ describe('validateCreatorDetails', () => {
     expect(() => {
       for (const value of validCreatorDetails) {
         validateCreatorDetails({ value })
+      }
+    }).to.not.throw()
+  })
+
+  it('should not throw error for objects withouth snake_cased keys', () => {
+    const validCreatorDetails = [
+      {},
+      { BTC: '3Np23VinPrh9tDFuDKpf1p9uBCD977Q2av' },
+      { addresses: { BTC: 'BTC_ADDRESS' } },
+      { addresses: { BTC: 'address1', USD: 'address2' } },
+      { addresses: { ASSEt: 'ASSEt-address' } }
+    ]
+
+    expect(() => {
+      for (const value of validCreatorDetails) {
+        validateCreatorDetails({ value, validateWithoutSnakeCased: true })
       }
     }).to.not.throw()
   })

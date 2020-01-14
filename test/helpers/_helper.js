@@ -1,6 +1,6 @@
 import { base } from '../../src'
 import _get from 'lodash/get'
-import { BadRequestError } from '../../src/errors'
+import { BadRequestError, TransactionError } from '../../src/errors'
 
 export class Helper {
   /**
@@ -43,9 +43,9 @@ export class Helper {
 
     try {
       const { data } = await this.api.postTxEnvelope(envelope)
-      return data
+      return data.data.attributes
     } catch (e) {
-      if (e instanceof BadRequestError) {
+      if ((e instanceof BadRequestError) || (e instanceof TransactionError)) {
         const errorString = this.tryGetTxErrorString(e)
         if (errorString) {
           throw new Error(errorString)
@@ -57,7 +57,7 @@ export class Helper {
   }
 
   tryGetTxErrorString (errorObject) {
-    let resultCodes = _get(errorObject, 'meta.extras.resultCodes')
+    let resultCodes = _get(errorObject, 'meta.resultCodes')
 
     if (resultCodes) {
       const txCode = resultCodes.transaction

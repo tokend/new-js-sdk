@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 
 export class StampBuilder {

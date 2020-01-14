@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { UnsignedHyper } from 'js-xdr'
 import { BaseOperation } from './base_operation'
 

@@ -1,4 +1,4 @@
-import { default as xdr } from '../generated/xdr_generated'
+import xdr from '../generated/xdr_generated'
 import { Keypair } from '../keypair'
 import { Operation } from '../operation'
 import { CreateIssuanceRequestBuilder } from './create_issuance_request_builder'
