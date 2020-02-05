@@ -3,7 +3,7 @@ import { ACCOUNT_TYPES, KEY_VALUE_KEYS } from '../../src/const'
 import { logger } from '../logger'
 
 import {
-  accountHelper,
+  accountHelper, assetHelper,
   balanceHelper,
   issuanceHelper,
   keyValueHelper,
@@ -41,6 +41,12 @@ export async function createFundedAccount (roleID, balances) {
     accountKp,
     accountId
   }
+}
+
+export async function fundMasterAccount (asset, amount, assetOwner = assetHelper.masterKp) {
+  await fundAccount(assetHelper.masterKp.accountId(), {
+    [asset]: amount
+  }, assetOwner)
 }
 
 export async function fundAccount (accountId, balances, assetOwnerKp = this.masterKp) {

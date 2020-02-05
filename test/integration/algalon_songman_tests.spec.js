@@ -2,19 +2,44 @@ import {Keypair} from "../../src/base";
 import {Wallet} from "../../src/wallet";
 import {ApiCaller} from "../../src/api2";
 import * as config from "../config";
-import {changeRoleHelper, requestHelper, api, keyValueHelper, assetPairHelper} from "../helpers";
+import {
+  api,
+  assetHelper,
+  assetPairHelper,
+  balanceHelper,
+  changeRoleHelper,
+  keyValueHelper,
+  requestHelper,
+  saleHelper
+} from "../helpers";
 import {logger} from "../logger";
 import {Asset} from "../helpers/asset";
 import {createAndApproveAsset} from "../scripts/create_asset";
 import {ASSET_PAIR_POLICIES} from "../../src/const";
+import {fundMasterAccount} from "../scripts/create_account";
+import {constructPayment, createPaymentFromOpts} from "../scripts/create_payment";
 
 describe.only('algalon_songman_tests', async () => {
   const log = logger.new('algalon')
-  let account = Keypair.fromSecret('SASW37POW3HF37YAAROTT6DBYZM4DUOLI4F5FKPZVQ2XIO35PWZDFHUC')
 
-  const wallet = new Wallet('foo@bar.baz', account, account.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
+  const systemAsset = 'RUB'
+  const labelAccount = Keypair.fromSecret('SCI3MA6V7UB74HVS2AT2Q3VONAGG53VOCXXI74GABKTHAK6X5TXETEDN')
+  const serviceAccount = Keypair.fromSecret('SC323IG53ETX6M4H5IMLOJZG7CD6AZLFQMDCTKERWI2J7DAK3BFWNF5J')
+
+  const wallet = new Wallet('foo@bar.baz', labelAccount, labelAccount.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
   let apiWithLabelSign = ApiCaller.getInstance(config.api_url)
   apiWithLabelSign.useWallet(wallet)
+
+  it('should issue to master account enough money to work with labels', async () => {
+    const systemAssetInfo = await assetHelper.mustLoad(systemAsset)
+
+    let amount = Math.floor(parseFloat(systemAssetInfo.availableForIssuance) / 2)
+    if (amount >= 100000) { // let's say that less amount wouldn't be enough for all stuff
+      await Promise.all([
+        fundMasterAccount(systemAssetInfo.code, `${amount}`),
+      ])
+    }
+  });
 
   it('should change role of the account to label', async () => {
     let roleToSetKey = 'account_role:label'
@@ -39,16 +64,16 @@ describe.only('algalon_songman_tests', async () => {
     }
 
     let creatorDetails = {
-      blob_id: await createBlob("kyc_form", kycData, account)
+      blob_id: await createBlob("kyc_form", kycData, labelAccount)
     }
 
     log.info(`created blob, id ${creatorDetails.blob_id}`)
 
     let requestId = await changeRoleHelper.create({
-      destinationAccount: account.accountId(),
+      destinationAccount: labelAccount.accountId(),
       accountRoleToSet: `${roleToSet}`,
       creatorDetails: creatorDetails
-    }, account)
+    }, labelAccount)
 
     log.info(`created change role request, id ${requestId}`)
 
@@ -57,7 +82,7 @@ describe.only('algalon_songman_tests', async () => {
     })
   });
 
-  it.only(`should create genre and artist for label ${account.accountId()}`, async () => {
+  it(`should create genre and artist for label ${labelAccount.accountId()}`, async () => {
     let genreName = Asset.randomCode('pop_')
     log.info(`randomized the name for genre: ${genreName}`)
 
@@ -77,7 +102,7 @@ describe.only('algalon_songman_tests', async () => {
     let artistName = Asset.randomCode('wham_')
     log.info(`tryna create artist, name ${artistName}`)
 
-    const {data: artist} = await apiWithLabelSign.postWithSignature(`/integrations/songman/labels/${account.accountId()}/artists`, {
+    const {data: artist} = await apiWithLabelSign.postWithSignature(`/integrations/songman/labels/${labelAccount.accountId()}/artists`, {
       data: {
         attributes: {
           name: artistName,
@@ -104,34 +129,94 @@ describe.only('algalon_songman_tests', async () => {
       }
     }
 
-    let systemAsset = 'RUB'
+    const assetTypeDefault = '0'
 
-    for (let i = 1; i <= 5; i++) {
-      const musicObjectName = Asset.randomCode('last_christmas_')
-      const assetCode = Asset.randomCode('SONG')
+    const musicObjectName = 'last_christmas'
+    const assetCode = Asset.randomCode('SONG')
 
-      await Promise.all([
-        createAndApproveAsset({
-          code: assetCode,
-          creatorDetails: {
-            type: musicObjectTypes.album,
-            name: musicObjectName,
-            released: `1984`,
-            genre_name: genreName,
-            artist_id: Number.parseInt(artist.id, 10),
-          }
-        }),
-      ], account)
-      log.info(`Created music object, code: ${assetCode}`)
+    await Promise.all([
+      createAndApproveAsset({
+        assetType: assetTypeDefault,
+        code: assetCode,
+        creatorDetails: {
+          type: musicObjectTypes.album,
+          name: musicObjectName,
+          released: `1984`,
+          genre_name: genreName,
+          artist_id: Number.parseInt(artist.id, 10),
+        },
+      }, labelAccount),
+    ])
+    log.info(`Created music object, code: ${assetCode}`)
 
-      await assetPairHelper.create({
-        base: systemAsset,
-        quote: assetCode,
-        physicalPrice: `${i}`,
-        policies: ASSET_PAIR_POLICIES.tradeableSecondaryMarket
-      })
-      log.info(`Created tradeable asset pair, base: ${systemAsset}, quote: ${assetCode}`)
+    await assetPairHelper.create({
+      base: assetCode,
+      quote: systemAsset,
+      physicalPrice: `10`,
+      policies: ASSET_PAIR_POLICIES.tradeableSecondaryMarket
+    })
+    log.info(`Created tradeable asset pair, base: ${systemAsset}, quote: ${assetCode}`)
 
+    let amount = Math.floor(10 + 100 * Math.random())
+    await saleHelper.create({
+      baseAsset: assetCode,
+      quoteAssets: [{asset: systemAsset, price: '100'}],
+      defaultQuoteAsset: systemAsset,
+      requiredBaseAssetForHardCap: `${amount}`
+    }, labelAccount)
+    log.info(`Created sale of ${assetCode} of amount ${amount}, `)
+  });
+
+  it.only('should send initiate royalty payment request to service', async () => {
+    let getNonZeroBalances = async (assetCode) => {
+      const balances = await balanceHelper.mustLoadAllForAsset(assetCode)
+      const balanceOwners = balances.map(b => b.accountId)
+
+      return await Promise.all(balanceOwners.map(async owner => {
+        return await balanceHelper.mustLoad(owner, assetCode)
+      }))
     }
+
+    let saleID = `2` // TODO change on demand
+    const sale = await saleHelper.mustLoadById(saleID)
+
+    if (sale.state.name !== 'closed') { // 2 == closed
+      log.info(`sale ${saleID} is currently ${sale.state.name}`)
+      return
+    }
+
+    const saleAsset = sale.baseAsset
+    const investorsBalances = (await getNonZeroBalances(saleAsset)).filter(b => b.accountId !== sale.ownerId)
+
+    const investorsCount = investorsBalances.length
+    const royaltyAmount = `${investorsCount * 1000}`
+
+    const master = assetHelper.masterKp
+
+    let requests = []
+    for(let i = 0; i < 100; i++) {
+      const payment = await constructPayment(master, serviceAccount, systemAsset, royaltyAmount)
+
+      const response = await Promise.all([
+        createPaymentFromOpts(payment)
+      ])
+      log.info(`Payment from ${master} to ${serviceAccount.accountId()} with ${royaltyAmount} of ${systemAsset} successful`)
+
+
+      expect(response.length).to.be.equal(1)
+      let env = response[0].envelopeXdr
+
+      requests.push({
+        data: {
+          attributes: {
+            tx: `${env}`
+          }
+        }
+      })
+    }
+
+    log.info("requests created, now bang bang bang")
+
+    await Promise.all(requests.map(async requestBody => await api.postWithSignature(`/integrations/royalty/${saleID}/pay`, requestBody)))
   });
 });
