@@ -19,7 +19,7 @@ import {ASSET_PAIR_POLICIES} from "../../src/const";
 import {fundMasterAccount} from "../scripts/create_account";
 import {constructPayment, createPaymentFromOpts} from "../scripts/create_payment";
 
-describe.only('algalon_songman_tests', async () => {
+describe('algalon_songman_tests', async () => {
   const log = logger.new('algalon')
 
   const systemAsset = 'RUB'
@@ -167,7 +167,7 @@ describe.only('algalon_songman_tests', async () => {
     log.info(`Created sale of ${assetCode} of amount ${amount}, `)
   });
 
-  it.only('should send initiate royalty payment request to service', async () => {
+  it('should send initiate royalty payment request to service', async () => {
     let getNonZeroBalances = async (assetCode) => {
       const balances = await balanceHelper.mustLoadAllForAsset(assetCode)
       const balanceOwners = balances.map(b => b.accountId)
