@@ -1,6 +1,7 @@
 # TokenD JavaScript SDK
 
-The TokenD JavaScript SDK facilitates client integration with the TokenD asset tokenizaton platform.
+The TokenD JavaScript SDK facilitates client integration with TokenD
+platform.
 
 ## Table of content
 
@@ -8,11 +9,12 @@ The TokenD JavaScript SDK facilitates client integration with the TokenD asset t
 
 1. [Javascript SDK](#javascript-sdk)
     - [Installation](#installation)
-    - [TokenD SDK](#tokend-sdk)
+    - [Versions and repository](#versions-and-repository)
+    - [TokenD SDK](#javascript-sdk)
     - [Wallets](#wallets)
-    - [API Server](#api-server)
-    - [Horizon Server](#horizon-server)
     - [Two Factor Auth](#two-factor-auth)
+    - [Identity Service Server](#identity-service-server)
+    - [Horizon Server](#horizon-server)
     - [Transactions](#transactions)
 
 1. [Development Guide](#development-guide)
@@ -23,24 +25,32 @@ The TokenD JavaScript SDK facilitates client integration with the TokenD asset t
 
 ## Platform Overview
 
-There two ways to interact with TokenD platform:
+TokenD platform mostly consists of Core, Horizon, Identity Service and auxiliary
+modules. Docs on them and other important system-related information can be
+found on [docs.tokend.io](https://docs.tokend.io).
 
-- By calling REST services(API)
+There are two ways to interact with TokenD platform:
+- By calling JsonApi services
 - By building, signing and submitting blockchain transactions
 
-Every user has a [keypair](./Keypair.html) that is used to authorize requests and sign the blockchain transactions. The keypair public key is used to identify user within the system.
+To authorize requests and sign blockchain transactions the SDK needs
+[keypair](https://docs.tokend.io/#tag/Key-Concepts). Keypair’s public key is
+used to identify user within the system and generally called "Account ID" within
+TokenD documentation. How to get and operate over a keypair can be found in
+[Wallets](#wallets) section.
 
 ## JavaScript SDK
 
 ### Installation
 
 ```bash
-npm install -S tokend-sdk
+yarn install -S @tokend/js-sdk
 ```
 
 #### Webpack
 
-If you use webpack as your build system you'll need to exclude the optional native module `ed25519`
+If you use webpack as your build system you will need to exclude the optional
+native module `ed25519`
 
 ```js
   plugins: [
@@ -48,37 +58,53 @@ If you use webpack as your build system you'll need to exclude the optional nati
   ]
 ```
 
-You can also checkout package's [webpack config](https://github.com/tokend/new-js-sdk/blob/master/webpack.config.js).
+You can also checkout package's [webpack-config](https://github.com/tokend/new-js-sdk/blob/master/webpack.config.js).
 
-#### Prebuilt Minified Scripts
+#### Prebuilt minified scripts
 
-The package also ships prebuilt minified scripts for browsers in the `/dist` folder.
+The package also ships prebuilt minified scripts for browsers in the `/dist`
+folder.
 
 ```html
 <script type="text/javascript" src="https://<sdk-dist-url>"></script>
 <script type="text/javascript">
   (async () => {
-    let sdk = await Sdk.TokenD.create('https://<tokend-backend-url>')
+    const apiCaller = await ApiCaller
+      .getInstanceWithPassphrase('https://<tokend-backend-url>')
     // ...
   })()
 </script>
 ```
 
-## TokenD SDK
+### Versions and repository
 
-To get started create a TokenD SDK instance:
+The repository is located on [GitHub](https://github.com/new-js-sdk).
+
+Full version list can be found in
+[releases](https://github.com/tokend/new-js-sdk/releases) section of the repo
+
+The latest changelog can be found in root directory of the repo, look for
+[CHANGELOG.md](https://github.com/tokend/new-js-sdk/blob/master/CHANGELOG.md)
+file.
+
+## API Caller
+
+`ApiCaller` is the main entity to make calls to the servers. It encapsulates
+signings, error parsers, response parsers and functionality to fetch base
+environment config.
+
+To get started create an `ApiCaller` instance:
 
 ```js
-import { TokenD } from 'tokend-sdk'
+import { ApiCaller } from '@tokend/js-sdk'
 
-let sdk = await TokenD.create('https://<tokend-backend-url>')
+const apiCaller = await ApiCaller
+  .getInstanceWithPassphrase('https://<tokend-backend-url>')
 ```
-
-You can configure different environment setting such as proxy configuration via [options](./TokenD.create.html).
 
 ## Response Format
 
-All HTTP responses share the following format:
+All HTTP responses share the converted [JSON API](https://jsonapi.org/) format:
 
 ```js
 {
@@ -87,48 +113,68 @@ All HTTP responses share the following format:
   // Flattened and camel-cased response data
   data: [
     {
-      balanceId: 'BCTZM23JQ4RT5L643R2SUPM3VSR3AISVXWX56KNYJVZB2L4TNNDEFXDG',
-      accountId: 'GD3EIROYAVQUVDCSZDYVTOQSK7LGWPNXVIIQ7W7D5A7UFEJVLVH22GNY',
-      asset: 'ETH'
+      id: 'BTC',
+      issued: '100.000000',
+      maxIssuanceAmount: '21000000.000000',
+      owner: {
+        id: 'GBA4EX43M25UPV4WIE6RRMQOFTWXZZRIPFAI5VPY6Z2ZVVXVWZ6NEOOB',
+        type: 'accounts'
+      },
+      relationshipNames: ['owner'],
+      ...
     },
     {
-      balanceId: 'BBRL3IVE7QD4YGEWKVQRF5YVOK37PXNZZGR7ILZOYQ5SMZVRLFGOMISX',
-      accountId: 'GCBUB6JILEXAFGE6VIGJMPQUQHFCM5N6JSREA65P23SG2YLEVLIOAJNU',
-      asset: 'ETH'
-    }
+      id: 'USD',
+      issued: '956823.000000',
+      maxIssuanceAmount: '223372036853.000000',
+      owner: {
+        id: 'GBA4EX43M25UPV4WIE6RRMQOFTWXZZRIPFAI5VPY6Z2ZVVXVWZ6NEOOB',
+        type: 'accounts'
+      },
+      relationshipNames: ['owner'],
+      ...
+    },
   ],
 
   // Response headers
   headers: {...},
 
+  // Raw links URL paths
+  links: {
+    first: '/<path-to-first-page>',
+    last: '/<path-to-last-page>',
+    next: '/<path-to-next-page>',
+    prev: '/<path-to-prev-page>',
+    self: '/<path-to-current-page>'
+  }
+
   // Parsed links and relations
+  fetchFirst: () => {...},
+  fetchLast: () => {...},
   fetchNext: () => {...},
   fetchPrev: () => {...},
-  fetchAccount: () => {...}
+  fetchSelf: () => {...}
 }
 ```
 
-The links and relations that are returned with the responses are converted into functions you can call on the returned object.
+The links and relations that are returned with the responses are converted into
+functions you can call on the returned object.
 For example you can use them for simple pagination through collections:
 
 ```js
-let page = await sdk.horizon.balances.getPage()
+const page = await apiCaller.get('/v3/assets')
 console.log('Page', page.data)
 
-let prevPage = await page.fetchPrev()
+const prevPage = await page.fetchPrev()
 console.log('Previous page', prevPage.data)
 ```
 
 ## Errors
 
-### Common errors
-
-- [NetworkError](./NetworkError.html)
-- [TimeoutError](./TimeoutError.html)
-
 ### Wrappers for error responses
 
-All the error responses subclass [ServerErrorBase](./ServerErrorBase.html) and share the following format:
+All the error responses subclass `ServerErrorBase` and share the following
+format:
 
 ```js
 {
@@ -150,169 +196,161 @@ All the error responses subclass [ServerErrorBase](./ServerErrorBase.html) and s
 }
 ```
 
-### Interceptors
+## Managers
 
-SDK allows you to use [request and response interceptors](https://github.com/axios/axios#interceptors):
+The SDK includes some managers to make developers’ lives a bit easier. They
+encapsulate some complicated entity-specific logic, here is the list of
+managers:
 
-```js
-sdk.api.useRequestInterceptors(
-  request => {
-    // Track user's actions, transform request data, etc
-  },
-  err => {
-    // Log, handle errors, retry requests, etc
-  }
-)
+- `WalletsManager` - to manipulate over wallets
+- `SignersManager` - to manipulate over account signers
+- `FactorsManager` - to manipulate over authentication factors
+- `DocumentsManager` - to upload and get files
 
-sdk.api.useResponseInterceptor(
-  config => {
-    // Parse and transform response data, show notifications, etc
-  },
-  err => {
-    // Track errors, try to retry requests, show 2FA prompts, etc
-  }
-)
-```
+Managers use `ApiCaller` instance to perform their requests but they do not
+update its instance. So if you change anything state using a manager, i.e.
+changed wallet password, do not forget to manually pass it to you `ApiCaller`
+instance.
 
 ## Wallets
 
-Wallets hold user's keypair and account ID that are used to identify user, authorize access to the backend services and sign the blockhain transactions.
+Wallets hold user's keypair that is used to identify user, authorize access to
+the backend services and sign the blockchain transactions.
+
+### Wallets manager
+
+Creating a `WalletsManager` instance:
+
+```js
+import { WalletsManager } from '@tokend/js-sdk'
+
+const walletsManager = new WalletsManager(apiCaller)
+```
 
 ### Create a wallet
 
 ```js
-let { wallet, recoverySeed } = await sdk.api.wallets.create(
+const { wallet, recoverySeed } = await walletsManager.create(
   'my@email.com',
-  'MyPassw0rd'
+  'MyPassW0rd'
 )
 
 // Get the confirmation token from email
-await sdk.api.wallets.verifyEmail(token)
+await walletsManager.verifyEmail(token)
 ```
 
 ### Retrieve and use the wallet to sign requests
 
 ```js
-let wallet = await sdk.api.wallets.get('my@email.com', 'MyPassw0rd')
-sdk.useWallet(wallet)
+const wallet = await walletsManager.get('my@email.com', 'MyPassW0rd')
+apiCaller.useWallet(wallet)
 ```
 
 ### Change password
 
 ```js
-let updateWallet = await sdk.api.wallets.changePassword('MyNewPassw0rd')
-sdk.useWallet(updatedWallet)
+const updatedWallet = await walletsManager.changePassword('MyNewPassW0rd')
+apiCaller.useWallet(updatedWallet)
 ```
 
 ### Recover the password
 
 ```js
-let recoveredWallet = await sdk.api.wallets.recovery(
+const recoveredWallet = await walletsManager.recovery(
   'my@email.com',
   recoverySeed,
-  'MyNewPassw0rd'
+  'MyNewPassW0rd'
 )
 ```
 
-## API Server
+## Two Factor Auth
 
-[API server](#api) is responsible for multiple activities:
+Some actions may require 2FA. Following snippet uses `FactorsManager`
+instance to verify factors and retry failed requests:
 
+```js
+import { errors, FactorsManager } from '@tokend/js-sdk'
+
+// Create factors manager instance
+const factorsManager = new FactorsManager(apiCaller)
+
+try {
+  // Perform an action that may require 2FA
+  await walletsManager.changePassword('MyNewPassw0rd')
+} catch (e) {
+  if (e instanceof errors.TFARequiredError) {
+    // Handle 2FA
+    if (e.meta.factorType === 'password') {
+      // Show password prompt to user...
+      await factorsManager.verifyPasswordFactorAndRetry(e, password)
+    } else {
+      // Show TOTP prompt to user...
+      await factorsManager.verifyTotpFactorAndRetry(e, otp)
+    }
+  }
+}
+```
+
+## Identity Service server
+
+[Identity Service](https://docs.tokend.io/identity) is responsible for multiple
+activities:
 - Stores [wallets](#wallets) that hold encrypted keypairs
 - Handles 2 factor auth
 - Stores private off-chain data, such as KYC data and documents
 
-### Resources
+### References
 
-- [Wallets](./Wallets.html)
-- [Factors](./Factors.html)
-- [Users](./Users.html)
-- [Documents](./Documents.html)
-- [Kyc entities](./KycEntites.html)
-- [Blobs](./Blobs.html)
-
-### Errors
-
-- [ApiError](./ApiError.html) - base class for API errors
-- [BadRequestError](./BadRequestError.html)
-- [NotAllowedError](./NotAllowedError.html)
-- [ForbiddenRequestError](./ForbiddenRequestError.html)
-- [TFARequiredError](./TFARequiredError.html)
-- [VerificationRequiredError](./VerificationRequiredError.html)
-- [NotFoundError](./NotFoundError.html)
-- [ConflictError](./ConflictError.html)
-- [InternalServerError](./InternalServerError.html)
+- [Sign Up Flow](http://docs.tokend.io/identity/#tag/Sign-Up-Flow)
+- [Sign In Flow](http://docs.tokend.io/identity/#tag/Sign-In-Flow)
+- [Email Verification Flow](http://docs.tokend.io/identity/#tag/Email-Verification-Flow)
+- [Recovery Flow](http://docs.tokend.io/identity/#tag/Recovery-Flow)
+- [References](http://docs.tokend.io/identity/#tag/Wallet)
 
 ## Horizon Server
 
-[Horizon server](#horizon) is the interface for interaction with the TokenD blockchain. It allows to submit transactions and query on-chain data.
+[Horizon server](http://docs.tokend.io/horizon/) is the interface for
+interaction with the TokenD blockchain. It allows to submit transactions and
+query on-chain data.
 
-### Resources
+### References
 
-- [Account](./Account.html)
-- [Balances](./Balances.html)
-- [Signers](./Signers.html)
-- [Transactions](./Transactions.html)
-
-### Errors
-
-- [HorizonError](./HorizonError.html) - base class for Horizon errors
-- [BadRequestError](./BadRequestError.html)
-- [UnauthorizedError](./UnauthorizedError.html)
-- [TFARequiredError](./TFARequiredError.html)
-- [NotFoundError](./NotFoundError.html)
-- [InternalServerError](./InternalServerError.html)
-
-## Two Factor Auth
-
-Some actions may require 2FA. Following snipet allows utilizes [interceptors](#interceptors) to handle and retry failed requests:
-
-```js
-import { errors } from 'tokend-sdk'
-
-sdk.api.useResponseInterceptor(
-  config => config,
-  err => {
-    if (err instanceof errors.api.TFARequiredError) {
-      // Handle 2FA
-      if (err.meta.factorType === 'password') {
-        // Show password promt to user...
-        return sdk.api.factors.verifyPasswordFactorAndRetry(err, password)
-      } else {
-        // Shot TOTP prompt to user...
-        return sdk.api.factors.verifyTotpFactorAndRetry(err, otp)
-      }
-    } else {
-      return Promise.reject(err)
-    }
-  }
-)
-```
+- [Essentials](http://docs.tokend.io/horizon/#tag/Accounts)
+- [Asset Movements](http://docs.tokend.io/horizon/#tag/AMLAlert)
+- [Access Control](http://docs.tokend.io/horizon/#operation/getSignersForAccount)
+- [KYC & AML](http://docs.tokend.io/horizon/#tag/Account-Roles)
+- [Decentralized Exchange](http://docs.tokend.io/horizon/#tag/Asset-Pairs)
+- [Advanced](http://docs.tokend.io/horizon/#tag/PreIssuance)
+- [Other](http://docs.tokend.io/horizon/#tag/Polls)
 
 ## Transactions
 
-Blockhain transactions must have:
+Blockchain transactions must have:
 
 - Source - user's account ID
-- One or more [operations](./Operations.html)
+- One or more [operations](https://docs.tokend.io/#tag/Key-Concepts/paths/~1txs/get)
 - User's signature
 
 ### Building and signing
 
+<!-- TODO: XDR are used, Base is for building operations -->
+
 ```js
-import { base } from 'tokend-sdk'
+import { base } from '@tokend/js-sdk'
 
-let tx = new base.TransactionBuilder(sdk.wallet.accountId)
+const tx = new base.TransactionBuilder(apiCaller.wallet.accountId)
   .addOperation(base.Operation.payment(paymentParamsObject))
-  .build();
-
-tx.sign(sdk.wallet.keypair);
+  .addSigner(apiCaller.wallet.keypair)
+  .build()
+  .toEnvelope()
+  .toXDR()
+  .toString('base64')
 ```
 
 ### Submitting
 
 ```js
-let response = await sdk.horizon.transactions.submit(tx)
+const response = await apiCaller.postTxEnvelope(tx)
 ```
 
 ### Handling XDR encoded fields in responses
@@ -323,15 +361,15 @@ form. You can convert this XDR to JSON using the `.fromXDR()` method.
 An example of re-writing the txHandler from above to print the XDR fields as JSON:
 
 ```js
-import { base } from 'tokend-sdk'
+import { base } from '@tokend/js-sdk'
 
-let envelope = response.data.envelopeXdr
+const envelope = response.data.envelopeXdr
 console.log(base.xdr.TransactionEnvelope.fromXDR(envelope, 'base64'))
 
-let result = response.data.resultXdr
+const result = response.data.resultXdr
 console.log(base.xdr.TransactionResult.fromXDR(result, 'base64'))
 
-let resultMeta = response.data.resultMetaXdr
+const resultMeta = response.data.resultMetaXdr
 console.log(base.xdr.TransactionMeta.fromXDR(resultMeta, 'base64'))
 ```
 
@@ -339,18 +377,19 @@ console.log(base.xdr.TransactionMeta.fromXDR(resultMeta, 'base64'))
 
 ### Transpiling
 
-As for now some handy ES7 features need transpiler in both node.js and browser environments so the [babel transpiler](https://babeljs.io/) is used.
+As for now some handy ES7 features need transpiler in both node.js and browser
+environments so the [babel transpiler](https://babeljs.io/) is used.
 
 Build for node.js:
 
 ```
-npm run build
+yarn build
 ```
 
 Build for browsers:
 
 ```
-npm run build:browser
+yarn build:browser
 ```
 
 ### Coding Style
@@ -362,7 +401,7 @@ All public classes and functions must have JSDoc annotations.
 Run linter to check for style violations:
 
 ```
-npm run lint
+yarn lint
 ```
 
 ### Testing
@@ -370,50 +409,52 @@ npm run lint
 Node.js tests:
 
 ```
-npm test
+yarn test
 ```
 
 Browser tests:
 
 ```
-npm tests:browser
+yarn tests:browser
 ```
 
 Test coverage:
 
 ```
-npm run coverage
+yarn coverage
 ```
 
 ### Building XDR Files
 
-SDK uses XDR JS wrappers generated out of raw `.x` files placed in [XDR TokenD repo](https://github.com/tokend/xdr).
+SDK uses XDR JS wrappers generated out of raw `.x` files placed in
+[XDR TokenD repo](https://github.com/tokend/xdr).
 
 To update the JS wrappers:
 
-1. Checkout the [xdr repo](https://github.com/tokend/xdr) to desired commit or branch
+1. Checkout the [xdr repo](https://github.com/tokend/xdr) to desired commit or
+  branch
 1. Install [Docker](https://docs.docker.com/install) if needed
 1. Make `generateXDR.sh` executable if needed
-    ```
-    chmod +x generateXDR.sh
-    ```
+  ```
+  chmod +x generateXDR.sh
+  ```
 1. Run the script
-    ```bash
-    ./generateXDR.sh master # assuming `master` is the desired branch
-    ```
+  ```bash
+  ./generateXDR.sh master # assuming `master` is the desired branch
+  ```
 
 ### Generating Docs
 
 HTML docs
 
 ```bash
-npm run docs
+yarn docs
 ```
 
 Markdown docs
 
 ```bash
-npm run docs:md
+yarn docs:md
 ```
 
 ## Troubleshooting
@@ -426,114 +467,118 @@ When installing js-sdk on windows, you might see an error that looks similar to 
 error MSB8020: The build tools for v120 (Platform Toolset = 'v120 ') cannot be found. To build using the v120 build tools, please install v120 build tools.  Alternatively, you may upgrade to the current Visual Studio tools by selecting the Project menu or right-click the solution, and then selecting "Retarget solution"
 ```
 
-To resolve this issue, you should upgrade your version of nodejs, node-gyp and then re-attempt to install the offending package using `npm install -g --msvs_version=2015 ed25519`.  Afterwards, retry installing stellar-sdk as normal.
-
+To resolve this issue, you should upgrade your version of nodejs, node-gyp and then re-attempt to install the offending package using `yarn global add --msvs_version=2015 ed25519`.  Afterwards, retry installing stellar-sdk as normal.
 
 ## Use Cases
 
-### Creating your own token
+### Creating your own asset
 
-TokenD JS SDK makes creation of tokens as simple as it's possible for your users.
+TokenD JS SDK makes creation of assets as simple as it's possible for your users.
 To start doing it on your own, follow next steps:
 
-1. First of all, import the SDK in your project and initiate it. You will need several modules described here:
+1. First of all, import the SDK in your project and create an `ApiCaller`
+instance. You will need several modules described here:
 
 ```js
-    import { TokenD } from 'tokend-sdk'
+import {
+  ApiCaller, // the module for sending requests to API server
+  DocumentsManager, // the module for uploading documents
+  base, // the module for crafting transactions
+  Wallet // the wrapper for managing user's key pair
+} from '@tokend/js-sdk'
 
-    const sdk = await TokenD.create('https://<tokend-backend-url>')
-    const base = sdk.base // the module for crafting transactions
-    const horizon = sdk.horizon // the middleware for sending requests to horizon server
-    const api = sdk.api // the middleware for sending requests to api server
+const apiCaller = await ApiCaller
+  .getInstanceWithPassphrase('https://<tokend-backend-url>')
+const documentsManager = new DocumentsManager({
+  apiCaller,
+  storageURL: 'https://<tokend-storage-url>',
+})
 ```
 
-2. Your token may need the logotype. Let's suppose that your app have the file field, where user can upload the image:
+2. Use your wallet by API caller to sign request:
+```js
+// Just an example, replace it with the actual ones
+const seed = 'SA4CAMSMX6CRAC4XPUPUDAC5VYSFQRWEEFDBVBEDIIRWNEHDYAX5OHMC'
+const email = 'example@mail.com'
+
+const keypair = base.Keypair.fromSecret()
+const accountId = keypair.accountId()
+
+apiCaller.useWallet(new Wallet(email, keypair, accountId))
+```
+
+3. Your asset may need the logotype. Let's suppose that your app have the file field, where user can upload the image:
 
 ```html
-    <input type="file" id="#token-logo">
+<input type="file" id="#token-logo">
 ```
 
 Simply attach the listener to the field to handle image upload
 
 ```js
-    const field = document.getElementById('token-logo')
-    field.addEventListener('change', handleImageUpload)
+const field = document.getElementById('token-logo')
+field.addEventListener('change', handleImageUpload)
 ```
 
-3. Now to save the image in TokenD storage you need some magic:
+4. Now to save the image in TokenD storage you need some magic:
 
 After simply deriving raw file from field event
 
 ```js
-    async function handleImageUpload (event) {
-        const file = event.target.files[0]
-    }
+async function handleImageUpload (event) {
+  const file = event.target.files[0]
+}
 ```
 
-tell the API you need the space for new image and get needed params for the file upload:
+use `DocumentsManager` instance created before to upload a file:
 
 ```js
-    async function handleImageUpload (event) {
-        const file = event.target.files[0]
-        const { url, formData } = await api.documents.create('general_public', file.type)
-    }
+async function handleImageUpload (event) {
+  const file = event.target.files[0]
+  const documentKey = await documentsManager.uploadDocument({
+    // document policy, may be public or private
+    type: 'general_public',
+    // MIME-type of the file to upload
+    mimeType: file.type,
+    // The file itself
+    file,
+  })
+
+  return documentKey
+}
 ```
-
-`formData` object will look like described in API docs [API documentation][1]. You will need it
-for two things: uploading the file itself and saving it's storage key in the blockchain.
-
-Now you've got all the necessary data for uploading your token logotype. You can use any http-client
-(we'll use `axios` here) to upload it to the storage using `POST` request
+5. Now you can create the asset itself. For doing this, create the operation:
 
 ```js
-    import { axios } from 'axios'
-
-    async function handleImageUpload (event) {
-         const file = event.target.files[0]
-         const { url, formData } = await api.documents.create('general_public', file.type)
-         await axios.post(url, Object.assign(formData, {
-            file: new Blob([file], { type: file.type })
-         }))
-         return formData.key
+const operation = base.ManageAssetBuilder.assetCreationRequest({
+  // Request ID, if 0 - creates new, updates otherwise
+  requestID: '0',
+  // Asset code
+  code: 'TKN',
+  // Account ID of keypair which will sign request for asset to be
+  // authrorized to be issued
+  preissuedAssetSigner: 'GBT3XFWQUHUTKZMI22TVTWRA7UHV2LIO2BIFNRCH3CXWPYVYPTMXMDGC',
+  // Max amount can be issued of that asset
+  maxIssuanceAmount: '100000',
+  // Asset policies
+  policies: 0,
+  // Amount of pre issued assets available after creation of the asset
+  initialPreissuedAmount: '100000',
+  // Count of digits after the comma
+  trailingDigitsCount: 6,
+  creatorDetails: {
+    // Asset name
+    name: 'My first asset',
+    logo: {
+      // The document key you've derived before
+      key: documentKey
     }
-```
-
-3. Now you can create the token itself. For doing this, create the operation:
-
-```js
-    const operation = base.ManageAssetBuilder.assetCreationRequest({
-      requestID: '0', // Request ID, if 0 - creates new, updates otherwise
-      code: 'TKN', // Asset code
-      preissuedAssetSigner: 'GBT3XFWQUHUTKZMI22TVTWRA7UHV2LIO2BIFNRCH3CXWPYVYPTMXMDGC', //  AccountID of keypair which will sign request for asset to be authrorized to be issued
-      maxIssuanceAmount: '100000', //  Max amount can be issued of that asset
-      policies: 0, // Asset policies
-      initialPreissuedAmount: '100000', // Amount of pre issued tokens available after creation of the asset
-      details: {
-           name: 'My first token'
-           logo: {
-               key: key // the key you've derived before
-           }
-       }
-    })
   }
+})
 ```
 
-Craft the transaction and sign it:
-
+5. Post operation using `ApiCaller` instance:
 
 ```js
-    const seed = 'SA4CAMSMX6CRAC4XPUPUDAC5VYSFQRWEEFDBVBEDIIRWNEHDYAX5OHMC' // is just an example, replace it with the actual one
-
-    const keypair = base.Keypair.fromSecret()
-    const accountId = base.accountId()
-
-    let tx = new base.TransactionBuilder(accountId)
-      .addOperation(operation) // the previously created operation
-      .build()
-
-    tx.sign(keypair)
-
-    const txResponse = await horizon.transactions.submit(tx) // returns promise, so you can handle response:
+const txResponse = await apiCaller.postOperations(operation)
 ```
-
-[1]: http://tokend.gitlab.io/docs/#upload
