@@ -43,10 +43,10 @@ export async function createFundedAccount (roleID, balances) {
   }
 }
 
-export async function fundMasterAccount (asset, amount, assetOwner = assetHelper.masterKp) {
-  await fundAccount(assetHelper.masterKp.accountId(), {
+export async function fundMasterAccount (asset, amount) {
+  await fundAccount(this.masterKp.accountId(), {
     [asset]: amount
-  }, assetOwner)
+  }, this.masterKp)
 }
 
 export async function fundAccount (accountId, balances, assetOwnerKp = this.masterKp) {
