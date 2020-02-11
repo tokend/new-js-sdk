@@ -36,7 +36,6 @@ export class Balance extends Helper {
 
   async mustLoad (ownerAccountId, asset) {
     return Running.untilGotReturnValue(async _ => {
-      console.log('owner', ownerAccountId)
       const { data: account } = await this.sdk.horizon.account.get(ownerAccountId)
       return this.getMostFundedBalance(account.balances, asset)
     })
