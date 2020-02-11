@@ -6,6 +6,13 @@ import { getKvEntryWithFallback } from './get_task_from_kv'
 import { KEY_VALUE_KEYS } from '../../src/const'
 import { balanceHelper, paymentHelper } from '../helpers'
 
+export async function constructPaymentWithSource (fromAccount, toAccount, assetCode, amount) {
+  return {
+    source: fromAccount.accountId(),
+    ...await constructPayment(fromAccount, toAccount, assetCode, amount)
+  }
+}
+
 export async function constructPayment (fromAccount, toAccount, assetCode, amount) {
   const log = logger.new('constructPayment')
 
@@ -96,7 +103,7 @@ async function preparePayment () {
 }
 
 export async function createPaymentFromOpts (opts) {
-  return paymentHelper.create(opts, opts.fromAccount.accountKp);
+  return paymentHelper.create(opts, opts.fromAccount)
 }
 
 export async function createPayment () {
