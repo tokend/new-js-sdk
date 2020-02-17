@@ -249,16 +249,17 @@ apiCaller.useWallet(wallet)
 ### Change password
 
 ```js
-const updatedWallet = await walletsManager.changePassword('MyNewPassW0rd')
+const u1pdatedWallet = await walletsManager.changePassword('MyNewPassW0rd')
 apiCaller.useWallet(updatedWallet)
 ```
 
 ### Recover the password
+Create a new wallet with new password for creating kyc recovery request for 
+recovery account.
 
 ```js
-const recoveredWallet = await walletsManager.recovery(
+const recoveredWallet = await walletsManager.kycRecovery(
   'my@email.com',
-  recoverySeed,
   'MyNewPassW0rd'
 )
 ```

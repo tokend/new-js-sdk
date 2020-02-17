@@ -253,6 +253,7 @@ export class WalletsManager {
 
   /**
    * Recover a wallet using the recovery seed.
+   * @deprecated Use {@link kycRecovery}
    *
    * @param {string} email User's email.
    * @param {string} recoverySeed User's recovery seed.
@@ -341,7 +342,7 @@ export class WalletsManager {
   }
 
   /**
-   * Recover a wallet using the recovery seed.
+   * Recover a wallet using the kyc recovery.
    *
    * @param {string} email User's email.
    * @param {string} newPassword Desired password.

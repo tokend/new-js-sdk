@@ -76,7 +76,7 @@ export class ApiCaller {
     newCaller.useWallet(wallet)
     return newCaller
   }
-  
+
   /**
    * Creates an `ApiCaller` instance with the provided `baseURL` set as default
    * Horizon server endpoint. It also * required network passphrase and wallet

@@ -2,6 +2,9 @@ import { WalletsManager } from '../../src/api2/managers/wallets-manager'
 import { ApiCaller, base } from '../../src'
 import { logger } from '../logger'
 import config from "../config";
+/**
+ * @deprecated Use {@link walletsManager.kycRecovery}
+ */
 
 describe('Seed recovery', () => {
     it('should create wallet and recovered', async () => {
