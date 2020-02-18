@@ -13,7 +13,7 @@ export class CreateManageOfferRequestBuilder {
    * @param {boolean} opts.isBuy - if true - buys base asset, false - sells base asset
    * @param {string} opts.amount - Amount of the base asset
    * @param {string} opts.offerID - id of the offer
-   * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
+   * @param {object} opts.creatorDetails - details of the operation provided by creator
    * @param {string} opts.price - Price of the offer
    * @param {string} opts.orderBookID - 0 - for secondary market, otherwise to participate in sale
    * For this operation, back-end creates a "calculated fee", that calculates

@@ -11,7 +11,7 @@ export class CreatePaymentRequestBuilder {
    * @param {string} opts.sourceBalanceId
    * @param {string} opts.destination
    * @param {number|string} opts.amount
-   * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
+   * @param {object} opts.creatorDetails - details of the operation provided by creator
    * @param {object} opts.feeData
    * * @param {object} opts.feeData.sourceFee
    * * * @param {number|string} opts.feeData.sourceFee.percent
