@@ -1,6 +1,8 @@
 import xdr from '../generated/xdr_generated'
 import { BaseOperation } from './base_operation'
 import { PaymentBuilder } from './payment_builder'
+import { validateCreatorDetails } from '../../utils/validators'
+import { isUndefined } from 'lodash'
 
 export class CreatePaymentRequestBuilder {
   /**
@@ -9,6 +11,7 @@ export class CreatePaymentRequestBuilder {
    * @param {string} opts.sourceBalanceId
    * @param {string} opts.destination
    * @param {number|string} opts.amount
+   * @param {object} opts.creatorDetails - External details needed for PSIM to process withdraw operation
    * @param {object} opts.feeData
    * * @param {object} opts.feeData.sourceFee
    * * * @param {number|string} opts.feeData.sourceFee.percent
@@ -26,16 +29,30 @@ export class CreatePaymentRequestBuilder {
   static createPaymentRequest (opts) {
     let paymentAttrs = PaymentBuilder.prepareAttrs(opts)
 
+    if (isUndefined(opts.creatorDetails)) {
+      opts.creatorDetails = {}
+    }
+
+    validateCreatorDetails({
+      value: opts.creatorDetails,
+      fieldName: 'opts.creatorDetails'
+    })
+
+    let request = new xdr.CreatePaymentRequest({
+      paymentOp: new xdr.PaymentOp(paymentAttrs),
+      ext: new xdr.CreatePaymentRequestExt
+        .movementRequestsDetail(JSON.stringify(opts.creatorDetails))
+
+    })
+
     let createPaymentRequestOp = new xdr.CreatePaymentRequestOp({
-      request: new xdr.CreatePaymentRequest({
-        paymentOp: new xdr.PaymentOp(paymentAttrs),
-        ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
-      }),
+      request: request,
       allTasks: opts.allTasks,
       ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
     })
 
     let opAttrs = {}
+
     opAttrs.body = xdr.OperationBody
       .createPaymentRequest(createPaymentRequestOp)
 
@@ -46,5 +63,16 @@ export class CreatePaymentRequestBuilder {
   static createPaymentRequestToObject (result, attrs) {
     PaymentBuilder.paymentToObject(result, attrs.request().paymentOp())
     result.allTasks = attrs.allTasks()
+    switch (attrs.request().ext().switch()) {
+      case xdr.LedgerVersion.emptyVersion(): {
+        break
+      }
+      case xdr.LedgerVersion.movementRequestsDetail(): {
+        result.creatorDetails = JSON.parse(attrs.request().ext().creatorDetails())
+        break
+      }
+      default:
+        throw new Error('Unexpected version of create payment request')
+    }
   }
 }
