@@ -1,6 +1,6 @@
-// revision: 5cf21644b65d3e0119a7164d24e81e7f5ceefae3
-// branch:   feature/redemption-rr
-// Automatically generated on 2019-12-11T15:22:12+00:00
+// revision: cb9934f17765fd65f2c5ecaf7b177c8b39408888
+// branch:   feature/movements-rr-details
+// Automatically generated on 2020-02-18T09:07:19+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -7302,7 +7302,9 @@ xdr.struct("CreateManageOfferRequestOp", [
 //       //: Offer is invalid
 //       INVALID_OFFER = -1,
 //       //: Tasks for the manage offer request were neither provided in the request nor loaded through KeyValue
-//       MANAGE_OFFER_TASKS_NOT_FOUND = -2
+//       MANAGE_OFFER_TASKS_NOT_FOUND = -2,
+//       //: Creator details are not in a valid JSON format
+//       INVALID_CREATOR_DETAILS = -3
 //   };
 //
 // ===========================================================================
@@ -7310,6 +7312,7 @@ xdr.enum("CreateManageOfferRequestResultCode", {
   success: 0,
   invalidOffer: -1,
   manageOfferTasksNotFound: -2,
+  invalidCreatorDetail: -3,
 });
 
 // === xdr source ============================================================
@@ -7395,7 +7398,9 @@ xdr.struct("CreatePaymentRequestOp", [
 //       //: Payment is invalid
 //       INVALID_PAYMENT = -1,
 //       //: Tasks for the payment request were neither provided in the request nor loaded through KeyValue
-//       PAYMENT_TASKS_NOT_FOUND = -2
+//       PAYMENT_TASKS_NOT_FOUND = -2,
+//       //: Creator details are not in a valid JSON format
+//       INVALID_CREATOR_DETAILS = -3
 //   };
 //
 // ===========================================================================
@@ -7403,6 +7408,7 @@ xdr.enum("CreatePaymentRequestResultCode", {
   success: 0,
   invalidPayment: -1,
   paymentTasksNotFound: -2,
+  invalidCreatorDetail: -3,
 });
 
 // === xdr source ============================================================
@@ -7715,7 +7721,9 @@ xdr.struct("CreateRedemptionRequestOp", [
 //       //: No destination with provided account ID
 //       DST_ACCOUNT_NOT_FOUND = -10,
 //       //: Not allowed to set zero tasks for request
-//       REDEMPTION_ZERO_TASKS_NOT_ALLOWED = -11
+//       REDEMPTION_ZERO_TASKS_NOT_ALLOWED = -11,
+//       //: Not allowed to redeem non-owned asset
+//       REDEMPTION_NON_OWNED_ASSET_FORBIDDEN = -12
 //   };
 //
 // ===========================================================================
@@ -7732,6 +7740,7 @@ xdr.enum("CreateRedemptionRequestResultCode", {
   referenceDuplication: -9,
   dstAccountNotFound: -10,
   redemptionZeroTasksNotAllowed: -11,
+  redemptionNonOwnedAssetForbidden: -12,
 });
 
 // === xdr source ============================================================
@@ -8440,7 +8449,8 @@ xdr.struct("LicenseOp", [
 //       //: Provided due date is in the past.
 //       INVALID_DUE_DATE = -2,
 //       //: Not enough valid signatures to submit a license (at least one valid signature is required)
-//       INVALID_SIGNATURE = -3
+//       INVALID_SIGNATURE = -3,
+//       EXTRA_SIGNATURES = -4
 //   };
 //
 // ===========================================================================
@@ -8449,6 +8459,7 @@ xdr.enum("LicenseResultCode", {
   invalidStamp: -1,
   invalidDueDate: -2,
   invalidSignature: -3,
+  extraSignature: -4,
 });
 
 // === xdr source ============================================================
@@ -15284,7 +15295,7 @@ xdr.union("RemoveAssetOpExt", {
 
 // === xdr source ============================================================
 //
-//   //: `RemoveAssetOp` removes specified asset pair
+//   //: `RemoveAssetOp` changes the state of specified asset to removed 
 //   struct RemoveAssetOp
 //   {
 //       //: Defines an asset
@@ -19143,18 +19154,70 @@ xdr.struct("LimitsUpdateRequest", [
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case MOVEMENT_REQUESTS_DETAILS:
+//           longstring creatorDetails;
+//       }
+//
+// ===========================================================================
+xdr.union("ManageOfferRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+    ["movementRequestsDetail", "creatorDetails"],
+  ],
+  arms: {
+    creatorDetails: xdr.lookup("Longstring"),
+  },
+});
+
+// === xdr source ============================================================
+//
 //   struct ManageOfferRequest 
 //   {
 //       ManageOfferOp op;
 //   
-//       EmptyExt ext;
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case MOVEMENT_REQUESTS_DETAILS:
+//           longstring creatorDetails;
+//       } ext;
 //   };
 //
 // ===========================================================================
 xdr.struct("ManageOfferRequest", [
   ["op", xdr.lookup("ManageOfferOp")],
-  ["ext", xdr.lookup("EmptyExt")],
+  ["ext", xdr.lookup("ManageOfferRequestExt")],
 ]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case MOVEMENT_REQUESTS_DETAILS:
+//           longstring creatorDetails;
+//       }
+//
+// ===========================================================================
+xdr.union("CreatePaymentRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+    ["movementRequestsDetail", "creatorDetails"],
+  ],
+  arms: {
+    creatorDetails: xdr.lookup("Longstring"),
+  },
+});
 
 // === xdr source ============================================================
 //
@@ -19162,13 +19225,19 @@ xdr.struct("ManageOfferRequest", [
 //   {
 //       PaymentOp paymentOp;
 //   
-//       EmptyExt ext;
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       case MOVEMENT_REQUESTS_DETAILS:
+//           longstring creatorDetails;
+//       } ext;
 //   };
 //
 // ===========================================================================
 xdr.struct("CreatePaymentRequest", [
   ["paymentOp", xdr.lookup("PaymentOp")],
-  ["ext", xdr.lookup("EmptyExt")],
+  ["ext", xdr.lookup("CreatePaymentRequestExt")],
 ]);
 
 // === xdr source ============================================================
@@ -20588,7 +20657,11 @@ xdr.struct("TransactionResult", [
 //       CLEAR_DATABASE_CACHE = 20,
 //       FIX_ISSUANCE_REVIEWER = 21,
 //       MARK_ASSET_AS_DELETED = 22,
-//       FIX_MAX_SUBJECT_SIZE = 23
+//       FIX_MAX_SUBJECT_SIZE = 23,
+//       FIX_MOVEMENT_REVIEW = 24,
+//       FIX_SIGNATURE_CHECK = 25,
+//       FIX_AUTOREVIEW = 26,
+//       MOVEMENT_REQUESTS_DETAILS = 27
 //   };
 //
 // ===========================================================================
@@ -20617,6 +20690,10 @@ xdr.enum("LedgerVersion", {
   fixIssuanceReviewer: 21,
   markAssetAsDeleted: 22,
   fixMaxSubjectSize: 23,
+  fixMovementReview: 24,
+  fixSignatureCheck: 25,
+  fixAutoreview: 26,
+  movementRequestsDetail: 27,
 });
 
 // === xdr source ============================================================

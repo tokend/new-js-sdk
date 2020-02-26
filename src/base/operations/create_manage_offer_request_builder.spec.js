@@ -15,15 +15,16 @@ describe('createManageOfferRequest', () => {
     let offerID = '0'
     let orderBookID = '123'
     let op = CreateManageOfferRequestBuilder.createManageOfferRequest({
-      baseBalance,
-      quoteBalance,
-      amount,
-      price,
-      isBuy,
-      offerID,
-      fee,
-      orderBookID,
-      allTasks
+      baseBalance: baseBalance,
+      quoteBalance: quoteBalance,
+      amount: amount,
+      price: price,
+      isBuy: isBuy,
+      offerID: offerID,
+      fee: fee,
+      orderBookID: orderBookID,
+      allTasks: allTasks,
+      creatorDetails: {}
     })
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
