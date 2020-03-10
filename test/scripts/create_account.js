@@ -25,9 +25,8 @@ import { ensureAndGetBalanceId } from './create_sale_offer'
  *    USD: '500.1220010'
  *  }
  */
-export async function createFundedAccount (roleID, balances) {
+export async function createFundedAccount (roleID, balances, ownerKP, boolean) {
   const log = logger.new('createFundedAccount')
-
   const accountKp = Keypair.random()
   const accountId = accountKp.accountId()
   await accountHelper.create({
@@ -35,15 +34,14 @@ export async function createFundedAccount (roleID, balances) {
     id: accountId
   })
   log.info(`Account created, id: ${accountId}`)
-
-  await fundAccount(accountId, balances)
+  await fundAccount(accountId, balances, ownerKP, boolean)
   return {
     accountKp,
     accountId
   }
 }
 
-export async function fundAccount (accountId, balances, assetOwnerKp = this.masterKp) {
+export async function fundAccount (accountId, balances, assetOwnerKp = this.masterKp, boolean) {
   const log = logger.new('fundAccount')
 
   const { data: prevAccount } = await sdk.horizon.account.get(accountId)
@@ -72,17 +70,16 @@ export async function fundAccount (accountId, balances, assetOwnerKp = this.mast
         const balance = account
           .balances
           .find(balance => asset === balance.asset)
-
         return issuanceHelper.fundAccount({
           balanceId: balance.balanceId,
           amount,
           asset
-        }, assetOwnerKp)
+        }, assetOwnerKp, boolean)
       })
   )
   log.info(`Account ${accountId} funded`)
 }
 
-export function createFundedGeneral (balances) {
-  return createFundedAccount('1', balances)
+export function createFundedGeneral (balances, ownerKP, boolean) {
+  return createFundedAccount('1', balances, ownerKP, boolean)
 }
