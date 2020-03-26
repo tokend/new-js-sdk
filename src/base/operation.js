@@ -42,6 +42,7 @@ import { RemoveAssetOpBuilder } from './operations/remove_asset_op_builder'
 import { OpenSwapBuilder } from './operations/open_swap_builder'
 import { CloseSwapBuilder } from './operations/close_swap_builder'
 import { RedemptionRequestBuilder } from './operations/redemption_request_op_builder'
+import { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -498,6 +499,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.createRedemptionRequest():
         RedemptionRequestBuilder.redemptionRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.manageSignerRole():
+        ManageSignerRoleBuilder.manageSignerRoleToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')
