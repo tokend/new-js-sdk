@@ -86,7 +86,6 @@ export class ManageSignerRoleBuilder {
     switch (attrs.data().switch()) {
       case xdr.ManageSignerRoleAction.create(): {
         let data = attrs.data().createData()
-        console.log(data)
         result.details = JSON.parse(data.details())
         result.isReadOnly = data.isReadOnly()
         result.ruleIDs = []
