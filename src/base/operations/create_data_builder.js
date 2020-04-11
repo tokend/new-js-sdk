@@ -7,24 +7,15 @@ import { Keypair } from '../keypair'
 
 export class CreateDataBuilder {
   /**
-   * Create data //todo describe
+   * Create data operation
    */
   static createData (opts) {
+    if (!Keypair.isValidPublicKey(opts.source)) {
+      throw new Error('source is invalid')
+    }
     let attributes = {
-      source: Keypair.fromAccountId(opts.destination).xdrAccountId()
+      source: Keypair.fromAccountId(opts.source).xdrAccountId()
     }
-    if (!isUndefined(opts.referrer) && !(opts.referrer === '')) {
-      console.log(opts.referrer)
-      if (!Keypair.isValidPublicKey(opts.referrer)) {
-        throw new TypeError('referrer is invalid')
-      }
-      attributes.referrer = Keypair.fromAccountId(opts.referrer).xdrAccountId()
-    }
-
-    if (isUndefined(opts.roleID)) {
-      throw new Error('roleID is undefined')
-    }
-    attributes.roleId = UnsignedHyper.fromString(opts.roleID)
 
     if (isUndefined(opts.signersData)) {
       throw new Error('signersData is undefined')
@@ -41,13 +32,16 @@ export class CreateDataBuilder {
     for (let signerData of opts.signersData) {
       attributes.signersData.push(ManageSignerBuilder.prepareUpdateSignerData(signerData))
     }
-    attributes.type = UnsignedHyper.fromString('20')
-    attributes.value = JSON.stringify('23')
+    attributes.type = UnsignedHyper.fromString(opts.type)
+    attributes.value = JSON.stringify(opts.value)
     attributes.ext = new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
 
     let op = new xdr.CreateDataOp(attributes)
     let opAttributes = {}
     opAttributes.body = xdr.OperationBody.createDatum(op)
     return new xdr.Operation(opAttributes)
+  }
+
+  static createDataToObject (result, attributes) {
   }
 }

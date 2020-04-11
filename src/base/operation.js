@@ -11,6 +11,8 @@ import { ManageKeyValueBuilder } from './operations/manage_key_value_builder'
 import { StampBuilder } from './operations/stamp'
 import { LicenseBuilder } from './operations/license_operation'
 import { ManageAccountRoleBuilder } from './operations/manage_account_role_builder'
+import { CreateDataBuilder } from './operations/create_data_builder'
+
 export class Operation extends BaseOperation {
   /**
      * Create a payment operation.
@@ -323,6 +325,7 @@ export class Operation extends BaseOperation {
         ManageAccountRoleBuilder.manageAccountRoleToObject(result, attrs)
         break
       case xdr.OperationType.createDatum():
+        CreateDataBuilder.createDataToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')
