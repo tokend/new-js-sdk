@@ -13,6 +13,7 @@ import { LicenseBuilder } from './operations/license_operation'
 import { ManageAccountRoleBuilder } from './operations/manage_account_role_builder'
 import { CreateDataBuilder } from './operations/create_data_builder'
 import { UpdateDataBuilder } from './operations/update_data_builder'
+import { RemoveDataBuilder } from './operations/remove_data_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -330,6 +331,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.updateDatum():
         UpdateDataBuilder.updateDataToObject(result, attrs)
+        break
+      case xdr.OperationType.removeDatum():
+        RemoveDataBuilder.removeDataToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

@@ -2,7 +2,7 @@ import { CreateDataBuilder } from './create_data_builder'
 import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 
-describe('write data in blockchain', () => {
+describe.only('write data in blockchain', () => {
   it('success', () => {
     let source = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
     let roleID = '1'
