@@ -1,9 +1,9 @@
 import xdr from '../generated/xdr_generated'
-import {Keypair} from "../keypair";
-import isUndefined from "lodash/isUndefined";
-import isArray from "lodash/isArray";
-import {ManageSignerBuilder} from "./manage_signer_builder";
-import {UnsignedHyper} from "js-xdr";
+import { Keypair } from '../keypair'
+import isUndefined from 'lodash/isUndefined'
+import isArray from 'lodash/isArray'
+import { ManageSignerBuilder } from './manage_signer_builder'
+import { UnsignedHyper } from 'js-xdr'
 
 export class RemoveDataBuilder {
   /**
