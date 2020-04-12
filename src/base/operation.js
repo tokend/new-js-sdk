@@ -12,6 +12,7 @@ import { StampBuilder } from './operations/stamp'
 import { LicenseBuilder } from './operations/license_operation'
 import { ManageAccountRoleBuilder } from './operations/manage_account_role_builder'
 import { CreateDataBuilder } from './operations/create_data_builder'
+import { UpdateDataBuilder } from './operations/update_data_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -326,6 +327,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.createDatum():
         CreateDataBuilder.createDataToObject(result, attrs)
+        break
+      case xdr.OperationType.updateDatum():
+        UpdateDataBuilder.updateDataToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation')

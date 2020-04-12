@@ -2,7 +2,7 @@ import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { CreateAccountBuilder } from './create_account_builder'
 
-describe.only('create Account', () => {
+describe('create Account', () => {
   it('success', () => {
     let destination = 'GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ'
     let roleID = '1'
