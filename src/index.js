@@ -14,6 +14,7 @@ export {
   DocumentsManager,
   FactorsManager,
   SignersManager,
+  Signer,
   WalletsManager,
   JsonapiResponse
 } from './api2'

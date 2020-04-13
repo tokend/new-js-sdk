@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## [1.11.4] - 2020-04-13
+### Added
+- Global export 'Signer' class
+
 ## [1.11.3] - 2019-12-04
 ### Added
 - `signAndSendTransaction` method in to api-caller
@@ -263,7 +267,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.11.3...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.11.4...HEAD
+[1.11.4]: https://github.com/tokend/new-js-sdk/compare/1.11.3...1.11.4
 [1.11.3]: https://github.com/tokend/new-js-sdk/compare/1.11.2...1.11.3
 [1.11.2]: https://github.com/tokend/new-js-sdk/compare/1.11.1...1.11.2
 [1.11.1]: https://github.com/tokend/new-js-sdk/compare/1.11.0...1.11.1
