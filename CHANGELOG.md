@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.13.0] - 2020-04-13
+
 ## [1.13.0-rc.0] - 2020-04-02
 ### Added
 - Builder for `ManageSignerRoleOp`
@@ -286,7 +288,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.13.0-rc.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.13.0...HEAD
+[1.13.0]: https://github.com/tokend/new-js-sdk/compare/1.13.0-rc.0...1.13.0
 [1.13.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.12.2...1.13.0-rc.0
 [1.12.2]: https://github.com/tokend/new-js-sdk/compare/1.12.1...1.12.2
 [1.12.1]: https://github.com/tokend/new-js-sdk/compare/1.12.0...1.12.1
