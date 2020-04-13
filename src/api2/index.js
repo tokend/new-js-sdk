@@ -3,6 +3,7 @@ export {
   DocumentsManager,
   FactorsManager,
   SignersManager,
-  WalletsManager
+  WalletsManager,
+  Signer
 } from './managers'
 export { JsonapiResponse } from './middlewares/parse-jsonapi-response'
