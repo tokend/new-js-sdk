@@ -10,16 +10,17 @@ export class UpdateDataBuilder {
    * @param {string} opts.dataId
    * @param {object} opts.value
    * @param {string} [opts.source] - The source account for the operation.
-   * @returns {xdr.CreateDataOp}
+   * @returns {xdr.UpdateDataOp}
    */
   static updateData (opts) {
     validators.validateUint64({ value: opts.dataId, fieldName: 'opts.dataId' })
     validators.validateCreatorDetails({ value: opts.value, fieldName: 'opts.value' })
 
-    let attributes = {}
-    attributes.dataId = UnsignedHyper.fromString(opts.dataId)
-    attributes.value = JSON.stringify(opts.value)
-    attributes.ext = new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
+    let attributes = {
+      dataId: UnsignedHyper.fromString(opts.dataId),
+      value: JSON.stringify(opts.value),
+      ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
+    }
 
     let op = new xdr.UpdateDataOp(attributes)
     let opAttributes = {}

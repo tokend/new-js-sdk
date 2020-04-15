@@ -16,10 +16,11 @@ export class CreateDataBuilder {
     validators.validateUint64({ value: opts.type, fieldName: 'opts.type' })
     validators.validateCreatorDetails({ value: opts.value, fieldName: 'opts.value' })
 
-    let attributes = {}
-    attributes.type = UnsignedHyper.fromString(opts.type)
-    attributes.value = JSON.stringify(opts.value)
-    attributes.ext = new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
+    let attributes = {
+      type: UnsignedHyper.fromString(opts.type),
+      value: JSON.stringify(opts.value),
+      ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
+    }
 
     let op = new xdr.CreateDataOp(attributes)
     let opAttributes = {}
