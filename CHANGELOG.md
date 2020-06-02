@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased] - 2020-06-02
+### Changed
+- Subject size from 256 to 1000 
+
 ## [1.13.0] - 2020-04-13
 
 ## [1.13.0-rc.0] - 2020-04-02

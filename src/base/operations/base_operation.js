@@ -55,7 +55,7 @@ export class BaseOperation {
   }
 
   static isValidSubject (value) {
-    return BaseOperation.isValidString(value, 0, 256)
+    return BaseOperation.isValidString(value, 0, 1000)
   }
 
   static isValidArray (value, minSize) {
