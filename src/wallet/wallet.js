@@ -15,26 +15,32 @@ export class Wallet {
    * @constructor
    *
    * @param {string} email User's email.
-   * @param {Keypair|string} keypair User's key pair or a secret seed.
+   * @param {Keypair|string} signingKeypair User's key pair or a secret seed.
    * @param {string} accountId User's account ID.
    * @param {string} [walletId] Wallet ID.
    * @param {string} [sessionId] Session ID.
    * @param {string} [sessionKey] Session key.
+   * @param {Array} [keypairs] array of {@link Keypair} or strings(secret seed) which saved in key storage
    */
-  constructor (email, keypair, accountId, walletId, sessionId, sessionKey) {
+  constructor (email, signingKeypair, accountId, walletId, sessionId, sessionKey, keypairs) {
     if (isNil(email)) {
       throw new Error('Email is required.')
     }
 
-    if (isNil(keypair)) {
-      throw new Error('No keypair provided.')
-    } else if (isString(keypair)) {
-      if (!Keypair.isValidSecretKey(keypair)) {
-        throw new Error('Invalid secret seed.')
-      }
-      keypair = Keypair.fromSecret(keypair)
-    } else if (!(keypair instanceof Keypair)) {
-      throw new Error('Invalid keypair. Expected a Keypair instance or a string seed.')
+    if (!Array.isArray(keypairs)) {
+      keypairs = []
+    } else {
+      keypairs = keypairs.map(item => {
+        if (this._isValidKeypair(item) && isString(item)) {
+          return item
+        } else {
+          return item.secret()
+        }
+      })
+    }
+
+    if (this._isValidKeypair(signingKeypair) && isString(signingKeypair)) {
+      signingKeypair = Keypair.fromSecret(signingKeypair)
     }
 
     if (!Keypair.isValidPublicKey(accountId)) {
@@ -53,12 +59,22 @@ export class Wallet {
       throw new Error('Hex encoded session key expected.')
     }
 
+    keypairs = Array.from([
+      signingKeypair.secret(),
+      ...keypairs
+    ]
+      .reduce((result, item) => {
+        result.add(item)
+        return result
+      }, new Set()))
+      .map(item => Keypair.fromSecret(item))
     this._email = email
-    this._keypair = keypair
+    this._signingKeypair = signingKeypair
     this._accountId = accountId
     this._id = walletId
     this._sessionId = sessionId
     this._sessionKey = sessionKey
+    this._keypairs = keypairs
   }
 
   /**
@@ -69,14 +85,21 @@ export class Wallet {
    *
    * @return {Wallet} The new wallet.
    */
-  static generate (email, accountId = null) {
+  static generate (email, accountId = null, keypairs = []) {
     let keypair = Keypair.random()
     accountId = accountId || keypair.accountId()
 
     return new Wallet(
       email,
       keypair,
-      accountId
+      accountId,
+      null,
+      null,
+      null,
+      [
+        keypair,
+        ...keypairs
+      ]
     )
   }
 
@@ -108,11 +131,12 @@ export class Wallet {
 
     return new Wallet(
       opts.email,
-      Keypair.fromSecret(decryptedKeychain.seed),
-      opts.accountId || Keypair.fromSecret(decryptedKeychain.seed).accountId(),
+      Keypair.fromSecret(decryptedKeychain.seed || decryptedKeychain.seeds[0]),
+      opts.accountId || decryptedKeychain.accountId,
       sjcl.codec.hex.fromBits(rawWalletId),
       opts.sessionId,
-      opts.sessionKey
+      opts.sessionKey,
+      decryptedKeychain.seed ? [decryptedKeychain.seed] : decryptedKeychain.seeds
     )
   }
 
@@ -182,14 +206,21 @@ export class Wallet {
    * Secret seed.
    */
   get secretSeed () {
-    return this._keypair.secret()
+    return this._signingKeypair.secret()
+  }
+
+  /**
+   * Secret seeds which saved in key storage.
+   */
+  get secretSeeds () {
+    return this._keypairs.map(item => item.secret())
   }
 
   /**
    * Get signing keypair.
    */
   get keypair () {
-    return this._keypair
+    return this._signingKeypair
   }
 
   /**
@@ -233,7 +264,7 @@ export class Wallet {
     let walletKey = crypto.deriveWalletKey(masterKey)
     let rawKeychainData = {
       accountId: this.accountId,
-      seed: this._keypair.secret()
+      seeds: this.secretSeeds
     }
     let keychainData = crypto.encryptData(
       JSON.stringify(rawKeychainData),
@@ -262,10 +293,36 @@ export class Wallet {
   encryptRecoveryData (kdfParams, recoveryKeypair) {
     let recoveryWallet = new Wallet(
       this.email,
-      this._keypair,
+      this._signingKeypair,
       recoveryKeypair.accountId()
     )
 
     return recoveryWallet.encrypt(kdfParams, recoveryKeypair.secret())
+  }
+
+  /**
+   * Set signing Keypair
+   *
+   * @param {Keypair} keypair signing Keypair.
+   */
+  useSigningKeypair (keypair) {
+    if (this._isValidKeypair(keypair) && isString(keypair)) {
+      this._signingKeypair = Keypair.fromSecret(keypair)
+    } else {
+      this._signingKeypair = keypair
+    }
+  }
+
+  _isValidKeypair (keypair) {
+    if (isNil(keypair)) {
+      throw new Error('No keypair provided.')
+    } else if (isString(keypair)) {
+      if (!Keypair.isValidSecretKey(keypair)) {
+        throw new Error('One of secret seed invalid.')
+      }
+    } else if (!(keypair instanceof Keypair)) {
+      throw new Error('One of keypair invalid. Expected a Keypair instance or a string seed.')
+    }
+    return true
   }
 }
