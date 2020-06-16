@@ -102,11 +102,11 @@ export class WalletsManager {
    * @param {string} email User's email.
    * @param {string} password User's password.
    * @param {Array} [signers] array of {@link Signer}
-   * @param {Array} [keypairsToSave] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
+   * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    *
    * @return {Promise.<object>} User's wallet.
    */
-  async createWithSigners (email, password, signers = [], keypairsToSave = []) {
+  async createWithSigners (email, password, signers = [], additionalKeypairs = []) {
     signers.forEach(item => {
       if (!(item instanceof Signer)) {
         throw new TypeError('A signer instance expected.')
@@ -115,10 +115,10 @@ export class WalletsManager {
     const { data: kdfParams } = await this.getKdfParams('')
     const { data: roleId } = await this.getSignerRoleId()
 
-    const mainWallet = Wallet.generate(email, null, keypairsToSave)
+    const mainWallet = Wallet.generate(email, null, additionalKeypairs)
     const encryptedMainWallet = mainWallet.encrypt(kdfParams, password)
 
-    const secondFactorWallet = Wallet.generate(email, null, keypairsToSave)
+    const secondFactorWallet = Wallet.generate(email, null, additionalKeypairs)
     const encryptedSecondFactorWallet = secondFactorWallet.encrypt(
       kdfParams, password
     )
@@ -203,11 +203,11 @@ export class WalletsManager {
    * @param {string} password User's password.
    * @param {Keypair} recoveryKeypair the keypair to later recover the account
    * @param {string} [referrerId] public key of the referrer
-   * @param {Array} [keypairsToSave] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
+   * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
-  async create (email, password, recoveryKeypair, referrerId = '', keypairsToSave = []) {
+  async create (email, password, recoveryKeypair, referrerId = '', additionalKeypairs = []) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
     const recoverySigner = new Signer({
       id: walletRecoveryKeypair.accountId(),
@@ -219,7 +219,7 @@ export class WalletsManager {
       email,
       password,
       [recoverySigner],
-      keypairsToSave
+      additionalKeypairs
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()
     return wallet
@@ -266,11 +266,11 @@ export class WalletsManager {
    * @param {string} email User's email.
    * @param {string} recoverySeed User's recovery seed.
    * @param {string} newPassword Desired password.
-   * @param {Array} newKeypairsToSave array of {@link Keypair} or strings(secret seed) which will be saved to key storage
+   * @param {Array} newAdditionalKeypairs array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    *
    * @return {Promise.<Wallet>} New wallet.
    */
-  async recovery (email, recoverySeed, newPassword, newKeypairsToSave) {
+  async recovery (email, recoverySeed, newPassword, newAdditionalKeypairs) {
     const { data: kdfParams } = await this.getKdfParams(email, true)
     const accountId = await this._getAccountIdByEmail(email)
 
@@ -281,10 +281,10 @@ export class WalletsManager {
       recoverySeed
     )
 
-    const newMainWallet = Wallet.generate(email, accountId, newKeypairsToSave)
+    const newMainWallet = Wallet.generate(email, accountId, newAdditionalKeypairs)
     const encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
 
-    const newSecondFactorWallet = Wallet.generate(email, accountId, newKeypairsToSave)
+    const newSecondFactorWallet = Wallet.generate(email, accountId, newAdditionalKeypairs)
     const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
       kdfParams, newPassword
     )
@@ -355,17 +355,17 @@ export class WalletsManager {
    *
    * @param {string} email User's email.
    * @param {string} newPassword Desired password.
-   * @param {Array} [keypairsToSave] array of {@link Keypair} or strings(secret seed) which will be saved to key storage for new account
+   * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage for new account
    *
    * @return {Promise.<Wallet>} New wallet.
    */
-  async kycRecovery (email, newPassword, keypairsToSave = []) {
+  async kycRecovery (email, newPassword, additionalKeypairs = []) {
     const { data: kdfParams } = await this.getKdfParams(email, true)
 
-    const newMainWallet = Wallet.generate(email, null, keypairsToSave)
+    const newMainWallet = Wallet.generate(email, null, additionalKeypairs)
     const encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
 
-    const newSecondFactorWallet = Wallet.generate(email, null, keypairsToSave)
+    const newSecondFactorWallet = Wallet.generate(email, null, additionalKeypairs)
     const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
       kdfParams, newPassword
     )

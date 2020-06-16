@@ -22,24 +22,22 @@ export class Wallet {
    * @param {string} [sessionKey] Session key.
    * @param {Array} [keypairs] array of {@link Keypair} or strings(secret seed) which saved in key storage
    */
-  constructor (email, signingKeypair, accountId, walletId, sessionId, sessionKey, keypairs) {
+  constructor (
+    email,
+    signingKeypair,
+    accountId,
+    walletId,
+    sessionId,
+    sessionKey,
+    keypairs = []
+  ) {
     if (isNil(email)) {
       throw new Error('Email is required.')
     }
 
-    if (!Array.isArray(keypairs)) {
-      keypairs = []
-    } else {
-      keypairs = keypairs.map(item => {
-        if (this._isValidKeypair(item) && isString(item)) {
-          return item
-        } else {
-          return item.secret()
-        }
-      })
-    }
+    this._checkIfKeypairIsValid(signingKeypair)
 
-    if (this._isValidKeypair(signingKeypair) && isString(signingKeypair)) {
+    if (isString(signingKeypair)) {
       signingKeypair = Keypair.fromSecret(signingKeypair)
     }
 
@@ -59,14 +57,18 @@ export class Wallet {
       throw new Error('Hex encoded session key expected.')
     }
 
-    keypairs = Array.from([
+    keypairs = keypairs.map(item => {
+      this._checkIfKeypairIsValid(item)
+      if (isString(item)) {
+        return item
+      }
+      return item.secret()
+    })
+
+    keypairs = Array.from(new Set([
       signingKeypair.secret(),
       ...keypairs
-    ]
-      .reduce((result, item) => {
-        result.add(item)
-        return result
-      }, new Set()))
+    ]))
       .map(item => Keypair.fromSecret(item))
     this._email = email
     this._signingKeypair = signingKeypair
@@ -82,6 +84,7 @@ export class Wallet {
    *
    * @param {string} email User's email.
    * @param {string} [accountId] User's account ID.
+   * @param {Array} [keypairs] array of {@link Keypair} or strings(secret seed) which saved in key storage
    *
    * @return {Wallet} The new wallet.
    */
@@ -306,14 +309,15 @@ export class Wallet {
    * @param {Keypair} keypair signing Keypair.
    */
   useSigningKeypair (keypair) {
-    if (this._isValidKeypair(keypair) && isString(keypair)) {
+    this._checkIfKeypairIsValid(keypair)
+    if (isString(keypair)) {
       this._signingKeypair = Keypair.fromSecret(keypair)
     } else {
       this._signingKeypair = keypair
     }
   }
 
-  _isValidKeypair (keypair) {
+  _checkIfKeypairIsValid (keypair) {
     if (isNil(keypair)) {
       throw new Error('No keypair provided.')
     } else if (isString(keypair)) {
@@ -323,6 +327,5 @@ export class Wallet {
     } else if (!(keypair instanceof Keypair)) {
       throw new Error('One of keypair invalid. Expected a Keypair instance or a string seed.')
     }
-    return true
   }
 }
