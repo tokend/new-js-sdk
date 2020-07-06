@@ -1,4 +1,4 @@
-import { DocumentsManager } from "../api2"
+import { DocumentsManager } from '../api2'
 
 /**
  * Wrapper to simplify work with documents
@@ -99,7 +99,7 @@ export class Document {
 
   static isDoc (obj) {
     if (!(obj && typeof obj === 'object')) return false
-    return !this.isEmpty
+    return Boolean(obj.file || obj.key)
   }
 
   static useDocumentsManager (instance) {
