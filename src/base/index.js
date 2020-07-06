@@ -3,6 +3,8 @@ import xdr from './generated/xdr_generated'
 export { xdr }
 export { hash } from './hashing'
 export { sign, verify, FastSigning } from './signing'
+export { Document } from './document'
+export { uploadDocuments, uploadDocumentsDeep } from './util/upload-documents'
 export { Keypair } from './keypair'
 export { UnsignedHyper, Hyper } from 'js-xdr'
 export { Transaction } from './transaction'
