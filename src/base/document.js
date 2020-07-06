@@ -1,4 +1,4 @@
-import { documentsManager } from '@/api'
+import { DocumentsManager } from "../api2"
 
 /**
  * Wrapper to simplify work with documents
@@ -30,7 +30,7 @@ export class Document {
   get privateUrl () { return this._privateUrl }
 
   get publicUrl () {
-    return documentsManager.getDocumentUrlByKey(this._key)
+    return this.documentsManager.getDocumentUrlByKey(this._key)
   }
 
   get isEmpty () {
@@ -82,13 +82,13 @@ export class Document {
       mimeType: this._mimeType,
       file: this._file
     }
-    this._key = await documentsManager.uploadDocument(opts)
+    this._key = await this.documentsManager.uploadDocument(opts)
     return this
   }
 
   async getPrivateUrl () {
     if (!this.isUploaded) return ''
-    this._privateUrl = await documentsManager.getPrivateUrl(this._key)
+    this._privateUrl = await this.documentsManager.getPrivateUrl(this._key)
     return this
   }
 
@@ -100,5 +100,12 @@ export class Document {
   static isDoc (obj) {
     if (!(obj && typeof obj === 'object')) return false
     return !this.isEmpty
+  }
+
+  static useDocumentsManager (instance) {
+    if (!(instance && instance instanceof DocumentsManager)) {
+      this.prototype.documentsManager = new DocumentsManager()
+    }
+    this.prototype.documentsManager = instance
   }
 }
