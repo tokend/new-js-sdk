@@ -11,14 +11,14 @@ export class Document {
    * @param {string} [opts.name] - file name
    * @param {string} [opts.mimeType] - file MIME type
    * @param {string} [opts.key] - storage service file key
-   * @param {string} [opts.docType] - storage service document type
+   * @param {string} [opts.type] - storage service document type
    */
   constructor (opts = {}) {
     this._file = opts.file || null
     this._name = opts.name || ''
     this._mimeType = opts.mimeType || ''
     this._key = opts.key || ''
-    this._docType = opts.docType || ''
+    this._type = opts.type || ''
     this._privateUrl = ''
   }
 
@@ -26,7 +26,7 @@ export class Document {
   get name () { return this._name }
   get mimeType () { return this._mimeType }
   get key () { return this._key }
-  get docType () { return this._docType }
+  get type () { return this._type }
   get privateUrl () { return this._privateUrl }
 
   get publicUrl () {
@@ -61,8 +61,8 @@ export class Document {
     return this
   }
 
-  setDocType (val) {
-    this._docType = val
+  setType (val) {
+    this._type = val
     return this
   }
 
@@ -78,7 +78,7 @@ export class Document {
     if (this.isUploaded) return this
     if (this.isEmpty) throw new Error('Cannot upload an empty doc')
     const opts = {
-      type: this._docType,
+      type: this._type,
       mimeType: this._mimeType,
       file: this._file
     }
@@ -99,11 +99,12 @@ export class Document {
 
   static isDoc (obj) {
     if (!(obj && typeof obj === 'object')) return false
-    return Boolean(obj.file || obj.key)
+    return Boolean(obj.file || this.isUploaded)
   }
 
   static useDocumentsManager (instance) {
     if (!(instance && instance instanceof DocumentsManager)) {
+      // return null ?
       this.prototype.documentsManager = new DocumentsManager()
     }
     this.prototype.documentsManager = instance
