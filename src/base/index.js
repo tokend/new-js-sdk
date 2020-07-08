@@ -47,6 +47,8 @@ export { OpenSwapBuilder } from './operations/open_swap_builder'
 export { CloseSwapBuilder } from './operations/close_swap_builder'
 export { RedemptionRequestBuilder } from './operations/redemption_request_op_builder'
 export { CreateDataBuilder } from './operations/create_data_builder'
+export { UpdateDataBuilder } from './operations/update_data_builder'
+export { RemoveDataBuilder } from './operations/remove_data_builder'
 
 export * from './strkey'
 

@@ -26,6 +26,7 @@ import { ManageAccountRole } from './manage_account_role'
 import { ChangeRole } from './change_role'
 import { KYCRecoveryHelper } from './kyc_recovery'
 import { Redemption } from './redemption'
+import { Data } from './data'
 
 const masterKP = base.Keypair.fromSecret(config.master_seed)
 const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
@@ -69,3 +70,4 @@ export const changeRoleHelper = new ChangeRole(DEFAULTS)
 export const kycRecoveryHelper = new KYCRecoveryHelper(DEFAULTS)
 export const swapHelper = new Swap(DEFAULTS)
 export const redemptionHelper = new Redemption(DEFAULTS)
+export const dataHelper = new Data(DEFAULTS)

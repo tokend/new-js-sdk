@@ -7,6 +7,22 @@ export class Running {
     return new Promise(resolve => setTimeout(resolve, ms))
   }
 
+  static async untilNotFound (asyncFn, delayMs = config.retry_delay_ms) {
+    const log = logger.new('Running.untilNotFound')
+
+    try {
+      await asyncFn()
+      return this.untilNotFound(asyncFn, delayMs)
+    } catch (e) {
+      if (e instanceof NotFoundError) {
+        return
+      }
+
+      log.error(`The error got from ${e.requestPath} is not NotFoundError`)
+      throw e
+    }
+  }
+
   static async untilFound (asyncFn, delayMs = config.retry_delay_ms) {
     const log = logger.new('Running.untilFound')
     try {
