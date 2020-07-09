@@ -13,12 +13,12 @@ export class Document {
    * @param {string} [opts.key] - storage service file key
    * @param {string} [opts.type] - storage service document type
    */
-  constructor (opts = {}) {
+  constructor (opts = {}, type = '') {
     this._file = opts.file || null
     this._name = opts.name || ''
     this._mimeType = opts.mimeType || ''
     this._key = opts.key || ''
-    this._type = opts.type || ''
+    this._type = type || ''
     this._privateUrl = ''
   }
 
@@ -92,20 +92,9 @@ export class Document {
     return this
   }
 
-  static fromObj (obj) {
-    if (!this.isDoc(obj)) return null
-    return new Document(obj)
-  }
-
-  static isDoc (obj) {
-    if (!(obj && typeof obj === 'object')) return false
-    return Boolean(obj.file || this.isUploaded)
-  }
-
   static useDocumentsManager (instance) {
     if (!(instance && instance instanceof DocumentsManager)) {
-      // return null ?
-      this.prototype.documentsManager = new DocumentsManager()
+      Error('Instance of DocumentsManager should be passed as parameter')
     }
     this.prototype.documentsManager = instance
   }
