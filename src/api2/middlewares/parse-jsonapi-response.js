@@ -73,7 +73,7 @@ export class JsonapiResponse {
     }
   }
 
-  makeLinkCallersWithSignature (api) {
+  makeLinkCallersWithSignature (api, seed) {
     for (const [key, value] of Object.entries(this.links)) {
       const methodName = camelCase('fetch_' + key)
       const link = isString(value) ? value : value.href
@@ -82,7 +82,7 @@ export class JsonapiResponse {
       const path = url.path()
       const query = url.search(true)
 
-      this[methodName] = _ => api.getWithSignature(path, query)
+      this[methodName] = _ => api.getWithSignature(path, query, seed)
     }
   }
 

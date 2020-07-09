@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { Network, TransactionBuilder, Transaction } from '../base'
+import { Network, TransactionBuilder, Transaction, Keypair } from '../base'
 import { Wallet } from '../wallet'
 import middlewares from './middlewares'
 import { toCamelCaseDeep } from '../utils/case_converter'
@@ -142,17 +142,19 @@ export class ApiCaller {
    * @param {string} endpoint - target endpoint _with_ starting slash
    * @param {object} query - query params. query parameters should not contain
    * no more than 1 level of nesting.
+   * @param {string} seed - seed to sign request
    * @param {boolean} [needSign=false] - set `true` to sign the request, also
    * check for `.getWithSignature()`
    * @returns {Object} - the parsed response.
    */
-  get (endpoint, query, needSign = false) {
+  get (endpoint, query, seed, needSign = false) {
     return this._call({
       method: methods.GET,
       needSign,
       endpoint,
       query,
-      isEmptyBodyAllowed: true
+      isEmptyBodyAllowed: true,
+      seed
     })
   }
 
@@ -181,10 +183,11 @@ export class ApiCaller {
    * @param {string} endpoint - target endpoint _with_ starting slash
    * @param {object} query - query params. query parameters should not contain
    * no more than 1 level of nesting.
+   * @param {string} seed - seed to sign request
    * @returns {Object} - the parsed response.
    */
-  getWithSignature (endpoint, query) {
-    return this.get(endpoint, query, true)
+  getWithSignature (endpoint, query, seed) {
+    return this.get(endpoint, query, seed, true)
   }
 
   /**
@@ -194,16 +197,18 @@ export class ApiCaller {
    *
    * @param {string} endpoint - target endpoint _with_ starting slash
    * @param {object} data - body to include
+   * @param {string} seed - seed to sign request
    * @param {boolean} [needSign=false] - set `true` to sign the request, also
    * check for `.postWithSignature()`
    * @returns {Object} - the parsed response.
    */
-  post (endpoint, data, needSign = false) {
+  post (endpoint, data, seed, needSign = false) {
     return this._call({
       method: methods.POST,
       needSign,
       endpoint,
-      data
+      data,
+      seed
     })
   }
 
@@ -213,10 +218,11 @@ export class ApiCaller {
    *
    * @param {string} endpoint - target endpoint _with_ starting slash
    * @param {object} data - body to include
+   * @param {string} seed - seed to sign request
    * @returns {Object} - the parsed response.
    */
-  postWithSignature (endpoint, data) {
-    return this.post(endpoint, data, true)
+  postWithSignature (endpoint, data, seed) {
+    return this.post(endpoint, data, seed, true)
   }
 
   /**
@@ -228,14 +234,16 @@ export class ApiCaller {
    * @param {object} data - body to include
    * @param {boolean} [needSign=false] - set `true` to sign the request, also
    * check for `.patchWithSignature()`
+   * @param {string} seed - seed to sign request
    * @returns {Object} - the parsed response.
    */
-  patch (endpoint, data, needSign = false) {
+  patch (endpoint, data, seed, needSign = false) {
     return this._call({
       method: methods.PATCH,
       needSign,
       endpoint,
-      data
+      data,
+      seed
     })
   }
 
@@ -245,10 +253,11 @@ export class ApiCaller {
    *
    * @param {string} endpoint - target endpoint _with_ starting slash
    * @param {object} data - body to include
+   * @param {string} seed - seed to sign request
    * @returns {Object} - the parsed response.
    */
-  patchWithSignature (endpoint, data) {
-    return this.patch(endpoint, data, true)
+  patchWithSignature (endpoint, data, seed) {
+    return this.patch(endpoint, data, seed, true)
   }
 
   /**
@@ -260,14 +269,16 @@ export class ApiCaller {
    * @param {object} data - body to include
    * @param {boolean} [needSign=false] - set `true` to sign the request, also
    * check for `.putWithSignature()`
+   * @param {string} seed - seed to sign request
    * @returns {Object} - the parsed response.
    */
-  put (endpoint, data, needSign = false) {
+  put (endpoint, data, seed, needSign = false) {
     return this._call({
       method: methods.PUT,
       needSign,
       endpoint,
-      data
+      data,
+      seed
     })
   }
 
@@ -277,10 +288,11 @@ export class ApiCaller {
    *
    * @param {string} endpoint - target endpoint _with_ starting slash
    * @param {object} data - body to include
+   * @param {string} seed - seed to sign request
    * @returns {Object} - the parsed response.
    */
-  putWithSignature (endpoint, data) {
-    return this.put(endpoint, data, true)
+  putWithSignature (endpoint, data, seed) {
+    return this.put(endpoint, data, seed, true)
   }
 
   /**
@@ -290,17 +302,19 @@ export class ApiCaller {
    *
    * @param {string} endpoint - target endpoint _with_ starting slash
    * @param {object} data - body to include
+   * @param {string} seed - seed to sign request
    * @param {boolean} [needSign=false] - set `true` to sign the request, also
    * check for `.deleteWithSignature()`
    * @returns {Object} - the parsed response.
    */
-  delete (endpoint, data, needSign = false) {
+  delete (endpoint, data, seed, needSign = false) {
     return this._call({
       method: methods.DELETE,
       needSign,
       endpoint,
       data,
-      isEmptyBodyAllowed: true
+      isEmptyBodyAllowed: true,
+      seed
     })
   }
 
@@ -310,10 +324,11 @@ export class ApiCaller {
    *
    * @param {string} endpoint - target endpoint _with_ starting slash
    * @param {object} data - body to include
+   * @param {string} seed - seed to sign request
    * @returns {Object} - the parsed response.
    */
-  deleteWithSignature (endpoint, data) {
-    return this.delete(endpoint, data, true)
+  deleteWithSignature (endpoint, data, seed) {
+    return this.delete(endpoint, data, seed, true)
   }
 
   /**
@@ -424,6 +439,7 @@ export class ApiCaller {
    * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
    * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
    * @param {bool} opts.isEmptyBodyAllowed - defines if empty body is allowed, `false` by default
+   * @param {string} opts.seed - seed to sign request
    *
    * @private
    */
@@ -452,7 +468,10 @@ export class ApiCaller {
     }
 
     if (opts.needSign) {
-      config = middlewares.signRequest(config, this._wallet.keypair)
+      const keypair = opts.seed
+        ? Keypair.fromSecret(opts.seed)
+        : this._wallet.keypair
+      config = middlewares.signRequest(config, keypair)
     }
 
     let response
@@ -468,7 +487,7 @@ export class ApiCaller {
 
       if (!isEmpty(response.links)) {
         if (opts.needSign) {
-          response.makeLinkCallersWithSignature(this)
+          response.makeLinkCallersWithSignature(this, opts.seed)
         } else {
           response.makeLinkCallers(this)
         }
