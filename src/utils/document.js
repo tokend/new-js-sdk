@@ -11,7 +11,7 @@ export class Document {
    * @param {string} [opts.name] - file name
    * @param {string} [opts.mimeType] - file MIME type
    * @param {string} [opts.key] - storage service file key
-   * @param {string} [opts.type] - storage service document type
+   * @param {string} [type] - storage service document type
    */
   constructor (opts = {}, type = '') {
     this._file = opts.file || null
@@ -71,14 +71,6 @@ export class Document {
       mime_type: this._mimeType || '',
       name: this._name || '',
       key: this._key || ''
-    }
-  }
-
-  static toEmptyJSON () {
-    return {
-      mime_type: '',
-      name: '',
-      key: ''
     }
   }
 

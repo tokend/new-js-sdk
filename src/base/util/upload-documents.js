@@ -1,4 +1,4 @@
-import { Document } from '../document'
+import { Document } from '../../utils/document'
 import isObject from 'lodash/isObject'
 
 /**
