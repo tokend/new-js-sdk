@@ -94,7 +94,7 @@ export class Document {
 
   static useDocumentsManager (instance) {
     if (!(instance && instance instanceof DocumentsManager)) {
-      Error('Instance of DocumentsManager should be passed as parameter')
+      throw new Error('Instance of DocumentsManager should be passed as parameter')
     }
     this.prototype.documentsManager = instance
   }
