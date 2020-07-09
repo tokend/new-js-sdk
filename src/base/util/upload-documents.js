@@ -6,7 +6,6 @@ import isObject from 'lodash/isObject'
  *
  * @param {Document[]} documents - array of {@link Document}
  * instances to be uploaded
- * @param {string} [accountId] - documents' owner account ID
  */
 export async function uploadDocuments (documents) {
   await Promise.all(documents.map(doc => uploadDocument(doc)))
