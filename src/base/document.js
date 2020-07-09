@@ -74,6 +74,14 @@ export class Document {
     }
   }
 
+  static toEmptyJSON () {
+    return {
+      mime_type: '',
+      name: '',
+      key: ''
+    }
+  }
+
   async uploadSelf () {
     if (this.isUploaded) return this
     if (this.isEmpty) throw new Error('Cannot upload an empty doc')
