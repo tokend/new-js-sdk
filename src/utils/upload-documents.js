@@ -8,10 +8,12 @@ import isObject from 'lodash/isObject'
  * instances to be uploaded
  */
 export async function uploadDocuments (documents) {
+  console.log('uploda documents')
   await Promise.all(documents.map(doc => uploadDocument(doc)))
 }
 
 export async function uploadDocumentsDeep (obj) {
+  console.log('upload documents deep')
   const docs = collectDocsToUploadDeep(obj)
   await uploadDocuments(docs)
 }
