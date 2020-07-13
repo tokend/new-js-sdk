@@ -4,7 +4,6 @@ import * as commonErrors from './errors'
 export * from './tokend_sdk'
 export * from './const'
 export { Document, uploadDocuments, uploadDocumentsDeep } from './utils/document'
-// export { uploadDocuments, uploadDocumentsDeep } from './util/upload-documents'
 export { default as base } from './base'
 export { Wallet, encryptSecretSeed, decryptSecretSeed } from './wallet'
 
