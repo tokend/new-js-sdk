@@ -140,14 +140,4 @@ export class DocumentsManager {
       throw new StorageServerError(e, this._axios)
     }
   }
-
-  async getPrivateUrl (key) {
-    try {
-      const { data } =
-        await this._apiCaller.getWithSignature(`/documents/${key}`)
-      return data.url
-    } catch (e) {
-      throw new Error(e)
-    }
-  }
 }
