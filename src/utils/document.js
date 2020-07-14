@@ -122,12 +122,12 @@ export class Document {
    * to be uploaded
    * @returns {Promise} Modified document with set key
    */
-  async _uploadDocument (document) {
+  static async _uploadDocument (document) {
     if (!(document instanceof Document)) return
     return document.uploadSelf()
   }
 
-  _collectDocsToUploadDeep (obj = {}) {
+  static _collectDocsToUploadDeep (obj = {}) {
     const docs = []
     for (const val of Object.values(obj)) {
       if (val instanceof Document && !val.isUploaded) {
