@@ -17,7 +17,7 @@ export class Document {
   constructor (opts = {}, type = '') {
     this._file = opts.file || null
     this._name = opts.name || ''
-    this._mimeType = opts.mimeType || ''
+    this._mimeType = opts.mimeType || opts.mime_type || ''
     this._key = opts.key || ''
     this._type = type || ''
     this._privateUrl = ''
@@ -89,8 +89,7 @@ export class Document {
 
   async getPrivateUrl () {
     if (!this.isUploaded) return ''
-    this._privateUrl = await this.documentsManager.getPrivateUrl(this._key)
-    return this
+    return this.documentsManager.getPrivateUrl(this._key)
   }
 
   static useDocumentsManager (instance) {
