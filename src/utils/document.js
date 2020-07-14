@@ -99,45 +99,45 @@ export class Document {
     }
     this.prototype.documentsManager = instance
   }
-}
 
-/**
- * Uploads an array of documents to the storage.
- *
- * @param {Document[]} documents - array of {@link Document}
- * instances to be uploaded
- */
-export async function uploadDocuments (documents) {
-  await Promise.all(documents.map(doc => uploadDocument(doc)))
-}
-
-export async function uploadDocumentsDeep (obj) {
-  const docs = collectDocsToUploadDeep(obj)
-  await uploadDocuments(docs)
-}
-
-/**
- * Uploads a document to the storage.
- *
- * @param {Document} [document] - instance of {@link Document}
- * to be uploaded
- * @returns {Promise} Modified document with set key
- */
-async function uploadDocument (document) {
-  if (!(document instanceof Document)) return
-  return document.uploadSelf()
-}
-
-function collectDocsToUploadDeep (obj = {}) {
-  const docs = []
-  for (const val of Object.values(obj)) {
-    if (val instanceof Document && !val.isUploaded) {
-      docs.push(val)
-      continue
-    }
-    if (isObject(val)) {
-      docs.push(...collectDocsToUploadDeep(val))
-    }
+  /**
+   * Uploads an array of documents to the storage.
+   *
+   * @param {Document[]} documents - array of {@link Document}
+   * instances to be uploaded
+   */
+  static async uploadDocuments (documents) {
+    await Promise.all(documents.map(doc => this._uploadDocument(doc)))
   }
-  return docs
+
+  static async uploadDocumentsDeep (obj) {
+    const docs = this._collectDocsToUploadDeep(obj)
+    await this.uploadDocuments(docs)
+  }
+
+  /**
+   * Uploads a document to the storage.
+   *
+   * @param {Document} [document] - instance of {@link Document}
+   * to be uploaded
+   * @returns {Promise} Modified document with set key
+   */
+  async _uploadDocument (document) {
+    if (!(document instanceof Document)) return
+    return document.uploadSelf()
+  }
+
+  _collectDocsToUploadDeep (obj = {}) {
+    const docs = []
+    for (const val of Object.values(obj)) {
+      if (val instanceof Document && !val.isUploaded) {
+        docs.push(val)
+        continue
+      }
+      if (isObject(val)) {
+        docs.push(...this._collectDocsToUploadDeep(val))
+      }
+    }
+    return docs
+  }
 }
