@@ -104,37 +104,28 @@ export class Document {
    * instances to be uploaded
    */
   static async uploadDocuments (documents) {
-    await Promise.all(documents.map(doc => this._uploadDocument(doc)))
+    await Promise.all(documents.map(doc => {
+      if (!(doc instanceof Document)) return
+      return doc.uploadSelf()
+    }))
   }
 
   static async uploadDocumentsDeep (obj) {
-    const docs = this._collectDocsToUploadDeep(obj)
+    const docs = collectDocsToUploadDeep(obj)
     await this.uploadDocuments(docs)
   }
+}
 
-  /**
-   * Uploads a document to the storage.
-   *
-   * @param {Document} [document] - instance of {@link Document}
-   * to be uploaded
-   * @returns {Promise} Modified document with set key
-   */
-  static async _uploadDocument (document) {
-    if (!(document instanceof Document)) return
-    return document.uploadSelf()
-  }
-
-  static _collectDocsToUploadDeep (obj = {}) {
-    const docs = []
-    for (const val of Object.values(obj)) {
-      if (val instanceof Document && !val.isUploaded) {
-        docs.push(val)
-        continue
-      }
-      if (isObject(val)) {
-        docs.push(...this._collectDocsToUploadDeep(val))
-      }
+function collectDocsToUploadDeep (obj = {}) {
+  const docs = []
+  for (const val of Object.values(obj)) {
+    if (val instanceof Document && !val.isUploaded) {
+      docs.push(val)
+      continue
     }
-    return docs
+    if (isObject(val)) {
+      docs.push(...collectDocsToUploadDeep(val))
+    }
   }
+  return docs
 }
