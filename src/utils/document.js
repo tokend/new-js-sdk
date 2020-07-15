@@ -115,7 +115,6 @@ export class Document {
     await this.uploadDocuments(docs)
   }
 }
-
 function collectDocsToUploadDeep (obj = {}) {
   const docs = []
   for (const val of Object.values(obj)) {
