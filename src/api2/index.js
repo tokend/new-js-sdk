@@ -1,5 +1,6 @@
 export { ApiCaller } from './api-caller'
 export {
+  VerificationManager,
   DocumentsManager,
   FactorsManager,
   SignersManager,

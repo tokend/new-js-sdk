@@ -15,6 +15,7 @@ export {
   DocumentsManager,
   FactorsManager,
   SignersManager,
+  VerificationManager,
   Signer,
   WalletsManager,
   JsonapiResponse
