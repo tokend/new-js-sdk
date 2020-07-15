@@ -9,6 +9,7 @@ for further information about branching and tagging conventions.
 ## [Unreleased]
 #### Added
 - `Document` and `upload-documents`
+- `VerificationManager` helper
 
 ## [1.13.1-rc.0] - 2020-06-02
 ### Changed
