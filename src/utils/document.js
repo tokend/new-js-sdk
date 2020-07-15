@@ -17,10 +17,9 @@ export class Document {
   constructor (opts = {}, type = '') {
     this._file = opts.file || null
     this._name = opts.name || ''
-    this._mimeType = opts.mimeType || ''
+    this._mimeType = opts.mimeType || opts.mime_type || ''
     this._key = opts.key || ''
     this._type = type || ''
-    this._privateUrl = ''
   }
 
   get file () { return this._file }
@@ -28,7 +27,6 @@ export class Document {
   get mimeType () { return this._mimeType }
   get key () { return this._key }
   get type () { return this._type }
-  get privateUrl () { return this._privateUrl }
 
   get publicUrl () {
     return this.documentsManager.getDocumentUrlByKey(this._key)
@@ -89,8 +87,7 @@ export class Document {
 
   async getPrivateUrl () {
     if (!this.isUploaded) return ''
-    this._privateUrl = await this.documentsManager.getPrivateUrl(this._key)
-    return this
+    return this.documentsManager.getPrivateUrl(this._key)
   }
 
   static useDocumentsManager (instance) {
@@ -99,35 +96,25 @@ export class Document {
     }
     this.prototype.documentsManager = instance
   }
-}
 
-/**
- * Uploads an array of documents to the storage.
- *
- * @param {Document[]} documents - array of {@link Document}
- * instances to be uploaded
- */
-export async function uploadDocuments (documents) {
-  await Promise.all(documents.map(doc => uploadDocument(doc)))
-}
+  /**
+   * Uploads an array of documents to the storage.
+   *
+   * @param {Document[]} documents - array of {@link Document}
+   * instances to be uploaded
+   */
+  static async uploadDocuments (documents) {
+    await Promise.all(documents.map(doc => {
+      if (!(doc instanceof Document)) return
+      return doc.uploadSelf()
+    }))
+  }
 
-export async function uploadDocumentsDeep (obj) {
-  const docs = collectDocsToUploadDeep(obj)
-  await uploadDocuments(docs)
+  static async uploadDocumentsDeep (obj) {
+    const docs = collectDocsToUploadDeep(obj)
+    await this.uploadDocuments(docs)
+  }
 }
-
-/**
- * Uploads a document to the storage.
- *
- * @param {Document} [document] - instance of {@link Document}
- * to be uploaded
- * @returns {Promise} Modified document with set key
- */
-async function uploadDocument (document) {
-  if (!(document instanceof Document)) return
-  return document.uploadSelf()
-}
-
 function collectDocsToUploadDeep (obj = {}) {
   const docs = []
   for (const val of Object.values(obj)) {
