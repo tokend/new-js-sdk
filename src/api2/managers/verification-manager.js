@@ -1,4 +1,4 @@
-import { base, uploadDocumentsDeep } from '../../index'
+import { base, Document } from '../../index'
 import { ApiCaller } from '../api-caller'
 
 /**
@@ -67,7 +67,7 @@ export class VerificationManager {
   }
 
   async _createBlob (blobData, ownerAccountId, blobType) {
-    await uploadDocumentsDeep(blobData)
+    await Document.uploadDocumentsDeep(blobData)
 
     const { data } = await this._apiCaller.postWithSignature('/blobs', {
       data: {
