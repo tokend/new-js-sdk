@@ -98,7 +98,7 @@
     "form-data": "2.3.3",
     "js-xdr": "1.1.2",
     "jsona": "1.5.0",
-    "lodash": "4.17.13",
+    "lodash": "4.17.19",
     "loglevel": "1.6.2",
     "loglevel-plugin-prefix": "0.8.4",
     "moment": "2.24.0",
