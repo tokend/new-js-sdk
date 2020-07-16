@@ -22,11 +22,25 @@ export class Document {
     this._type = type || ''
   }
 
-  get file () { return this._file }
-  get name () { return this._name }
-  get mimeType () { return this._mimeType }
-  get key () { return this._key }
-  get type () { return this._type }
+  get file () {
+    return this._file
+  }
+
+  get name () {
+    return this._name
+  }
+
+  get mimeType () {
+    return this._mimeType
+  }
+
+  get key () {
+    return this._key
+  }
+
+  get type () {
+    return this._type
+  }
 
   get publicUrl () {
     return this.documentsManager.getDocumentUrlByKey(this._key)
@@ -66,6 +80,10 @@ export class Document {
   }
 
   toJSON () {
+    if (!this.isUploaded) {
+      return
+    }
+
     return {
       mime_type: this._mimeType || '',
       name: this._name || '',
@@ -106,6 +124,7 @@ export class Document {
   static async uploadDocuments (documents) {
     await Promise.all(documents.map(doc => {
       if (!(doc instanceof Document)) return
+      if (doc.isEmpty) return
       return doc.uploadSelf()
     }))
   }
@@ -115,6 +134,7 @@ export class Document {
     await this.uploadDocuments(docs)
   }
 }
+
 function collectDocsToUploadDeep (obj = {}) {
   const docs = []
   for (const val of Object.values(obj)) {
