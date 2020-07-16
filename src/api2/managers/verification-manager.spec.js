@@ -34,6 +34,10 @@ describe('Verification manager', () => {
     it('should upload instances of Document provided in the blob data', async () => {
       const [doc1, doc2, doc3] = [new Document(), new Document(), new Document()]
 
+      sandbox.stub(doc1, 'isEmpty').get(_ => false)
+      sandbox.stub(doc2, 'isEmpty').get(_ => false)
+      sandbox.stub(doc3, 'isEmpty').get(_ => false)
+
       sandbox.stub(doc1, 'uploadSelf').resolves()
       sandbox.stub(doc2, 'uploadSelf').resolves()
       sandbox.stub(doc3, 'uploadSelf').resolves()
