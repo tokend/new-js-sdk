@@ -11,6 +11,10 @@ for further information about branching and tagging conventions.
 - `Document` and `upload-documents`
 - `VerificationManager` helper
 
+##[Unreleased]
+### Added
+- Ability to save a few keys to key storage
+
 ## [1.13.1-rc.0] - 2020-06-02
 ### Changed
 - Subject size from 256 to 1000 

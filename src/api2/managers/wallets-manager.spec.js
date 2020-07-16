@@ -10,6 +10,15 @@ describe('Wallets manager', () => {
   let sandbox
   let walletsManagerInstance
 
+  const email = 'foo@bar.com'
+  const accountId = 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
+  const seed = 'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3'
+  const password = 'qwe123'
+  const keypairs = [
+    seed,
+    'SDKJWNPRGPM7LWFJHRPQKKUSOZTO2SKFUYT2AE3DBXAR5X7C6LIMVGZA'
+  ]
+
   beforeEach(() => {
     sandbox = sinon.createSandbox()
 
@@ -46,11 +55,11 @@ describe('Wallets manager', () => {
     describe('getKdfParams', () => {
       it('returns KDF params calling _apiCaller.get with correct params', async () => {
         const result = await walletsManagerInstance
-          .getKdfParams('foo@bar.com', true)
+          .getKdfParams(email, true)
 
         expect(walletsManagerInstance._apiCaller.get)
           .to.have.been.calledOnceWithExactly(
-            '/kdf', { email: 'foo@bar.com', is_recovery: true }
+            '/kdf', { email: email, is_recovery: true }
           )
         expect(result).to.deep.equal({
           data: {
@@ -98,9 +107,9 @@ describe('Wallets manager', () => {
           })
         sandbox.stub(Wallet, 'fromEncrypted').returns(
           new Wallet(
-            'foo@bar.com',
-            'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-            'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+            email,
+            seed,
+            accountId,
             'some-wallet-id',
             'some-session-id',
             'some-session-key'
@@ -108,7 +117,7 @@ describe('Wallets manager', () => {
         )
 
         const result = await walletsManagerInstance.get(
-          'foo@bar.com', 'qwe123'
+          email, password
         )
 
         expect(walletsManagerInstance._apiCaller.get
@@ -119,8 +128,8 @@ describe('Wallets manager', () => {
           keychainData: 'SOME_KEYCHAIN_DATA',
           kdfParams: { bits: 256, n: 8, p: 1, r: 8, salt: '/1dwsCq6f1zdpIObxLBOiQ==' },
           salt: '/1dwsCq6f1zdpIObxLBOiQ==',
-          email: 'foo@bar.com',
-          password: 'qwe123',
+          email: email,
+          password: password,
           accountId: 'SOME_ACCOUNT_ID',
           sessionId: 'SOME_SESSION_ID',
           sessionKey: 'SOME_SESSION_KEY'
@@ -128,9 +137,9 @@ describe('Wallets manager', () => {
 
         expect(result).to.deep.equal(
           new Wallet(
-            'foo@bar.com',
-            'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-            'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+            email,
+            seed,
+            accountId,
             'some-wallet-id',
             'some-session-id',
             'some-session-key'
@@ -143,17 +152,20 @@ describe('Wallets manager', () => {
       it('returns new wallet, created by calling _apiCaller.post method with generated params', async () => {
         sandbox.stub(Wallet, 'generate').returns(
           new Wallet(
-            'foo@bar.com',
-            'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-            'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-            'some-wallet-id'
+            email,
+            seed,
+            accountId,
+            'some-wallet-id',
+            null,
+            null,
+            keypairs
           )
         )
         sandbox.stub(walletsManagerInstance._apiCaller, 'post')
           .withArgs('/wallets')
           .resolves({
             data: {
-              accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+              accountId: accountId,
               session: {
                 id: 'some-session-id',
                 encryptionKey: 'some-session-key'
@@ -161,26 +173,31 @@ describe('Wallets manager', () => {
             }
           })
         const result = await walletsManagerInstance.createWithSigners(
-          'foo@bar.com',
-          'qwe123',
-          []
+          email,
+          password,
+          [],
+          keypairs
         )
 
-        expect(Wallet.generate).to.have.been.calledWithExactly('foo@bar.com')
+        expect(Wallet.generate).to.have.been.calledWithExactly(
+          email,
+          null,
+          keypairs
+        )
         expect(walletsManagerInstance._apiCaller.post)
           .to.have.been.calledOnceWith('/wallets')
 
         expect(result.response).to.deep.equal({
           data: {
-            accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+            accountId: accountId,
             session: {
               id: 'some-session-id',
               encryptionKey: 'some-session-key'
             }
           }
         })
-        expect(result.wallet.email).to.equal('foo@bar.com')
-        expect(result.wallet.accountId).to.equal('GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S')
+        expect(result.wallet.email).to.equal(email)
+        expect(result.wallet.accountId).to.equal(accountId)
       })
     })
 
@@ -188,9 +205,9 @@ describe('Wallets manager', () => {
       it('returns new wallet, created by calling _apiCaller.post method with generated params', async () => {
         sandbox.stub(Wallet, 'generate').returns(
           new Wallet(
-            'foo@bar.com',
-            'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-            'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+            email,
+            seed,
+            accountId,
             'some-wallet-id'
           )
         )
@@ -198,7 +215,7 @@ describe('Wallets manager', () => {
           .withArgs('/wallets')
           .resolves({
             data: {
-              accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+              accountId: accountId,
               session: {
                 id: 'some-session-id',
                 encryptionKey: 'some-session-key'
@@ -206,27 +223,27 @@ describe('Wallets manager', () => {
             }
           })
         const result = await walletsManagerInstance.create(
-          'foo@bar.com',
-          'qwe123',
-          Keypair.fromSecret('SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3')
+          email,
+          password,
+          Keypair.fromSecret(seed)
         )
 
-        expect(Wallet.generate).to.have.been.calledWithExactly('foo@bar.com')
+        expect(Wallet.generate).to.have.been.calledWithExactly(email, null, [])
         expect(walletsManagerInstance._apiCaller.post)
           .to.have.been.calledOnceWith('/wallets')
 
         expect(result.response).to.deep.equal({
           data: {
-            accountId: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+            accountId: accountId,
             session: {
               id: 'some-session-id',
               encryptionKey: 'some-session-key'
             }
           }
         })
-        expect(result.recoverySeed).to.equal('SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3')
-        expect(result.wallet.email).to.equal('foo@bar.com')
-        expect(result.wallet.accountId).to.equal('GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S')
+        expect(result.recoverySeed).to.equal(seed)
+        expect(result.wallet.email).to.equal(email)
+        expect(result.wallet.accountId).to.equal(accountId)
       })
     })
 
@@ -279,14 +296,14 @@ describe('Wallets manager', () => {
       it('changes user\'s main wallet by calling _apiCaller.putWithSignature with derived params', async () => {
         sandbox.stub(Wallet, 'generate').returns(
           new Wallet(
-            'foo@bar.com',
-            'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-            'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
+            email,
+            seed,
+            accountId,
             'some-wallet-id'
           )
         )
         sandbox.stub(walletsManagerInstance, '_getAccountIdByEmail')
-          .resolves('GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S')
+          .resolves(accountId)
 
         sandbox.stub(
           walletsManagerInstance._signersManager,
@@ -296,14 +313,16 @@ describe('Wallets manager', () => {
           .resolves()
 
         const result = await walletsManagerInstance.recovery(
-          'foo@bar.com',
-          'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-          'qwe123'
+          email,
+          seed,
+          password,
+          []
         )
 
         expect(Wallet.generate).to.have.been.calledWithExactly(
-          'foo@bar.com',
-          'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
+          email,
+          accountId,
+          []
         )
         expect(walletsManagerInstance._getAccountIdByEmail)
           .to.have.been.calledOnce
@@ -313,17 +332,20 @@ describe('Wallets manager', () => {
         expect(walletsManagerInstance._apiCaller.putWithSignature)
           .to.have.been.calledOnce
 
-        expect(result.email).to.equal('foo@bar.com')
-        expect(result.accountId).to.equal('GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S')
+        expect(result.email).to.equal(email)
+        expect(result.accountId).to.equal(accountId)
       })
     })
 
     describe('changePassword', () => {
       const mockedWallet = new Wallet(
-        'foo@bar.com',
-        'SBLSDQ764O5IDRAFZXQJMBAJXWL3Z73SATJTAOIPGINPPUZ67E5VKIB3',
-        'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
-        'some-wallet-id'
+        email,
+        seed,
+        accountId,
+        'some-wallet-id',
+        null,
+        null,
+        keypairs
       )
 
       it('changes user\'s main wallet by calling _apiCaller.putWithSignature with derived params', async () => {
@@ -339,11 +361,12 @@ describe('Wallets manager', () => {
         sandbox.stub(walletsManagerInstance._apiCaller, 'putWithSignature')
           .resolves()
 
-        const result = await walletsManagerInstance.changePassword('qwe123')
+        const result = await walletsManagerInstance.changePassword(password)
 
         expect(Wallet.generate).to.have.been.calledWithExactly(
-          'foo@bar.com',
-          'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S'
+          email,
+          accountId,
+          keypairs
         )
         expect(walletsManagerInstance._signersManager
           .createChangeSignerTransaction
@@ -351,8 +374,8 @@ describe('Wallets manager', () => {
         expect(walletsManagerInstance._apiCaller.putWithSignature)
           .to.have.been.calledOnce
 
-        expect(result.email).to.equal('foo@bar.com')
-        expect(result.accountId).to.equal('GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S')
+        expect(result.email).to.equal(email)
+        expect(result.accountId).to.equal(accountId)
       })
     })
   })
