@@ -3,6 +3,7 @@ import * as commonErrors from './errors'
 // TokenD classes to expose
 export * from './tokend_sdk'
 export * from './const'
+export { Document } from './utils/document'
 export { default as base } from './base'
 export { Wallet, encryptSecretSeed, decryptSecretSeed } from './wallet'
 
@@ -14,6 +15,8 @@ export {
   DocumentsManager,
   FactorsManager,
   SignersManager,
+  VerificationManager,
+  Signer,
   WalletsManager,
   JsonapiResponse
 } from './api2'

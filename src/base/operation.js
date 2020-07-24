@@ -43,6 +43,7 @@ import { PreIssuanceRequestOpBuilder } from './operations/pre_issuance_request_o
 import { RedemptionRequestBuilder } from './operations/redemption_request_op_builder'
 import { RemoveAssetOpBuilder } from './operations/remove_asset_op_builder'
 import { RemoveAssetPairOpBuilder } from './operations/remove_asset_pair_op_builder'
+import { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -450,6 +451,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.removeAssetPair():
         RemoveAssetPairOpBuilder.removeAssetPairOpToObject(result, attrs)
+        break
+      case xdr.OperationType.manageSignerRole():
+        ManageSignerRoleBuilder.manageSignerRoleToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)

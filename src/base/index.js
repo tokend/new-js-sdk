@@ -49,6 +49,8 @@ export { RedemptionRequestBuilder } from './operations/redemption_request_op_bui
 export { CreateDataBuilder } from './operations/create_data_builder'
 export { UpdateDataBuilder } from './operations/update_data_builder'
 export { RemoveDataBuilder } from './operations/remove_data_builder'
+export { ManageAccountRoleBuilder } from './operations/manage_account_role_builder'
+export { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
 
 export * from './strkey'
 

@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## [1.14.0-rc.0] - 2020-07-16
+### Added
+- `Document` and `upload-documents`
+- `VerificationManager` helper
+- Ability to save a few keys to key storage
+
+## [1.13.1] - 2020-07-16
+
+## [1.13.1-rc.0] - 2020-06-02
+### Changed
+- Subject size from 256 to 1000 
+
+## [1.13.0] - 2020-04-13
+
+## [1.13.0-rc.0] - 2020-04-02
+### Added
+- Builder for `ManageSignerRoleOp`
 
 ## [1.12.3-dmsrc.0] - 2020-04-15
 ### Added
@@ -24,6 +41,10 @@ for further information about branching and tagging conventions.
 ## [1.12.0] - 2019-12-16
 ### Added
 - Redemption reviewable request
+
+## [1.11.4] - 2020-04-13
+### Added
+- Global export 'Signer' class
 
 ## [1.11.3] - 2019-12-04
 ### Added
@@ -282,11 +303,16 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.12.3-dmsrc.0...HEAD
-[1.12.3-dmsrc.0]: https://github.com/tokend/new-js-sdk/compare/1.12.2...1.12.3-dmsrc.0
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.0...HEAD
+[1.14.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.13.1...1.14.0-rc.0
+[1.13.1]: https://github.com/tokend/new-js-sdk/compare/1.13.1-rc.0...1.13.1
+[1.13.1-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.13.0...1.13.1-rc.0
+[1.13.0]: https://github.com/tokend/new-js-sdk/compare/1.13.0-rc.0...1.13.0
+[1.13.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.12.2...1.13.0-rc.0
 [1.12.2]: https://github.com/tokend/new-js-sdk/compare/1.12.1...1.12.2
 [1.12.1]: https://github.com/tokend/new-js-sdk/compare/1.12.0...1.12.1
-[1.12.0]: https://github.com/tokend/new-js-sdk/compare/1.11.3...1.12.0
+[1.12.0]: https://github.com/tokend/new-js-sdk/compare/1.11.4...1.12.0
+[1.11.4]: https://github.com/tokend/new-js-sdk/compare/1.11.3...1.11.4
 [1.11.3]: https://github.com/tokend/new-js-sdk/compare/1.11.2...1.11.3
 [1.11.2]: https://github.com/tokend/new-js-sdk/compare/1.11.1...1.11.2
 [1.11.1]: https://github.com/tokend/new-js-sdk/compare/1.11.0...1.11.1
