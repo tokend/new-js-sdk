@@ -1,6 +1,6 @@
-// revision: cb9934f17765fd65f2c5ecaf7b177c8b39408888
-// branch:   feature/movements-rr-details
-// Automatically generated on 2020-02-18T09:07:19+00:00
+// revision: d639694e4cdb49f22866a506b190bd92f3e62b84
+// branch:   master
+// Automatically generated on 2020-07-24T10:52:59+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -983,6 +983,32 @@ xdr.struct("ContractEntry", [
   ["state", xdr.lookup("Uint32")],
   ["customerDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("ContractEntryExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct DataEntry 
+//   {
+//       //: ID of the data entry
+//       uint64 id;
+//       //: Numeric type, used for access control
+//       uint64 type;
+//       //: Value stored
+//       longstring value;
+//   
+//       //: Creator of the entry
+//       AccountID owner;
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("DataEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["type", xdr.lookup("Uint64")],
+  ["value", xdr.lookup("Longstring")],
+  ["owner", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -2745,6 +2771,8 @@ xdr.enum("ThresholdIndices", {
 //           AccountSpecificRuleEntry accountSpecificRule;
 //       case SWAP:
 //           SwapEntry swap;
+//       case DATA:
+//           DataEntry data;
 //       }
 //
 // ===========================================================================
@@ -2783,6 +2811,7 @@ xdr.union("LedgerEntryData", {
     ["vote", "vote"],
     ["accountSpecificRule", "accountSpecificRule"],
     ["swap", "swap"],
+    ["datum", "data"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
@@ -2816,6 +2845,7 @@ xdr.union("LedgerEntryData", {
     vote: xdr.lookup("VoteEntry"),
     accountSpecificRule: xdr.lookup("AccountSpecificRuleEntry"),
     swap: xdr.lookup("SwapEntry"),
+    data: xdr.lookup("DataEntry"),
   },
 });
 
@@ -2908,6 +2938,8 @@ xdr.union("LedgerEntryExt", {
 //           AccountSpecificRuleEntry accountSpecificRule;
 //       case SWAP:
 //           SwapEntry swap;
+//       case DATA:
+//           DataEntry data;
 //       }
 //       data;
 //   
@@ -3999,6 +4031,20 @@ xdr.struct("LedgerKeySwap", [
 
 // === xdr source ============================================================
 //
+//   struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyData", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union LedgerKey switch (LedgerEntryType type)
 //   {
 //   case ACCOUNT:
@@ -4304,6 +4350,12 @@ xdr.struct("LedgerKeySwap", [
 //   
 //           EmptyExt ext;
 //       } swap;
+//   case DATA:
+//       struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       } data;
 //   };
 //
 // ===========================================================================
@@ -4342,6 +4394,7 @@ xdr.union("LedgerKey", {
     ["vote", "vote"],
     ["accountSpecificRule", "accountSpecificRule"],
     ["swap", "swap"],
+    ["datum", "data"],
   ],
   arms: {
     account: xdr.lookup("LedgerKeyAccount"),
@@ -4375,6 +4428,7 @@ xdr.union("LedgerKey", {
     vote: xdr.lookup("LedgerKeyVote"),
     accountSpecificRule: xdr.lookup("LedgerKeyAccountSpecificRule"),
     swap: xdr.lookup("LedgerKeySwap"),
+    data: xdr.lookup("LedgerKeyData"),
   },
 });
 
@@ -6729,6 +6783,83 @@ xdr.union("CreateChangeRoleRequestResult", {
   ],
   arms: {
     success: xdr.lookup("CreateChangeRoleRequestResultSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataOp
+//   {
+//       //: Numeric type, used for access control
+//       uint64 type;
+//       //: Value to store
+//       longstring value;
+//   
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataOp", [
+  ["type", xdr.lookup("Uint64")],
+  ["value", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreateDataResultCode
+//   {
+//       //: Data entry was successfully created
+//       SUCCESS = 0,
+//       //: `value` must be in a valid JSON format
+//       INVALID_DATA = -1
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateDataResultCode", {
+  success: 0,
+  invalidDatum: -1,
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataSuccess
+//   {
+//       //: ID of created data entry
+//       uint64 dataID;
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataSuccess", [
+  ["dataId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of operation application
+//   union CreateDataResult switch (CreateDataResultCode code)
+//   {
+//       case SUCCESS:
+//           //: Result of successful operation application
+//           CreateDataSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateDataResult", {
+  switchOn: xdr.lookup("CreateDataResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateDataSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -12476,7 +12607,9 @@ xdr.struct("ManageOfferOp", [
 //       //: Precision set in the system and precision of the amount are mismatched
 //       INCORRECT_AMOUNT_PRECISION = -28,
 //       //: Sale specific rule forbids to participate in sale for source account
-//       SPECIFIC_RULE_FORBIDS = -29
+//       SPECIFIC_RULE_FORBIDS = -29,
+//       //: Amount must be less then pending issuance
+//       PENDING_ISSUANCE_LESS_THEN_AMOUNT = -30
 //   };
 //
 // ===========================================================================
@@ -12511,6 +12644,7 @@ xdr.enum("ManageOfferResultCode", {
   requiresVerification: -27,
   incorrectAmountPrecision: -28,
   specificRuleForbid: -29,
+  pendingIssuanceLessThenAmount: -30,
 });
 
 // === xdr source ============================================================
@@ -15416,6 +15550,66 @@ xdr.union("RemoveAssetResult", {
 
 // === xdr source ============================================================
 //
+//   struct RemoveDataOp 
+//   {
+//       //: ID of the data to remove
+//       uint64 dataID;
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("RemoveDataOp", [
+  ["dataId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum RemoveDataResultCode 
+//   {
+//       //: Data successfully removed
+//       SUCCESS = 0,
+//       //: Entry with provided ID does not exist
+//       NOT_FOUND = -1,
+//       //: Only owner or admin can remove data.
+//       NOT_AUTHORIZED = -2
+//   };
+//
+// ===========================================================================
+xdr.enum("RemoveDataResultCode", {
+  success: 0,
+  notFound: -1,
+  notAuthorized: -2,
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of operation application
+//   union RemoveDataResult switch (RemoveDataResultCode code)
+//   {
+//   case SUCCESS:
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("RemoveDataResult", {
+  switchOn: xdr.lookup("RemoveDataResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   //: Actions that can be performed on request that is being reviewed
 //   enum ReviewRequestOpAction {
 //       //: Approve request
@@ -16636,6 +16830,72 @@ xdr.union("StampResult", {
 
 // === xdr source ============================================================
 //
+//   struct UpdateDataOp
+//   {
+//       //: ID of the data entry to update
+//       uint64 dataID;
+//       //: New value to set
+//       longstring value;
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateDataOp", [
+  ["dataId", xdr.lookup("Uint64")],
+  ["value", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum UpdateDataResultCode
+//   {
+//       //: Data was successfully updated
+//       SUCCESS = 0,
+//       //: `value` must be in a valid JSON format
+//       INVALID_DATA = -1,
+//       //: Entry with provided ID does not exist
+//       NOT_FOUND = -2,
+//       //: Only owner or admin can update data entry
+//       NOT_AUTHORIZED = -3
+//   };
+//
+// ===========================================================================
+xdr.enum("UpdateDataResultCode", {
+  success: 0,
+  invalidDatum: -1,
+  notFound: -2,
+  notAuthorized: -3,
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of operation application
+//   union UpdateDataResult switch (UpdateDataResultCode code)
+//   {
+//   case SUCCESS:
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("UpdateDataResult", {
+  switchOn: xdr.lookup("UpdateDataResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "ext"],
+  ],
+  arms: {
+    ext: xdr.lookup("EmptyExt"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   enum ErrorCode
 //   {
 //       MISC = 0, // Unspecific error
@@ -17634,6 +17894,22 @@ xdr.struct("AccountRuleResourceSwap", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceData", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
@@ -17765,6 +18041,14 @@ xdr.struct("AccountRuleResourceSwap", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } swap;
+//   case DATA:
+//       struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } data;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -17787,6 +18071,7 @@ xdr.union("AccountRuleResource", {
     ["initiateKycRecovery", "initiateKycRecovery"],
     ["accountSpecificRule", "accountSpecificRuleExt"],
     ["swap", "swap"],
+    ["datum", "data"],
   ],
   arms: {
     asset: xdr.lookup("AccountRuleResourceAsset"),
@@ -17800,6 +18085,7 @@ xdr.union("AccountRuleResource", {
     initiateKycRecovery: xdr.lookup("AccountRuleResourceInitiateKycRecovery"),
     accountSpecificRuleExt: xdr.lookup("AccountRuleResourceAccountSpecificRuleExt"),
     swap: xdr.lookup("AccountRuleResourceSwap"),
+    data: xdr.lookup("AccountRuleResourceData"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -17831,7 +18117,9 @@ xdr.union("AccountRuleResource", {
 //       CREATE_FOR_OTHER_WITH_TASKS = 19,
 //       REMOVE_FOR_OTHER = 20,
 //       EXCHANGE = 21,
-//       RECEIVE_REDEMPTION = 22
+//       RECEIVE_REDEMPTION = 22,
+//       UPDATE = 23,
+//       UPDATE_FOR_OTHER = 24
 //   };
 //
 // ===========================================================================
@@ -17858,6 +18146,8 @@ xdr.enum("AccountRuleAction", {
   removeForOther: 20,
   exchange: 21,
   receiveRedemption: 22,
+  update: 23,
+  updateForOther: 24,
 });
 
 // === xdr source ============================================================
@@ -18160,6 +18450,22 @@ xdr.struct("SignerRuleResourceSwap", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceData", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union SignerRuleResource switch (LedgerEntryType type)
 //   {
@@ -18322,6 +18628,14 @@ xdr.struct("SignerRuleResourceSwap", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } swap;
+//   case DATA:
+//       struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } data;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -18347,6 +18661,7 @@ xdr.union("SignerRuleResource", {
     ["initiateKycRecovery", "initiateKycRecovery"],
     ["accountSpecificRule", "accountSpecificRuleExt"],
     ["swap", "swap"],
+    ["datum", "data"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -18363,6 +18678,7 @@ xdr.union("SignerRuleResource", {
     initiateKycRecovery: xdr.lookup("SignerRuleResourceInitiateKycRecovery"),
     accountSpecificRuleExt: xdr.lookup("SignerRuleResourceAccountSpecificRuleExt"),
     swap: xdr.lookup("SignerRuleResourceSwap"),
+    data: xdr.lookup("SignerRuleResourceData"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -18392,7 +18708,8 @@ xdr.union("SignerRuleResource", {
 //       CREATE_WITH_TASKS = 17,
 //       CREATE_FOR_OTHER_WITH_TASKS = 18,
 //       REMOVE_FOR_OTHER = 19,
-//       EXCHANGE = 20
+//       EXCHANGE = 20,
+//       UPDATE_FOR_OTHER = 21
 //   };
 //
 // ===========================================================================
@@ -18417,6 +18734,7 @@ xdr.enum("SignerRuleAction", {
   createForOtherWithTask: 18,
   removeForOther: 19,
   exchange: 20,
+  updateForOther: 21,
 });
 
 // === xdr source ============================================================
@@ -19665,6 +19983,12 @@ xdr.struct("WithdrawalRequest", [
 //           CloseSwapOp closeSwapOp;
 //       case CREATE_REDEMPTION_REQUEST:
 //           CreateRedemptionRequestOp createRedemptionRequestOp;
+//       case CREATE_DATA:
+//           CreateDataOp createDataOp;
+//       case UPDATE_DATA:
+//           UpdateDataOp updateDataOp;
+//       case REMOVE_DATA:
+//           RemoveDataOp removeDataOp;
 //       }
 //
 // ===========================================================================
@@ -19722,6 +20046,9 @@ xdr.union("OperationBody", {
     ["openSwap", "openSwapOp"],
     ["closeSwap", "closeSwapOp"],
     ["createRedemptionRequest", "createRedemptionRequestOp"],
+    ["createDatum", "createDataOp"],
+    ["updateDatum", "updateDataOp"],
+    ["removeDatum", "removeDataOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -19774,6 +20101,9 @@ xdr.union("OperationBody", {
     openSwapOp: xdr.lookup("OpenSwapOp"),
     closeSwapOp: xdr.lookup("CloseSwapOp"),
     createRedemptionRequestOp: xdr.lookup("CreateRedemptionRequestOp"),
+    createDataOp: xdr.lookup("CreateDataOp"),
+    updateDataOp: xdr.lookup("UpdateDataOp"),
+    removeDataOp: xdr.lookup("RemoveDataOp"),
   },
 });
 
@@ -19889,6 +20219,12 @@ xdr.union("OperationBody", {
 //           CloseSwapOp closeSwapOp;
 //       case CREATE_REDEMPTION_REQUEST:
 //           CreateRedemptionRequestOp createRedemptionRequestOp;
+//       case CREATE_DATA:
+//           CreateDataOp createDataOp;
+//       case UPDATE_DATA:
+//           UpdateDataOp updateDataOp;
+//       case REMOVE_DATA:
+//           RemoveDataOp removeDataOp;
 //       }
 //       body;
 //   };
@@ -20215,6 +20551,12 @@ xdr.struct("AccountRuleRequirement", [
 //           CloseSwapResult closeSwapResult;
 //       case CREATE_REDEMPTION_REQUEST:
 //           CreateRedemptionRequestResult createRedemptionRequestResult;
+//       case CREATE_DATA:
+//           CreateDataResult createDataResult;
+//       case UPDATE_DATA:
+//           UpdateDataResult updateDataResult;
+//       case REMOVE_DATA:
+//           RemoveDataResult removeDataResult;
 //       }
 //
 // ===========================================================================
@@ -20272,6 +20614,9 @@ xdr.union("OperationResultTr", {
     ["openSwap", "openSwapResult"],
     ["closeSwap", "closeSwapResult"],
     ["createRedemptionRequest", "createRedemptionRequestResult"],
+    ["createDatum", "createDataResult"],
+    ["updateDatum", "updateDataResult"],
+    ["removeDatum", "removeDataResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -20324,6 +20669,9 @@ xdr.union("OperationResultTr", {
     openSwapResult: xdr.lookup("OpenSwapResult"),
     closeSwapResult: xdr.lookup("CloseSwapResult"),
     createRedemptionRequestResult: xdr.lookup("CreateRedemptionRequestResult"),
+    createDataResult: xdr.lookup("CreateDataResult"),
+    updateDataResult: xdr.lookup("UpdateDataResult"),
+    removeDataResult: xdr.lookup("RemoveDataResult"),
   },
 });
 
@@ -20434,6 +20782,12 @@ xdr.union("OperationResultTr", {
 //           CloseSwapResult closeSwapResult;
 //       case CREATE_REDEMPTION_REQUEST:
 //           CreateRedemptionRequestResult createRedemptionRequestResult;
+//       case CREATE_DATA:
+//           CreateDataResult createDataResult;
+//       case UPDATE_DATA:
+//           UpdateDataResult updateDataResult;
+//       case REMOVE_DATA:
+//           RemoveDataResult removeDataResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -20661,7 +21015,10 @@ xdr.struct("TransactionResult", [
 //       FIX_MOVEMENT_REVIEW = 24,
 //       FIX_SIGNATURE_CHECK = 25,
 //       FIX_AUTOREVIEW = 26,
-//       MOVEMENT_REQUESTS_DETAILS = 27
+//       MOVEMENT_REQUESTS_DETAILS = 27,
+//       FIX_CRASH_CORE_WITH_PAYMENT = 28,
+//       FIX_INVEST_TO_IMMEDIATE_SALE = 29,
+//       FIX_PAYMENT_TASKS_WILDCARD_VALUE = 30
 //   };
 //
 // ===========================================================================
@@ -20694,6 +21051,9 @@ xdr.enum("LedgerVersion", {
   fixSignatureCheck: 25,
   fixAutoreview: 26,
   movementRequestsDetail: 27,
+  fixCrashCoreWithPayment: 28,
+  fixInvestToImmediateSale: 29,
+  fixPaymentTasksWildcardValue: 30,
 });
 
 // === xdr source ============================================================
@@ -20840,7 +21200,8 @@ xdr.union("PublicKey", {
 //       VOTE = 35,
 //       ACCOUNT_SPECIFIC_RULE = 36,
 //       INITIATE_KYC_RECOVERY = 37,
-//       SWAP = 38
+//       SWAP = 38,
+//       DATA = 39
 //   };
 //
 // ===========================================================================
@@ -20881,6 +21242,7 @@ xdr.enum("LedgerEntryType", {
   accountSpecificRule: 36,
   initiateKycRecovery: 37,
   swap: 38,
+  datum: 39,
 });
 
 // === xdr source ============================================================
@@ -21119,7 +21481,10 @@ xdr.struct("Fee", [
 //       REMOVE_ASSET = 53,
 //       OPEN_SWAP = 54,
 //       CLOSE_SWAP = 55,
-//       CREATE_REDEMPTION_REQUEST = 56
+//       CREATE_REDEMPTION_REQUEST = 56,
+//       CREATE_DATA = 57,
+//       UPDATE_DATA = 58,
+//       REMOVE_DATA = 59
 //   };
 //
 // ===========================================================================
@@ -21174,6 +21539,9 @@ xdr.enum("OperationType", {
   openSwap: 54,
   closeSwap: 55,
   createRedemptionRequest: 56,
+  createDatum: 57,
+  updateDatum: 58,
+  removeDatum: 59,
 });
 
 // === xdr source ============================================================
