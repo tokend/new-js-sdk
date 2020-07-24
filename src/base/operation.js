@@ -14,6 +14,35 @@ import { ManageAccountRoleBuilder } from './operations/manage_account_role_build
 import { CreateDataBuilder } from './operations/create_data_builder'
 import { UpdateDataBuilder } from './operations/update_data_builder'
 import { RemoveDataBuilder } from './operations/remove_data_builder'
+import { ManageCreatePollRequestBuilder } from './operations/manage_create_poll_request_builder'
+import { ReviewRequestBuilder } from './operations/review_request_builder'
+import { BindExternalSystemAccountIdBuilder } from './operations/bind_external_system_account_id_builder'
+import { CancelAtomicSwapAskBuilder } from './operations/cancel_atomic_swap_ask_builder'
+import { CancelChangeRoleRequestBuilder } from './operations/cancel_change_role_request_builder'
+import { CloseSwapBuilder } from './operations/close_swap_builder'
+import { CreateAMLRequestBuilder } from './operations/create_aml_request_builder'
+import { CreateAtomicSwapAskRequestBuilder } from './operations/create_atomic_swap_ask_request_builder'
+import { CreateAtomicSwapBidRequestBuilder } from './operations/create_atomic_swap_bid_request_builder'
+import { CreateChangeRoleRequestBuilder } from './operations/create_change_role_request_builder'
+import { CreateIssuanceRequestBuilder } from './operations/create_issuance_request_builder'
+import { CreateKYCRecoveryRequestBuilder } from './operations/create_kyc_recovery_request_builder'
+import { CreateManageLimitsRequestBuilder } from './operations/create_manage_limits_request_builder'
+import { CreateManageOfferRequestBuilder } from './operations/create_manage_offer_request_builder'
+import { CreatePaymentRequestBuilder } from './operations/create_payment_request_builder'
+import { CreateWithdrawRequestBuilder } from './operations/create_withdraw_request_builder'
+import { InitiateKYCRecoveryBuilder } from './operations/initiate_kyc_recovery_builder'
+import { ManageAssetBuilder } from './operations/manage_asset_builder'
+import { ManageLimitsBuilder } from './operations/manage_limits_builder'
+import { ManageOfferBuilder } from './operations/manage_offer_builder'
+import { ManagePollBuilder } from './operations/manage_poll_builder'
+import { ManageSaleBuilder } from './operations/manage_sale_builder'
+import { ManageVoteBuilder } from './operations/manage_vote_builder'
+import { OpenSwapBuilder } from './operations/open_swap_builder'
+import { PaymentBuilder } from './operations/payment_builder'
+import { PreIssuanceRequestOpBuilder } from './operations/pre_issuance_request_op_builder'
+import { RedemptionRequestBuilder } from './operations/redemption_request_op_builder'
+import { RemoveAssetOpBuilder } from './operations/remove_asset_op_builder'
+import { RemoveAssetPairOpBuilder } from './operations/remove_asset_pair_op_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -335,8 +364,95 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.removeDatum():
         RemoveDataBuilder.removeDataToObject(result, attrs)
         break
+      case xdr.OperationType.manageCreatePollRequest():
+        ManageCreatePollRequestBuilder.manageCreatePollRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.reviewRequest():
+        ReviewRequestBuilder.reviewRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.bindExternalSystemAccountId():
+        BindExternalSystemAccountIdBuilder.bindExternalSystemAccountIdToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelAtomicSwapAsk():
+        CancelAtomicSwapAskBuilder.cancelAtomicSwapAskToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelChangeRoleRequest():
+        CancelChangeRoleRequestBuilder.cancelChangeRoleRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.closeSwap():
+        CloseSwapBuilder.closeSwapToObject(result, attrs)
+        break
+      case xdr.OperationType.createAmlAlert():
+        CreateAMLRequestBuilder.createAmlAlertToObject(result, attrs)
+        break
+      case xdr.OperationType.createAtomicSwapAskRequest():
+        CreateAtomicSwapAskRequestBuilder.createAtomicSwapAskRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createAtomicSwapBidRequest():
+        CreateAtomicSwapBidRequestBuilder.createAtomicSwapBidRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createChangeRoleRequest():
+        CreateChangeRoleRequestBuilder.createChangeRoleRequestOpToObject(result, attrs)
+        break
+      case xdr.OperationType.createIssuanceRequest():
+        CreateIssuanceRequestBuilder.createIssuanceRequestOpToObject(result, attrs)
+        break
+      case xdr.OperationType.createKycRecoveryRequest():
+        CreateKYCRecoveryRequestBuilder.createKYCRecoveryRequestOpToObject(result, attrs)
+        break
+      case xdr.OperationType.createManageLimitsRequest():
+        CreateManageLimitsRequestBuilder.createManageLimitsRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createManageOfferRequest():
+        CreateManageOfferRequestBuilder.createManageOfferRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createPaymentRequest():
+        CreatePaymentRequestBuilder.createPaymentRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createWithdrawalRequest():
+        CreateWithdrawRequestBuilder.createWithdrawalRequestOpToObject(result, attrs)
+        break
+      case xdr.OperationType.initiateKycRecovery():
+        InitiateKYCRecoveryBuilder.initiateKYCRecoveryToObject(result, attrs)
+        break
+      case xdr.OperationType.manageAsset():
+        ManageAssetBuilder.manageAssetToObject(result, attrs)
+        break
+      case xdr.OperationType.manageLimit():
+        ManageLimitsBuilder.manageLimitsOpToObject(result, attrs)
+        break
+      case xdr.OperationType.manageOffer():
+        ManageOfferBuilder.manageOfferOpToObject(result, attrs)
+        break
+      case xdr.OperationType.managePoll():
+        ManagePollBuilder.managePollToObject(result, attrs)
+        break
+      case xdr.OperationType.manageSale():
+        ManageSaleBuilder.manageSaleToObject(result, attrs)
+        break
+      case xdr.OperationType.manageVote():
+        ManageVoteBuilder.manageVoteToObject(result, attrs)
+        break
+      case xdr.OperationType.openSwap():
+        OpenSwapBuilder.openSwapToObject(result, attrs)
+        break
+      case xdr.OperationType.payment():
+        PaymentBuilder.paymentToObject(result, attrs)
+        break
+      case xdr.OperationType.createPreissuanceRequest():
+        PreIssuanceRequestOpBuilder.preIssuanceRequestOpToObject(result, attrs)
+        break
+      case xdr.OperationType.createRedemptionRequest():
+        RedemptionRequestBuilder.redemptionRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.removeAsset():
+        RemoveAssetOpBuilder.removeAssetOpToObject(result, attrs)
+        break
+      case xdr.OperationType.removeAssetPair():
+        RemoveAssetPairOpBuilder.removeAssetPairOpToObject(result, attrs)
+        break
       default:
-        throw new Error('Unknown operation')
+        throw new Error('Unknown operation ' + operation.body().switch().name)
     }
     return result
   }
