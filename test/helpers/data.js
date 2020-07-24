@@ -44,14 +44,14 @@ export class Data extends Helper {
 
   async mustLoad (dataId) {
     return Running.untilFound(async () => {
-      const { data } = await this.api.get(`/v3/data/${dataId}`)
+      const { data } = await this.api.getWithSignature(`/v3/data/${dataId}`)
       return data
     })
   }
 
   async mustNotFound (dataId) {
     return Running.untilNotFound(async () => {
-      await this.api.get(`/v3/data/${dataId}`)
+      await this.api.getWithSignature(`/v3/data/${dataId}`)
     })
   }
 }

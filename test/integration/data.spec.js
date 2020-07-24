@@ -35,33 +35,4 @@ describe('Data', () => {
     await dataHelper.mustNotFound(dataId)
     log.info(`data entry with ID #${dataId} doesn't exist anymore`)
   })
-
-  it('should create by one user and restrict others from updating/removing it', async () => {
-    const log = logger.new('data-2')
-
-    const actorA = Keypair.random()
-    const actorB = Keypair.random()
-    await accountHelper.createSyndicate(actorA.accountId())
-    await accountHelper.createSyndicate(actorB.accountId())
-
-    log.info(`created actor A: ${actorA.accountId()}`)
-    log.info(`created actor B: ${actorB.accountId()}`)
-
-    const dataID = await dataHelper.create({ value: { 'some': 'value' } }, actorA)
-    const data = await dataHelper.mustLoad(dataID)
-
-    log.info(`created data entry with ID #${dataID}: ${JSON.stringify(data)}`)
-
-    const updateErr = await catchPromise(
-      dataHelper.update({
-        dataId: dataID,
-        value: { 'something': 'else' }
-      }, actorB)
-    )
-
-    const removeErr = await catchPromise(dataHelper.remove(dataID, actorB))
-
-    expect(updateErr.message).to.contain('op_not_authorized')
-    expect(removeErr.message).to.contain('op_not_authorized')
-  })
 })

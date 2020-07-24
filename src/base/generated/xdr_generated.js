@@ -1,6 +1,6 @@
-// revision: 49353b335197a0c2a0008bf74c2d1cca076afa4a
-// branch:   feature/manage-data
-// Automatically generated on 2020-04-13T12:22:14+00:00
+// revision: d639694e4cdb49f22866a506b190bd92f3e62b84
+// branch:   master
+// Automatically generated on 2020-07-24T10:52:59+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -12607,7 +12607,9 @@ xdr.struct("ManageOfferOp", [
 //       //: Precision set in the system and precision of the amount are mismatched
 //       INCORRECT_AMOUNT_PRECISION = -28,
 //       //: Sale specific rule forbids to participate in sale for source account
-//       SPECIFIC_RULE_FORBIDS = -29
+//       SPECIFIC_RULE_FORBIDS = -29,
+//       //: Amount must be less then pending issuance
+//       PENDING_ISSUANCE_LESS_THEN_AMOUNT = -30
 //   };
 //
 // ===========================================================================
@@ -12642,6 +12644,7 @@ xdr.enum("ManageOfferResultCode", {
   requiresVerification: -27,
   incorrectAmountPrecision: -28,
   specificRuleForbid: -29,
+  pendingIssuanceLessThenAmount: -30,
 });
 
 // === xdr source ============================================================
@@ -15568,13 +15571,16 @@ xdr.struct("RemoveDataOp", [
 //       //: Data successfully removed
 //       SUCCESS = 0,
 //       //: Entry with provided ID does not exist
-//       NOT_FOUND = -1
+//       NOT_FOUND = -1,
+//       //: Only owner or admin can remove data.
+//       NOT_AUTHORIZED = -2
 //   };
 //
 // ===========================================================================
 xdr.enum("RemoveDataResultCode", {
   success: 0,
   notFound: -1,
+  notAuthorized: -2,
 });
 
 // === xdr source ============================================================
@@ -16850,7 +16856,9 @@ xdr.struct("UpdateDataOp", [
 //       //: `value` must be in a valid JSON format
 //       INVALID_DATA = -1,
 //       //: Entry with provided ID does not exist
-//       NOT_FOUND = -2
+//       NOT_FOUND = -2,
+//       //: Only owner or admin can update data entry
+//       NOT_AUTHORIZED = -3
 //   };
 //
 // ===========================================================================
@@ -16858,6 +16866,7 @@ xdr.enum("UpdateDataResultCode", {
   success: 0,
   invalidDatum: -1,
   notFound: -2,
+  notAuthorized: -3,
 });
 
 // === xdr source ============================================================
@@ -18109,7 +18118,8 @@ xdr.union("AccountRuleResource", {
 //       REMOVE_FOR_OTHER = 20,
 //       EXCHANGE = 21,
 //       RECEIVE_REDEMPTION = 22,
-//       UPDATE = 23
+//       UPDATE = 23,
+//       UPDATE_FOR_OTHER = 24
 //   };
 //
 // ===========================================================================
@@ -18137,6 +18147,7 @@ xdr.enum("AccountRuleAction", {
   exchange: 21,
   receiveRedemption: 22,
   update: 23,
+  updateForOther: 24,
 });
 
 // === xdr source ============================================================
@@ -18697,7 +18708,8 @@ xdr.union("SignerRuleResource", {
 //       CREATE_WITH_TASKS = 17,
 //       CREATE_FOR_OTHER_WITH_TASKS = 18,
 //       REMOVE_FOR_OTHER = 19,
-//       EXCHANGE = 20
+//       EXCHANGE = 20,
+//       UPDATE_FOR_OTHER = 21
 //   };
 //
 // ===========================================================================
@@ -18722,6 +18734,7 @@ xdr.enum("SignerRuleAction", {
   createForOtherWithTask: 18,
   removeForOther: 19,
   exchange: 20,
+  updateForOther: 21,
 });
 
 // === xdr source ============================================================
@@ -21003,7 +21016,9 @@ xdr.struct("TransactionResult", [
 //       FIX_SIGNATURE_CHECK = 25,
 //       FIX_AUTOREVIEW = 26,
 //       MOVEMENT_REQUESTS_DETAILS = 27,
-//       FIX_CRASH_CORE_WITH_PAYMENT = 28
+//       FIX_CRASH_CORE_WITH_PAYMENT = 28,
+//       FIX_INVEST_TO_IMMEDIATE_SALE = 29,
+//       FIX_PAYMENT_TASKS_WILDCARD_VALUE = 30
 //   };
 //
 // ===========================================================================
@@ -21037,6 +21052,8 @@ xdr.enum("LedgerVersion", {
   fixAutoreview: 26,
   movementRequestsDetail: 27,
   fixCrashCoreWithPayment: 28,
+  fixInvestToImmediateSale: 29,
+  fixPaymentTasksWildcardValue: 30,
 });
 
 // === xdr source ============================================================
