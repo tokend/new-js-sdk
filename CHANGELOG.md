@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## [1.14.0-rc.1] - 2020-07-29
+### Added
+- Create, update, remove data builders
+- gitignore lib, dist
+
 ## [1.14.0-rc.0] - 2020-07-16
 ### Added
 - `Document` and `upload-documents`
@@ -23,10 +28,6 @@ for further information about branching and tagging conventions.
 ## [1.13.0-rc.0] - 2020-04-02
 ### Added
 - Builder for `ManageSignerRoleOp`
-
-## [1.12.3-dmsrc.0] - 2020-04-15
-### Added
-- Create, update, remove data builders
 
 ## [1.12.2] - 2020-03-02
 
@@ -303,7 +304,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.1...HEAD
+[1.14.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.0...1.14.0-rc.1
 [1.14.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.13.1...1.14.0-rc.0
 [1.13.1]: https://github.com/tokend/new-js-sdk/compare/1.13.1-rc.0...1.13.1
 [1.13.1-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.13.0...1.13.1-rc.0
