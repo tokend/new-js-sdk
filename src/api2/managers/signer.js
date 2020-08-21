@@ -14,7 +14,7 @@ export class Signer {
     this.attributes = {
       role_id: opts.roleId,
       weight: opts.weight ? opts.weight : 1000,
-      identity: opts.identity ? opts.identity : 1
+      identity: typeof opts.identity === 'number' ? opts.identity : 1
     }
   }
 }
