@@ -51,6 +51,7 @@ export { UpdateDataBuilder } from './operations/update_data_builder'
 export { RemoveDataBuilder } from './operations/remove_data_builder'
 export { ManageAccountRoleBuilder } from './operations/manage_account_role_builder'
 export { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
+export { DataRequestBuilder } from './operations/data_request_builder'
 
 export * from './strkey'
 

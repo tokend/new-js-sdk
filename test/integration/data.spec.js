@@ -1,6 +1,7 @@
 import { logger } from '../logger'
-import { accountHelper, dataHelper } from '../helpers'
+import {accountHelper, dataHelper, keyValueHelper, requestHelper} from '../helpers'
 import { Keypair } from '../../src/base'
+import {KEY_VALUE_KEYS} from "../../src/const";
 
 describe('Data', () => {
   it('should create, update and remove', async () => {
@@ -35,4 +36,88 @@ describe('Data', () => {
     await dataHelper.mustNotFound(dataId)
     log.info(`data entry with ID #${dataId} doesn't exist anymore`)
   })
+
+
+  it('should create & cancel request', async () => {
+    const log = logger.new('data-2')
+
+    const actor = Keypair.random()
+    await accountHelper.createSyndicate(actor.accountId())
+    log.info(`created actor with id: ${actor.accountId()}`)
+
+    await keyValueHelper.putEntries({
+      [`${"create_data_creation_request_tasks"}:${1}`]: 1
+    })
+    const value = { name: 'some-name', state: 'some-state' }
+    const requestId = await dataHelper.createCreationRequest({
+      value: value,
+      requestID: '0',
+      owner: actor.accountId(),
+      type: '1',
+      creatorDetails: {
+        a: "b"
+      }
+    }, actor)
+
+    log.info(`create data request: #${requestId}`)
+
+    await dataHelper.cancelCreationRequest({
+      requestID: requestId,
+    }, actor)
+  })
+
+
+  it('should create & approve request', async () => {
+    const log = logger.new('data-2')
+
+    const actor = Keypair.random()
+    await accountHelper.createSyndicate(actor.accountId())
+    log.info(`created actor with id: ${actor.accountId()}`)
+
+    await keyValueHelper.putEntries({
+      [`${"create_data_creation_request_tasks"}:${1}`]: 1
+    })
+    const value = { name: 'some-name', state: 'some-state' }
+    const requestId = await dataHelper.createCreationRequest({
+      value: value,
+      requestID: '0',
+      owner: actor.accountId(),
+      type: '1',
+      creatorDetails: {
+        a: "b"
+      }
+    }, actor)
+
+    log.info(`create data request: #${requestId}`)
+
+    await requestHelper.approve(requestId, { tasksToRemove: 1 })
+  })
+
+
+  it('should create & reject request', async () => {
+    const log = logger.new('data-2')
+
+    const actor = Keypair.random()
+    await accountHelper.createSyndicate(actor.accountId())
+    log.info(`created actor with id: ${actor.accountId()}`)
+
+    await keyValueHelper.putEntries({
+      [`${"create_data_creation_request_tasks"}:${1}`]: 1
+    })
+    const value = { name: 'some-name', state: 'some-state' }
+    const requestId = await dataHelper.createCreationRequest({
+      value: value,
+      requestID: '0',
+      owner: actor.accountId(),
+      type: '1',
+      creatorDetails: {
+        a: "b"
+      }
+    }, actor)
+
+    log.info(`create data request: #${requestId}`)
+
+    await requestHelper.reject(requestId, { tasksToAdd: 2, reason: "because" })
+  })
+
 })

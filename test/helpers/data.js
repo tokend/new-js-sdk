@@ -1,15 +1,60 @@
-import { Helper } from './_helper'
+import { getRequestIdFromResultXdr, Helper } from './_helper'
 import { base } from '../../src'
 import { Running } from './_running'
 
 export class Data extends Helper {
   /**
-   *
-   * @param opts
-   * @param {string} [opts.type]
-   * @param {object} [opts.value]
-   * @param ownerKp
-   */
+     *  @param {object} opts
+     * @param {string|number} opts.requestID - set to zero to create new request
+     * @param {string} opts.type
+     * @param {object} opts.value
+     * @param {string} opts.owner
+     * @param {object} opts.creatorDetails
+     * @param {number|string} opts.allTasks
+     * @param {string} ownerKp
+     * **/
+  async createCreationRequest (opts, ownerKp = this.masterKp) {
+    const DEFAULTS = {
+      type: '1',
+      value: { something: 'random' },
+      owner: ownerKp.accountId()
+    }
+
+    const operation = base.DataRequestBuilder.createDataCreationRequest({
+      ...DEFAULTS,
+      ...opts
+    })
+
+    const response = await this.submit(operation, ownerKp)
+    return base
+      .xdr
+      .TransactionResult
+      .fromXDR(Buffer.from(response.resultXdr, 'base64'))
+      .result()
+      .results()[0]
+      .tr()['createDataCreationRequestResult']()
+      .createDataCreationRequestResponse()
+      .requestId()
+      .toString()
+  }
+  /**
+     * @param opts
+     * @param {string} opts.requestID
+     *@param ownerKp
+     * **/
+  async cancelCreationRequest (opts, ownerKp = this.masterKp) {
+    const operation = base.DataRequestBuilder.cancelDataCreationRequest(opts)
+    return this.submit(operation, ownerKp)
+  }
+
+  /**
+     *
+     * @param opts
+     * @param {string} [opts.type]
+     * @param {object} [opts.value]
+     * @param ownerKp
+     */
+
   async create (opts, ownerKp = this.masterKp) {
     const DEFAULTS = {
       type: '1',
@@ -18,7 +63,7 @@ export class Data extends Helper {
 
     const operation = base.CreateDataBuilder.createData({
       ...DEFAULTS,
-      ...opts,
+      ...opts
     })
 
     const response = await this.submit(operation, ownerKp)
@@ -26,12 +71,12 @@ export class Data extends Helper {
   }
 
   /**
-   *
-   * @param opts
-   * @param {string} opts.dataId
-   * @param {object} opts.value
-   * @param ownerKp
-   */
+     *
+     * @param opts
+     * @param {string} opts.dataId
+     * @param {object} opts.value
+     * @param ownerKp
+     */
   async update (opts, ownerKp = this.masterKp) {
     const operation = base.UpdateDataBuilder.updateData(opts)
     return this.submit(operation, ownerKp)
