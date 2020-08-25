@@ -61,6 +61,16 @@ describe('Data', () => {
 
     log.info(`create data request: #${requestId}`)
 
+    log.info('try load request by id')
+
+    await dataHelper.mustLoadRequest(requestId)
+
+    log.info('try load requests list')
+
+    await dataHelper.mustLoadRequestsList()
+
+    log.info('try cancel request')
+
     await dataHelper.cancelCreationRequest({
       requestID: requestId,
     }, actor)

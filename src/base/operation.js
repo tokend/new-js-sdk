@@ -462,6 +462,11 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.cancelDataCreationRequest():
         DataRequestBuilder.cancelDataCreationRequestToObject(result, attrs)
         break
+      case xdr.OperationType.manageAssetPair():
+        break
+      case xdr.OperationType.manageBalance():
+        break
+      case xdr.OperationType.createSaleRequest():
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)
     }

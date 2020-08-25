@@ -99,6 +99,20 @@ export class Data extends Helper {
       await this.api.getWithSignature(`/v3/data/${dataId}`)
     })
   }
+
+  async mustLoadRequest (requestId) {
+    return Running.untilFound(async () => {
+      const { data } = await this.api.getWithSignature(`/v3/data_creation_requests/${requestId}`)
+      return data
+    })
+  }
+
+  async mustLoadRequestsList () {
+    return Running.untilFound(async () => {
+      const { data } = await this.api.getWithSignature(`/v3/data_creation_requests`)
+      return data
+    })
+  }
 }
 
 function getEntryIDFromResultXdr (resultXdr) {
