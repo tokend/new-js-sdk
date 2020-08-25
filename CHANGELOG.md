@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+## [Unreleased]
+### Fixed
+- A bug with the omitted key chain seeds if the `seed` property present
+
+### Changed
+- Now default signer can be provided on the wallet creation
+
 ## [1.14.0-rc.2] - 2020-08-07
 ### Fixed
 - A bug with removed enums.cost
@@ -25,7 +32,7 @@ for further information about branching and tagging conventions.
 
 ## [1.13.1-rc.0] - 2020-06-02
 ### Changed
-- Subject size from 256 to 1000 
+- Subject size from 256 to 1000
 
 ## [1.13.0] - 2020-04-13
 
@@ -101,7 +108,7 @@ for further information about branching and tagging conventions.
 - Integration tests
 
 ## [1.10.2-rc.0] - 2019-09-16
-### Added 
+### Added
 - Builder for `RemoveAssetOp`
 - Unit tests for `RemoveAssetOp`
 - Integration tests for `RemoveAssetOp`
