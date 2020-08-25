@@ -1,6 +1,6 @@
 import { logger } from '../logger'
-import {accountHelper, dataHelper, keyValueHelper, requestHelper} from '../helpers'
-import { Keypair } from '../../src/base'
+import {accountHelper, dataHelper, keyValueHelper, requestHelper, api} from '../helpers'
+import { Keypair, CreateDataBuilder, TransactionBuilder } from '../../src/base'
 import {KEY_VALUE_KEYS} from "../../src/const";
 
 describe('Data', () => {
@@ -128,6 +128,68 @@ describe('Data', () => {
     log.info(`create data request: #${requestId}`)
 
     await requestHelper.reject(requestId, { tasksToAdd: 2, reason: "because" })
+  })
+
+  it('should create data with a lot of operations', async () => {
+    const log = logger.new('data-1')
+
+    const actor = Keypair.random()
+    await accountHelper.createSyndicate(actor.accountId())
+    log.info(`created actor with id: ${actor.accountId()}`)
+
+    const batchSize = 1000
+    const batchesCount = 50
+
+    var blobs = []
+    for (var i = 0; i < batchesCount; i++) {
+      log.info(`process batch ${i}`)
+      var txs = []
+
+      for (var j = 0; j < batchSize; j++) {
+        const op = CreateDataBuilder.createData({
+          type: '10',
+          value: { test: i * batchSize + j + 1 }
+        })
+        const transaction = new TransactionBuilder(actor.accountId())
+          .addOperations(op)
+          .build()
+        transaction.sign(actor)
+        const envelope = transaction.toEnvelope().toXDR().toString('base64')
+        txs.push(envelope)
+      }
+
+      const resp = await api.postWithSignature("blobs", {
+        data: {
+          type: "alpha",
+          attributes: {
+            value: JSON.stringify(txs)
+          },
+          relationships: {
+            owner: {
+              data: {
+                id: actor.accountId()
+              }
+            }
+          }
+        }
+      })
+      blobs.push(resp.data.id)
+    }
+
+    await keyValueHelper.putEntries({
+      [`${"create_data_creation_request_tasks"}:${1}`]: 1
+    })
+    const value = { blobs: blobs }
+    const requestId = await dataHelper.createCreationRequest({
+      value: value,
+      requestID: '0',
+      owner: actor.accountId(),
+      type: '1',
+      creatorDetails: {
+        a: "b"
+      }
+    }, actor)
+    log.info(`created request with ID #${requestId}`)
   })
 
 })
