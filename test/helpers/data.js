@@ -4,15 +4,15 @@ import { Running } from './_running'
 
 export class Data extends Helper {
   /**
-     *  @param {object} opts
-     * @param {string|number} opts.requestID - set to zero to create new request
-     * @param {string} opts.type
-     * @param {object} opts.value
-     * @param {string} opts.owner
-     * @param {object} opts.creatorDetails
-     * @param {number|string} opts.allTasks
-     * @param {string} ownerKp
-     * **/
+   *  @param {object} opts
+   * @param {string|number} opts.requestID - set to zero to create new request
+   * @param {string} opts.type
+   * @param {object} opts.value
+   * @param {string} opts.owner
+   * @param {object} opts.creatorDetails
+   * @param {number|string} opts.allTasks
+   * @param {string} ownerKp
+   * **/
   async createCreationRequest (opts, ownerKp = this.masterKp) {
     const DEFAULTS = {
       type: '1',
@@ -26,24 +26,79 @@ export class Data extends Helper {
     })
 
     const response = await this.submit(operation, ownerKp)
-    return base
-      .xdr
-      .TransactionResult
-      .fromXDR(Buffer.from(response.resultXdr, 'base64'))
-      .result()
-      .results()[0]
-      .tr()['createDataCreationRequestResult']()
-      .createDataCreationRequestResponse()
-      .requestId()
-      .toString()
+    return getRequestIdFromResultXdr(response.resultXdr, 'createDataCreationRequestResult')
   }
   /**
-     * @param opts
-     * @param {string} opts.requestID
-     *@param ownerKp
-     * **/
+   * @param opts
+   * @param {string} opts.requestID
+   *@param ownerKp
+   * **/
   async cancelCreationRequest (opts, ownerKp = this.masterKp) {
     const operation = base.DataRequestBuilder.cancelDataCreationRequest(opts)
+    return this.submit(operation, ownerKp)
+  }
+
+  /**
+   *  @param {object} opts
+   * @param {string|number} opts.requestID - set to zero to create new request
+   * @param {object} opts.value
+   * @param {string | number } opts.id - data id
+   * @param {object} opts.creatorDetails
+   * @param {number|string} opts.allTasks
+   * @param {string} ownerKp
+   * **/
+  async createUpdateRequest (opts, ownerKp = this.masterKp) {
+    const DEFAULTS = {
+      value: { something: 'random' },
+      owner: ownerKp.accountId()
+    }
+
+    const operation = base.DataRequestBuilder.createDataUpdateRequest({
+      ...DEFAULTS,
+      ...opts
+    })
+
+    const response = await this.submit(operation, ownerKp)
+    return getRequestIdFromResultXdr(response.resultXdr, 'createDataUpdateRequestResult')
+  }
+  /**
+   * @param opts
+   * @param {string} opts.requestID
+   *@param ownerKp
+   * **/
+  async cancelUpdateRequest (opts, ownerKp = this.masterKp) {
+    const operation = base.DataRequestBuilder.cancelDataUpdateRequest(opts)
+    return this.submit(operation, ownerKp)
+  }
+
+  /**
+   *  @param {object} opts
+   * @param {string|number} opts.requestID - set to zero to create new request
+   * @param {string | number } opts.id - data id
+   * @param {object} opts.creatorDetails
+   * @param {number|string} opts.allTasks
+   * @param {string} ownerKp
+   * **/
+  async createRemoveRequest (opts, ownerKp = this.masterKp) {
+    const DEFAULTS = {
+      owner: ownerKp.accountId()
+    }
+
+    const operation = base.DataRequestBuilder.createDataRemoveRequest({
+      ...DEFAULTS,
+      ...opts
+    })
+
+    const response = await this.submit(operation, ownerKp)
+    return getRequestIdFromResultXdr(response.resultXdr, 'createDataRemoveRequestResult')
+  }
+  /**
+   * @param opts
+   * @param {string} opts.requestID
+   *@param ownerKp
+   * **/
+  async cancelRemoveRequest (opts, ownerKp = this.masterKp) {
+    const operation = base.DataRequestBuilder.cancelDataRemoveRequest(opts)
     return this.submit(operation, ownerKp)
   }
 

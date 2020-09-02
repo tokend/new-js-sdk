@@ -1,6 +1,6 @@
-// revision: 0704a22d880f73e724dad827c8a70756b0ae10f0
+// revision: e23d9089d8d8e7cd0fc3b5cdbda36fb804fb1572
 // branch:   feature/manage-data-reviewable-request
-// Automatically generated on 2020-08-24T10:51:36+00:00
+// Automatically generated on 2020-08-30T22:27:33+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1737,7 +1737,8 @@ xdr.struct("ReferenceEntry", [
 //   	CREATE_PAYMENT = 20,
 //   	PERFORM_REDEMPTION = 21,
 //   	DATA_CREATION = 22,
-//   	DATA_UPDATE = 23
+//   	DATA_UPDATE = 23,
+//   	DATA_REMOVE = 24
 //   };
 //
 // ===========================================================================
@@ -1765,6 +1766,7 @@ xdr.enum("ReviewableRequestType", {
   performRedemption: 21,
   dataCreation: 22,
   dataUpdate: 23,
+  dataRemove: 24,
 });
 
 // === xdr source ============================================================
@@ -1858,6 +1860,9 @@ xdr.struct("TasksExt", [
 //               DataCreationRequest dataCreationRequest;
 //           case DATA_UPDATE:
 //               DataUpdateRequest dataUpdateRequest;
+//           case DATA_REMOVE:
+//               DataRemoveRequest dataRemoveRequest;
+//   
 //   	}
 //
 // ===========================================================================
@@ -1886,6 +1891,7 @@ xdr.union("ReviewableRequestEntryBody", {
     ["performRedemption", "redemptionRequest"],
     ["dataCreation", "dataCreationRequest"],
     ["dataUpdate", "dataUpdateRequest"],
+    ["dataRemove", "dataRemoveRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -1909,6 +1915,7 @@ xdr.union("ReviewableRequestEntryBody", {
     redemptionRequest: xdr.lookup("RedemptionRequest"),
     dataCreationRequest: xdr.lookup("DataCreationRequest"),
     dataUpdateRequest: xdr.lookup("DataUpdateRequest"),
+    dataRemoveRequest: xdr.lookup("DataRemoveRequest"),
   },
 });
 
@@ -1985,6 +1992,9 @@ xdr.union("ReviewableRequestEntryExt", {
 //               DataCreationRequest dataCreationRequest;
 //           case DATA_UPDATE:
 //               DataUpdateRequest dataUpdateRequest;
+//           case DATA_REMOVE:
+//               DataRemoveRequest dataRemoveRequest;
+//   
 //   	} body;
 //   
 //   	TasksExt tasks;
@@ -5505,6 +5515,264 @@ xdr.union("CancelDataCreationRequestResult", {
 //       }
 //
 // ===========================================================================
+xdr.union("CancelDataRemoveRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelDataRemoveRequestOp is used to cancel reviwable request for data Remove.
+//   //: If successful, request with the corresponding ID will be deleted
+//   struct CancelDataRemoveRequestOp
+//   {
+//       //: ID of the DataRemoveRequest request to be canceled
+//       uint64 requestID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataRemoveRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelDataRemoveRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for CancelDataRemoveRequest operation
+//   enum CancelDataRemoveRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: ID of a request cannot be 0
+//       REQUEST_ID_INVALID = -1, // request id can not be equal zero
+//       //: request with provided ID is not found
+//       REQUEST_NOT_FOUND = -2 // trying to cancel not existing reviewable request
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelDataRemoveRequestResultCode", {
+  success: 0,
+  requestIdInvalid: -1,
+  requestNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataRemoveSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `CancelDataRemoveRequestOp` application
+//   struct CancelDataRemoveSuccess {
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataRemoveSuccess", [
+  ["ext", xdr.lookup("CancelDataRemoveSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelDataRemoveRequest operation application along with the result code
+//   union CancelDataRemoveRequestResult switch (CancelDataRemoveRequestResultCode code)
+//   {
+//       case SUCCESS:
+//           CancelDataRemoveSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelDataRemoveRequestResult", {
+  switchOn: xdr.lookup("CancelDataRemoveRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelDataRemoveSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataUpdateRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelDataUpdateRequestOp is used to cancel reviwable request for data Update.
+//   //: If successful, request with the corresponding ID will be deleted
+//   struct CancelDataUpdateRequestOp
+//   {
+//       //: ID of the DataUpdateRequest request to be canceled
+//       uint64 requestID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataUpdateRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelDataUpdateRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for CancelDataUpdateRequest operation
+//   enum CancelDataUpdateRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: ID of a request cannot be 0
+//       REQUEST_ID_INVALID = -1, // request id can not be equal zero
+//       //: request with provided ID is not found
+//       REQUEST_NOT_FOUND = -2 // trying to cancel not existing reviewable request
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelDataUpdateRequestResultCode", {
+  success: 0,
+  requestIdInvalid: -1,
+  requestNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataUpdateSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `CancelDataUpdateRequestOp` application
+//   struct CancelDataUpdateSuccess {
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataUpdateSuccess", [
+  ["ext", xdr.lookup("CancelDataUpdateSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelDataUpdateRequest operation application along with the result code
+//   union CancelDataUpdateRequestResult switch (CancelDataUpdateRequestResultCode code)
+//   {
+//       case SUCCESS:
+//           CancelDataUpdateSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelDataUpdateRequestResult", {
+  switchOn: xdr.lookup("CancelDataUpdateRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelDataUpdateSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
 xdr.union("CancelSaleCreationRequestOpExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
@@ -6984,7 +7252,7 @@ xdr.enum("CreateDataCreationRequestResultCode", {
 //       }
 //
 // ===========================================================================
-xdr.union("CreateDataCreationRequestResponseExt", {
+xdr.union("CreateDataCreationRequestSuccessExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -6996,7 +7264,7 @@ xdr.union("CreateDataCreationRequestResponseExt", {
 
 // === xdr source ============================================================
 //
-//   struct CreateDataCreationRequestResponse {
+//   struct CreateDataCreationRequestSuccess {
 //       uint64 requestID;
 //       bool fulfilled;
 //       AccountID owner;
@@ -7014,14 +7282,14 @@ xdr.union("CreateDataCreationRequestResponseExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("CreateDataCreationRequestResponse", [
+xdr.struct("CreateDataCreationRequestSuccess", [
   ["requestId", xdr.lookup("Uint64")],
   ["fulfilled", xdr.bool()],
   ["owner", xdr.lookup("AccountId")],
   ["id", xdr.lookup("Uint64")],
   ["type", xdr.lookup("Uint64")],
   ["value", xdr.lookup("Longstring")],
-  ["ext", xdr.lookup("CreateDataCreationRequestResponseExt")],
+  ["ext", xdr.lookup("CreateDataCreationRequestSuccessExt")],
 ]);
 
 // === xdr source ============================================================
@@ -7029,7 +7297,7 @@ xdr.struct("CreateDataCreationRequestResponse", [
 //   union CreateDataCreationRequestResult switch (CreateDataCreationRequestResultCode code)
 //   {
 //   case SUCCESS:
-//       CreateDataCreationRequestResponse createDataCreationRequestResponse;
+//       CreateDataCreationRequestSuccess success;
 //   default:
 //       void;
 //   };
@@ -7039,10 +7307,117 @@ xdr.union("CreateDataCreationRequestResult", {
   switchOn: xdr.lookup("CreateDataCreationRequestResultCode"),
   switchName: "code",
   switches: [
-    ["success", "createDataCreationRequestResponse"],
+    ["success", "success"],
   ],
   arms: {
-    createDataCreationRequestResponse: xdr.lookup("CreateDataCreationRequestResponse"),
+    success: xdr.lookup("CreateDataCreationRequestSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataRemoveRequestOp
+//   {
+//       //: ID of the DataRemoveRequest. If set to 0, a new request is created
+//       uint64 requestID;
+//   
+//       DataRemoveRequest dataRemoveRequest;
+//   
+//       uint32* allTasks;
+//   
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataRemoveRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["dataRemoveRequest", xdr.lookup("DataRemoveRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreateDataRemoveRequestResultCode
+//   {
+//       SUCCESS = 0,
+//       REMOVE_DATA_TASKS_NOT_FOUND = -1,
+//       DATA_NOT_FOUND = -2,
+//       INVALID_CREATOR_DETAILS = -3,
+//       REQUEST_NOT_FOUND = -4
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateDataRemoveRequestResultCode", {
+  success: 0,
+  removeDataTasksNotFound: -1,
+  dataNotFound: -2,
+  invalidCreatorDetail: -3,
+  requestNotFound: -4,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateDataRemoveRequestSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataRemoveRequestSuccess {
+//       uint64 requestID;
+//       bool fulfilled;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataRemoveRequestSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["ext", xdr.lookup("CreateDataRemoveRequestSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union CreateDataRemoveRequestResult switch (CreateDataRemoveRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       CreateDataRemoveRequestSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateDataRemoveRequestResult", {
+  switchOn: xdr.lookup("CreateDataRemoveRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateDataRemoveRequestSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -7078,7 +7453,8 @@ xdr.struct("CreateDataUpdateRequestOp", [
 //       INVALID_VALUE = -1,
 //       UPDATE_DATA_TASKS_NOT_FOUND = -2,
 //       DATA_NOT_FOUND = -3,
-//       INVALID_CREATOR_DETAILS = -4
+//       INVALID_CREATOR_DETAILS = -4,
+//       REQUEST_NOT_FOUND = -5
 //   };
 //
 // ===========================================================================
@@ -7088,6 +7464,7 @@ xdr.enum("CreateDataUpdateRequestResultCode", {
   updateDataTasksNotFound: -2,
   dataNotFound: -3,
   invalidCreatorDetail: -4,
+  requestNotFound: -5,
 });
 
 // === xdr source ============================================================
@@ -7099,7 +7476,7 @@ xdr.enum("CreateDataUpdateRequestResultCode", {
 //       }
 //
 // ===========================================================================
-xdr.union("CreateDataUpdateRequestResponseExt", {
+xdr.union("CreateDataUpdateRequestSuccessExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
   switches: [
@@ -7111,13 +7488,9 @@ xdr.union("CreateDataUpdateRequestResponseExt", {
 
 // === xdr source ============================================================
 //
-//   struct CreateDataUpdateRequestResponse {
+//   struct CreateDataUpdateRequestSuccess {
 //       uint64 requestID;
 //       bool fulfilled;
-//       AccountID owner;
-//       uint64 id;
-//       uint64 type;
-//       longstring value;
 //   
 //       //: Reserved for future use
 //       union switch (LedgerVersion v)
@@ -7129,14 +7502,10 @@ xdr.union("CreateDataUpdateRequestResponseExt", {
 //   };
 //
 // ===========================================================================
-xdr.struct("CreateDataUpdateRequestResponse", [
+xdr.struct("CreateDataUpdateRequestSuccess", [
   ["requestId", xdr.lookup("Uint64")],
   ["fulfilled", xdr.bool()],
-  ["owner", xdr.lookup("AccountId")],
-  ["id", xdr.lookup("Uint64")],
-  ["type", xdr.lookup("Uint64")],
-  ["value", xdr.lookup("Longstring")],
-  ["ext", xdr.lookup("CreateDataUpdateRequestResponseExt")],
+  ["ext", xdr.lookup("CreateDataUpdateRequestSuccessExt")],
 ]);
 
 // === xdr source ============================================================
@@ -7144,7 +7513,7 @@ xdr.struct("CreateDataUpdateRequestResponse", [
 //   union CreateDataUpdateRequestResult switch (CreateDataUpdateRequestResultCode code)
 //   {
 //   case SUCCESS:
-//       CreateDataUpdateRequestResponse createDataUpdateRequestResponse;
+//       CreateDataUpdateRequestSuccess success;
 //   default:
 //       void;
 //   };
@@ -7154,10 +7523,10 @@ xdr.union("CreateDataUpdateRequestResult", {
   switchOn: xdr.lookup("CreateDataUpdateRequestResultCode"),
   switchName: "code",
   switches: [
-    ["success", "createDataUpdateRequestResponse"],
+    ["success", "success"],
   ],
   arms: {
-    createDataUpdateRequestResponse: xdr.lookup("CreateDataUpdateRequestResponse"),
+    success: xdr.lookup("CreateDataUpdateRequestSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -17898,6 +18267,38 @@ xdr.struct("ReviewableRequestResourceDataCreation", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceDataUpdate", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceDataRemove", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some reviewable request types that
 //   //: can be used to restrict the usage of reviewable requests
 //   union ReviewableRequestResource switch (ReviewableRequestType requestType)
@@ -18039,6 +18440,22 @@ xdr.struct("ReviewableRequestResourceDataCreation", [
 //           //: Reserved for future extension
 //           EmptyExt ext;
 //       } dataCreation;
+//   case DATA_UPDATE:
+//       struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } dataUpdate;
+//   case DATA_REMOVE:
+//       struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } dataRemove;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -18059,6 +18476,8 @@ xdr.union("ReviewableRequestResource", {
     ["createPayment", "createPayment"],
     ["performRedemption", "performRedemption"],
     ["dataCreation", "dataCreation"],
+    ["dataUpdate", "dataUpdate"],
+    ["dataRemove", "dataRemove"],
   ],
   arms: {
     createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
@@ -18071,6 +18490,8 @@ xdr.union("ReviewableRequestResource", {
     createPayment: xdr.lookup("ReviewableRequestResourceCreatePayment"),
     performRedemption: xdr.lookup("ReviewableRequestResourcePerformRedemption"),
     dataCreation: xdr.lookup("ReviewableRequestResourceDataCreation"),
+    dataUpdate: xdr.lookup("ReviewableRequestResourceDataUpdate"),
+    dataRemove: xdr.lookup("ReviewableRequestResourceDataRemove"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -20104,6 +20525,54 @@ xdr.struct("RedemptionRequest", [
 //       }
 //
 // ===========================================================================
+xdr.union("DataRemoveRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct DataRemoveRequest {
+//       //: Id of the data entry
+//       uint64 id;
+//   
+//       // Sequence number increases when request is rejected
+//   	uint32 sequenceNumber;
+//   
+//       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("DataRemoveRequest", [
+  ["id", xdr.lookup("Uint64")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("DataRemoveRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
 xdr.union("SaleCreationRequestQuoteAssetExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
@@ -20532,6 +21001,12 @@ xdr.struct("WithdrawalRequest", [
 //           CancelDataCreationRequestOp cancelDataCreationRequestOp;
 //       case CREATE_DATA_UPDATE_REQUEST:
 //           CreateDataUpdateRequestOp createDataUpdateRequestOp;
+//       case CREATE_DATA_REMOVE_REQUEST:
+//           CreateDataRemoveRequestOp createDataRemoveRequestOp;
+//       case CANCEL_DATA_UPDATE_REQUEST:
+//           CancelDataUpdateRequestOp cancelDataUpdateRequestOp;
+//       case CANCEL_DATA_REMOVE_REQUEST:
+//           CancelDataRemoveRequestOp cancelDataRemoveRequestOp;
 //       }
 //
 // ===========================================================================
@@ -20595,6 +21070,9 @@ xdr.union("OperationBody", {
     ["createDataCreationRequest", "createDataCreationRequestOp"],
     ["cancelDataCreationRequest", "cancelDataCreationRequestOp"],
     ["createDataUpdateRequest", "createDataUpdateRequestOp"],
+    ["createDataRemoveRequest", "createDataRemoveRequestOp"],
+    ["cancelDataUpdateRequest", "cancelDataUpdateRequestOp"],
+    ["cancelDataRemoveRequest", "cancelDataRemoveRequestOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -20653,6 +21131,9 @@ xdr.union("OperationBody", {
     createDataCreationRequestOp: xdr.lookup("CreateDataCreationRequestOp"),
     cancelDataCreationRequestOp: xdr.lookup("CancelDataCreationRequestOp"),
     createDataUpdateRequestOp: xdr.lookup("CreateDataUpdateRequestOp"),
+    createDataRemoveRequestOp: xdr.lookup("CreateDataRemoveRequestOp"),
+    cancelDataUpdateRequestOp: xdr.lookup("CancelDataUpdateRequestOp"),
+    cancelDataRemoveRequestOp: xdr.lookup("CancelDataRemoveRequestOp"),
   },
 });
 
@@ -20780,6 +21261,12 @@ xdr.union("OperationBody", {
 //           CancelDataCreationRequestOp cancelDataCreationRequestOp;
 //       case CREATE_DATA_UPDATE_REQUEST:
 //           CreateDataUpdateRequestOp createDataUpdateRequestOp;
+//       case CREATE_DATA_REMOVE_REQUEST:
+//           CreateDataRemoveRequestOp createDataRemoveRequestOp;
+//       case CANCEL_DATA_UPDATE_REQUEST:
+//           CancelDataUpdateRequestOp cancelDataUpdateRequestOp;
+//       case CANCEL_DATA_REMOVE_REQUEST:
+//           CancelDataRemoveRequestOp cancelDataRemoveRequestOp;
 //       }
 //   
 //       body;
@@ -21119,6 +21606,12 @@ xdr.struct("AccountRuleRequirement", [
 //           CancelDataCreationRequestResult cancelDataCreationRequestResult;
 //       case CREATE_DATA_UPDATE_REQUEST:
 //           CreateDataUpdateRequestResult createDataUpdateRequestResult;
+//       case CREATE_DATA_REMOVE_REQUEST:
+//           CreateDataRemoveRequestResult createDataRemoveRequestResult;
+//       case CANCEL_DATA_UPDATE_REQUEST:
+//           CancelDataUpdateRequestResult cancelDataUpdateRequestResult;
+//       case CANCEL_DATA_REMOVE_REQUEST:
+//           CancelDataRemoveRequestResult cancelDataRemoveRequestResult;
 //       }
 //
 // ===========================================================================
@@ -21182,6 +21675,9 @@ xdr.union("OperationResultTr", {
     ["createDataCreationRequest", "createDataCreationRequestResult"],
     ["cancelDataCreationRequest", "cancelDataCreationRequestResult"],
     ["createDataUpdateRequest", "createDataUpdateRequestResult"],
+    ["createDataRemoveRequest", "createDataRemoveRequestResult"],
+    ["cancelDataUpdateRequest", "cancelDataUpdateRequestResult"],
+    ["cancelDataRemoveRequest", "cancelDataRemoveRequestResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -21240,6 +21736,9 @@ xdr.union("OperationResultTr", {
     createDataCreationRequestResult: xdr.lookup("CreateDataCreationRequestResult"),
     cancelDataCreationRequestResult: xdr.lookup("CancelDataCreationRequestResult"),
     createDataUpdateRequestResult: xdr.lookup("CreateDataUpdateRequestResult"),
+    createDataRemoveRequestResult: xdr.lookup("CreateDataRemoveRequestResult"),
+    cancelDataUpdateRequestResult: xdr.lookup("CancelDataUpdateRequestResult"),
+    cancelDataRemoveRequestResult: xdr.lookup("CancelDataRemoveRequestResult"),
   },
 });
 
@@ -21362,6 +21861,12 @@ xdr.union("OperationResultTr", {
 //           CancelDataCreationRequestResult cancelDataCreationRequestResult;
 //       case CREATE_DATA_UPDATE_REQUEST:
 //           CreateDataUpdateRequestResult createDataUpdateRequestResult;
+//       case CREATE_DATA_REMOVE_REQUEST:
+//           CreateDataRemoveRequestResult createDataRemoveRequestResult;
+//       case CANCEL_DATA_UPDATE_REQUEST:
+//           CancelDataUpdateRequestResult cancelDataUpdateRequestResult;
+//       case CANCEL_DATA_REMOVE_REQUEST:
+//           CancelDataRemoveRequestResult cancelDataRemoveRequestResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -22061,7 +22566,10 @@ xdr.struct("Fee", [
 //       REMOVE_DATA = 59,
 //       CREATE_DATA_CREATION_REQUEST = 60,
 //       CANCEL_DATA_CREATION_REQUEST = 61,
-//       CREATE_DATA_UPDATE_REQUEST = 62
+//       CREATE_DATA_UPDATE_REQUEST = 62,
+//       CREATE_DATA_REMOVE_REQUEST = 63,
+//       CANCEL_DATA_UPDATE_REQUEST = 64,
+//       CANCEL_DATA_REMOVE_REQUEST = 65
 //   };
 //
 // ===========================================================================
@@ -22122,6 +22630,9 @@ xdr.enum("OperationType", {
   createDataCreationRequest: 60,
   cancelDataCreationRequest: 61,
   createDataUpdateRequest: 62,
+  createDataRemoveRequest: 63,
+  cancelDataUpdateRequest: 64,
+  cancelDataRemoveRequest: 65,
 });
 
 // === xdr source ============================================================
