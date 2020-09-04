@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
-## [1.14.0-rc.3] - 2020-09-03
+## [1.14.0-rc.3] - 2020-09-04
 ## Added
 - Create, update, remove data reviewable requests
 
