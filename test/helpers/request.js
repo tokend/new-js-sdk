@@ -31,6 +31,11 @@ export class Request extends Helper {
     return this.review(requestId, { ...opts, action })
   }
 
+  permanentReject (requestId, opts) {
+    const action = base.xdr.ReviewRequestOpAction.permanentReject().value
+    return this.review(requestId, { ...opts, action })
+  }
+
   /**
    * @param {string|number} requestId
    * @param {object} opts
