@@ -38,6 +38,25 @@ export class DataRequestBuilder {
   }
 
   /**
+   * Create mass operation request. Build on top of data request.
+   * @param {object} opts
+   * @param {string|number} opts.requestID - set to zero to create new request
+   * @param {string} opts.type
+   * @param {object} opts.value
+   * @param {string[]} opts.value.blobs
+   * @param {string} opts.owner
+   * @param {object} opts.creatorDetails
+   * @param {number|string} opts.allTasks
+   * @param {string} [opts.source] - The source account for the operation.
+   * @returns {xdr.CreateDataCreationRequestOp}
+   */
+  static createMassOperationsRequest (opts) {
+    validators.validateArray({ value: opts.value.blobs, fieldName: 'opts.value.blobs', minLength: 1, maxLength: 1000 })
+
+    return this.createDataCreationRequest(opts)
+  }
+
+  /**
      * @param {string} opts.requestID
      * **/
   static cancelDataCreationRequest (opts) {
