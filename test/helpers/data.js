@@ -162,6 +162,13 @@ export class Data extends Helper {
     })
   }
 
+  async mustLoadUpdateRequest (requestId) {
+    return Running.untilFound(async () => {
+      const { data } = await this.api.getWithSignature(`/v3/data_update_requests/${requestId}`)
+      return data
+    })
+  }
+
   async mustLoadRequestsList () {
     return Running.untilFound(async () => {
       const { data } = await this.api.getWithSignature(`/v3/data_creation_requests`)

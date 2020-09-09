@@ -1,5 +1,12 @@
 import { logger } from '../logger'
-import {accountHelper, dataHelper, keyValueHelper, requestHelper, api} from '../helpers'
+import {
+  accountHelper,
+  dataHelper,
+  keyValueHelper,
+  requestHelper,
+  api,
+  masterKP
+} from '../helpers'
 import { Keypair, CreateDataBuilder, TransactionBuilder } from '../../src/base'
 import {KEY_VALUE_KEYS} from "../../src/const";
 
@@ -360,7 +367,7 @@ describe('Data', () => {
         txs.push(envelope)
       }
 
-      const resp = await api.postWithSignature("blobs", {
+      const resp = await api.postWithSignature("/blobs", {
         data: {
           type: "alpha",
           attributes: {
@@ -369,7 +376,7 @@ describe('Data', () => {
           relationships: {
             owner: {
               data: {
-                id: actor.accountId()
+                id: masterKP.accountId()
               }
             }
           }
