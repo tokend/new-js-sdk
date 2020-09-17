@@ -1,6 +1,6 @@
-// revision: d639694e4cdb49f22866a506b190bd92f3e62b84
-// branch:   master
-// Automatically generated on 2020-07-24T10:52:59+00:00
+// revision: 868cd261ba9b031ae894c39a458c6d22a917915c
+// branch:   feature/deferred-payment
+// Automatically generated on 2020-09-17T13:41:14+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1013,6 +1013,37 @@ xdr.struct("DataEntry", [
 
 // === xdr source ============================================================
 //
+//   struct DeferredPaymentEntry
+//   {
+//       //: ID of the deferred payment entry
+//       uint64 id;
+//   
+//       uint64 amount;
+//       PaymentFeeData feeData;
+//   
+//       //: Creator of the entry
+//       AccountID source;
+//       BalanceID sourceBalance;
+//   
+//       AccountID destination;
+//   
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("DeferredPaymentEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["amount", xdr.lookup("Uint64")],
+  ["feeData", xdr.lookup("PaymentFeeData")],
+  ["source", xdr.lookup("AccountId")],
+  ["sourceBalance", xdr.lookup("BalanceId")],
+  ["destination", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -1735,7 +1766,12 @@ xdr.struct("ReferenceEntry", [
 //   	KYC_RECOVERY = 18,
 //   	MANAGE_OFFER = 19,
 //   	CREATE_PAYMENT = 20,
-//   	PERFORM_REDEMPTION = 21
+//   	PERFORM_REDEMPTION = 21,
+//   	DATA_CREATION = 22,
+//   	DATA_UPDATE = 23,
+//   	DATA_REMOVE = 24,
+//   	CREATE_DEFERRED_PAYMENT = 25,
+//       CLOSE_DEFERRED_PAYMENT = 26
 //   };
 //
 // ===========================================================================
@@ -1761,6 +1797,11 @@ xdr.enum("ReviewableRequestType", {
   manageOffer: 19,
   createPayment: 20,
   performRedemption: 21,
+  dataCreation: 22,
+  dataUpdate: 23,
+  dataRemove: 24,
+  createDeferredPayment: 25,
+  closeDeferredPayment: 26,
 });
 
 // === xdr source ============================================================
@@ -1850,6 +1891,17 @@ xdr.struct("TasksExt", [
 //   			CreatePaymentRequest createPaymentRequest;
 //           case PERFORM_REDEMPTION:
 //               RedemptionRequest redemptionRequest;
+//           case DATA_CREATION:
+//               DataCreationRequest dataCreationRequest;
+//           case DATA_UPDATE:
+//               DataUpdateRequest dataUpdateRequest;
+//           case DATA_REMOVE:
+//               DataRemoveRequest dataRemoveRequest;
+//           case CREATE_DEFERRED_PAYMENT:
+//               CreateDeferredPaymentRequest createDeferredPaymentRequest;
+//           case CLOSE_DEFERRED_PAYMENT:
+//               CloseDeferredPaymentRequest closeDeferredPaymentRequest;
+//   
 //   	}
 //
 // ===========================================================================
@@ -1876,6 +1928,11 @@ xdr.union("ReviewableRequestEntryBody", {
     ["manageOffer", "manageOfferRequest"],
     ["createPayment", "createPaymentRequest"],
     ["performRedemption", "redemptionRequest"],
+    ["dataCreation", "dataCreationRequest"],
+    ["dataUpdate", "dataUpdateRequest"],
+    ["dataRemove", "dataRemoveRequest"],
+    ["createDeferredPayment", "createDeferredPaymentRequest"],
+    ["closeDeferredPayment", "closeDeferredPaymentRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -1897,6 +1954,11 @@ xdr.union("ReviewableRequestEntryBody", {
     manageOfferRequest: xdr.lookup("ManageOfferRequest"),
     createPaymentRequest: xdr.lookup("CreatePaymentRequest"),
     redemptionRequest: xdr.lookup("RedemptionRequest"),
+    dataCreationRequest: xdr.lookup("DataCreationRequest"),
+    dataUpdateRequest: xdr.lookup("DataUpdateRequest"),
+    dataRemoveRequest: xdr.lookup("DataRemoveRequest"),
+    createDeferredPaymentRequest: xdr.lookup("CreateDeferredPaymentRequest"),
+    closeDeferredPaymentRequest: xdr.lookup("CloseDeferredPaymentRequest"),
   },
 });
 
@@ -1969,6 +2031,17 @@ xdr.union("ReviewableRequestEntryExt", {
 //   			CreatePaymentRequest createPaymentRequest;
 //           case PERFORM_REDEMPTION:
 //               RedemptionRequest redemptionRequest;
+//           case DATA_CREATION:
+//               DataCreationRequest dataCreationRequest;
+//           case DATA_UPDATE:
+//               DataUpdateRequest dataUpdateRequest;
+//           case DATA_REMOVE:
+//               DataRemoveRequest dataRemoveRequest;
+//           case CREATE_DEFERRED_PAYMENT:
+//               CreateDeferredPaymentRequest createDeferredPaymentRequest;
+//           case CLOSE_DEFERRED_PAYMENT:
+//               CloseDeferredPaymentRequest closeDeferredPaymentRequest;
+//   
 //   	} body;
 //   
 //   	TasksExt tasks;
@@ -2773,6 +2846,8 @@ xdr.enum("ThresholdIndices", {
 //           SwapEntry swap;
 //       case DATA:
 //           DataEntry data;
+//       case DEFERRED_PAYMENT:
+//           DeferredPaymentEntry deferredPayment;
 //       }
 //
 // ===========================================================================
@@ -2812,6 +2887,7 @@ xdr.union("LedgerEntryData", {
     ["accountSpecificRule", "accountSpecificRule"],
     ["swap", "swap"],
     ["datum", "data"],
+    ["deferredPayment", "deferredPayment"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
@@ -2846,6 +2922,7 @@ xdr.union("LedgerEntryData", {
     accountSpecificRule: xdr.lookup("AccountSpecificRuleEntry"),
     swap: xdr.lookup("SwapEntry"),
     data: xdr.lookup("DataEntry"),
+    deferredPayment: xdr.lookup("DeferredPaymentEntry"),
   },
 });
 
@@ -2940,6 +3017,8 @@ xdr.union("LedgerEntryExt", {
 //           SwapEntry swap;
 //       case DATA:
 //           DataEntry data;
+//       case DEFERRED_PAYMENT:
+//           DeferredPaymentEntry deferredPayment;
 //       }
 //       data;
 //   
@@ -4045,6 +4124,20 @@ xdr.struct("LedgerKeyData", [
 
 // === xdr source ============================================================
 //
+//   struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyDeferredPayment", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union LedgerKey switch (LedgerEntryType type)
 //   {
 //   case ACCOUNT:
@@ -4356,6 +4449,12 @@ xdr.struct("LedgerKeyData", [
 //   
 //           EmptyExt ext;
 //       } data;
+//   case DEFERRED_PAYMENT:
+//       struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       } deferredPayment;
 //   };
 //
 // ===========================================================================
@@ -4395,6 +4494,7 @@ xdr.union("LedgerKey", {
     ["accountSpecificRule", "accountSpecificRule"],
     ["swap", "swap"],
     ["datum", "data"],
+    ["deferredPayment", "deferredPayment"],
   ],
   arms: {
     account: xdr.lookup("LedgerKeyAccount"),
@@ -4429,6 +4529,7 @@ xdr.union("LedgerKey", {
     accountSpecificRule: xdr.lookup("LedgerKeyAccountSpecificRule"),
     swap: xdr.lookup("LedgerKeySwap"),
     data: xdr.lookup("LedgerKeyData"),
+    deferredPayment: xdr.lookup("LedgerKeyDeferredPayment"),
   },
 });
 
@@ -5347,6 +5448,640 @@ xdr.union("CancelChangeRoleRequestResult", {
   ],
   arms: {
     success: xdr.lookup("CancelChangeRoleSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelCloseDeferredPaymentRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelCloseDeferredPaymentRequestOp is used to cancel existing deferred payment creation request
+//   struct CancelCloseDeferredPaymentRequestOp
+//   {
+//       //: id of existing request
+//       uint64 requestID;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelCloseDeferredPaymentRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelCloseDeferredPaymentRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes of CancelCloseDeferredPaymentRequestOp
+//   enum CancelCloseDeferredPaymentRequestResultCode
+//   {
+//       //: Atomic swap ask was successfully removed or marked as canceled
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       NOT_FOUND = -1
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelCloseDeferredPaymentRequestResultCode", {
+  success: 0,
+  notFound: -1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelCloseDeferredPaymentRequestResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Success result of CancelCloseDeferredPaymentRequestOp application
+//   struct CancelCloseDeferredPaymentRequestResultSuccess
+//   {
+//       //: reserved for the future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelCloseDeferredPaymentRequestResultSuccess", [
+  ["ext", xdr.lookup("CancelCloseDeferredPaymentRequestResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelCloseDeferredPaymentRequestOp application
+//   union CancelCloseDeferredPaymentRequestResult switch (CancelCloseDeferredPaymentRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       //: is used to pass useful fields after successful operation applying
+//       CancelCloseDeferredPaymentRequestResultSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelCloseDeferredPaymentRequestResult", {
+  switchOn: xdr.lookup("CancelCloseDeferredPaymentRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelCloseDeferredPaymentRequestResultSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataCreationRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelDataCreationRequestOp is used to cancel reviwable request for data creation.
+//   //: If successful, request with the corresponding ID will be deleted
+//   struct CancelDataCreationRequestOp
+//   {
+//       //: ID of the DataCreationRequest request to be canceled
+//       uint64 requestID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataCreationRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelDataCreationRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for CancelDataCreationRequest operation
+//   enum CancelDataCreationRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: ID of a request cannot be 0
+//       REQUEST_ID_INVALID = -1, // request id can not be equal zero
+//       //: request with provided ID is not found
+//       REQUEST_NOT_FOUND = -2 // trying to cancel not existing reviewable request
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelDataCreationRequestResultCode", {
+  success: 0,
+  requestIdInvalid: -1,
+  requestNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataCreationSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `CancelDataCreationRequestOp` application
+//   struct CancelDataCreationSuccess {
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataCreationSuccess", [
+  ["ext", xdr.lookup("CancelDataCreationSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelDataCreationRequest operation application along with the result code
+//   union CancelDataCreationRequestResult switch (CancelDataCreationRequestResultCode code)
+//   {
+//       case SUCCESS:
+//           CancelDataCreationSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelDataCreationRequestResult", {
+  switchOn: xdr.lookup("CancelDataCreationRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelDataCreationSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataRemoveRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelDataRemoveRequestOp is used to cancel reviwable request for data Remove.
+//   //: If successful, request with the corresponding ID will be deleted
+//   struct CancelDataRemoveRequestOp
+//   {
+//       //: ID of the DataRemoveRequest request to be canceled
+//       uint64 requestID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataRemoveRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelDataRemoveRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for CancelDataRemoveRequest operation
+//   enum CancelDataRemoveRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: ID of a request cannot be 0
+//       REQUEST_ID_INVALID = -1, // request id can not be equal zero
+//       //: request with provided ID is not found
+//       REQUEST_NOT_FOUND = -2 // trying to cancel not existing reviewable request
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelDataRemoveRequestResultCode", {
+  success: 0,
+  requestIdInvalid: -1,
+  requestNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataRemoveSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `CancelDataRemoveRequestOp` application
+//   struct CancelDataRemoveSuccess {
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataRemoveSuccess", [
+  ["ext", xdr.lookup("CancelDataRemoveSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelDataRemoveRequest operation application along with the result code
+//   union CancelDataRemoveRequestResult switch (CancelDataRemoveRequestResultCode code)
+//   {
+//       case SUCCESS:
+//           CancelDataRemoveSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelDataRemoveRequestResult", {
+  switchOn: xdr.lookup("CancelDataRemoveRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelDataRemoveSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataUpdateRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelDataUpdateRequestOp is used to cancel reviwable request for data Update.
+//   //: If successful, request with the corresponding ID will be deleted
+//   struct CancelDataUpdateRequestOp
+//   {
+//       //: ID of the DataUpdateRequest request to be canceled
+//       uint64 requestID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataUpdateRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelDataUpdateRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for CancelDataUpdateRequest operation
+//   enum CancelDataUpdateRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: ID of a request cannot be 0
+//       REQUEST_ID_INVALID = -1, // request id can not be equal zero
+//       //: request with provided ID is not found
+//       REQUEST_NOT_FOUND = -2 // trying to cancel not existing reviewable request
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelDataUpdateRequestResultCode", {
+  success: 0,
+  requestIdInvalid: -1,
+  requestNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataUpdateSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `CancelDataUpdateRequestOp` application
+//   struct CancelDataUpdateSuccess {
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataUpdateSuccess", [
+  ["ext", xdr.lookup("CancelDataUpdateSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelDataUpdateRequest operation application along with the result code
+//   union CancelDataUpdateRequestResult switch (CancelDataUpdateRequestResultCode code)
+//   {
+//       case SUCCESS:
+//           CancelDataUpdateSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelDataUpdateRequestResult", {
+  switchOn: xdr.lookup("CancelDataUpdateRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelDataUpdateSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDeferredPaymentCreationRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelDeferredPaymentCreationRequestOp is used to cancel existing deferred payment creation request
+//   struct CancelDeferredPaymentCreationRequestOp
+//   {
+//       //: id of existing request
+//       uint64 requestID;
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDeferredPaymentCreationRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelDeferredPaymentCreationRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes of CancelDeferredPaymentCreationRequestOp
+//   enum CancelDeferredPaymentCreationRequestResultCode
+//   {
+//       //: Atomic swap ask was successfully removed or marked as canceled
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: There is no atomic swap ask with such id
+//       NOT_FOUND = -1, // request does not exist
+//       REQUEST_ID_INVALID = -2,
+//       LINE_FULL = -3
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelDeferredPaymentCreationRequestResultCode", {
+  success: 0,
+  notFound: -1,
+  requestIdInvalid: -2,
+  lineFull: -3,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDeferredPaymentCreationRequestResultSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Success result of CancelDeferredPaymentCreationRequestOp application
+//   struct CancelDeferredPaymentCreationRequestResultSuccess
+//   {
+//       //: reserved for the future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDeferredPaymentCreationRequestResultSuccess", [
+  ["ext", xdr.lookup("CancelDeferredPaymentCreationRequestResultSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelDeferredPaymentCreationRequestOp application
+//   union CancelDeferredPaymentCreationRequestResult switch (CancelDeferredPaymentCreationRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       //: is used to pass useful fields after successful operation applying
+//       CancelDeferredPaymentCreationRequestResultSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelDeferredPaymentCreationRequestResult", {
+  switchOn: xdr.lookup("CancelDeferredPaymentCreationRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelDeferredPaymentCreationRequestResultSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -6789,6 +7524,539 @@ xdr.union("CreateChangeRoleRequestResult", {
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateCloseDeferredPaymentRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CreateCloseDeferredPaymentRequestOp is used to create `CLOSE_DEFERRED_PAYMENT` request
+//   struct CreateCloseDeferredPaymentRequestOp
+//   {
+//   
+//       uint64 requestID;
+//   
+//       //: Body of request which will be created
+//       CloseDeferredPaymentRequest request;
+//   
+//       uint32* allTasks;
+//       //: reserved for the future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateCloseDeferredPaymentRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["request", xdr.lookup("CloseDeferredPaymentRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("CreateCloseDeferredPaymentRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes of CreateAtomicSwapBidRequestOp
+//   enum CreateCloseDeferredPaymentRequestResultCode
+//   {
+//       //: `CLOSE_DEFERRED_PAYMENT` request has either been successfully created
+//       //: or auto approved
+//       SUCCESS = 0,
+//   
+//       UNDERFUNDED = -1,
+//       INVALID_CREATOR_DETAILS = -2,
+//       NOT_AUTHORIZED = -3,
+//       DESTINATION_ACCOUNT_NOT_FOUND = -4,
+//       INCORRECT_PRECISION = -5,
+//       ASSET_MISMATCH = -6,
+//       LINE_FULL = -7,
+//       TASKS_NOT_FOUND = -8,
+//       INVALID_AMOUNT = -9,
+//       DESTINATION_BALANCE_NOT_FOUND = -10,
+//       REQUEST_NOT_FOUND = -11
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateCloseDeferredPaymentRequestResultCode", {
+  success: 0,
+  underfunded: -1,
+  invalidCreatorDetail: -2,
+  notAuthorized: -3,
+  destinationAccountNotFound: -4,
+  incorrectPrecision: -5,
+  assetMismatch: -6,
+  lineFull: -7,
+  tasksNotFound: -8,
+  invalidAmount: -9,
+  destinationBalanceNotFound: -10,
+  requestNotFound: -11,
+});
+
+// === xdr source ============================================================
+//
+//   enum CloseDeferredPaymentEffect
+//   {
+//       CHARGED = 0,
+//       DELETED = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("CloseDeferredPaymentEffect", {
+  charged: 0,
+  deleted: 1,
+});
+
+// === xdr source ============================================================
+//
+//   struct CloseDeferredPaymentResult
+//   {
+//       uint64 deferredPaymentID;
+//   
+//       AccountID destination;
+//       BalanceID destinationBalance;
+//   
+//       CloseDeferredPaymentEffect effect;
+//   
+//       uint64 deferredPaymentRemainder;
+//   
+//       uint64 totalFee;
+//       uint64 totalAmount;
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CloseDeferredPaymentResult", [
+  ["deferredPaymentId", xdr.lookup("Uint64")],
+  ["destination", xdr.lookup("AccountId")],
+  ["destinationBalance", xdr.lookup("BalanceId")],
+  ["effect", xdr.lookup("CloseDeferredPaymentEffect")],
+  ["deferredPaymentRemainder", xdr.lookup("Uint64")],
+  ["totalFee", xdr.lookup("Uint64")],
+  ["totalAmount", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateCloseDeferredPaymentRequestSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Success result of CreateASwapAskCreationRequestOp application
+//   struct CreateCloseDeferredPaymentRequestSuccess
+//   {
+//       uint64 requestID;
+//       bool fulfilled;
+//       uint64 deferredPaymentID;
+//   
+//       CloseDeferredPaymentResult* extendedResult;
+//   
+//       //: reserved for the future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateCloseDeferredPaymentRequestSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["deferredPaymentId", xdr.lookup("Uint64")],
+  ["extendedResult", xdr.option(xdr.lookup("CloseDeferredPaymentResult"))],
+  ["ext", xdr.lookup("CreateCloseDeferredPaymentRequestSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CreateCloseDeferredPaymentRequestOp application
+//   union CreateCloseDeferredPaymentRequestResult switch (CreateCloseDeferredPaymentRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       //: is used to pass useful fields after successful operation applying
+//       CreateCloseDeferredPaymentRequestSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateCloseDeferredPaymentRequestResult", {
+  switchOn: xdr.lookup("CreateCloseDeferredPaymentRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateCloseDeferredPaymentRequestSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataCreationRequestOp
+//   {
+//       //: ID of the DataCreationRequest. If set to 0, a new request is created
+//       uint64 requestID;
+//   
+//       DataCreationRequest dataCreationRequest;
+//   
+//       uint32* allTasks;
+//   
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataCreationRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["dataCreationRequest", xdr.lookup("DataCreationRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreateDataCreationRequestResultCode
+//   {
+//       SUCCESS = 0,
+//       INVALID_VALUE = -1,
+//       CREATE_DATA_TASKS_NOT_FOUND = -2,
+//       REQUEST_NOT_FOUND = -3,
+//       INVALID_CREATOR_DETAILS = -4
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateDataCreationRequestResultCode", {
+  success: 0,
+  invalidValue: -1,
+  createDataTasksNotFound: -2,
+  requestNotFound: -3,
+  invalidCreatorDetail: -4,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateDataCreationRequestSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataCreationRequestSuccess {
+//       uint64 requestID;
+//       bool fulfilled;
+//       AccountID owner;
+//       uint64 id;
+//       uint64 type;
+//       longstring value;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataCreationRequestSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["owner", xdr.lookup("AccountId")],
+  ["id", xdr.lookup("Uint64")],
+  ["type", xdr.lookup("Uint64")],
+  ["value", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("CreateDataCreationRequestSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union CreateDataCreationRequestResult switch (CreateDataCreationRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       CreateDataCreationRequestSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateDataCreationRequestResult", {
+  switchOn: xdr.lookup("CreateDataCreationRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateDataCreationRequestSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataRemoveRequestOp
+//   {
+//       //: ID of the DataRemoveRequest. If set to 0, a new request is created
+//       uint64 requestID;
+//   
+//       DataRemoveRequest dataRemoveRequest;
+//   
+//       uint32* allTasks;
+//   
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataRemoveRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["dataRemoveRequest", xdr.lookup("DataRemoveRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreateDataRemoveRequestResultCode
+//   {
+//       SUCCESS = 0,
+//       REMOVE_DATA_TASKS_NOT_FOUND = -1,
+//       DATA_NOT_FOUND = -2,
+//       INVALID_CREATOR_DETAILS = -3,
+//       REQUEST_NOT_FOUND = -4
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateDataRemoveRequestResultCode", {
+  success: 0,
+  removeDataTasksNotFound: -1,
+  dataNotFound: -2,
+  invalidCreatorDetail: -3,
+  requestNotFound: -4,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateDataRemoveRequestSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataRemoveRequestSuccess {
+//       uint64 requestID;
+//       bool fulfilled;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataRemoveRequestSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["ext", xdr.lookup("CreateDataRemoveRequestSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union CreateDataRemoveRequestResult switch (CreateDataRemoveRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       CreateDataRemoveRequestSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateDataRemoveRequestResult", {
+  switchOn: xdr.lookup("CreateDataRemoveRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateDataRemoveRequestSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataUpdateRequestOp
+//   {
+//       //: ID of the DataUpdateRequest. If set to 0, a new request is created
+//       uint64 requestID;
+//   
+//       DataUpdateRequest dataUpdateRequest;
+//   
+//       uint32* allTasks;
+//   
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataUpdateRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["dataUpdateRequest", xdr.lookup("DataUpdateRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreateDataUpdateRequestResultCode
+//   {
+//       SUCCESS = 0,
+//       INVALID_VALUE = -1,
+//       UPDATE_DATA_TASKS_NOT_FOUND = -2,
+//       DATA_NOT_FOUND = -3,
+//       INVALID_CREATOR_DETAILS = -4,
+//       REQUEST_NOT_FOUND = -5
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateDataUpdateRequestResultCode", {
+  success: 0,
+  invalidValue: -1,
+  updateDataTasksNotFound: -2,
+  dataNotFound: -3,
+  invalidCreatorDetail: -4,
+  requestNotFound: -5,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateDataUpdateRequestSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataUpdateRequestSuccess {
+//       uint64 requestID;
+//       bool fulfilled;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataUpdateRequestSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["ext", xdr.lookup("CreateDataUpdateRequestSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union CreateDataUpdateRequestResult switch (CreateDataUpdateRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       CreateDataUpdateRequestSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateDataUpdateRequestResult", {
+  switchOn: xdr.lookup("CreateDataUpdateRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateDataUpdateRequestSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   struct CreateDataOp
 //   {
 //       //: Numeric type, used for access control
@@ -6860,6 +8128,159 @@ xdr.union("CreateDataResult", {
   ],
   arms: {
     success: xdr.lookup("CreateDataSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateDeferredPaymentCreationRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CreateDeferredPaymentCreationRequestOp is used to create `CREATE_DEFERRED_PAYMENT` request
+//   struct CreateDeferredPaymentCreationRequestOp
+//   {
+//   
+//       uint64 requestID;
+//       //: Body of request which will be created
+//       CreateDeferredPaymentRequest request;
+//   
+//       //: (optional) Bit mask whose flags must be cleared in order for `CREATE_ATOMIC_SWAP_BID` request to be approved,
+//       //: which will be used instead of key-value by `create_deferred_payment_creation_request_tasks` key
+//       uint32* allTasks;
+//       //: reserved for the future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDeferredPaymentCreationRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["request", xdr.lookup("CreateDeferredPaymentRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("CreateDeferredPaymentCreationRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes of CreateAtomicSwapBidRequestOp
+//   enum CreateDeferredPaymentCreationRequestResultCode
+//   {
+//       //: `CREATE_DEFERRED_PAYMENT` request has either been successfully created
+//       //: or auto approved
+//       SUCCESS = 0,
+//   
+//       SOURCE_BALANCE_NOT_FOUND = -1,
+//       DESTINATION_ACCOUNT_NOT_FOUND = -2,
+//       INCORRECT_PRECISION = -3,
+//       UNDERFUNDED = -4,
+//       TASKS_NOT_FOUND = -5,
+//       INVALID_CREATOR_DETAILS = -6,
+//       INVALID_AMOUNT = -7,
+//       REQUEST_NOT_FOUND = -8
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateDeferredPaymentCreationRequestResultCode", {
+  success: 0,
+  sourceBalanceNotFound: -1,
+  destinationAccountNotFound: -2,
+  incorrectPrecision: -3,
+  underfunded: -4,
+  tasksNotFound: -5,
+  invalidCreatorDetail: -6,
+  invalidAmount: -7,
+  requestNotFound: -8,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateDeferredPaymentCreationRequestSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Success result of CreateASwapAskCreationRequestOp application
+//   struct CreateDeferredPaymentCreationRequestSuccess
+//   {
+//       //: id of created request
+//       uint64 requestID;
+//       //: Indicates whether or not the `CREATE_ATOMIC_SWAP_ASK` request was auto approved and fulfilled
+//       bool fulfilled;
+//       //: ID of a newly created ask (if the ask  creation request has been auto approved)
+//       uint64 deferredPaymentID;
+//   
+//       //: reserved for the future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDeferredPaymentCreationRequestSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["deferredPaymentId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CreateDeferredPaymentCreationRequestSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CreateDeferredPaymentCreationRequestOp application
+//   union CreateDeferredPaymentCreationRequestResult switch (CreateDeferredPaymentCreationRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       //: is used to pass useful fields after successful operation applying
+//       CreateDeferredPaymentCreationRequestSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateDeferredPaymentCreationRequestResult", {
+  switchOn: xdr.lookup("CreateDeferredPaymentCreationRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateDeferredPaymentCreationRequestSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -9248,7 +10669,9 @@ xdr.struct("ManageAccountRuleOp", [
 //       //: It is not allowed to remove the rule if it is used at least in one role
 //       RULE_IS_USED = -2,
 //       //: Passed details has invalid json structure
-//       INVALID_DETAILS = -3
+//       INVALID_DETAILS = -3,
+//       //: Custom rule action can not be used with entries other than CUSTOM
+//       INVALID_ACTION = -4
 //   };
 //
 // ===========================================================================
@@ -9257,6 +10680,7 @@ xdr.enum("ManageAccountRuleResultCode", {
   notFound: -1,
   ruleIsUsed: -2,
   invalidDetail: -3,
+  invalidAction: -4,
 });
 
 // === xdr source ============================================================
@@ -14089,7 +15513,9 @@ xdr.struct("ManageSignerRuleOp", [
 //       //: It is not allowed to remove the rule if it is attached to at least one role
 //       RULE_IS_USED = -2,
 //       //: Passed details have invalid json structure
-//       INVALID_DETAILS = -3
+//       INVALID_DETAILS = -3,
+//       //: Custom rule action can not be used with entries other than CUSTOM
+//       INVALID_ACTION = -4
 //   };
 //
 // ===========================================================================
@@ -14098,6 +15524,7 @@ xdr.enum("ManageSignerRuleResultCode", {
   notFound: -1,
   ruleIsUsed: -2,
   invalidDetail: -3,
+  invalidAction: -4,
 });
 
 // === xdr source ============================================================
@@ -15649,8 +17076,8 @@ xdr.union("LimitsUpdateDetailsExt", {
 // === xdr source ============================================================
 //
 //   //: Review details of a Limits Update request
-//   struct LimitsUpdateDetails { 
-//       //: Limits entry containing new limits to set 
+//   struct LimitsUpdateDetails {
+//       //: Limits entry containing new limits to set
 //       LimitsV2Entry newLimitsV2;
 //   
 //       //:reserved for future use
@@ -15729,7 +17156,7 @@ xdr.union("AmlAlertDetailsExt", {
 
 // === xdr source ============================================================
 //
-//   //: Details of AML Alert 
+//   //: Details of AML Alert
 //   struct AMLAlertDetails {
 //       //: Comment on reason of AML Alert
 //       string comment<>;
@@ -16073,6 +17500,47 @@ xdr.struct("AtomicSwapBidExtended", [
 
 // === xdr source ============================================================
 //
+//   struct CreateDeferredPaymentResult
+//   {
+//       uint64 deferredPaymentID;
+//       AccountID destination;
+//       AccountID source;
+//       uint64 totalFee;
+//       uint64 totalAmount;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDeferredPaymentResult", [
+  ["deferredPaymentId", xdr.lookup("Uint64")],
+  ["destination", xdr.lookup("AccountId")],
+  ["source", xdr.lookup("AccountId")],
+  ["totalFee", xdr.lookup("Uint64")],
+  ["totalAmount", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct DataCreationExtended {
+//       //: Owner of the created data entry
+//       AccountID owner;
+//       //: ID of the created data entry
+//       uint64 id;
+//       //: Security type of the created data entry
+//       uint64 type;
+//   };
+//
+// ===========================================================================
+xdr.struct("DataCreationExtended", [
+  ["owner", xdr.lookup("AccountId")],
+  ["id", xdr.lookup("Uint64")],
+  ["type", xdr.lookup("Uint64")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch(ReviewableRequestType requestType) {
 //       case CREATE_SALE:
 //           SaleExtended saleExtended;
@@ -16090,6 +17558,13 @@ xdr.struct("AtomicSwapBidExtended", [
 //           PaymentResult paymentResult;
 //       case PERFORM_REDEMPTION:
 //           CreateRedemptionRequestResult createRedemptionResult;
+//       case DATA_CREATION:
+//           DataCreationExtended dataCreationExtended;
+//       case CREATE_DEFERRED_PAYMENT:
+//           CreateDeferredPaymentResult createDeferredPaymentResult;
+//       case CLOSE_DEFERRED_PAYMENT:
+//            CloseDeferredPaymentResult closeDeferredPaymentResult;
+//   
 //       }
 //
 // ===========================================================================
@@ -16105,6 +17580,9 @@ xdr.union("ExtendedResultTypeExt", {
     ["manageOffer", "manageOfferResult"],
     ["createPayment", "paymentResult"],
     ["performRedemption", "createRedemptionResult"],
+    ["dataCreation", "dataCreationExtended"],
+    ["createDeferredPayment", "createDeferredPaymentResult"],
+    ["closeDeferredPayment", "closeDeferredPaymentResult"],
   ],
   arms: {
     saleExtended: xdr.lookup("SaleExtended"),
@@ -16114,6 +17592,9 @@ xdr.union("ExtendedResultTypeExt", {
     manageOfferResult: xdr.lookup("ManageOfferResult"),
     paymentResult: xdr.lookup("PaymentResult"),
     createRedemptionResult: xdr.lookup("CreateRedemptionRequestResult"),
+    dataCreationExtended: xdr.lookup("DataCreationExtended"),
+    createDeferredPaymentResult: xdr.lookup("CreateDeferredPaymentResult"),
+    closeDeferredPaymentResult: xdr.lookup("CloseDeferredPaymentResult"),
   },
 });
 
@@ -16160,6 +17641,13 @@ xdr.union("ExtendedResultExt", {
 //           PaymentResult paymentResult;
 //       case PERFORM_REDEMPTION:
 //           CreateRedemptionRequestResult createRedemptionResult;
+//       case DATA_CREATION:
+//           DataCreationExtended dataCreationExtended;
+//       case CREATE_DEFERRED_PAYMENT:
+//           CreateDeferredPaymentResult createDeferredPaymentResult;
+//       case CLOSE_DEFERRED_PAYMENT:
+//            CloseDeferredPaymentResult closeDeferredPaymentResult;
+//   
 //       } typeExt;
 //   
 //       //: Reserved for future use
@@ -16296,7 +17784,7 @@ xdr.struct("ReviewRequestOp", [
 //       SUCCESS = 0,
 //   
 //       //: Codes considered as "failure" for an operation
-//       //: Reject reason must be empty on approve and not empty on reject/permanent 
+//       //: Reject reason must be empty on approve and not empty on reject/permanent
 //       INVALID_REASON = -1,
 //       //: Unknown action to perform on ReviewableRequest
 //       INVALID_ACTION = -2,
@@ -16349,7 +17837,7 @@ xdr.struct("ReviewRequestOp", [
 //       //: Trying to create a sale with one of the quote assets that doesn't exist
 //       QUOTE_ASSET_NOT_FOUND = -550,
 //   
-//       //: Change role 
+//       //: Change role
 //       //: Trying to remove zero tasks
 //       NON_ZERO_TASKS_TO_REMOVE_NOT_ALLOWED = -600,
 //       //: There is no account role with provided id
@@ -16414,9 +17902,12 @@ xdr.struct("ReviewRequestOp", [
 //   
 //       // offer
 //       MANAGE_OFFER_FAILED = -1700,
-//       
+//   
 //       // payment
-//       PAYMENT_FAILED = -1800
+//       PAYMENT_FAILED = -1800,
+//   
+//       // Update Data
+//       DATA_NOT_FOUND = -1900
 //   };
 //
 // ===========================================================================
@@ -16484,6 +17975,7 @@ xdr.enum("ReviewRequestResultCode", {
   invalidSignerDatum: -1600,
   manageOfferFailed: -1700,
   paymentFailed: -1800,
+  dataNotFound: -1900,
 });
 
 // === xdr source ============================================================
@@ -17479,6 +18971,88 @@ xdr.struct("ReviewableRequestResourcePerformRedemption", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceDataCreation", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceDataUpdate", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceDataRemove", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           AssetCode assetCode;
+//   
+//           uint64 assetType;
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCreateDeferredPayment", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           AssetCode assetCode;
+//   
+//           uint64 assetType;
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("ReviewableRequestResourceCloseDeferredPayment", [
+  ["assetCode", xdr.lookup("AssetCode")],
+  ["assetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some reviewable request types that
 //   //: can be used to restrict the usage of reviewable requests
 //   union ReviewableRequestResource switch (ReviewableRequestType requestType)
@@ -17612,6 +19186,46 @@ xdr.struct("ReviewableRequestResourcePerformRedemption", [
 //           //: reserved for future extension
 //           EmptyExt ext;
 //       } performRedemption;
+//   case DATA_CREATION:
+//       struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } dataCreation;
+//   case DATA_UPDATE:
+//       struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } dataUpdate;
+//   case DATA_REMOVE:
+//       struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } dataRemove;
+//   case CREATE_DEFERRED_PAYMENT:
+//       struct
+//       {
+//           AssetCode assetCode;
+//   
+//           uint64 assetType;
+//           EmptyExt ext;
+//       } createDeferredPayment;
+//   case CLOSE_DEFERRED_PAYMENT:
+//       struct
+//       {
+//           AssetCode assetCode;
+//   
+//           uint64 assetType;
+//           EmptyExt ext;
+//       } closeDeferredPayment;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -17631,6 +19245,11 @@ xdr.union("ReviewableRequestResource", {
     ["manageOffer", "manageOffer"],
     ["createPayment", "createPayment"],
     ["performRedemption", "performRedemption"],
+    ["dataCreation", "dataCreation"],
+    ["dataUpdate", "dataUpdate"],
+    ["dataRemove", "dataRemove"],
+    ["createDeferredPayment", "createDeferredPayment"],
+    ["closeDeferredPayment", "closeDeferredPayment"],
   ],
   arms: {
     createSale: xdr.lookup("ReviewableRequestResourceCreateSale"),
@@ -17642,10 +19261,34 @@ xdr.union("ReviewableRequestResource", {
     manageOffer: xdr.lookup("ReviewableRequestResourceManageOffer"),
     createPayment: xdr.lookup("ReviewableRequestResourceCreatePayment"),
     performRedemption: xdr.lookup("ReviewableRequestResourcePerformRedemption"),
+    dataCreation: xdr.lookup("ReviewableRequestResourceDataCreation"),
+    dataUpdate: xdr.lookup("ReviewableRequestResourceDataUpdate"),
+    dataRemove: xdr.lookup("ReviewableRequestResourceDataRemove"),
+    createDeferredPayment: xdr.lookup("ReviewableRequestResourceCreateDeferredPayment"),
+    closeDeferredPayment: xdr.lookup("ReviewableRequestResourceCloseDeferredPayment"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
 });
+
+// === xdr source ============================================================
+//
+//   //: Describes custom rule resource that can be used outside of the Core for flexible access control
+//   struct CustomRuleResource {
+//       //: Action attributes
+//       longstring *action;
+//       //: Resource attributes
+//       longstring resource;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CustomRuleResource", [
+  ["action", xdr.option(xdr.lookup("Longstring"))],
+  ["resource", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
 
 // === xdr source ============================================================
 //
@@ -18049,6 +19692,8 @@ xdr.struct("AccountRuleResourceData", [
 //           //: Reserved for future extension
 //           EmptyExt ext;
 //       } data;
+//   case CUSTOM:
+//       CustomRuleResource custom;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -18072,6 +19717,7 @@ xdr.union("AccountRuleResource", {
     ["accountSpecificRule", "accountSpecificRuleExt"],
     ["swap", "swap"],
     ["datum", "data"],
+    ["custom", "custom"],
   ],
   arms: {
     asset: xdr.lookup("AccountRuleResourceAsset"),
@@ -18086,6 +19732,7 @@ xdr.union("AccountRuleResource", {
     accountSpecificRuleExt: xdr.lookup("AccountRuleResourceAccountSpecificRuleExt"),
     swap: xdr.lookup("AccountRuleResourceSwap"),
     data: xdr.lookup("AccountRuleResourceData"),
+    custom: xdr.lookup("CustomRuleResource"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -18119,7 +19766,8 @@ xdr.union("AccountRuleResource", {
 //       EXCHANGE = 21,
 //       RECEIVE_REDEMPTION = 22,
 //       UPDATE = 23,
-//       UPDATE_FOR_OTHER = 24
+//       UPDATE_FOR_OTHER = 24,
+//       CUSTOM = 25
 //   };
 //
 // ===========================================================================
@@ -18148,6 +19796,7 @@ xdr.enum("AccountRuleAction", {
   receiveRedemption: 22,
   update: 23,
   updateForOther: 24,
+  custom: 25,
 });
 
 // === xdr source ============================================================
@@ -18636,6 +20285,8 @@ xdr.struct("SignerRuleResourceData", [
 //           //: Reserved for future extension
 //           EmptyExt ext;
 //       } data;
+//   case CUSTOM:
+//       CustomRuleResource custom;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -18662,6 +20313,7 @@ xdr.union("SignerRuleResource", {
     ["accountSpecificRule", "accountSpecificRuleExt"],
     ["swap", "swap"],
     ["datum", "data"],
+    ["custom", "custom"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -18679,6 +20331,7 @@ xdr.union("SignerRuleResource", {
     accountSpecificRuleExt: xdr.lookup("SignerRuleResourceAccountSpecificRuleExt"),
     swap: xdr.lookup("SignerRuleResourceSwap"),
     data: xdr.lookup("SignerRuleResourceData"),
+    custom: xdr.lookup("CustomRuleResource"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -18709,7 +20362,8 @@ xdr.union("SignerRuleResource", {
 //       CREATE_FOR_OTHER_WITH_TASKS = 18,
 //       REMOVE_FOR_OTHER = 19,
 //       EXCHANGE = 20,
-//       UPDATE_FOR_OTHER = 21
+//       UPDATE_FOR_OTHER = 21,
+//       CUSTOM = 22
 //   };
 //
 // ===========================================================================
@@ -18735,6 +20389,7 @@ xdr.enum("SignerRuleAction", {
   removeForOther: 19,
   exchange: 20,
   updateForOther: 21,
+  custom: 22,
 });
 
 // === xdr source ============================================================
@@ -19101,6 +20756,35 @@ xdr.struct("ChangeRoleRequest", [
 
 // === xdr source ============================================================
 //
+//   struct CloseDeferredPaymentRequest {
+//       uint64 deferredPaymentID;
+//   
+//       BalanceID destinationBalance;
+//   
+//       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//   
+//       uint64 amount;
+//       PaymentFeeData feeData;
+//   
+//       uint32 sequenceNumber;
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CloseDeferredPaymentRequest", [
+  ["deferredPaymentId", xdr.lookup("Uint64")],
+  ["destinationBalance", xdr.lookup("BalanceId")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["amount", xdr.lookup("Uint64")],
+  ["feeData", xdr.lookup("PaymentFeeData")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -19146,6 +20830,88 @@ xdr.struct("ContractRequest", [
   ["startTime", xdr.lookup("Uint64")],
   ["endTime", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("ContractRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("DataCreationRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct DataCreationRequest {
+//       //: Numeric type, used for access control
+//       uint64 type;
+//   
+//       // Sequence number increases when request is rejected
+//   	uint32 sequenceNumber;
+//   
+//       //: Owner of data to create
+//       AccountID owner;
+//   
+//       //: Value stored
+//       longstring value;
+//   
+//       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("DataCreationRequest", [
+  ["type", xdr.lookup("Uint64")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["owner", xdr.lookup("AccountId")],
+  ["value", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("DataCreationRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct CreateDeferredPaymentRequest {
+//       BalanceID sourceBalance;
+//       AccountID destination;
+//   
+//       uint64 amount;
+//       PaymentFeeData feeData;
+//       uint32 sequenceNumber;
+//   
+//       longstring creatorDetails; // details set by requester
+//   
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDeferredPaymentRequest", [
+  ["sourceBalance", xdr.lookup("BalanceId")],
+  ["destination", xdr.lookup("AccountId")],
+  ["amount", xdr.lookup("Uint64")],
+  ["feeData", xdr.lookup("PaymentFeeData")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("EmptyExt")],
 ]);
 
 // === xdr source ============================================================
@@ -19619,6 +21385,54 @@ xdr.struct("RedemptionRequest", [
 //       }
 //
 // ===========================================================================
+xdr.union("DataRemoveRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct DataRemoveRequest {
+//       //: Id of the data entry
+//       uint64 id;
+//   
+//       // Sequence number increases when request is rejected
+//   	uint32 sequenceNumber;
+//   
+//       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("DataRemoveRequest", [
+  ["id", xdr.lookup("Uint64")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("DataRemoveRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
 xdr.union("SaleCreationRequestQuoteAssetExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
@@ -19778,6 +21592,58 @@ xdr.struct("SaleCreationRequest", [
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["quoteAssets", xdr.varArray(xdr.lookup("SaleCreationRequestQuoteAsset"), 100)],
   ["ext", xdr.lookup("SaleCreationRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("DataUpdateRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct DataUpdateRequest {
+//       //: Id of the data entry
+//       uint64 id;
+//   
+//       // Sequence number increases when request is rejected
+//   	uint32 sequenceNumber;
+//   
+//       //: Value stored
+//       longstring value;
+//   
+//       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("DataUpdateRequest", [
+  ["id", xdr.lookup("Uint64")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["value", xdr.lookup("Longstring")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("DataUpdateRequestExt")],
 ]);
 
 // === xdr source ============================================================
@@ -19989,6 +21855,27 @@ xdr.struct("WithdrawalRequest", [
 //           UpdateDataOp updateDataOp;
 //       case REMOVE_DATA:
 //           RemoveDataOp removeDataOp;
+//       case CREATE_DATA_CREATION_REQUEST:
+//           CreateDataCreationRequestOp createDataCreationRequestOp;
+//       case CANCEL_DATA_CREATION_REQUEST:
+//           CancelDataCreationRequestOp cancelDataCreationRequestOp;
+//       case CREATE_DATA_UPDATE_REQUEST:
+//           CreateDataUpdateRequestOp createDataUpdateRequestOp;
+//       case CREATE_DATA_REMOVE_REQUEST:
+//           CreateDataRemoveRequestOp createDataRemoveRequestOp;
+//       case CANCEL_DATA_UPDATE_REQUEST:
+//           CancelDataUpdateRequestOp cancelDataUpdateRequestOp;
+//       case CANCEL_DATA_REMOVE_REQUEST:
+//           CancelDataRemoveRequestOp cancelDataRemoveRequestOp;
+//       case CREATE_DEFERRED_PAYMENT_CREATION_REQUEST:
+//           CreateDeferredPaymentCreationRequestOp createDeferredPaymentCreationRequestOp;
+//       case CANCEL_DEFERRED_PAYMENT_CREATION_REQUEST:
+//           CancelDeferredPaymentCreationRequestOp cancelDeferredPaymentCreationRequestOp;
+//       case CREATE_CLOSE_DEFERRED_PAYMENT_REQUEST:
+//           CreateCloseDeferredPaymentRequestOp createCloseDeferredPaymentRequestOp;
+//       case CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST:
+//           CancelCloseDeferredPaymentRequestOp cancelCloseDeferredPaymentRequestOp;
+//   
 //       }
 //
 // ===========================================================================
@@ -20049,6 +21936,16 @@ xdr.union("OperationBody", {
     ["createDatum", "createDataOp"],
     ["updateDatum", "updateDataOp"],
     ["removeDatum", "removeDataOp"],
+    ["createDataCreationRequest", "createDataCreationRequestOp"],
+    ["cancelDataCreationRequest", "cancelDataCreationRequestOp"],
+    ["createDataUpdateRequest", "createDataUpdateRequestOp"],
+    ["createDataRemoveRequest", "createDataRemoveRequestOp"],
+    ["cancelDataUpdateRequest", "cancelDataUpdateRequestOp"],
+    ["cancelDataRemoveRequest", "cancelDataRemoveRequestOp"],
+    ["createDeferredPaymentCreationRequest", "createDeferredPaymentCreationRequestOp"],
+    ["cancelDeferredPaymentCreationRequest", "cancelDeferredPaymentCreationRequestOp"],
+    ["createCloseDeferredPaymentRequest", "createCloseDeferredPaymentRequestOp"],
+    ["cancelCloseDeferredPaymentRequest", "cancelCloseDeferredPaymentRequestOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -20104,6 +22001,16 @@ xdr.union("OperationBody", {
     createDataOp: xdr.lookup("CreateDataOp"),
     updateDataOp: xdr.lookup("UpdateDataOp"),
     removeDataOp: xdr.lookup("RemoveDataOp"),
+    createDataCreationRequestOp: xdr.lookup("CreateDataCreationRequestOp"),
+    cancelDataCreationRequestOp: xdr.lookup("CancelDataCreationRequestOp"),
+    createDataUpdateRequestOp: xdr.lookup("CreateDataUpdateRequestOp"),
+    createDataRemoveRequestOp: xdr.lookup("CreateDataRemoveRequestOp"),
+    cancelDataUpdateRequestOp: xdr.lookup("CancelDataUpdateRequestOp"),
+    cancelDataRemoveRequestOp: xdr.lookup("CancelDataRemoveRequestOp"),
+    createDeferredPaymentCreationRequestOp: xdr.lookup("CreateDeferredPaymentCreationRequestOp"),
+    cancelDeferredPaymentCreationRequestOp: xdr.lookup("CancelDeferredPaymentCreationRequestOp"),
+    createCloseDeferredPaymentRequestOp: xdr.lookup("CreateCloseDeferredPaymentRequestOp"),
+    cancelCloseDeferredPaymentRequestOp: xdr.lookup("CancelCloseDeferredPaymentRequestOp"),
   },
 });
 
@@ -20225,7 +22132,29 @@ xdr.union("OperationBody", {
 //           UpdateDataOp updateDataOp;
 //       case REMOVE_DATA:
 //           RemoveDataOp removeDataOp;
+//       case CREATE_DATA_CREATION_REQUEST:
+//           CreateDataCreationRequestOp createDataCreationRequestOp;
+//       case CANCEL_DATA_CREATION_REQUEST:
+//           CancelDataCreationRequestOp cancelDataCreationRequestOp;
+//       case CREATE_DATA_UPDATE_REQUEST:
+//           CreateDataUpdateRequestOp createDataUpdateRequestOp;
+//       case CREATE_DATA_REMOVE_REQUEST:
+//           CreateDataRemoveRequestOp createDataRemoveRequestOp;
+//       case CANCEL_DATA_UPDATE_REQUEST:
+//           CancelDataUpdateRequestOp cancelDataUpdateRequestOp;
+//       case CANCEL_DATA_REMOVE_REQUEST:
+//           CancelDataRemoveRequestOp cancelDataRemoveRequestOp;
+//       case CREATE_DEFERRED_PAYMENT_CREATION_REQUEST:
+//           CreateDeferredPaymentCreationRequestOp createDeferredPaymentCreationRequestOp;
+//       case CANCEL_DEFERRED_PAYMENT_CREATION_REQUEST:
+//           CancelDeferredPaymentCreationRequestOp cancelDeferredPaymentCreationRequestOp;
+//       case CREATE_CLOSE_DEFERRED_PAYMENT_REQUEST:
+//           CreateCloseDeferredPaymentRequestOp createCloseDeferredPaymentRequestOp;
+//       case CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST:
+//           CancelCloseDeferredPaymentRequestOp cancelCloseDeferredPaymentRequestOp;
+//   
 //       }
+//   
 //       body;
 //   };
 //
@@ -20557,6 +22486,27 @@ xdr.struct("AccountRuleRequirement", [
 //           UpdateDataResult updateDataResult;
 //       case REMOVE_DATA:
 //           RemoveDataResult removeDataResult;
+//       case CREATE_DATA_CREATION_REQUEST:
+//           CreateDataCreationRequestResult createDataCreationRequestResult;
+//       case CANCEL_DATA_CREATION_REQUEST:
+//           CancelDataCreationRequestResult cancelDataCreationRequestResult;
+//       case CREATE_DATA_UPDATE_REQUEST:
+//           CreateDataUpdateRequestResult createDataUpdateRequestResult;
+//       case CREATE_DATA_REMOVE_REQUEST:
+//           CreateDataRemoveRequestResult createDataRemoveRequestResult;
+//       case CANCEL_DATA_UPDATE_REQUEST:
+//           CancelDataUpdateRequestResult cancelDataUpdateRequestResult;
+//       case CANCEL_DATA_REMOVE_REQUEST:
+//           CancelDataRemoveRequestResult cancelDataRemoveRequestResult;
+//       case CREATE_DEFERRED_PAYMENT_CREATION_REQUEST:
+//               CreateDeferredPaymentCreationRequestResult createDeferredPaymentCreationRequestResult;
+//       case CANCEL_DEFERRED_PAYMENT_CREATION_REQUEST:
+//           CancelDeferredPaymentCreationRequestResult cancelDeferredPaymentCreationRequestResult;
+//       case CREATE_CLOSE_DEFERRED_PAYMENT_REQUEST:
+//           CreateCloseDeferredPaymentRequestResult createCloseDeferredPaymentRequestResult;
+//       case CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST:
+//           CancelCloseDeferredPaymentRequestResult cancelCloseDeferredPaymentRequestResult;
+//   
 //       }
 //
 // ===========================================================================
@@ -20617,6 +22567,16 @@ xdr.union("OperationResultTr", {
     ["createDatum", "createDataResult"],
     ["updateDatum", "updateDataResult"],
     ["removeDatum", "removeDataResult"],
+    ["createDataCreationRequest", "createDataCreationRequestResult"],
+    ["cancelDataCreationRequest", "cancelDataCreationRequestResult"],
+    ["createDataUpdateRequest", "createDataUpdateRequestResult"],
+    ["createDataRemoveRequest", "createDataRemoveRequestResult"],
+    ["cancelDataUpdateRequest", "cancelDataUpdateRequestResult"],
+    ["cancelDataRemoveRequest", "cancelDataRemoveRequestResult"],
+    ["createDeferredPaymentCreationRequest", "createDeferredPaymentCreationRequestResult"],
+    ["cancelDeferredPaymentCreationRequest", "cancelDeferredPaymentCreationRequestResult"],
+    ["createCloseDeferredPaymentRequest", "createCloseDeferredPaymentRequestResult"],
+    ["cancelCloseDeferredPaymentRequest", "cancelCloseDeferredPaymentRequestResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -20672,6 +22632,16 @@ xdr.union("OperationResultTr", {
     createDataResult: xdr.lookup("CreateDataResult"),
     updateDataResult: xdr.lookup("UpdateDataResult"),
     removeDataResult: xdr.lookup("RemoveDataResult"),
+    createDataCreationRequestResult: xdr.lookup("CreateDataCreationRequestResult"),
+    cancelDataCreationRequestResult: xdr.lookup("CancelDataCreationRequestResult"),
+    createDataUpdateRequestResult: xdr.lookup("CreateDataUpdateRequestResult"),
+    createDataRemoveRequestResult: xdr.lookup("CreateDataRemoveRequestResult"),
+    cancelDataUpdateRequestResult: xdr.lookup("CancelDataUpdateRequestResult"),
+    cancelDataRemoveRequestResult: xdr.lookup("CancelDataRemoveRequestResult"),
+    createDeferredPaymentCreationRequestResult: xdr.lookup("CreateDeferredPaymentCreationRequestResult"),
+    cancelDeferredPaymentCreationRequestResult: xdr.lookup("CancelDeferredPaymentCreationRequestResult"),
+    createCloseDeferredPaymentRequestResult: xdr.lookup("CreateCloseDeferredPaymentRequestResult"),
+    cancelCloseDeferredPaymentRequestResult: xdr.lookup("CancelCloseDeferredPaymentRequestResult"),
   },
 });
 
@@ -20788,6 +22758,27 @@ xdr.union("OperationResultTr", {
 //           UpdateDataResult updateDataResult;
 //       case REMOVE_DATA:
 //           RemoveDataResult removeDataResult;
+//       case CREATE_DATA_CREATION_REQUEST:
+//           CreateDataCreationRequestResult createDataCreationRequestResult;
+//       case CANCEL_DATA_CREATION_REQUEST:
+//           CancelDataCreationRequestResult cancelDataCreationRequestResult;
+//       case CREATE_DATA_UPDATE_REQUEST:
+//           CreateDataUpdateRequestResult createDataUpdateRequestResult;
+//       case CREATE_DATA_REMOVE_REQUEST:
+//           CreateDataRemoveRequestResult createDataRemoveRequestResult;
+//       case CANCEL_DATA_UPDATE_REQUEST:
+//           CancelDataUpdateRequestResult cancelDataUpdateRequestResult;
+//       case CANCEL_DATA_REMOVE_REQUEST:
+//           CancelDataRemoveRequestResult cancelDataRemoveRequestResult;
+//       case CREATE_DEFERRED_PAYMENT_CREATION_REQUEST:
+//               CreateDeferredPaymentCreationRequestResult createDeferredPaymentCreationRequestResult;
+//       case CANCEL_DEFERRED_PAYMENT_CREATION_REQUEST:
+//           CancelDeferredPaymentCreationRequestResult cancelDeferredPaymentCreationRequestResult;
+//       case CREATE_CLOSE_DEFERRED_PAYMENT_REQUEST:
+//           CreateCloseDeferredPaymentRequestResult createCloseDeferredPaymentRequestResult;
+//       case CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST:
+//           CancelCloseDeferredPaymentRequestResult cancelCloseDeferredPaymentRequestResult;
+//   
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -21201,7 +23192,9 @@ xdr.union("PublicKey", {
 //       ACCOUNT_SPECIFIC_RULE = 36,
 //       INITIATE_KYC_RECOVERY = 37,
 //       SWAP = 38,
-//       DATA = 39
+//       DATA = 39,
+//       CUSTOM = 40,
+//       DEFERRED_PAYMENT = 41
 //   };
 //
 // ===========================================================================
@@ -21243,6 +23236,8 @@ xdr.enum("LedgerEntryType", {
   initiateKycRecovery: 37,
   swap: 38,
   datum: 39,
+  custom: 40,
+  deferredPayment: 41,
 });
 
 // === xdr source ============================================================
@@ -21484,7 +23479,17 @@ xdr.struct("Fee", [
 //       CREATE_REDEMPTION_REQUEST = 56,
 //       CREATE_DATA = 57,
 //       UPDATE_DATA = 58,
-//       REMOVE_DATA = 59
+//       REMOVE_DATA = 59,
+//       CREATE_DATA_CREATION_REQUEST = 60,
+//       CANCEL_DATA_CREATION_REQUEST = 61,
+//       CREATE_DATA_UPDATE_REQUEST = 62,
+//       CREATE_DATA_REMOVE_REQUEST = 63,
+//       CANCEL_DATA_UPDATE_REQUEST = 64,
+//       CANCEL_DATA_REMOVE_REQUEST = 65,
+//       CREATE_DEFERRED_PAYMENT_CREATION_REQUEST = 66,
+//       CANCEL_DEFERRED_PAYMENT_CREATION_REQUEST = 67,
+//       CREATE_CLOSE_DEFERRED_PAYMENT_REQUEST = 68,
+//       CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST = 69
 //   };
 //
 // ===========================================================================
@@ -21542,6 +23547,16 @@ xdr.enum("OperationType", {
   createDatum: 57,
   updateDatum: 58,
   removeDatum: 59,
+  createDataCreationRequest: 60,
+  cancelDataCreationRequest: 61,
+  createDataUpdateRequest: 62,
+  createDataRemoveRequest: 63,
+  cancelDataUpdateRequest: 64,
+  cancelDataRemoveRequest: 65,
+  createDeferredPaymentCreationRequest: 66,
+  cancelDeferredPaymentCreationRequest: 67,
+  createCloseDeferredPaymentRequest: 68,
+  cancelCloseDeferredPaymentRequest: 69,
 });
 
 // === xdr source ============================================================
