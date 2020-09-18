@@ -27,8 +27,9 @@ import { ChangeRole } from './change_role'
 import { KYCRecoveryHelper } from './kyc_recovery'
 import { Redemption } from './redemption'
 import { Data } from './data'
+import { DeferredPayment } from './deferred_payment'
 
-const masterKP = base.Keypair.fromSecret(config.master_seed)
+export const masterKP = base.Keypair.fromSecret(config.master_seed)
 const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
 
 export const sdk = new TokenD(config.api_url, {
@@ -71,3 +72,4 @@ export const kycRecoveryHelper = new KYCRecoveryHelper(DEFAULTS)
 export const swapHelper = new Swap(DEFAULTS)
 export const redemptionHelper = new Redemption(DEFAULTS)
 export const dataHelper = new Data(DEFAULTS)
+export const deferredPaymentHelper = new DeferredPayment(DEFAULTS)

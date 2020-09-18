@@ -464,6 +464,9 @@ export class Operation extends BaseOperation {
         CreateDeferredPaymentCreationRequestBuilder
           .cancelDeferredPaymentCreationRequestToObject(result, attrs)
         break
+      case xdr.OperationType.manageBalance():
+        // FIXME: Parse response
+        break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)
     }
