@@ -44,6 +44,7 @@ import { RedemptionRequestBuilder } from './operations/redemption_request_op_bui
 import { RemoveAssetOpBuilder } from './operations/remove_asset_op_builder'
 import { RemoveAssetPairOpBuilder } from './operations/remove_asset_pair_op_builder'
 import { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
+import { DataRequestBuilder } from './operations/data_request_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -454,6 +455,24 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.manageSignerRole():
         ManageSignerRoleBuilder.manageSignerRoleToObject(result, attrs)
+        break
+      case xdr.OperationType.createDataCreationRequest():
+        DataRequestBuilder.createDataCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelDataCreationRequest():
+        DataRequestBuilder.cancelDataCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createDataUpdateRequest():
+        DataRequestBuilder.createDataUpdateRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelDataUpdateRequest():
+        DataRequestBuilder.cancelDataUpdateRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createDataRemoveRequest():
+        DataRequestBuilder.createDataRemoveRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelDataRemoveRequest():
+        DataRequestBuilder.cancelDataRemoveRequestToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)

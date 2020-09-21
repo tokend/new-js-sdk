@@ -28,7 +28,7 @@ import { KYCRecoveryHelper } from './kyc_recovery'
 import { Redemption } from './redemption'
 import { Data } from './data'
 
-const masterKP = base.Keypair.fromSecret(config.master_seed)
+export const masterKP = base.Keypair.fromSecret(config.master_seed)
 const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
 
 export const sdk = new TokenD(config.api_url, {
