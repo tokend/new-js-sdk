@@ -123,13 +123,22 @@ export class WalletsManager {
       kdfParams, password
     )
 
-    const defaultSigner = new Signer({
-      id: mainWallet.accountId,
-      roleId: roleId.value.u32,
-      weight: 1000,
-      identity: 1
-    })
-    signers.push(defaultSigner)
+    const defaultSignerRoleId = roleId.value.u32 || roleId.value.u64
+    const defaultSigner = signers
+      .find(el => el.attributes.role_id === defaultSignerRoleId)
+    if (defaultSigner) {
+      if (!defaultSigner.id) {
+        defaultSigner.id = mainWallet.accountId
+      }
+    } else {
+      const defaultSigner = new Signer({
+        id: mainWallet.accountId,
+        roleId: defaultSignerRoleId,
+        weight: 1000,
+        identity: 1
+      })
+      signers.push(defaultSigner)
+    }
 
     const relationshipsSigners = signers.map(item => {
       return {

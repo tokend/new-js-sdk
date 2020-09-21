@@ -132,14 +132,16 @@ export class Wallet {
       crypto.decryptData(opts.keychainData, rawWalletKey)
     )
 
+    const mainSeed = decryptedKeychain.seed || decryptedKeychain.seeds[0]
+    const allSeeds = decryptedKeychain.seeds || [mainSeed]
     return new Wallet(
       opts.email,
-      Keypair.fromSecret(decryptedKeychain.seed || decryptedKeychain.seeds[0]),
+      Keypair.fromSecret(mainSeed),
       opts.accountId || decryptedKeychain.accountId,
       sjcl.codec.hex.fromBits(rawWalletId),
       opts.sessionId,
       opts.sessionKey,
-      decryptedKeychain.seed ? [decryptedKeychain.seed] : decryptedKeychain.seeds
+      allSeeds
     )
   }
 

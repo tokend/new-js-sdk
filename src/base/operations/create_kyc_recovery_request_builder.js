@@ -53,7 +53,7 @@ export class CreateKYCRecoveryRequestBuilder {
       validators.validateUint64({
         value: item.identity,
         fieldName: 'opts.signers[].identity',
-        min: 1
+        min: 0
       })
     })
     attrs.targetAccount = Keypair
