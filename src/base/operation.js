@@ -45,6 +45,7 @@ import { RemoveAssetOpBuilder } from './operations/remove_asset_op_builder'
 import { RemoveAssetPairOpBuilder } from './operations/remove_asset_pair_op_builder'
 import { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
 import { CreateDeferredPaymentCreationRequestBuilder } from './operations/create_deferred_payment_creation_request'
+import { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_close_deferred_payment_request'
 
 export class Operation extends BaseOperation {
   /**
@@ -463,6 +464,14 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.cancelDeferredPaymentCreationRequest():
         CreateDeferredPaymentCreationRequestBuilder
           .cancelDeferredPaymentCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createCloseDeferredPaymentRequest():
+        CreateCloseDeferredPaymentRequestBuilder
+          .createCloseDeferredPaymentRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelCloseDeferredPaymentRequest():
+        CreateCloseDeferredPaymentRequestBuilder
+          .cancelCloseDeferredPaymentRequestToObject(result, attrs)
         break
       case xdr.OperationType.manageBalance():
         // FIXME: Parse response
