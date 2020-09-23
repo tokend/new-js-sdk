@@ -52,6 +52,7 @@ export { RemoveDataBuilder } from './operations/remove_data_builder'
 export { ManageAccountRoleBuilder } from './operations/manage_account_role_builder'
 export { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
 export { CreateDeferredPaymentCreationRequestBuilder } from './operations/create_deferred_payment_creation_request'
+export { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_close_deferred_payment_request'
 
 export * from './strkey'
 

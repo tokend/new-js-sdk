@@ -59,11 +59,18 @@ describe('Deferred payments', ()  => {
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
-      allTasks: 1,
+      allTasks: 0,
       creatorDetails: {
         blobs: [resp.data.id]
       }
     })
     log.info(`Created request with id ${requestID}`)
+
+    await deferredPaymentHelper.closeDeferredPayment({
+      deferredPaymentID: '8',
+      destinationBalanceID: fromBalance.balanceId,
+      amount: '100',
+      allTasks: 0
+    })
   })
 })
