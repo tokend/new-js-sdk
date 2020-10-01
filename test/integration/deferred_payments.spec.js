@@ -68,7 +68,7 @@ describe('Deferred payments', ()  => {
 
     await deferredPaymentHelper.closeDeferredPayment({
       deferredPaymentID: '8',
-      destinationBalanceID: fromBalance.balanceId,
+      destination: fromBalance.balanceId,
       amount: '100',
       allTasks: 0
     })

@@ -34,7 +34,6 @@ export class CreateDeferredPaymentCreationRequestBuilder {
       sourceBalance: Keypair.fromBalanceId(opts.sourceBalanceId).xdrBalanceId(),
       destination: Keypair.fromAccountId(opts.destination).xdrAccountId(),
       amount: BaseOperation._toUnsignedXDRAmount(opts.amount),
-      feeData: this._buildFeeData(opts),
       sequenceNumber: opts.sequenceNumber,
       creatorDetails: JSON.stringify(opts.creatorDetails),
       ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
@@ -82,52 +81,12 @@ export class CreateDeferredPaymentCreationRequestBuilder {
     validateCreatorDetails({ value: opts.creatorDetails, fieldName: 'opts.creatorDetails' })
   }
 
-  static _buildFeeData (opts) {
-    let sourceFee = new xdr.Fee({
-      percent: BaseOperation._toUnsignedXDRAmount('0'),
-      fixed: BaseOperation._toUnsignedXDRAmount('0'),
-      ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
-    })
-    let destinationFee = new xdr.Fee({
-      percent: BaseOperation._toUnsignedXDRAmount(
-        '0'
-      ),
-      fixed: BaseOperation._toUnsignedXDRAmount(
-        '0'
-      ),
-      ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
-    })
-    return new xdr.PaymentFeeData({
-      sourceFee,
-      destinationFee,
-      sourcePaysForDest: false,
-      ext: new xdr.PaymentFeeDataExt(xdr.LedgerVersion.emptyVersion())
-    })
-  }
-
   static createDeferredPaymentCreationRequestToObject (result, attrs) {
     result.requestID = attrs.requestId().toString()
     result.allTasks = attrs.allTasks()
     result.sourceBalanceId = BaseOperation.balanceIdtoString(attrs.request().sourceBalance())
     result.destination = BaseOperation.accountIdtoAddress(attrs.request().destination())
     result.amount = BaseOperation._fromXDRAmount(attrs.request().amount())
-    result.feeData = {
-      sourceFee: {
-        fixed: '0',
-        percent: BaseOperation._fromXDRAmount(
-          attrs.request().feeData().sourceFee().percent()
-        )
-      },
-      destinationFee: {
-        fixed: BaseOperation._fromXDRAmount(
-          attrs.request().feeData().destinationFee().fixed()
-        ),
-        percent: BaseOperation._fromXDRAmount(
-          attrs.request().feeData().destinationFee().percent()
-        )
-      },
-      sourcePaysForDest: attrs.request().feeData().sourcePaysForDest()
-    }
     result.creatorDetails = JSON.parse(attrs.request().creatorDetails())
     result.sequenceNumber = attrs.request().sequenceNumber().toString()
 

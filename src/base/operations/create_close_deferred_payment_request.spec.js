@@ -11,7 +11,7 @@ describe.only('create close deferred payment request', () => {
     let opts = {
       requestID: '0',
       deferredPaymentID: '1',
-      destinationBalanceID: destinationBalanceId,
+      destination: destinationBalanceId,
       amount: amount,
       creatorDetails: {}
     }
@@ -22,7 +22,7 @@ describe.only('create close deferred payment request', () => {
     let obj = Operation.operationToObject(operation)
     expect(obj.requestID).to.be.equal(opts.requestID)
     expect(obj.deferredPaymentID).to.be.equal(opts.deferredPaymentID)
-    expect(obj.destinationBalanceID).to.be.equal(opts.destinationBalanceID)
+    expect(obj.destination).to.be.equal(opts.destination)
     expect(obj.amount).to.be.equal(opts.amount)
     expect(JSON.stringify(obj.creatorDetails)).to.be.equal(JSON.stringify(opts.creatorDetails))
   })

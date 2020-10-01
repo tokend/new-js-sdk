@@ -1,6 +1,6 @@
-// revision: 868cd261ba9b031ae894c39a458c6d22a917915c
+// revision: 2d66fe9f7016a264f24267b49e8c076df9229c93
 // branch:   feature/deferred-payment
-// Automatically generated on 2020-09-17T13:41:14+00:00
+// Automatically generated on 2020-10-01T09:32:22+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1019,7 +1019,8 @@ xdr.struct("DataEntry", [
 //       uint64 id;
 //   
 //       uint64 amount;
-//       PaymentFeeData feeData;
+//   
+//       longstring details;
 //   
 //       //: Creator of the entry
 //       AccountID source;
@@ -1035,7 +1036,7 @@ xdr.struct("DataEntry", [
 xdr.struct("DeferredPaymentEntry", [
   ["id", xdr.lookup("Uint64")],
   ["amount", xdr.lookup("Uint64")],
-  ["feeData", xdr.lookup("PaymentFeeData")],
+  ["details", xdr.lookup("Longstring")],
   ["source", xdr.lookup("AccountId")],
   ["sourceBalance", xdr.lookup("BalanceId")],
   ["destination", xdr.lookup("AccountId")],
@@ -7633,10 +7634,6 @@ xdr.enum("CloseDeferredPaymentEffect", {
 //   
 //       CloseDeferredPaymentEffect effect;
 //   
-//       uint64 deferredPaymentRemainder;
-//   
-//       uint64 totalFee;
-//       uint64 totalAmount;
 //       EmptyExt ext;
 //   };
 //
@@ -7646,9 +7643,6 @@ xdr.struct("CloseDeferredPaymentResult", [
   ["destination", xdr.lookup("AccountId")],
   ["destinationBalance", xdr.lookup("BalanceId")],
   ["effect", xdr.lookup("CloseDeferredPaymentEffect")],
-  ["deferredPaymentRemainder", xdr.lookup("Uint64")],
-  ["totalFee", xdr.lookup("Uint64")],
-  ["totalAmount", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -17505,8 +17499,6 @@ xdr.struct("AtomicSwapBidExtended", [
 //       uint64 deferredPaymentID;
 //       AccountID destination;
 //       AccountID source;
-//       uint64 totalFee;
-//       uint64 totalAmount;
 //   
 //       EmptyExt ext;
 //   };
@@ -17516,8 +17508,6 @@ xdr.struct("CreateDeferredPaymentResult", [
   ["deferredPaymentId", xdr.lookup("Uint64")],
   ["destination", xdr.lookup("AccountId")],
   ["source", xdr.lookup("AccountId")],
-  ["totalFee", xdr.lookup("Uint64")],
-  ["totalAmount", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
 
@@ -20756,16 +20746,58 @@ xdr.struct("ChangeRoleRequest", [
 
 // === xdr source ============================================================
 //
+//   //: Defines the type of destination of the payment
+//   enum CloseDeferredPaymentDestinationType {
+//       ACCOUNT = 0,
+//       BALANCE = 1
+//   };
+//
+// ===========================================================================
+xdr.enum("CloseDeferredPaymentDestinationType", {
+  account: 0,
+  balance: 1,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (CloseDeferredPaymentDestinationType type) {
+//           case ACCOUNT:
+//               AccountID accountID;
+//           case BALANCE:
+//               BalanceID balanceID;
+//       }
+//
+// ===========================================================================
+xdr.union("CloseDeferredPaymentRequestDestination", {
+  switchOn: xdr.lookup("CloseDeferredPaymentDestinationType"),
+  switchName: "type",
+  switches: [
+    ["account", "accountId"],
+    ["balance", "balanceId"],
+  ],
+  arms: {
+    accountId: xdr.lookup("AccountId"),
+    balanceId: xdr.lookup("BalanceId"),
+  },
+});
+
+// === xdr source ============================================================
+//
 //   struct CloseDeferredPaymentRequest {
 //       uint64 deferredPaymentID;
 //   
-//       BalanceID destinationBalance;
+//       //: `destination` defines the type of instance that receives the payment based on given PaymentDestinationType
+//       union switch (CloseDeferredPaymentDestinationType type) {
+//           case ACCOUNT:
+//               AccountID accountID;
+//           case BALANCE:
+//               BalanceID balanceID;
+//       } destination;
 //   
 //       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
 //       longstring creatorDetails; // details set by requester
 //   
 //       uint64 amount;
-//       PaymentFeeData feeData;
 //   
 //       uint32 sequenceNumber;
 //   
@@ -20775,10 +20807,9 @@ xdr.struct("ChangeRoleRequest", [
 // ===========================================================================
 xdr.struct("CloseDeferredPaymentRequest", [
   ["deferredPaymentId", xdr.lookup("Uint64")],
-  ["destinationBalance", xdr.lookup("BalanceId")],
+  ["destination", xdr.lookup("CloseDeferredPaymentRequestDestination")],
   ["creatorDetails", xdr.lookup("Longstring")],
   ["amount", xdr.lookup("Uint64")],
-  ["feeData", xdr.lookup("PaymentFeeData")],
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["ext", xdr.lookup("EmptyExt")],
 ]);
@@ -20895,7 +20926,6 @@ xdr.struct("DataCreationRequest", [
 //       AccountID destination;
 //   
 //       uint64 amount;
-//       PaymentFeeData feeData;
 //       uint32 sequenceNumber;
 //   
 //       longstring creatorDetails; // details set by requester
@@ -20908,7 +20938,6 @@ xdr.struct("CreateDeferredPaymentRequest", [
   ["sourceBalance", xdr.lookup("BalanceId")],
   ["destination", xdr.lookup("AccountId")],
   ["amount", xdr.lookup("Uint64")],
-  ["feeData", xdr.lookup("PaymentFeeData")],
   ["sequenceNumber", xdr.lookup("Uint32")],
   ["creatorDetails", xdr.lookup("Longstring")],
   ["ext", xdr.lookup("EmptyExt")],

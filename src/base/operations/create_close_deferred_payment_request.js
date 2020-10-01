@@ -5,7 +5,7 @@ import { BaseOperation } from './base_operation'
 import { UnsignedHyper } from 'js-xdr'
 import {
   validateAmount,
-  validateBalanceKey, validateCreatorDetails,
+  validateCreatorDetails,
   validateUint64
 } from '../../utils/validators'
 
@@ -15,7 +15,7 @@ export class CreateCloseDeferredPaymentRequestBuilder {
    * @param {object} opts
    * @param {string|number} opts.requestID - set to zero to create new request
    * @param {string} opts.deferredPaymentID
-   * @param {string} opts.destinationBalanceID
+   * @param {string} opts.destination
    * @param {number|string} opts.amount
    * @param {number} opts.sequenceNumber
    * @param {object} opts.creatorDetails
@@ -29,15 +29,25 @@ export class CreateCloseDeferredPaymentRequestBuilder {
     }
     this._validateRequest(opts)
 
-    let request = new xdr.CloseDeferredPaymentRequest({
+    let requestAttrs = {
       deferredPaymentId: UnsignedHyper.fromString(opts.deferredPaymentID),
-      destinationBalance: Keypair.fromBalanceId(opts.destinationBalanceID).xdrAccountId(),
       amount: BaseOperation._toUnsignedXDRAmount(opts.amount),
-      feeData: this._buildFeeData(opts),
       sequenceNumber: opts.sequenceNumber,
       creatorDetails: JSON.stringify(opts.creatorDetails),
       ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
-    })
+    }
+
+    if (Keypair.isValidPublicKey(opts.destination)) {
+      requestAttrs.destination = new xdr.CloseDeferredPaymentRequestDestination.account(
+        Keypair.fromAccountId(opts.destination).xdrAccountId()
+      )
+    } else {
+      requestAttrs.destination = new xdr.CloseDeferredPaymentRequestDestination.balance(
+        Keypair.fromBalanceId(opts.destination).xdrAccountId()
+      )
+    }
+
+    let request = new xdr.CloseDeferredPaymentRequest(requestAttrs)
 
     let attrs = {
       requestId: UnsignedHyper.fromString(opts.requestID),
@@ -76,58 +86,33 @@ export class CreateCloseDeferredPaymentRequestBuilder {
   static _validateRequest (opts) {
     validateUint64({ value: opts.requestID, fieldName: 'opts.requestID' })
     validateUint64({ value: opts.deferredPaymentID, fieldName: 'opts.deferredPaymentID' })
-    validateBalanceKey({ value: opts.destinationBalanceID, fieldName: 'opts.destinationBalanceID' })
+    if (!Keypair.isValidPublicKey(opts.destination) && !Keypair
+      .isValidBalanceKey(opts.destination)) {
+      throw new TypeError(
+        `opts.destination must be a valid balance key, got ${JSON.stringify(opts.destination)}`
+      )
+    }
     validateAmount({ value: opts.amount, fieldName: 'opts.amount' })
     validateCreatorDetails({ value: opts.creatorDetails, fieldName: 'opts.creatorDetails' })
-  }
-
-  static _buildFeeData (opts) {
-    let sourceFee = new xdr.Fee({
-      percent: BaseOperation._toUnsignedXDRAmount('0'),
-      fixed: BaseOperation._toUnsignedXDRAmount('0'),
-      ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
-    })
-    let destinationFee = new xdr.Fee({
-      percent: BaseOperation._toUnsignedXDRAmount(
-        '0'
-      ),
-      fixed: BaseOperation._toUnsignedXDRAmount(
-        '0'
-      ),
-      ext: new xdr.FeeExt(xdr.LedgerVersion.emptyVersion())
-    })
-    return new xdr.PaymentFeeData({
-      sourceFee,
-      destinationFee,
-      sourcePaysForDest: false,
-      ext: new xdr.PaymentFeeDataExt(xdr.LedgerVersion.emptyVersion())
-    })
   }
 
   static createCloseDeferredPaymentRequestToObject (result, attrs) {
     result.requestID = attrs.requestId().toString()
     result.allTasks = attrs.allTasks()
     result.deferredPaymentID = attrs.request().deferredPaymentId().toString()
-    result.destinationBalanceID = BaseOperation
-      .balanceIdtoString(attrs.request().destinationBalance())
-    result.amount = BaseOperation._fromXDRAmount(attrs.request().amount())
-    result.feeData = {
-      sourceFee: {
-        fixed: '0',
-        percent: BaseOperation._fromXDRAmount(
-          attrs.request().feeData().sourceFee().percent()
-        )
-      },
-      destinationFee: {
-        fixed: BaseOperation._fromXDRAmount(
-          attrs.request().feeData().destinationFee().fixed()
-        ),
-        percent: BaseOperation._fromXDRAmount(
-          attrs.request().feeData().destinationFee().percent()
-        )
-      },
-      sourcePaysForDest: attrs.request().feeData().sourcePaysForDest()
+    switch (attrs.request().destination().switch()) {
+      case xdr.CloseDeferredPaymentRequestDestination.account().switch(): {
+        result.destination = BaseOperation.accountIdtoAddress(
+          attrs.request().destination().accountId())
+        break
+      }
+      case xdr.CloseDeferredPaymentRequestDestination.balance().switch(): {
+        result.destination = BaseOperation.balanceIdtoString(
+          attrs.request().destination().balanceId())
+        break
+      }
     }
+    result.amount = BaseOperation._fromXDRAmount(attrs.request().amount())
     result.creatorDetails = JSON.parse(attrs.request().creatorDetails())
     result.sequenceNumber = attrs.request().sequenceNumber().toString()
 
