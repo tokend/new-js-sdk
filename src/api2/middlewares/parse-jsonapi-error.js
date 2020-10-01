@@ -38,6 +38,8 @@ export function parseJsonapiError (error, axiosInstance) {
         error = new errors.TFARequiredError(error, axiosInstance)
       } else if (errCode === 'verification_required') {
         error = new errors.VerificationRequiredError(error, axiosInstance)
+      } else if (errCode === 'wrong_location') {
+        error = new errors.WrongLocationError(error, axiosInstance)
       } else {
         error = new errors.ForbiddenRequestError(error, axiosInstance)
       }

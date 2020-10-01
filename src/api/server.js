@@ -95,6 +95,8 @@ export class ApiServer extends ServerBase {
                     error,
                     this._axios
                   )
+                } else if (errCode === 'wrong_location') {
+                  error = new errors.WrongLocationError(error, this._axios)
                 } else {
                   error = new errors.ForbiddenRequestError(error, this._axios)
                 }
