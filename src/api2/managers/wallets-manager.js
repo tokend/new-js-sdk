@@ -65,13 +65,11 @@ export class WalletsManager {
    *
    * @param {string} email User's email.
    * @param {string} password User's password.
-   * @param {object} geoPosition User's current geoposition data
+   * @param {object} geocode User's current location data
    *
    * @return {Promise.<Wallet>} User's wallet.
    */
-  async get (email, password, geoPosition) {
-    const isLocationPassed = !_isEmpty(geoPosition)
-
+  async get (email, password, geocode) {
     const { data: kdfParams } = await this.getKdfParams(email)
     const walletId = Wallet.deriveId(
       email, password, kdfParams, kdfParams.salt
@@ -80,10 +78,10 @@ export class WalletsManager {
     let walletResponse
     try {
       walletResponse = await this._apiCaller.get(`/wallets/${walletId}`,
-        isLocationPassed
+        geocode
           ? {
-            location_lat: geoPosition.latitude,
-            location_long: geoPosition.longitude
+            location_lat: geocode.latitude,
+            location_long: geocode.longitude
           }
           : {}
       )
@@ -114,7 +112,7 @@ export class WalletsManager {
    * @param {string} password User's password.
    * @param {Array} [signers] array of {@link Signer}
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
-   * @param {object} geoPosition User's current geoposition data
+   * @param {object} geocode User's current location data
    *
    * @return {Promise.<object>} User's wallet.
    */
@@ -123,7 +121,7 @@ export class WalletsManager {
     password,
     signers = [],
     additionalKeypairs = [],
-    geoPosition = {}
+    geocode = {}
   ) {
     signers.forEach(item => {
       if (!(item instanceof Signer)) {
@@ -165,7 +163,7 @@ export class WalletsManager {
       }
     })
 
-    const isLocationPassed = !_isEmpty(geoPosition)
+    const isgeocodePresent = !_isEmpty(geocode)
 
     const response = await this._apiCaller.post('/wallets', {
       data: {
@@ -193,12 +191,12 @@ export class WalletsManager {
           signers: {
             data: relationshipsSigners
           },
-          ...(isLocationPassed
+          ...(isgeocodePresent
             ? {
               location: {
                 data: {
                   type: 'location',
-                  id: geoPosition.id
+                  id: geocode.id
                 }
               }
             }
@@ -217,13 +215,13 @@ export class WalletsManager {
           }
         },
         ...signers,
-        isLocationPassed
+        isgeocodePresent
           ? {
             type: 'location',
-            id: geoPosition.id,
+            id: geocode.id,
             attributes: {
-              location_lat: geoPosition.latitude,
-              location_long: geoPosition.longitude
+              location_lat: geocode.latitude,
+              location_long: geocode.longitude
             }
           }
           : undefined
@@ -254,7 +252,7 @@ export class WalletsManager {
    * @param {Keypair} recoveryKeypair the keypair to later recover the account
    * @param {string} [referrerId] public key of the referrer
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
-   * @param {object} geoPosition object with user's current location data
+   * @param {object} geocode object with user's current location data
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
@@ -264,7 +262,7 @@ export class WalletsManager {
     recoveryKeypair,
     referrerId = '',
     additionalKeypairs = [],
-    geoPosition = {}
+    geocode = {}
   ) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
     const recoverySigner = new Signer({
@@ -278,7 +276,7 @@ export class WalletsManager {
       password,
       [recoverySigner],
       additionalKeypairs,
-      geoPosition
+      geocode
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()
     return wallet
