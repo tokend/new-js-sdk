@@ -163,7 +163,7 @@ export class WalletsManager {
       }
     })
 
-    const isgeocodePresent = !_isEmpty(geocode)
+    const isGeocodePresent = !_isEmpty(geocode)
 
     const response = await this._apiCaller.post('/wallets', {
       data: {
@@ -191,7 +191,7 @@ export class WalletsManager {
           signers: {
             data: relationshipsSigners
           },
-          ...(isgeocodePresent
+          ...(isGeocodePresent
             ? {
               location: {
                 data: {
@@ -215,7 +215,7 @@ export class WalletsManager {
           }
         },
         ...signers,
-        isgeocodePresent
+        isGeocodePresent
           ? {
             type: 'location',
             id: geocode.id,
