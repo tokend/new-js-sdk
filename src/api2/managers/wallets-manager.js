@@ -196,7 +196,7 @@ export class WalletsManager {
               location: {
                 data: {
                   type: 'location',
-                  id: geocode.id
+                  id: `${geocode.latitude}:${geocode.longitude}`
                 }
               }
             }
@@ -218,7 +218,7 @@ export class WalletsManager {
         isGeocodePresent
           ? {
             type: 'location',
-            id: geocode.id,
+            id: `${geocode.latitude}:${geocode.longitude}`,
             attributes: {
               location_lat: geocode.latitude,
               location_long: geocode.longitude
