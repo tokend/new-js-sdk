@@ -8,11 +8,13 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
-### Added 
+### Added
 - Login rejection functionality
 
 ### Fixed
 - A bug with the omitted key chain seeds if the `seed` property present
+- An issue with missing `manageBalance`, `manageAssetPair` and
+  `createSaleRequest` operations decoding
 
 ### Changed
 - Now default signer can be provided on the wallet creation

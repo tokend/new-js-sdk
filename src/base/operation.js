@@ -456,6 +456,12 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.manageSignerRole():
         ManageSignerRoleBuilder.manageSignerRoleToObject(result, attrs)
         break
+      case xdr.OperationType.manageAssetPair():
+        break
+      case xdr.OperationType.manageBalance():
+        break
+      case xdr.OperationType.createSaleRequest():
+        break
       case xdr.OperationType.createDataCreationRequest():
         DataRequestBuilder.createDataCreationRequestToObject(result, attrs)
         break
