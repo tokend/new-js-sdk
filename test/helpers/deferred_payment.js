@@ -15,7 +15,15 @@ export class DeferredPayment extends Helper {
     return getRequestIdFromResultXdr(response.resultXdr, 'createDeferredPaymentCreationRequestResult')
   }
 
-  async closeDeferredPayment(opts, ownerKp = this.masterKp) {
+  async cancelDeferredPayment (opts, ownerKp = this.masterKp) {
+    const operation = base.CreateDeferredPaymentCreationRequestBuilder
+      .cancelDeferredPaymentCreationRequest(opts)
+
+    const response = await this.submit(operation, ownerKp)
+    return response
+  }
+
+  async closeDeferredPayment (opts, ownerKp = this.masterKp) {
     const DEFAULTS = {
       requestID: '0',
       creatorDetails: {}
@@ -26,5 +34,13 @@ export class DeferredPayment extends Helper {
 
     const response = await this.submit(operation, ownerKp)
     return getRequestIdFromResultXdr(response.resultXdr, 'createCloseDeferredPaymentRequestResult')
+  }
+
+  async cancelCloseDeferredPayment (opts, ownerKp = this.masterKp) {
+    const operation = base.CreateCloseDeferredPaymentRequestBuilder
+      .cancelCloseDeferredPaymentRequest(opts)
+
+    const response = await this.submit(operation, ownerKp)
+    return response
   }
 }
