@@ -66,11 +66,11 @@ describe('Deferred payments', ()  => {
     })
     log.info(`Created request with id ${requestID}`)
 
-    await deferredPaymentHelper.closeDeferredPayment({
-      deferredPaymentID: '8',
-      destination: fromBalance.balanceId,
-      amount: '100',
-      allTasks: 0
-    })
+    // await deferredPaymentHelper.closeDeferredPayment({
+    //   deferredPaymentID: '8',
+    //   destination: fromBalance.balanceId,
+    //   amount: '100',
+    //   allTasks: 0
+    // })
   })
 })
