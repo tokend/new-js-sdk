@@ -53,6 +53,7 @@ export { ManageAccountRoleBuilder } from './operations/manage_account_role_build
 export { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
 export { CreateDeferredPaymentCreationRequestBuilder } from './operations/create_deferred_payment_creation_request'
 export { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_close_deferred_payment_request'
+export { DataRequestBuilder } from './operations/data_request_builder'
 
 export * from './strkey'
 

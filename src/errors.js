@@ -226,6 +226,15 @@ export class NotAllowedError extends ServerError {}
 export class ForbiddenRequestError extends ServerError {}
 
 /**
+ * Wrong location.
+ *
+ * @export
+ * @class
+ */
+
+export class WrongLocationError extends ServerError {}
+
+/**
  * Two Factor auth required.
  *
  * @export

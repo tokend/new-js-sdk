@@ -46,6 +46,7 @@ import { RemoveAssetPairOpBuilder } from './operations/remove_asset_pair_op_buil
 import { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder'
 import { CreateDeferredPaymentCreationRequestBuilder } from './operations/create_deferred_payment_creation_request'
 import { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_close_deferred_payment_request'
+import { DataRequestBuilder } from './operations/data_request_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -473,8 +474,31 @@ export class Operation extends BaseOperation {
         CreateCloseDeferredPaymentRequestBuilder
           .cancelCloseDeferredPaymentRequestToObject(result, attrs)
         break
+      case xdr.OperationType.createSaleRequest():
+        break
+      case xdr.OperationType.createDataCreationRequest():
+        DataRequestBuilder.createDataCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelDataCreationRequest():
+        DataRequestBuilder.cancelDataCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createDataUpdateRequest():
+        DataRequestBuilder.createDataUpdateRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelDataUpdateRequest():
+        DataRequestBuilder.cancelDataUpdateRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.createDataRemoveRequest():
+        DataRequestBuilder.createDataRemoveRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelDataRemoveRequest():
+        DataRequestBuilder.cancelDataRemoveRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.manageAssetPair():
+        // TODO
+        break
       case xdr.OperationType.manageBalance():
-        // FIXME: Parse response
+        // TODO
         break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)
