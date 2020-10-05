@@ -8,13 +8,16 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
-### Added
+### Fixed
+- An issue with missing `manageBalance`, `manageAssetPair` and
+  `createSaleRequest` operations decoding
+  
+## [1.14.0-rc.4] - 2020-10-05
+### Added 
 - Login rejection functionality
 
 ### Fixed
 - A bug with the omitted key chain seeds if the `seed` property present
-- An issue with missing `manageBalance`, `manageAssetPair` and
-  `createSaleRequest` operations decoding
 
 ### Changed
 - Now default signer can be provided on the wallet creation
@@ -325,7 +328,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.4...HEAD
+[1.14.0-rc.4]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3...1.14.0-rc.4
 [1.14.0-rc.3]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.2...1.14.0-rc.3
 [1.14.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.1...1.14.0-rc.2
 [1.14.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.0...1.14.0-rc.1
