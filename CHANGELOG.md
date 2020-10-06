@@ -7,14 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.14.0-rc.6] - 2020-10-06
+### Added
+- To Wallet:
+  - `switchSigningKeypair()`
+  - `keypairs` and `nonSigningKeypairs` getters
+  - static and instance `clone()`
+- To WalletsManager:
+  - `changeEmail()`
+
+### Changed
+- Exposed `getSigners()` of SignersManager
+
+## [1.14.0-rc.5] - 2020-10-05
+### Fixed
+- An issue with missing `manageBalance`, `manageAssetPair` and
+  `createSaleRequest` operations decoding
+
+## [1.14.0-rc.4] - 2020-10-05
 ### Added
 - Login rejection functionality
 
 ### Fixed
 - A bug with the omitted key chain seeds if the `seed` property present
-- An issue with missing `manageBalance`, `manageAssetPair` and
-  `createSaleRequest` operations decoding
 
 ### Changed
 - Now default signer can be provided on the wallet creation
@@ -325,7 +340,10 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.6...HEAD
+[1.14.0-rc.6]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.5...1.14.0-rc.6
+[1.14.0-rc.5]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.4...1.14.0-rc.5
+[1.14.0-rc.4]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3...1.14.0-rc.4
 [1.14.0-rc.3]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.2...1.14.0-rc.3
 [1.14.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.1...1.14.0-rc.2
 [1.14.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.0...1.14.0-rc.1

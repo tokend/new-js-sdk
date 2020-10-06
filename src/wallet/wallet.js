@@ -165,6 +165,26 @@ export class Wallet {
     )
   }
 
+  /** @returns {Wallet} New wallet */
+  static clone (wallet) {
+    if (!(wallet instanceof Wallet)) {
+      throw new TypeError('the arg should be a Wallet instance')
+    }
+    return new Wallet(
+      wallet._email,
+      wallet._signingKeypair,
+      wallet._accountId,
+      wallet._id,
+      wallet._sessionId,
+      wallet._sessionKey,
+      wallet._keypairs
+    )
+  }
+
+  clone () {
+    return Wallet.clone(this)
+  }
+
   /**
    * Derive the wallet ID.
    *
@@ -226,6 +246,18 @@ export class Wallet {
    */
   get keypair () {
     return this._signingKeypair
+  }
+
+  /**
+   * Get all keypairs.
+   */
+  get keypairs () {
+    return this._keypairs
+  }
+
+  get nonSigningKeypairs () {
+    const curKpId = this._signingKeypair.accountId()
+    return this._keypairs.filter(el => el.accountId() !== curKpId)
   }
 
   /**
@@ -303,6 +335,20 @@ export class Wallet {
     )
 
     return recoveryWallet.encrypt(kdfParams, recoveryKeypair.secret())
+  }
+
+  switchSigningKeypair (kpPubKey) {
+    if (!Keypair.isValidPublicKey(kpPubKey)) {
+      throw new TypeError(`The argument should be a valid public key`)
+    }
+
+    const kp = this._keypairs.find(el => el.accountId() === kpPubKey)
+    if (!kp) {
+      throw new ReferenceError(`The wallet does not contain a keypair with the provided public key: ${kpPubKey}`)
+    }
+
+    this.useSigningKeypair(kp)
+    return this
   }
 
   /**
