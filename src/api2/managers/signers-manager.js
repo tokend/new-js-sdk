@@ -48,6 +48,13 @@ export class SignersManager {
     return txEnv.toEnvelope().toXDR().toString('base64')
   }
 
+  async getSigners (accountId) {
+    const endpoint = `/v3/accounts/${accountId}/signers`
+    const { data: signers } = await this._apiCaller.get(endpoint)
+
+    return signers
+  }
+
   async _makeChangeSignerOperations ({
     newPublicKey,
     sourceAccount,
@@ -75,16 +82,9 @@ export class SignersManager {
   }
 
   async _getNonRecoverySigners (accountId) {
-    const signers = await this._getSigners(accountId)
+    const signers = await this.getSigners(accountId)
     return signers
       .filter(signer => signer.role.id !== RECOVERY_SIGNER_ROLE_ID)
-  }
-
-  async _getSigners (accountId) {
-    const endpoint = `/v3/accounts/${accountId}/signers`
-    const { data: signers } = await this._apiCaller.get(endpoint)
-
-    return signers
   }
 
   async _makeCreateSignerOp (newAccountId) {
