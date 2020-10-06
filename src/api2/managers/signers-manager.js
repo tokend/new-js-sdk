@@ -48,7 +48,9 @@ export class SignersManager {
     return txEnv.toEnvelope().toXDR().toString('base64')
   }
 
-  async getSigners (accountId) {
+  async getSigners (accountId = '') {
+    accountId = accountId || ((this._apiCaller || {}).wallet || {}).accountId
+    if (!accountId) throw new Error('cannot get signers for no accountId')
     const endpoint = `/v3/accounts/${accountId}/signers`
     const { data: signers } = await this._apiCaller.get(endpoint)
 
