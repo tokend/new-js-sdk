@@ -565,6 +565,79 @@ export class WalletsManager {
   }
 
   /**
+   * Change email.
+   *
+   * @param {string} newEmail Desired email.
+   * @param {string} password Current password.
+   * @param {Wallet} [wallet] Wallet to change the email
+   *
+   * @return {Promise.<Wallet>} Updated wallet.
+   */
+  async changeEmail ({
+    newEmail,
+    password,
+    wallet
+  }) {
+    const { data: kdfParams } = await this.getKdfParams('')
+    wallet = Wallet.clone(wallet || this._apiCaller.wallet)
+
+    const oldWalletId = wallet.id
+    wallet._email = newEmail
+    const encryptedWallet = wallet.encrypt(kdfParams, password)
+
+    const extraKps = wallet.nonSigningKeypairs
+    const factorWallet = Wallet.generate(newEmail, null, extraKps)
+    const encryptedFactorWallet = factorWallet.encrypt(kdfParams, password)
+
+    const signers = await this._signersManager.getSigners(wallet.accountId)
+
+    const body = {
+      data: {
+        type: 'wallet',
+        id: encryptedWallet.id,
+        attributes: {
+          email: newEmail,
+          salt: encryptedWallet.salt,
+          account_id: encryptedWallet.accountId,
+          keychain_data: encryptedWallet.keychainData
+        },
+        relationships: {
+          kdf: {
+            data: {
+              type: kdfParams.type,
+              id: kdfParams.id
+            }
+          },
+          factor: {
+            data: {
+              type: 'password',
+              id: encryptedWallet.id
+            }
+          },
+          signers: {
+            data: signers
+          }
+        }
+      },
+      included: [
+        {
+          type: 'password',
+          id: encryptedWallet.id,
+          attributes: {
+            account_id: factorWallet.accountId,
+            keychain_data: encryptedFactorWallet.keychainData,
+            salt: encryptedFactorWallet.salt
+          }
+        },
+        ...signers
+      ]
+    }
+    const response = await this._apiCaller.post(`/wallets/${oldWalletId}`, body)
+
+    return { wallet, response }
+  }
+
+  /**
    * Get user account ID by provided recovery wallet ID.
    *
    * @param {string} recoveryWalletId ID of recovery wallet.
