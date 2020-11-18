@@ -27,7 +27,7 @@ export function signRequest (requestConfig, signerKp) {
   config.headers = config.headers || {}
   config.headers[HEADER_SIGNATURE] = signatureHeader
 
-  return config
+  return config.headers
 }
 
 function getRequestUrl (config) {

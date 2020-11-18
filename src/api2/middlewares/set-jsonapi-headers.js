@@ -13,5 +13,5 @@ export function setJsonapiHeaders (requestConfig) {
   config.headers[HEADER_CONTENT_TYPE] = MIME_TYPE_JSON_API
   config.headers[HEADER_ACCEPT] = MIME_TYPE_JSON_API
 
-  return config
+  return config.headers
 }
