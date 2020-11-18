@@ -27,6 +27,7 @@ import { ChangeRole } from './change_role'
 import { KYCRecoveryHelper } from './kyc_recovery'
 import { Redemption } from './redemption'
 import { Data } from './data'
+import { CsvParser } from './csv_parser'
 
 export const masterKP = base.Keypair.fromSecret(config.master_seed)
 const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
@@ -71,3 +72,4 @@ export const kycRecoveryHelper = new KYCRecoveryHelper(DEFAULTS)
 export const swapHelper = new Swap(DEFAULTS)
 export const redemptionHelper = new Redemption(DEFAULTS)
 export const dataHelper = new Data(DEFAULTS)
+export const csvParserHelper = new CsvParser(DEFAULTS)

@@ -413,6 +413,10 @@ export class ApiCaller {
     }
   }
 
+  async call (opts) {
+    return this._call(opts)
+  }
+
   /**
    * Performs a request
    *
@@ -421,6 +425,7 @@ export class ApiCaller {
    * @param {object} opts.data - request data (for POST/PUT requests)
    * @param {object} opts.query - request query params. See {@link parseQuery} for details
    * @param {string} opts.method - the http method of request
+   * @param {string} opts.contentType - contentType header, `application/vnd.api+json` by default
    * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
    * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
    * @param {bool} opts.isEmptyBodyAllowed - defines if empty body is allowed, `false` by default
@@ -440,19 +445,26 @@ export class ApiCaller {
         ? undefined
         : opts.data || {},
       method: opts.method,
+      headers: {},
       url: opts.endpoint, // TODO: smartly build url
-      withCredentials: true
+      withCredentials: true,
+      maxContentLength: 100000000000,
+      maxBodyLength: 1000000000000
     }
 
-    config = middlewares.flattenToAxiosJsonApiQuery(config)
-    config = middlewares.setJsonapiHeaders(config)
+    config.params = middlewares.flattenToAxiosJsonApiQuery(config)
+    config.headers = middlewares.setJsonapiHeaders(config)
+
+    if (opts.contentType) {
+      config.headers['Content-Type'] = opts.contentType
+    }
 
     if (this._customTimeout) {
       config.timeout = this._customTimeout
     }
 
     if (opts.needSign) {
-      config = middlewares.signRequest(config, this._wallet.keypair)
+      config.headers = middlewares.signRequest(config, this._wallet.keypair)
     }
 
     let response
