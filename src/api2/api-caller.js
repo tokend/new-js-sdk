@@ -398,7 +398,7 @@ export class ApiCaller {
       method: methods.POST,
       url: `${this._baseURL}${endpoint}`
     }
-    config = middlewares.setJsonapiHeaders(config)
+    config.headers = middlewares.setJsonapiHeaders(config)
 
     let response
     try {
