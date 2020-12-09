@@ -9,10 +9,11 @@ const HEADERS_TO_SIGN = [HEADER_REQUEST_TARGET]
 /**
  * @param {object} requestConfig - the axios config of the request
  * @param {Keypair} signerKp - keypair to sign with
+ * @param {string} accountId - account id that identifies user who sends request
  *
  * @return {object} requestConfig - modified config with header signature
  */
-export function signRequest (requestConfig, signerKp) {
+export function signRequest (requestConfig, signerKp, accountId) {
   if (!Keypair.isValidSecretKey(signerKp.secret())) {
     throw new Error('Invalid keypair provided')
   }
@@ -22,7 +23,8 @@ export function signRequest (requestConfig, signerKp) {
   const url = getRequestUrl(config)
   const digest = getRequestDigest(url, config, HEADERS_TO_SIGN)
   const signature = signerKp.sign(digest).toString('base64')
-  const signatureHeader = getSignatureHeader(signerKp.accountId(), HEADERS_TO_SIGN, signature)
+  const signatureHeader = getSignatureHeader(signerKp.accountId(), HEADERS_TO_SIGN,
+    signature, accountId)
 
   config.headers = config.headers || {}
   config.headers[HEADER_SIGNATURE] = signatureHeader
@@ -51,8 +53,8 @@ function getRequestDigest (url, config, headersToSign) {
   return hash(toSign.join('\n'))
 }
 
-function getSignatureHeader (keyId, signedHeaders, signature) {
+function getSignatureHeader (keyId, signedHeaders, signature, accountId) {
   const algorithm = 'ed25519-sha256'
 
-  return `keyId="${keyId}",algorithm="${algorithm}",headers="${signedHeaders.join(' ')}",signature="${signature}"`
+  return `accountId="${accountId}",keyId="${keyId}",algorithm="${algorithm}",headers="${signedHeaders.join(' ')}",signature="${signature}"`
 }

@@ -15,10 +15,10 @@ describe('signRequest', () => {
       params: {}
     }
 
-    const result = signRequest(requestConfig, signerKp)
+    const result = signRequest(requestConfig, signerKp, signerKp.accountId())
 
     expect(result.headers).to.have.property('signature').deep.equal(
-      `keyId="GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB",algorithm="ed25519-sha256",headers="(request-target)",signature="p4Dc3rOLvjltcor8MmdpXu7/6s9VDxq+4ONbI+iIrRyo8B6WYwvSx4YAsfzI5Hk4eb56zkxyXdWCONNp273YBQ=="`
+      `accountId="GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB",keyId="GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB",algorithm="ed25519-sha256",headers="(request-target)",signature="p4Dc3rOLvjltcor8MmdpXu7/6s9VDxq+4ONbI+iIrRyo8B6WYwvSx4YAsfzI5Hk4eb56zkxyXdWCONNp273YBQ=="`
     )
   })
 })
