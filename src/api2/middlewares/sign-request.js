@@ -23,8 +23,8 @@ export function signRequest (requestConfig, signerKp, accountId) {
   const url = getRequestUrl(config)
   const digest = getRequestDigest(url, config, HEADERS_TO_SIGN)
   const signature = signerKp.sign(digest).toString('base64')
-  const signatureHeader = getSignatureHeader(accountId, signerKp.accountId(), HEADERS_TO_SIGN,
-    signature)
+  const signatureHeader = getSignatureHeader(signerKp.accountId(), HEADERS_TO_SIGN,
+    signature, accountId)
 
   config.headers = config.headers || {}
   config.headers[HEADER_SIGNATURE] = signatureHeader
@@ -53,7 +53,7 @@ function getRequestDigest (url, config, headersToSign) {
   return hash(toSign.join('\n'))
 }
 
-function getSignatureHeader (accountId, keyId, signedHeaders, signature) {
+function getSignatureHeader (keyId, signedHeaders, signature, accountId) {
   const algorithm = 'ed25519-sha256'
 
   return `accountId="${accountId}",keyId="${keyId}",algorithm="${algorithm}",headers="${signedHeaders.join(' ')}",signature="${signature}"`

@@ -1,7 +1,7 @@
 import { signRequest } from './sign-request'
 import { Keypair } from '../../base'
 
-describe.only('signRequest', () => {
+describe('signRequest', () => {
   it('should properly sign the request', () => {
     const signerKp = Keypair.fromSecret('SANRZWBGCH6L6PPVW5KFHCETRMP6N3NJJD7F2FS54HTCXHVVXMB4BP2F')
     const requestConfig = {
