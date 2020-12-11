@@ -5,6 +5,7 @@ import { hash, Keypair } from '../../base'
 const HEADER_SIGNATURE = 'signature'
 const HEADER_REQUEST_TARGET = '(request-target)'
 const HEADERS_TO_SIGN = [HEADER_REQUEST_TARGET]
+const HEADER_ACCOUNT_ID = 'account_id'
 
 /**
  * @param {object} requestConfig - the axios config of the request
@@ -23,11 +24,11 @@ export function signRequest (requestConfig, signerKp, accountId) {
   const url = getRequestUrl(config)
   const digest = getRequestDigest(url, config, HEADERS_TO_SIGN)
   const signature = signerKp.sign(digest).toString('base64')
-  const signatureHeader = getSignatureHeader(signerKp.accountId(), HEADERS_TO_SIGN,
-    signature, accountId)
+  const signatureHeader = getSignatureHeader(signerKp.accountId(), HEADERS_TO_SIGN, signature)
 
   config.headers = config.headers || {}
   config.headers[HEADER_SIGNATURE] = signatureHeader
+  config.headers[HEADER_ACCOUNT_ID] = accountId
 
   return config
 }
@@ -53,8 +54,8 @@ function getRequestDigest (url, config, headersToSign) {
   return hash(toSign.join('\n'))
 }
 
-function getSignatureHeader (keyId, signedHeaders, signature, accountId) {
+function getSignatureHeader (keyId, signedHeaders, signature) {
   const algorithm = 'ed25519-sha256'
 
-  return `accountId="${accountId}",keyId="${keyId}",algorithm="${algorithm}",headers="${signedHeaders.join(' ')}",signature="${signature}"`
+  return `keyId="${keyId}",algorithm="${algorithm}",headers="${signedHeaders.join(' ')}",signature="${signature}"`
 }
