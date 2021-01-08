@@ -5,7 +5,7 @@ import { hash, Keypair } from '../../base'
 const HEADER_SIGNATURE = 'signature'
 const HEADER_REQUEST_TARGET = '(request-target)'
 const HEADERS_TO_SIGN = [HEADER_REQUEST_TARGET]
-const HEADER_ACCOUNT_ID = 'account_id'
+const HEADER_ACCOUNT_ID = 'Account-Id'
 
 /**
  * @param {object} requestConfig - the axios config of the request
