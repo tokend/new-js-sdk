@@ -18,11 +18,13 @@ for further information about branching and tagging conventions.
 ### Changed
 - Auth header for request contains account ID of wallet
 
-## [1.14.0-rc.7] - 2020-12-09
-
 ## [1.14.0-rc.8] - 2020-11-18
 ### Added
 - Ability to submit form data
+
+## [1.14.0-rc.7] - 2020-10-06
+### Added
+- Deferred payments
 
 ## [1.14.0-rc.6] - 2020-10-06
 ### Added
