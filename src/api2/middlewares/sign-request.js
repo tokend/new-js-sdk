@@ -5,14 +5,16 @@ import { hash, Keypair } from '../../base'
 const HEADER_SIGNATURE = 'signature'
 const HEADER_REQUEST_TARGET = '(request-target)'
 const HEADERS_TO_SIGN = [HEADER_REQUEST_TARGET]
+const HEADER_ACCOUNT_ID = 'Account-Id'
 
 /**
  * @param {object} requestConfig - the axios config of the request
  * @param {Keypair} signerKp - keypair to sign with
+ * @param {string} accountId - account id that identifies user who sends request
  *
  * @return {object} requestConfig - modified config with header signature
  */
-export function signRequest (requestConfig, signerKp) {
+export function signRequest (requestConfig, signerKp, accountId) {
   if (!Keypair.isValidSecretKey(signerKp.secret())) {
     throw new Error('Invalid keypair provided')
   }
@@ -26,6 +28,7 @@ export function signRequest (requestConfig, signerKp) {
 
   config.headers = config.headers || {}
   config.headers[HEADER_SIGNATURE] = signatureHeader
+  config.headers[HEADER_ACCOUNT_ID] = accountId
 
   return config.headers
 }

@@ -464,7 +464,8 @@ export class ApiCaller {
     }
 
     if (opts.needSign) {
-      config.headers = middlewares.signRequest(config, this._wallet.keypair)
+      config.headers = middlewares.signRequest(config, this._wallet.keypair,
+        this._wallet.accountId)
     }
 
     let response
