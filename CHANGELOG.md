@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+
+## [1.14.0-rc.11] - 2021-01-11
+
 ## [1.14.0-rc.10] - 2021-01-08
 ### Changed
 - `account_id` header -> `Account-Id`
@@ -15,12 +18,10 @@ for further information about branching and tagging conventions.
 - Backward compatibility for signing requests
 
 ## [1.14.0-rc.8] - 2020-12-09
-### Changed
-- Auth header for request contains account ID of wallet
-
-## [1.14.0-rc.8] - 2020-11-18
 ### Added
 - Ability to submit form data
+### Changed
+- Auth header for request contains account ID of wallet
 
 ## [1.14.0-rc.7] - 2020-10-06
 ### Added
@@ -359,7 +360,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.10...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.11...HEAD
+[1.14.0-rc.11]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.10...1.14.0-rc.11
 [1.14.0-rc.10]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.9...1.14.0-rc.10
 [1.14.0-rc.9]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.8...1.14.0-rc.9
 [1.14.0-rc.8]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.7...1.14.0-rc.8
