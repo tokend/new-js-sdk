@@ -75,7 +75,7 @@ export function flattenToAxiosJsonApiQuery (requestConfig) {
     ...flattenPrimitivesOnly(config.params)
   }
 
-  return config
+  return config.params
 }
 
 function isDeeperThanOneNesting (object) {
