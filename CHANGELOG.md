@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
+
+## [Unreleased]
+#### Fixed
+- Uploading documents with DocumentManager by Node.js
+
 ## [1.14.0-rc.10] - 2021-01-08
 ### Changed
 - `account_id` header -> `Account-Id`
