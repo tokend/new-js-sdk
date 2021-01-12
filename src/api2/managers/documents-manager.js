@@ -131,7 +131,7 @@ export class DocumentsManager {
     /**
      * Because of 'form-data' library exports different instances for web js
      * and node js, we have to check does instance of 'formData' has method
-     * "getBoundary" for node js compability
+     * "getBoundary" for node js compatibility
      */
 
     const headerContentType = 'getBoundary' in formData
