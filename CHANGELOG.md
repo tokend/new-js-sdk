@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+#### Changed
+- Data type 'value' passed to ManageKeyValueBuilder
+
 ## [1.14.0-rc.11] - 2021-01-11
 
 ## [1.14.0-rc.10] - 2021-01-08
