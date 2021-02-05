@@ -11,6 +11,7 @@ for further information about branching and tagging conventions.
 - Ability to add additional keypairs during change password with WalletManager
 #### Changed
 - Data type 'value' passed to ManageKeyValueBuilder
+
 ## [1.14.0-rc.10] - 2021-01-08
 ### Changed
 - `account_id` header -> `Account-Id`
