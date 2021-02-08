@@ -122,15 +122,25 @@ export class DocumentsManager {
       formData.append(_kebabCase(key), policy[key])
     }
 
-    formData.append('file', file)
+    formData.append('file', file, 'file')
 
     return formData
   }
 
   async _postFormData (formData) {
+    /**
+     * Because of 'form-data' library exports different instances for web js
+     * and node js, we have to check does instance of 'formData' has method
+     * "getBoundary" for node js compatibility
+     */
+
+    const headerContentType = 'getBoundary' in formData
+      ? `${MIME_TYPE_MULTIPART_FORM_DATA}; boundary=${formData.getBoundary()}`
+      : MIME_TYPE_MULTIPART_FORM_DATA
+
     const config = {
       headers: {
-        [HEADER_CONTENT_TYPE]: MIME_TYPE_MULTIPART_FORM_DATA
+        [HEADER_CONTENT_TYPE]: headerContentType
       }
     }
 
