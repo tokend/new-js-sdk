@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.14.0-rc.13] - 2021-02-08
 #### Added
 - Ability to add additional keypairs during change password with WalletManager
 #### Changed
@@ -370,7 +370,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.12...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.13...HEAD
+[1.14.0-rc.13]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.12...1.14.0-rc.13
 [1.14.0-rc.12]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.11...1.14.0-rc.12
 [1.14.0-rc.11]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.10...1.14.0-rc.11
 [1.14.0-rc.10]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.9...1.14.0-rc.10
