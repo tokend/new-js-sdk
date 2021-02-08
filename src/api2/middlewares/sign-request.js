@@ -30,7 +30,7 @@ export function signRequest (requestConfig, signerKp, accountId) {
   config.headers[HEADER_SIGNATURE] = signatureHeader
   config.headers[HEADER_ACCOUNT_ID] = accountId
 
-  return config
+  return config.headers
 }
 
 function getRequestUrl (config) {
