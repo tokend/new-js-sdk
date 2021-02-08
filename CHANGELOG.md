@@ -8,6 +8,8 @@ Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
 ## [Unreleased]
+#### Added
+- Ability to add additional keypairs during change password with WalletManager
 #### Changed
 - Data type 'value' passed to ManageKeyValueBuilder
 

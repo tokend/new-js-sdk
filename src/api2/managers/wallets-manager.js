@@ -480,10 +480,11 @@ export class WalletsManager {
    * Change password.
    *
    * @param {string} newPassword Desired password.
+   * @param {Keypair[]} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    *
    * @return {Promise.<Wallet>} New wallet.
    */
-  async changePassword (newPassword) {
+  async changePassword (newPassword, additionalKeypairs = []) {
     const oldWallet = this._apiCaller.wallet
 
     const { data: kdfParams } = await this.getKdfParams(oldWallet.email, true)
@@ -491,14 +492,14 @@ export class WalletsManager {
     const newMainWallet = Wallet.generate(
       oldWallet.email,
       oldWallet.accountId,
-      oldWallet.secretSeeds
+      [...oldWallet.secretSeeds, ...additionalKeypairs]
     )
     const encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
 
     const newSecondFactorWallet = Wallet.generate(
       oldWallet.email,
       null,
-      oldWallet.secretSeeds
+      [...oldWallet.secretSeeds, ...additionalKeypairs]
     )
     const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
       kdfParams, newPassword
