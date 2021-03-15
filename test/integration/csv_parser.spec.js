@@ -1,6 +1,6 @@
 import { csvParserHelper, masterKP } from '../helpers'
 
-const performanceTestsRowsCount = 1_000_000
+const performanceTestsRowsCount = 1000000
 
 describe('CSV Parser tests', () => {
   describe('Integration tests', () => {
