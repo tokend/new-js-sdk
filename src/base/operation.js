@@ -500,6 +500,9 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.manageBalance():
         // TODO
         break
+      case xdr.OperationType.checkSaleState():
+        // TODO
+        break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)
     }

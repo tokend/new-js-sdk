@@ -90,7 +90,7 @@ export class Swap extends Helper {
         'anyRandomStringWeDoNotCareNow'
       )
 
-      const { data } = await api.get('/v3/swaps/' + id)
+      const data = await this.mustLoadById(id)
       let date = new Date(data.lockTime)
       let currDate = new Date()
       if (date.getTime() > currDate.getTime()) {

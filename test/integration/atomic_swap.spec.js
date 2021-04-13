@@ -4,7 +4,7 @@ import { createAssetFromScratch } from '../scripts/create_asset'
 import { atomicSwapAskHelper } from '../helpers'
 import { NotFoundError } from '../../src/errors'
 
-describe('Atomic swap', () => {
+describe.skip('Atomic swap', () => {
   it('should create atomic swap bid and sold it', async () => {
     const { assetCode, ownerKp } = await createAssetFromScratch({policies: 32})
     let { ask } = await createAtomicSwapAsk({ baseAsset: assetCode }, ownerKp)

@@ -1,5 +1,5 @@
 import { logger } from '../logger'
-import { CreateDataBuilder, Keypair, TransactionBuilder } from '../../src/base'
+import { Keypair } from '../../src/base'
 import {
   accountHelper,
   balanceHelper,
@@ -10,7 +10,7 @@ import {
 } from '../helpers'
 import { Asset } from '../helpers/asset'
 import { createAndApproveAsset } from '../scripts/create_asset'
-import { createFundedAccount, createFundedGeneral } from '../scripts/create_account'
+import { createFundedAccount } from '../scripts/create_account'
 import { Running } from '../helpers/_running'
 
 describe('Deferred payments', ()  => {
@@ -145,8 +145,6 @@ describe('Deferred payments', ()  => {
   it('receive create deferred payment requests', async () => {
     const log = logger.new('deferred payments')
 
-    await Running.delay(5000)
-
     let assetCode = Asset.randomCode('USD')
     await createAndApproveAsset({
       code: assetCode,
@@ -176,7 +174,7 @@ describe('Deferred payments', ()  => {
     })
 
     log.info('trying to get request by id')
-
+    await requestHelper.mustLoad(requestID)
     var resp = await api.getWithSignature(`v3/create_deferred_payments_requests/${requestID}`)
     expect(resp.data.id === requestID)
 
@@ -416,7 +414,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -424,6 +422,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -484,7 +484,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -492,6 +492,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -505,7 +507,7 @@ describe('Deferred payments', ()  => {
     })
 
     log.info('trying to get request by id')
-
+    await requestHelper.mustLoad(requestID)
     var resp = await api.getWithSignature(`v3/create_close_deferred_payments_requests/${requestID}`)
     expect(resp.data.id === requestID)
 
@@ -559,7 +561,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -567,6 +569,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -605,7 +609,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -613,6 +617,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -651,7 +657,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -659,6 +665,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -697,7 +705,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -705,6 +713,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -748,8 +758,6 @@ describe('Deferred payments', ()  => {
   it('receive request for unlock unclaimed assets', async () => {
     const log = logger.new('deferred payments')
 
-    await Running.delay(5000)
-
     let assetCode = Asset.randomCode('USD')
     await createAndApproveAsset({
       code: assetCode,
@@ -770,7 +778,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -778,6 +786,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -794,7 +804,7 @@ describe('Deferred payments', ()  => {
     })
 
     log.info('trying to get request by id')
-
+    await requestHelper.mustLoad(requestID)
     var resp = await api.getWithSignature(`v3/create_close_deferred_payments_requests/${requestID}`)
     expect(resp.data.id === requestID)
 
@@ -848,7 +858,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -856,6 +866,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -897,7 +909,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -905,6 +917,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -946,7 +960,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -954,6 +968,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -995,7 +1011,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -1003,6 +1019,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -1046,8 +1064,6 @@ describe('Deferred payments', ()  => {
   it('receive request for mass unlock unclaimed assets', async () => {
     const log = logger.new('deferred payments')
 
-    await Running.delay(5000)
-
     let assetCode = Asset.randomCode('USD')
     await createAndApproveAsset({
       code: assetCode,
@@ -1068,7 +1084,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -1076,6 +1092,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -1092,7 +1110,7 @@ describe('Deferred payments', ()  => {
     })
 
     log.info('trying to get request by id')
-
+    await requestHelper.mustLoad(requestID)
     var resp = await api.getWithSignature(`v3/create_close_deferred_payments_requests/${requestID}`)
     expect(resp.data.id === requestID)
 
@@ -1146,7 +1164,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -1154,6 +1172,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -1195,7 +1215,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -1203,6 +1223,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
@@ -1244,7 +1266,7 @@ describe('Deferred payments', ()  => {
     const fromBalance = await balanceHelper.mustLoad(fromAccount.accountId, assetCode)
     log.info(`Got from balance with id ${fromBalance.balanceId}`)
 
-    await deferredPaymentHelper.create({
+    const creationRequestID = await deferredPaymentHelper.create({
       sourceBalanceId: fromBalance.balanceId,
       destination: receiver.accountId(),
       amount: fromAccFundAmount,
@@ -1252,6 +1274,8 @@ describe('Deferred payments', ()  => {
       creatorDetails: {}
     })
 
+    await requestHelper.mustLoad(creationRequestID)
+    // request is ingested, deferred_payment must be too
     const payments = await api.getWithSignature('v3/deferred_payments?page[order]=desc')
     const deferredPaymentID = payments.data[0].id
 
