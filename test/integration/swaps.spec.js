@@ -7,7 +7,7 @@ import { createFundedGeneral } from '../scripts/create_account'
 import nacl from 'tweetnacl'
 import moment from 'moment'
 
-describe.only('Swaps', () => {
+describe('Swaps', () => {
   it('should create swap and close it', async () => {
     const log = logger.new('swaps')
 
