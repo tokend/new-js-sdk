@@ -1,5 +1,6 @@
 import { getRequestIdFromResultXdr, Helper } from './_helper'
 import { base } from '../../src'
+import { Running } from './_running'
 
 export class DeferredPayment extends Helper {
   async create (opts, ownerKp = this.masterKp) {
@@ -42,5 +43,12 @@ export class DeferredPayment extends Helper {
 
     const response = await this.submit(operation, ownerKp)
     return response
+  }
+
+  async mustLoad (id) {
+    return Running.untilGotReturnValue(async _ => {
+      const payment = await this.api.getWithSignature('/v3/deferred_payments/' + id)
+      return payment.data
+    })
   }
 }

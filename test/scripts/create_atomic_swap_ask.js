@@ -1,15 +1,10 @@
 import { KEY_VALUE_KEYS } from '../../src/const'
 import { Asset } from '../helpers/asset'
 import _times from 'lodash/times'
-
 import { createAndApproveAsset } from './create_asset'
-
-import { ensureAndGetBalanceId } from './create_sale_offer'
-
 import { fundAccount } from './create_account'
 
 import {
-  sdk,
   requestHelper,
   atomicSwapAskHelper, balanceHelper,
 } from '../helpers'

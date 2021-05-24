@@ -42,7 +42,7 @@ export class Helper {
     const envelope = transaction.toEnvelope().toXDR().toString('base64')
 
     try {
-      const { data } = await this.api.postTxEnvelope(envelope)
+      const { data } = await this.api.postTxEnvelope(envelope, false)
       return data.data.attributes
     } catch (e) {
       if ((e instanceof BadRequestError) || (e instanceof TransactionError)) {
