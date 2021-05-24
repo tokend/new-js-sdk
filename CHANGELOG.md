@@ -10,6 +10,7 @@ for further information about branching and tagging conventions.
 ## [1.14.0-rc.13] - 2021-02-08
 #### Added
 - Ability to add additional keypairs during change password with WalletManager
+- Two arguments to function `signAndSendTransaction` to have opportunity send the endpoint
 #### Changed
 - Data type 'value' passed to ManageKeyValueBuilder
 
