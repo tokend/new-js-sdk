@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+#### Added
+- Two arguments to function `signAndSendTransaction` to have opportunity send the endpoint
+
 ## [1.14.0-rc.13] - 2021-02-08
 #### Added
 - Ability to add additional keypairs during change password with WalletManager
