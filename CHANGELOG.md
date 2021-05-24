@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.14.0-rc.14] - 2021-05-24
 #### Added
 - Two arguments to function `signAndSendTransaction` to have opportunity send the endpoint
+#### Fixed
+- Tests execution time
+- Some test issues
 
 ## [1.14.0-rc.13] - 2021-02-08
 #### Added
@@ -374,7 +377,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.13...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.14...HEAD
+[1.14.0-rc.14]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.13...1.14.0-rc.14
 [1.14.0-rc.13]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.12...1.14.0-rc.13
 [1.14.0-rc.12]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.11...1.14.0-rc.12
 [1.14.0-rc.11]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.10...1.14.0-rc.11
