@@ -379,6 +379,21 @@ export class ApiCaller {
     return this.postTxEnvelope(envelopeTx, waitForIngest, endpoint)
   }
 
+  signTransaction (tx) {
+    if (!this._wallet) {
+      throw new Error('No wallet found to sign the transaction')
+    }
+
+    const transaction = new Transaction(tx)
+    transaction.sign(this._wallet.keypair)
+    const envelopeTx = transaction
+      .toEnvelope()
+      .toXDR()
+      .toString('base64')
+
+    return envelopeTx
+  }
+
   /**
    * Posts a transaction envelope.
    *
