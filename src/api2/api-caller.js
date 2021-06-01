@@ -199,6 +199,8 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   post (endpoint, data, needSign = false) {
+    console.log('endpoint', endpoint)
+    console.log('data', data)
     return this._call({
       method: methods.POST,
       needSign,
@@ -216,6 +218,8 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   postWithSignature (endpoint, data) {
+    // console.log('endpoint', endpoint)
+    // console.log('data', data)
     return this.post(endpoint, data, true)
   }
 
@@ -365,16 +369,7 @@ export class ApiCaller {
   }
 
   signAndSendTransaction (tx, waitForIngest = true, endpoint = `/v3/transactions`) {
-    if (!this._wallet) {
-      throw new Error('No wallet found to sign the transaction')
-    }
-
-    const transaction = new Transaction(tx)
-    transaction.sign(this._wallet.keypair)
-    const envelopeTx = transaction
-      .toEnvelope()
-      .toXDR()
-      .toString('base64')
+    const envelopeTx = this.signTransaction(tx)
 
     return this.postTxEnvelope(envelopeTx, waitForIngest, endpoint)
   }
