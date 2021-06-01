@@ -199,8 +199,6 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   post (endpoint, data, needSign = false) {
-    console.log('endpoint', endpoint)
-    console.log('data', data)
     return this._call({
       method: methods.POST,
       needSign,
@@ -218,8 +216,6 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   postWithSignature (endpoint, data) {
-    // console.log('endpoint', endpoint)
-    // console.log('data', data)
     return this.post(endpoint, data, true)
   }
 
