@@ -365,6 +365,12 @@ export class ApiCaller {
   }
 
   signAndSendTransaction (tx, waitForIngest = true, endpoint = `/v3/transactions`) {
+    const envelopeTx = this.signTransaction(tx)
+
+    return this.postTxEnvelope(envelopeTx, waitForIngest, endpoint)
+  }
+
+  signTransaction (tx) {
     if (!this._wallet) {
       throw new Error('No wallet found to sign the transaction')
     }
@@ -376,7 +382,7 @@ export class ApiCaller {
       .toXDR()
       .toString('base64')
 
-    return this.postTxEnvelope(envelopeTx, waitForIngest, endpoint)
+    return envelopeTx
   }
 
   /**

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+#### Added
+- Function `signTransaction` in `api-caller.js`
+
 ## [1.14.0-rc.14] - 2021-05-24
 #### Added
 - Two arguments to function `signAndSendTransaction` to have opportunity send the endpoint
