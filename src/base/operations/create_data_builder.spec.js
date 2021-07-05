@@ -2,7 +2,7 @@ import { CreateDataBuilder } from './create_data_builder'
 import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 
-describe.only('write data in blockchain', () => {
+describe('write data in blockchain', () => {
   it('success', () => {
     let type = '20'
     let value = {

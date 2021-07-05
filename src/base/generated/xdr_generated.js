@@ -1,6 +1,6 @@
-// revision: 2d66fe9f7016a264f24267b49e8c076df9229c93
-// branch:   feature/deferred-payment
-// Automatically generated on 2020-10-05T11:50:30+00:00
+// revision: ed8e27617ef83de9c31aa8c58fe039c90a519ca8
+// branch:   (HEAD
+// Automatically generated on 2021-07-05T14:01:24+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -14628,13 +14628,15 @@ xdr.union("ManagePollResult", {
 //   enum ManageSaleAction
 //   {
 //       CREATE_UPDATE_DETAILS_REQUEST = 1,
-//       CANCEL = 2
+//       CANCEL = 2,
+//       UPDATE_TIME = 3
 //   };
 //
 // ===========================================================================
 xdr.enum("ManageSaleAction", {
   createUpdateDetailsRequest: 1,
   cancel: 2,
+  updateTime: 3,
 });
 
 // === xdr source ============================================================
@@ -14686,11 +14688,56 @@ xdr.struct("UpdateSaleDetailsData", [
 
 // === xdr source ============================================================
 //
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("UpdateTimeDataExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Details are valid if one of the fileds is not zero
+//   struct UpdateTimeData {
+//       //: start time can be updated if sale is not started yet (zero means no changes)
+//       uint64 newStartTime; 
+//       //: end time should be greater than start time (zero means no changes)
+//       uint64 newEndTime;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       } ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateTimeData", [
+  ["newStartTime", xdr.lookup("Uint64")],
+  ["newEndTime", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("UpdateTimeDataExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch (ManageSaleAction action) {
 //       case CREATE_UPDATE_DETAILS_REQUEST:
 //           UpdateSaleDetailsData updateSaleDetailsData;
 //       case CANCEL:
 //           void;
+//       case UPDATE_TIME:
+//           UpdateTimeData updateTime;
 //       }
 //
 // ===========================================================================
@@ -14700,9 +14747,11 @@ xdr.union("ManageSaleOpData", {
   switches: [
     ["createUpdateDetailsRequest", "updateSaleDetailsData"],
     ["cancel", xdr.void()],
+    ["updateTime", "updateTime"],
   ],
   arms: {
     updateSaleDetailsData: xdr.lookup("UpdateSaleDetailsData"),
+    updateTime: xdr.lookup("UpdateTimeData"),
   },
 });
 
@@ -14738,6 +14787,8 @@ xdr.union("ManageSaleOpExt", {
 //           UpdateSaleDetailsData updateSaleDetailsData;
 //       case CANCEL:
 //           void;
+//       case UPDATE_TIME:
+//           UpdateTimeData updateTime;
 //       } data;
 //   
 //       //: Reserved for future use
@@ -14775,7 +14826,13 @@ xdr.struct("ManageSaleOp", [
 //       //: It is not allowed to set allTasks for a pending reviewable request
 //       NOT_ALLOWED_TO_SET_TASKS_ON_UPDATE = -5, // not allowed to set allTasks on request update
 //       //: Update sale details tasks are not set in the system, i.e. it's not allowed to perform the update of sale details 
-//       SALE_UPDATE_DETAILS_TASKS_NOT_FOUND = -6
+//       SALE_UPDATE_DETAILS_TASKS_NOT_FOUND = -6,
+//       //: Both fields are zero
+//       INVALID_UPDATE_TIME_DATA = -7,
+//       //: Start time could not be updated (sale has already started)
+//       INVALID_START_TIME = -8,
+//       //: End time could not be less than start time
+//       INVALID_END_TIME = -9
 //   };
 //
 // ===========================================================================
@@ -14787,6 +14844,9 @@ xdr.enum("ManageSaleResultCode", {
   updateDetailsRequestNotFound: -4,
   notAllowedToSetTasksOnUpdate: -5,
   saleUpdateDetailsTasksNotFound: -6,
+  invalidUpdateTimeDatum: -7,
+  invalidStartTime: -8,
+  invalidEndTime: -9,
 });
 
 // === xdr source ============================================================
@@ -14795,6 +14855,7 @@ xdr.enum("ManageSaleResultCode", {
 //       case CREATE_UPDATE_DETAILS_REQUEST:
 //           uint64 requestID;
 //       case CANCEL:
+//       case UPDATE_TIME:
 //           void;
 //       }
 //
@@ -14805,6 +14866,7 @@ xdr.union("ManageSaleResultSuccessResponse", {
   switches: [
     ["createUpdateDetailsRequest", "requestId"],
     ["cancel", xdr.void()],
+    ["updateTime", xdr.void()],
   ],
   arms: {
     requestId: xdr.lookup("Uint64"),
@@ -14843,6 +14905,7 @@ xdr.union("ManageSaleResultSuccessExt", {
 //       case CREATE_UPDATE_DETAILS_REQUEST:
 //           uint64 requestID;
 //       case CANCEL:
+//       case UPDATE_TIME:
 //           void;
 //       } response;
 //   
@@ -23038,7 +23101,8 @@ xdr.struct("TransactionResult", [
 //       MOVEMENT_REQUESTS_DETAILS = 27,
 //       FIX_CRASH_CORE_WITH_PAYMENT = 28,
 //       FIX_INVEST_TO_IMMEDIATE_SALE = 29,
-//       FIX_PAYMENT_TASKS_WILDCARD_VALUE = 30
+//       FIX_PAYMENT_TASKS_WILDCARD_VALUE = 30,
+//       FIX_CHANGE_ROLE_REQUEST_REQUESTOR = 31
 //   };
 //
 // ===========================================================================
@@ -23074,6 +23138,7 @@ xdr.enum("LedgerVersion", {
   fixCrashCoreWithPayment: 28,
   fixInvestToImmediateSale: 29,
   fixPaymentTasksWildcardValue: 30,
+  fixChangeRoleRequestRequestor: 31,
 });
 
 // === xdr source ============================================================

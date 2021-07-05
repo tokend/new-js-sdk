@@ -37,4 +37,16 @@ describe('Manage sale', () => {
     let obj = Operation.operationToObject(operation)
     expect(obj.saleID).to.be.equal(opts.saleID)
   })
+  it('Update time', () => {
+    let opts = {
+      saleID: '1',
+      newEndTime: '12345678'
+    }
+    let op = ManageSaleBuilder.updateSaleTime(opts)
+    let xdrOp = op.toXDR('hex')
+    let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
+    let obj = Operation.operationToObject(operation)
+    expect(obj.saleID).to.be.equal(opts.saleID)
+    expect(obj.newEndTime).to.be.equal(opts.newEndTime)
+  })
 })

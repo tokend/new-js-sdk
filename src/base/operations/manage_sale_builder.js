@@ -73,6 +73,54 @@ export class ManageSaleBuilder {
     return new xdr.Operation(opAttrs)
   }
 
+  /**
+   * Creates request to update manage sale end time
+   * @param {object} opts
+   * @param {string} opts.saleID - ID of the sale to create new update end time request
+   * @param {number|string} opts.newEndTime - new sale end time
+   * @param {number|string} opts.newStartTime - new sale start time
+   * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
+   * @returns {xdr.ManageSaleOp}
+   */
+  static updateSaleTime (opts) {
+    if (isUndefined(opts.saleID)) {
+      throw new Error('opts.saleID is invalid')
+    }
+
+    if (isUndefined(opts.newEndTime) && isUndefined(opts.newStartTime)) {
+      throw new Error('both opts.newEndTime and opts.newStartTime are undefined')
+    }
+
+    let newStartTime = UnsignedHyper.fromString('0')
+    if (!isUndefined(opts.newStartTime)) {
+      newStartTime = UnsignedHyper.fromString(opts.newStartTime)
+    }
+
+    let newEndTime = UnsignedHyper.fromString('0')
+    if (!isUndefined(opts.newEndTime)) {
+      newEndTime = UnsignedHyper.fromString(opts.newEndTime)
+    }
+
+    let updateSaleTimeData = new xdr.UpdateTimeData({
+      newStartTime: newStartTime,
+      newEndTime: newEndTime,
+      ext: new xdr.UpdateTimeDataExt(xdr.LedgerVersion.emptyVersion())
+    })
+
+    let manageSaleOp = new xdr.ManageSaleOp({
+      saleId: UnsignedHyper.fromString(opts.saleID),
+      data: new xdr.ManageSaleOpData.updateTime(
+        updateSaleTimeData
+      ),
+      ext: new xdr.ManageSaleOpExt(xdr.LedgerVersion.emptyVersion())
+    })
+
+    let opAttrs = {}
+    opAttrs.body = xdr.OperationBody.manageSale(manageSaleOp)
+    BaseOperation.setSourceAccount(opAttrs, opts)
+    return new xdr.Operation(opAttrs)
+  }
+
   static manageSaleToObject (result, attrs) {
     result.saleID = attrs.saleId().toString()
     switch (attrs.data().switch()) {
@@ -80,6 +128,16 @@ export class ManageSaleBuilder {
         let data = attrs.data().updateSaleDetailsData()
         result.requestID = data.requestId().toString()
         result.creatorDetails = JSON.parse(data.creatorDetails())
+        break
+      }
+      case xdr.ManageSaleAction.updateTime(): {
+        let data = attrs.data().updateTime()
+        if (!isUndefined(data.newStartTime())) {
+          result.newStartTime = data.newStartTime().toString()
+        }
+        if (!isUndefined(data.newEndTime())) {
+          result.newEndTime = data.newEndTime().toString()
+        }
         break
       }
     }

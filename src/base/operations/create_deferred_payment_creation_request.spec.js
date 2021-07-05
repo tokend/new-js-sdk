@@ -3,7 +3,7 @@ import { Operation } from '../operation'
 import { Keypair } from '../keypair'
 import { CreateDeferredPaymentCreationRequestBuilder } from './create_deferred_payment_creation_request'
 
-describe.only('deferred payment creation request', () => {
+describe('deferred payment creation request', () => {
   it('create', () => {
     let sourceBalanceId = Keypair.random().balanceId()
     let destination = Keypair.random().accountId()

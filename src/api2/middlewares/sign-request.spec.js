@@ -15,12 +15,12 @@ describe('signRequest', () => {
       params: {}
     }
 
-    const result = signRequest(requestConfig, signerKp, signerKp.accountId())
+    const headers = signRequest(requestConfig, signerKp, signerKp.accountId())
 
-    expect(result.headers).to.have.property('signature').deep.equal(
+    expect(headers).to.have.property('signature').deep.equal(
       `keyId="GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB",algorithm="ed25519-sha256",headers="(request-target)",signature="p4Dc3rOLvjltcor8MmdpXu7/6s9VDxq+4ONbI+iIrRyo8B6WYwvSx4YAsfzI5Hk4eb56zkxyXdWCONNp273YBQ=="`
     )
-    expect(result.headers).to.have.property('account_id').deep.equal(
+    expect(headers).to.have.property('Account-Id').deep.equal(
       'GB65IHVVJOGUYKZLHT3GAZOWHCBMZLQLDJAWXJM5LUXI35LNAHHBQUKB'
     )
   })

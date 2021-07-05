@@ -2,7 +2,7 @@ import { RemoveDataBuilder } from './remove_data_builder'
 import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 
-describe.only('remove data in blockchain', () => {
+describe('remove data in blockchain', () => {
   it('success', () => {
     let dataId = '235'
     let op = RemoveDataBuilder.removeData({ dataId })

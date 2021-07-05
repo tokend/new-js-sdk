@@ -84,3 +84,7 @@ export async function createSale (opts, ownerKp) {
     ownerId: ownerKp.accountId()
   }
 }
+
+export async function updateTime(opts, ownerKp) {
+  
+}
