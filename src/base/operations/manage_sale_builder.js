@@ -93,12 +93,12 @@ export class ManageSaleBuilder {
 
     let newStartTime = UnsignedHyper.fromString('0')
     if (!isUndefined(opts.newStartTime)) {
-      newStartTime = UnsignedHyper.fromString(opts.newStartTime)
+      newStartTime = UnsignedHyper.fromString(opts.newStartTime.toString())
     }
 
     let newEndTime = UnsignedHyper.fromString('0')
     if (!isUndefined(opts.newEndTime)) {
-      newEndTime = UnsignedHyper.fromString(opts.newEndTime)
+      newEndTime = UnsignedHyper.fromString(opts.newEndTime.toString())
     }
 
     let updateSaleTimeData = new xdr.UpdateTimeData({
