@@ -2,7 +2,7 @@ import { UpdateDataBuilder } from './update_data_builder'
 import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 
-describe.only('update data in blockchain', () => {
+describe('update data in blockchain', () => {
   it('success', () => {
     let dataId = '235'
     let value = {

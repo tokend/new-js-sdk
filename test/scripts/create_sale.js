@@ -84,3 +84,10 @@ export async function createSale (opts, ownerKp) {
     ownerId: ownerKp.accountId()
   }
 }
+
+export async function updateTime(sale, ownerKp) {
+  const log = logger.new('updateSaleTime')
+  log.info('Increase sale end time by seconds')
+  saleHelper.updateTime({saleID: sale.id, newEndTime: new Date(sale.endTime).getTime()/1000 + 10}, ownerKp)
+  log.info('Sale end time was increased')
+}

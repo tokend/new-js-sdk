@@ -47,6 +47,8 @@ import { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder
 import { CreateDeferredPaymentCreationRequestBuilder } from './operations/create_deferred_payment_creation_request'
 import { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_close_deferred_payment_request'
 import { DataRequestBuilder } from './operations/data_request_builder'
+import { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
+import { SaleRequestBuilder } from './operations/sale_request_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -475,6 +477,7 @@ export class Operation extends BaseOperation {
           .cancelCloseDeferredPaymentRequestToObject(result, attrs)
         break
       case xdr.OperationType.createSaleRequest():
+        SaleRequestBuilder.crateSaleCreationRequestToObject(result, attrs)
         break
       case xdr.OperationType.createDataCreationRequest():
         DataRequestBuilder.createDataCreationRequestToObject(result, attrs)
@@ -495,13 +498,50 @@ export class Operation extends BaseOperation {
         DataRequestBuilder.cancelDataRemoveRequestToObject(result, attrs)
         break
       case xdr.OperationType.manageAssetPair():
-        // TODO
+        result.action = attrs.action()
+        result.base = attrs.base().toString()
+        result.quote = attrs.quote().toString()
+        result.policies = attrs.policies()
+        result.physicalPriceCorrection = Operation
+          ._fromXDRAmount(attrs.physicalPriceCorrection())
+        result.maxPriceStep = Operation._fromXDRAmount(attrs.maxPriceStep())
         break
       case xdr.OperationType.manageBalance():
-        // TODO
+        result.action = attrs.action()
+        result.destination = accountIdtoAddress(attrs.destination())
+        result.asset = attrs.asset().toString()
         break
       case xdr.OperationType.checkSaleState():
         // TODO
+        break
+      case xdr.OperationType.setFee():
+        if (!isUndefined(attrs.fee())) {
+          result.fee = {}
+          result.fee.fixedFee = Operation
+            ._fromXDRAmount(attrs.fee().fixedFee())
+          result.fee.percentFee = Operation
+            ._fromXDRAmount(attrs.fee().percentFee())
+          result.fee.feeType = attrs.fee().feeType()
+          result.fee.asset = attrs.fee().asset().toString()
+          result.fee.subtype = attrs.fee().subtype().toString()
+          result.fee.lowerBound = Operation
+            ._fromXDRAmount(attrs.fee().lowerBound())
+          result.fee.upperBound = Operation
+            ._fromXDRAmount(attrs.fee().upperBound())
+          if (attrs.fee().accountId()) {
+            result.fee.accountId = accountIdtoAddress(attrs.fee().accountId())
+          }
+          if (attrs.fee().accountRole()) {
+            result.fee.accountRole = attrs.fee().accountRole()
+          }
+          result.fee.hash = attrs.fee().hash()
+        }
+        break
+      case xdr.OperationType.manageAccountSpecificRule():
+        ManageAccountSpecificRuleBuilder.manageAccountSpecificRuleToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelSaleRequest():
+        SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)

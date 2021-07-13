@@ -3,7 +3,7 @@ import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { CreateCloseDeferredPaymentRequestBuilder } from './create_close_deferred_payment_request'
 
-describe.only('create close deferred payment request', () => {
+describe('create close deferred payment request', () => {
   it('create', () => {
     let destinationBalanceId = Keypair.random().balanceId()
     let amount = '100'

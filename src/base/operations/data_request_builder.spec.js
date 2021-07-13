@@ -2,7 +2,7 @@ import xdr from '../generated/xdr_generated'
 import { Operation } from '../operation'
 import { DataRequestBuilder } from './data_request_builder'
 
-describe.only('Data reviewable requests', () => {
+describe('Data reviewable requests', () => {
   it('Create data valid', () => {
     let type = '20'
     let value = {

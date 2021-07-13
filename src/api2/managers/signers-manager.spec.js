@@ -29,7 +29,7 @@ describe('Signers manager', () => {
 
   describe('createChangeSignerTransaction', () => {
     beforeEach(() => {
-      sandbox.stub(signersManagerInstance, '_getSigners').resolves([
+      sandbox.stub(signersManagerInstance, 'getSigners').resolves([
         {
           id: 'GBUQDWXPPEFREJPI45CUPACMY6AQINP4DQ2DFXAF6YISPF3C4FFJ3U5S',
           role: { id: '2' }

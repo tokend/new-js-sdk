@@ -1,4 +1,4 @@
-import { SaleRequestBuilder } from '../../src/base'
+import { ManageSaleBuilder, SaleRequestBuilder } from '../../src/base'
 import { Running } from './_running'
 import { getRequestIdFromResultXdr, getSuccessResultFromXDR, Helper } from './_helper'
 import { base } from '../../src'
@@ -97,6 +97,10 @@ export class Sale extends Helper {
 
   checkSaleState (id) {
     return this.submit(SaleRequestBuilder.checkSaleState({ saleID: id }))
+  }
+
+  async updateTime (opts, ownerKp) {
+    return this.submit(ManageSaleBuilder.updateSaleTime(opts), ownerKp)
   }
 
   mustLoadById (id) {

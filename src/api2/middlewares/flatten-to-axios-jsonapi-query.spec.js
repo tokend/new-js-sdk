@@ -7,9 +7,9 @@ describe('flattenToAxiosJsonApiQuery', () => {
       fizz: 'buzz'
     }
 
-    const result = flattenToAxiosJsonApiQuery({ params: query })
+    const params = flattenToAxiosJsonApiQuery({ params: query })
 
-    expect(result.params).to.deep.equal(query)
+    expect(params).to.deep.equal(query)
   })
 
   it('should properly modify object with array params', () => {
@@ -18,9 +18,9 @@ describe('flattenToAxiosJsonApiQuery', () => {
       param2: ['abc', 123, 'qqq']
     }
 
-    const result = flattenToAxiosJsonApiQuery({ params: query })
+    const params = flattenToAxiosJsonApiQuery({ params: query })
 
-    expect(result.params).to.deep.equal({
+    expect(params).to.deep.equal({
       param: 'fizz,bar,buzz',
       param2: 'abc,123,qqq'
     })
@@ -38,9 +38,9 @@ describe('flattenToAxiosJsonApiQuery', () => {
       }
     }
 
-    const result = flattenToAxiosJsonApiQuery({ params: query })
+    const params = flattenToAxiosJsonApiQuery({ params: query })
 
-    expect(result.params).to.deep.equal({
+    expect(params).to.deep.equal({
       'filter[first_name]': 'John',
       'filter[min_age]': 25,
       'page[number]': 2,
