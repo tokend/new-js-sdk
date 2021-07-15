@@ -104,7 +104,7 @@
     "moment": "2.24.0",
     "sjcl-tokend": "1.0.6",
     "tweetnacl": "1.0.1",
-    "urijs": "1.19.1",
+    "urijs": "1.19.6",
     "yarn": "^1.16.0"
   },
   "optionalDependencies": {
