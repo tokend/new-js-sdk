@@ -14,6 +14,14 @@ export class Balance extends Helper {
     return this.submit(operation)
   }
 
+  async mustLoadAllForAsset (asset) {
+    const { data: balances } = await this.sdk.horizon.balances.getPage({
+      asset: asset
+    })
+
+    return balances
+  }
+
   /**
    * Finds balance by asset code. If 2 or more balances is present, will return
    * the most funded
