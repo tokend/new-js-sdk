@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.14.0-rc.16] - 2021-07-22
 ### Added
 - Function `updateSaleTime` in `src/base/operations/manage_sale_builder.js`
 
@@ -388,7 +388,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.15...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.16...HEAD
+[1.14.0-rc.16]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.15...1.14.0-rc.16
 [1.14.0-rc.15]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.14...1.14.0-rc.15
 [1.14.0-rc.14]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.13...1.14.0-rc.14
 [1.14.0-rc.13]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.12...1.14.0-rc.13
