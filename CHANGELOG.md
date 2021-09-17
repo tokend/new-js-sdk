@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.14.0-rc.17] - 2021-09-17
+### Added
+- Method `ApiCaller.prototype.postOperationsParametrized()`
+
+### Changed
+- `ApiCaller.prototype._call()` now throws an error if needSign is set, but no
+  wallet found to sign the request.
+
 ## [1.14.0-rc.16] - 2021-07-22
 ### Added
 - Function `updateSaleTime` in `src/base/operations/manage_sale_builder.js`
@@ -388,7 +396,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.16...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.17...HEAD
+[1.14.0-rc.17]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.16...1.14.0-rc.17
 [1.14.0-rc.16]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.15...1.14.0-rc.16
 [1.14.0-rc.15]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.14...1.14.0-rc.15
 [1.14.0-rc.14]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.13...1.14.0-rc.14

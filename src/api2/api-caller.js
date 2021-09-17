@@ -326,28 +326,66 @@ export class ApiCaller {
    * does not do any other actions on the response
    */
   postOperations (...operations) {
-    if (!this._wallet) {
-      throw new Error('No wallet found to sign the transaction')
-    }
+    return this.postOperationsParametrized({}, ...operations)
+  }
 
-    return this.postTxEnvelope(
-      this.getTransaction(...operations)
+  /**
+   * Crafts a transaction envelope with the provided operations, signs it and
+   * makes the post request to a specific endpoint with the envelope.
+   *
+   * @see {@link BaseOperation}
+   * @param {string} endpoint - endpoint to send the transaction.
+   * @param {...BaseOperation} operations - operations to be included.
+   * @returns {Promise} - Promise with response, keys data will be camel cased,
+   * does not do any other actions on the response
+   */
+  postOperationsToSpecificEndpoint (endpoint, ...operations) {
+    return this.postOperationsParametrized(
+      {
+        waitForIngest: true,
+        endpoint
+      },
+      ...operations
     )
   }
 
-  postOperationsToSpecificEndpoint (endpoint, ...operations) {
-    if (!this._wallet) {
-      throw new Error('No wallet found to sign the transaction')
+  /**
+   * Crafts a transaction envelope with the provided operations, signs it and
+   * makes the post request to a specific endpoint with the envelope.
+   *
+   * @param {object} prm - request configuration
+   * @param {string} [prm.endpoint=/v3/transactions]
+   * Endpoint to send the transaction
+   * @param {boolean} [prm.needSignRequest=false]
+   * Set `true` to sign the request. Do not be confused with the transaction
+   * signature, which is performed inevitably.
+   * @param {boolean} [prm.waitForIngest=true]
+   * Set 'false' to skip the horizon ingestion. Thus the response is
+   * received right after the transaction is sent to the node.
+   *
+   * @param {...BaseOperation} operations - operations to be included.
+   * @see {@link BaseOperation}
+   *
+   * @returns {Promise} - Promise with response, keys data will be camel cased,
+   * does not do any other actions on the response
+   */
+  postOperationsParametrized (prm, ...operations) {
+    if (!prm || typeof prm !== 'object') {
+      throw new TypeError('`prm` should be a valid object!')
     }
 
     return this.postTxEnvelope(
       this.getTransaction(...operations),
-      true,
-      endpoint
+      prm.waitForIngest === undefined ? true : prm.waitForIngest,
+      prm.endpoint === undefined ? '/v3/transactions' : prm.endpoint,
+      prm.needSignRequest === undefined ? false : prm.needSignRequest
     )
   }
 
   getTransaction (...operations) {
+    if (!this._wallet) {
+      throw new ReferenceError('No wallet found to sign the transaction')
+    }
     return new TransactionBuilder(this._wallet.accountId)
       .addOperations(operations)
       .addSigner(this._wallet.keypair)
@@ -389,10 +427,18 @@ export class ApiCaller {
    * Posts a transaction envelope.
    *
    * @param {string} envelope - a transaction envelope to be submitted.
+   * @param {boolean} [waitForIngest=true] - set 'false' to skip ingest
+   * @param {string} [endpoint=/v3/transactions] - target endpoint
+   * @param {boolean} [needSignRequest=false] - sign the request (not the tx)
    * @returns {Promise} - Promise with response, keys data will be camel cased,
    * does not do any other actions on the response
    */
-  async postTxEnvelope (envelope, waitForIngest = true, endpoint = `/v3/transactions`) {
+  async postTxEnvelope (
+    envelope,
+    waitForIngest = true,
+    endpoint = `/v3/transactions`,
+    needSignRequest = false
+  ) {
     // using raw axios because we don't need most of middleware, but need custom
     // request timeout here
     let config = {
@@ -405,6 +451,14 @@ export class ApiCaller {
       url: `${this._baseURL}${endpoint}`
     }
     config.headers = middlewares.setJsonapiHeaders(config)
+
+    if (needSignRequest) {
+      if (!this._wallet || !this._wallet.keypair || !this._wallet.accountId) {
+        throw new ReferenceError('Signature requested, but no wallet found to sign the request')
+      }
+      config.headers = middlewares.signRequest(config, this._wallet.keypair,
+        this._wallet.accountId)
+    }
 
     let response
     try {
@@ -470,6 +524,9 @@ export class ApiCaller {
     }
 
     if (opts.needSign) {
+      if (!this._wallet || !this._wallet.keypair || !this._wallet.accountId) {
+        throw new ReferenceError('Signature requested, but no wallet found to sign the request')
+      }
       config.headers = middlewares.signRequest(config, this._wallet.keypair,
         this._wallet.accountId)
     }
