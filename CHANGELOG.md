@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.14.0-rc.18] - 2021-09-21
+### Changed
+- Methods `ApiCaller.prototype.postOperationsParametrized()` and
+  `ApiCaller.prototype.postTxEnvelope()` now accept `jsonApi` param, which
+  wraps the body to JSON API style.
+
 ## [1.14.0-rc.17] - 2021-09-17
 ### Added
 - Method `ApiCaller.prototype.postOperationsParametrized()`
@@ -396,7 +402,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.17...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.18...HEAD
+[1.14.0-rc.18]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.17...1.14.0-rc.18
 [1.14.0-rc.17]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.16...1.14.0-rc.17
 [1.14.0-rc.16]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.15...1.14.0-rc.16
 [1.14.0-rc.15]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.14...1.14.0-rc.15

@@ -362,6 +362,8 @@ export class ApiCaller {
    * @param {boolean} [prm.waitForIngest=true]
    * Set 'false' to skip the horizon ingestion. Thus the response is
    * received right after the transaction is sent to the node.
+   * @param {boolean} [prm.jsonApi=false]
+   * Set 'true' to wrap the request body in `data` object.
    *
    * @param {...BaseOperation} operations - operations to be included.
    * @see {@link BaseOperation}
@@ -378,7 +380,8 @@ export class ApiCaller {
       this.getTransaction(...operations),
       prm.waitForIngest === undefined ? true : prm.waitForIngest,
       prm.endpoint === undefined ? '/v3/transactions' : prm.endpoint,
-      prm.needSignRequest === undefined ? false : prm.needSignRequest
+      prm.needSignRequest === undefined ? false : prm.needSignRequest,
+      prm.jsonApi === undefined ? false : prm.jsonApi
     )
   }
 
@@ -430,6 +433,7 @@ export class ApiCaller {
    * @param {boolean} [waitForIngest=true] - set 'false' to skip ingest
    * @param {string} [endpoint=/v3/transactions] - target endpoint
    * @param {boolean} [needSignRequest=false] - sign the request (not the tx)
+   * @param {boolean} [jsonApi=false] - wrap the body for JSON API compliance
    * @returns {Promise} - Promise with response, keys data will be camel cased,
    * does not do any other actions on the response
    */
@@ -437,16 +441,19 @@ export class ApiCaller {
     envelope,
     waitForIngest = true,
     endpoint = `/v3/transactions`,
-    needSignRequest = false
+    needSignRequest = false,
+    jsonApi = false
   ) {
+    const attributes = {
+      tx: envelope,
+      wait_for_ingest: waitForIngest
+    }
+
     // using raw axios because we don't need most of middleware, but need custom
     // request timeout here
     let config = {
       timeout: SUBMIT_TRANSACTION_TIMEOUT,
-      data: {
-        tx: envelope,
-        wait_for_ingest: waitForIngest
-      },
+      data: jsonApi ? { data: { attributes } } : attributes,
       method: methods.POST,
       url: `${this._baseURL}${endpoint}`
     }
