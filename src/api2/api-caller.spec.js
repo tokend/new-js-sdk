@@ -37,7 +37,7 @@ describe('api-caller unit test', () => {
       )
       middlewares.parseJsonapiResponse.returns([])
 
-      await api._call('/foo/bar', {}, 'GET', true)
+      await api._call({ endpoint: '/foo/bar', method: 'GET', needSign: true })
 
       expect(middlewares.setJsonapiHeaders).to.have.been
         .calledBefore(middlewares.signRequest)

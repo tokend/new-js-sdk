@@ -452,10 +452,15 @@ export class ApiCaller {
     // using raw axios because we don't need most of middleware, but need custom
     // request timeout here
     let config = {
+      baseURL: this._baseURL,
       timeout: SUBMIT_TRANSACTION_TIMEOUT,
       data: jsonApi ? { data: { attributes } } : attributes,
       method: methods.POST,
-      url: `${this._baseURL}${endpoint}`
+      url: this._ensureEndpoint(endpoint),
+      headers: {},
+      withCredentials: needSignRequest,
+      maxContentLength: 100000000000,
+      maxBodyLength: 1000000000000
     }
     config.headers = middlewares.setJsonapiHeaders(config)
 
@@ -513,7 +518,7 @@ export class ApiCaller {
         : opts.data || {},
       method: opts.method,
       headers: {},
-      url: opts.endpoint, // TODO: smartly build url
+      url: this._ensureEndpoint(opts.endpoint), // TODO: smartly build url
       withCredentials: true,
       maxContentLength: 100000000000,
       maxBodyLength: 1000000000000
@@ -606,5 +611,12 @@ export class ApiCaller {
   useNetworkDetails (networkDetails) {
     this._networkDetails = networkDetails
     this.usePassphrase(networkDetails.networkPassphrase)
+  }
+
+  _ensureEndpoint (endpoint = '') {
+    if (!endpoint || !endpoint.startsWith('/')) {
+      throw new TypeError(`ApiCaller: endpoint should start with "/", got ${endpoint}`)
+    }
+    return endpoint
   }
 }
