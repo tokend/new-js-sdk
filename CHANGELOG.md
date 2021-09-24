@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
-## [Unreleased]
+## [1.14.0-rc.21] - 2021-09-24
 ### Changed
 - Method `ApiCaller.prototype.call()` now accepts optional `headers`,
   `withCredentials` and `baseUrl` parameters
@@ -415,7 +415,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.20...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.21...HEAD
+[1.14.0-rc.21]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.20...1.14.0-rc.21
 [1.14.0-rc.20]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.19...1.14.0-rc.20
 [1.14.0-rc.19]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.18...1.14.0-rc.19
 [1.14.0-rc.18]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.17...1.14.0-rc.18
