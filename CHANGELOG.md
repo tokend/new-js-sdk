@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+### Changed
+- Method `ApiCaller.prototype.call()` now accepts optional `headers`,
+  `withCredentials` and `baseUrl` parameters
+### Removed
+- Method `ApiCaller.prototype.postOperationsToSpecificEndpoint()`
+  Use `ApiCaller.prototype.postOperationsParametrized()` instead
+
 ## [1.14.0-rc.20] - 2021-09-22
 ## [1.14.0-rc.19] - 2021-09-22
 ### Fixed

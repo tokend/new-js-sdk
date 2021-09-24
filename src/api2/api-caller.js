@@ -147,7 +147,7 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   get (endpoint, query, needSign = false) {
-    return this._call({
+    return this.call({
       method: methods.GET,
       needSign,
       endpoint,
@@ -166,7 +166,7 @@ export class ApiCaller {
    * @returns {Object} - the response.
    */
   getRaw (endpoint, query) {
-    return this._call({
+    return this.call({
       method: methods.GET,
       needRaw: true,
       endpoint,
@@ -199,7 +199,7 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   post (endpoint, data, needSign = false) {
-    return this._call({
+    return this.call({
       method: methods.POST,
       needSign,
       endpoint,
@@ -231,7 +231,7 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   patch (endpoint, data, needSign = false) {
-    return this._call({
+    return this.call({
       method: methods.PATCH,
       needSign,
       endpoint,
@@ -263,7 +263,7 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   put (endpoint, data, needSign = false) {
-    return this._call({
+    return this.call({
       method: methods.PUT,
       needSign,
       endpoint,
@@ -295,7 +295,7 @@ export class ApiCaller {
    * @returns {Object} - the parsed response.
    */
   delete (endpoint, data, needSign = false) {
-    return this._call({
+    return this.call({
       method: methods.DELETE,
       needSign,
       endpoint,
@@ -327,26 +327,6 @@ export class ApiCaller {
    */
   postOperations (...operations) {
     return this.postOperationsParametrized({}, ...operations)
-  }
-
-  /**
-   * Crafts a transaction envelope with the provided operations, signs it and
-   * makes the post request to a specific endpoint with the envelope.
-   *
-   * @see {@link BaseOperation}
-   * @param {string} endpoint - endpoint to send the transaction.
-   * @param {...BaseOperation} operations - operations to be included.
-   * @returns {Promise} - Promise with response, keys data will be camel cased,
-   * does not do any other actions on the response
-   */
-  postOperationsToSpecificEndpoint (endpoint, ...operations) {
-    return this.postOperationsParametrized(
-      {
-        waitForIngest: true,
-        endpoint
-      },
-      ...operations
-    )
   }
 
   /**
@@ -485,28 +465,27 @@ export class ApiCaller {
     }
   }
 
-  async call (opts) {
-    return this._call(opts)
-  }
-
   /**
    * Performs a request
    *
    * @param {object} opts
-   * @param {string} opts.endpoint - endpoint where to make the call to, e.g. `/accounts`
-   * @param {object} opts.data - request data (for POST/PUT requests)
-   * @param {object} opts.query - request query params. See {@link parseQuery} for details
+   * @param {string} opts.endpoint - endpoint where to make the call to, e.g. '/v3/accounts'
    * @param {string} opts.method - the http method of request
-   * @param {string} opts.contentType - contentType header, `application/vnd.api+json` by default
-   * @param {bool} opts.needSign - defines if will try to sign the request, `false` by default
-   * @param {bool} opts.needRaw - defines if raw response should be returned, `false` by default
-   * @param {bool} opts.isEmptyBodyAllowed - defines if empty body is allowed, `false` by default
-   *
-   * @private
+   * @param {string} [opts.baseURL] - overwrite the default base url, e.g. 'https://api.tokend.io/'
+   * @param {object} [opts.data] - request data (for POST/PUT requests)
+   * @param {object} [opts.query] - request query params. See {@link parseQuery} for details
+   * @param {object} [opts.headers] - request headers
+   * @param {string} [opts.contentType] - contentType header, `application/vnd.api+json` by default
+   * @param {boolean} [opts.withCredentials=true] - set false to skip cookies
+   * @param {boolean} [opts.needSign=false] - defines if will try to sign the request, `false` by default
+   * @param {boolean} [opts.needRaw=false] - defines if raw response should be returned, `false` by default
+   * @param {boolean} [opts.isEmptyBodyAllowed=false] - defines if empty body is allowed, `false` by default
    */
-  async _call (opts) {
+  async call (opts) {
     let config = {
-      baseURL: this._baseURL,
+      baseURL: opts.baseURL || this._baseURL,
+      url: this._ensureEndpoint(opts.endpoint),
+      method: opts.method,
       params: opts.query || {},
       paramsSerializer: function (params) {
         return Object.entries(params)
@@ -516,10 +495,10 @@ export class ApiCaller {
       data: (opts.isEmptyBodyAllowed && !opts.data)
         ? undefined
         : opts.data || {},
-      method: opts.method,
-      headers: {},
-      url: this._ensureEndpoint(opts.endpoint), // TODO: smartly build url
-      withCredentials: true,
+      headers: opts.headers || {},
+      withCredentials: opts.withCredentials === undefined
+        ? true
+        : opts.withCredentials,
       maxContentLength: 100000000000,
       maxBodyLength: 1000000000000
     }

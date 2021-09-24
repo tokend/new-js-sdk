@@ -6,7 +6,7 @@ import { ApiCaller } from './api-caller'
 import middlewares from './middlewares'
 
 describe('api-caller unit test', () => {
-  describe('._call method', () => {
+  describe('.call method', () => {
     let sandbox
     let api
 
@@ -37,7 +37,7 @@ describe('api-caller unit test', () => {
       )
       middlewares.parseJsonapiResponse.returns([])
 
-      await api._call({ endpoint: '/foo/bar', method: 'GET', needSign: true })
+      await api.call({ endpoint: '/foo/bar', method: 'GET', needSign: true })
 
       expect(middlewares.setJsonapiHeaders).to.have.been
         .calledBefore(middlewares.signRequest)
