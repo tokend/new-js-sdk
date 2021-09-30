@@ -13,6 +13,7 @@ export class CreateAMLRequestBuilder {
      * @param {string} opts.creatorDetails - details about the reason due to which alert was raised
      * @param {string} opts.reference - Unique reference of the alert
      * @param {string} [opts.source] - The source account for the operation. Defaults to the transaction's source account.
+     * @param {number} [opts.allTasks] - Tasks to be added
      *
      * @returns {xdr.CreateAMLAlertRequestOp}
      */
@@ -46,7 +47,8 @@ export class CreateAMLRequestBuilder {
         reference: opts.reference,
         ext: new xdr.CreateAmlAlertRequestOpExt(
           xdr.LedgerVersion.emptyVersion()
-        )
+        ),
+        allTasks: opts.allTasks === undefined ? 0 : opts.allTasks
       })
     )
     BaseOperation.setSourceAccount(opAttributes, opts)
