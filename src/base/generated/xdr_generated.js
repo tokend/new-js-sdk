@@ -1,6 +1,6 @@
-// revision: ed8e27617ef83de9c31aa8c58fe039c90a519ca8
+// revision: 286e242be84a34b7c846f76c4d070a91e94331c0
 // branch:   (HEAD
-// Automatically generated on 2021-07-05T14:01:24+00:00
+// Automatically generated on 2021-10-07T12:37:10+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1634,12 +1634,14 @@ xdr.struct("PendingStatisticsEntry", [
 //   //: Functional type of poll
 //   enum PollType
 //   {
-//       SINGLE_CHOICE = 0
+//       SINGLE_CHOICE = 0,
+//       CUSTOM_CHOICE = 1
 //   };
 //
 // ===========================================================================
 xdr.enum("PollType", {
   singleChoice: 0,
+  customChoice: 1,
 });
 
 // === xdr source ============================================================
@@ -1649,6 +1651,8 @@ xdr.enum("PollType", {
 //   {
 //   case SINGLE_CHOICE:
 //       EmptyExt ext;
+//   case CUSTOM_CHOICE:
+//   	EmptyExt customChoiceExt;
 //   };
 //
 // ===========================================================================
@@ -1657,9 +1661,11 @@ xdr.union("PollData", {
   switchName: "type",
   switches: [
     ["singleChoice", "ext"],
+    ["customChoice", "customChoiceExt"],
   ],
   arms: {
     ext: xdr.lookup("EmptyExt"),
+    customChoiceExt: xdr.lookup("EmptyExt"),
   },
 });
 
@@ -2724,6 +2730,8 @@ xdr.struct("SingleChoiceVote", [
 //   {
 //   case SINGLE_CHOICE:
 //       SingleChoiceVote single;
+//   case CUSTOM_CHOICE:
+//   	longstring custom;
 //   //case MULTIPLE_CHOICE:
 //   //    MultipleChoiceVote multiple;
 //   };
@@ -2734,9 +2742,11 @@ xdr.union("VoteData", {
   switchName: "pollType",
   switches: [
     ["singleChoice", "single"],
+    ["customChoice", "custom"],
   ],
   arms: {
     single: xdr.lookup("SingleChoiceVote"),
+    custom: xdr.lookup("Longstring"),
   },
 });
 
@@ -23102,7 +23112,10 @@ xdr.struct("TransactionResult", [
 //       FIX_CRASH_CORE_WITH_PAYMENT = 28,
 //       FIX_INVEST_TO_IMMEDIATE_SALE = 29,
 //       FIX_PAYMENT_TASKS_WILDCARD_VALUE = 30,
-//       FIX_CHANGE_ROLE_REQUEST_REQUESTOR = 31
+//       FIX_CHANGE_ROLE_REQUEST_REQUESTOR = 31,
+//       FIX_UNORDERED_FEE_DESTINATION = 32,
+//       ADD_DEFAULT_FEE_RECEIVER_BALANCE_KV = 33,
+//       DELETE_REDEMPTION_ZERO_TASKS_CHECKING = 34
 //   };
 //
 // ===========================================================================
@@ -23139,6 +23152,9 @@ xdr.enum("LedgerVersion", {
   fixInvestToImmediateSale: 29,
   fixPaymentTasksWildcardValue: 30,
   fixChangeRoleRequestRequestor: 31,
+  fixUnorderedFeeDestination: 32,
+  addDefaultFeeReceiverBalanceKv: 33,
+  deleteRedemptionZeroTasksChecking: 34,
 });
 
 // === xdr source ============================================================

@@ -55,6 +55,10 @@ export class ManageCreatePollRequestBuilder {
         attrs.data = new xdr.PollData.singleChoice(
           new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion()))
         break
+      case xdr.PollType.customChoice().value:
+        attrs.data = new xdr.PollData.customChoice(
+          new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion()))
+        break
       default:
         throw new Error('current opts.pollType is not supported ' + opts.pollType)
     }
