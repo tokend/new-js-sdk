@@ -136,6 +136,8 @@ export class ManageCreatePollRequestBuilder {
         switch (request.data().switch()) {
           case xdr.PollType.singleChoice():
             break
+          case xdr.PollType.customChoice():
+            break
           default:
             throw new Error('Unexpected poll type ' + request.data().type().value)
         }
