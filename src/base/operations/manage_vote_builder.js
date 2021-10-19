@@ -36,8 +36,8 @@ export class ManageVoteBuilder {
    * @returns {xdr.ManageVoteOp}
    */
   static createCustomChoiceVote (opts) {
-    if (opts.choice === '') {
-      throw new Error('opts.choice is empty')
+    if (!opts.choice) {
+      throw new Error('opts.choice is NaN')
     }
 
     let attrs = {}
@@ -104,7 +104,7 @@ export class ManageVoteBuilder {
             result.choice = createData.data().single().choice().toString()
             break
           case xdr.PollType.customChoice():
-            result.choice = createData.data().custom().toString()
+            result.choice = createData.data().custom()
             break
           default:
             throw new Error('Unexpected poll type ' + createData.data().type().value)
