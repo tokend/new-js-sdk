@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.14.0-rc.23] - 2021-10-21
+### Fixed
+- Add custom poll type and vote type
+
 ## [1.14.0-rc.22] - 2021-09-30
 ### Fixed
 - Method createAMLAlert now adds 'allTasks' field to the operation body
