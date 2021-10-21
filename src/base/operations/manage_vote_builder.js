@@ -37,7 +37,7 @@ export class ManageVoteBuilder {
    */
   static createCustomChoiceVote (opts) {
     if (!opts.choice) {
-      throw new Error('opts.choice is NaN')
+      throw new Error('opts.choice is undefined')
     }
 
     let attrs = {}
