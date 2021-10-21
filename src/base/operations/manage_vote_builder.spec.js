@@ -3,13 +3,27 @@ import { Operation } from '../operation'
 import { ManageVoteBuilder } from './manage_vote_builder'
 
 describe('ManageVoteBuilder', () => {
-  it('Create', () => {
+  it('Create single choice', () => {
     let opt = {
       pollType: 0,
       pollID: '4123421',
       choice: 1
     }
     let op = ManageVoteBuilder.createSingleChoiceVote(opt)
+    let xdrOp = op.toXDR('hex')
+    let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
+    let obj = Operation.operationToObject(operation)
+    expect(obj.type).to.be.equal(xdr.OperationType.manageVote().name)
+    expect(opt.pollID).to.be.equal(obj.pollID)
+    expect(opt.pollType).to.be.equal(obj.pollType)
+  })
+  it('Create custom choice', () => {
+    let opt = {
+      pollType: 1,
+      pollID: '4123421',
+      choice: 'custom'
+    }
+    let op = ManageVoteBuilder.createCustomChoiceVote(opt)
     let xdrOp = op.toXDR('hex')
     let operation = xdr.Operation.fromXDR(Buffer.from(xdrOp, 'hex'))
     let obj = Operation.operationToObject(operation)

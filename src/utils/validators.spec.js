@@ -447,6 +447,10 @@ describe('validateXdrEnumType', () => {
         type: xdr.PollType
       })
       validateXdrEnumType({
+        value: xdr.PollType.customChoice(),
+        type: xdr.PollType
+      })
+      validateXdrEnumType({
         value: xdr.SaleType.basicSale(),
         type: xdr.SaleType
       })

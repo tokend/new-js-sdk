@@ -5,7 +5,7 @@ import { BaseOperation } from './base_operation'
 
 export class ManageVoteBuilder {
   /**
-   * Create new signer for source account.
+   * Create new single choice vote for source account.
    * @param {object} opts
    * @param {string} opts.pollID - ID of poll to voting in
    * @param {number} opts.choice - choice
@@ -27,6 +27,28 @@ export class ManageVoteBuilder {
     return this._createVote(opts, attrs)
   }
 
+  /**
+   * Create new custom choice vote for source account.
+   * @param {object} opts
+   * @param {string} opts.pollID - ID of poll to voting in
+   * @param {object} opts.choice - choice
+   * @param {string} [opts.source] - The source account. Defaults to the transaction's source account.
+   * @returns {xdr.ManageVoteOp}
+   */
+  static createCustomChoiceVote (opts) {
+    if (!opts.choice) {
+      throw new Error('opts.choice is undefined')
+    }
+
+    let attrs = {}
+
+    attrs.data = new xdr.VoteData.customChoice(
+      opts.choice
+    )
+
+    return this._createVote(opts, attrs)
+  }
+
   static _createVote (opts, attrs) {
     if (isUndefined(opts.pollID)) {
       throw new Error('opts.pollID is undefined')
@@ -40,7 +62,7 @@ export class ManageVoteBuilder {
   }
 
   /**
-   * Delete existing signer for source account.
+   * Delete existing vote for source account.
    * @param {object} opts
    * @param {string} opts.pollID - ID of poll
    * @param {string} [opts.source] - The source account. Defaults to the transaction's source account.
@@ -80,6 +102,9 @@ export class ManageVoteBuilder {
         switch (createData.data().switch()) {
           case xdr.PollType.singleChoice():
             result.choice = createData.data().single().choice().toString()
+            break
+          case xdr.PollType.customChoice():
+            result.choice = createData.data().custom()
             break
           default:
             throw new Error('Unexpected poll type ' + createData.data().type().value)

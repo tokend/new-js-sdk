@@ -55,6 +55,10 @@ export class ManageCreatePollRequestBuilder {
         attrs.data = new xdr.PollData.singleChoice(
           new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion()))
         break
+      case xdr.PollType.customChoice().value:
+        attrs.data = new xdr.PollData.customChoice(
+          new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion()))
+        break
       default:
         throw new Error('current opts.pollType is not supported ' + opts.pollType)
     }
@@ -131,6 +135,8 @@ export class ManageCreatePollRequestBuilder {
         result.pollType = request.data()._switch.value
         switch (request.data().switch()) {
           case xdr.PollType.singleChoice():
+            break
+          case xdr.PollType.customChoice():
             break
           default:
             throw new Error('Unexpected poll type ' + request.data().type().value)
