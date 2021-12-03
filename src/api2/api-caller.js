@@ -469,8 +469,8 @@ export class ApiCaller {
    * Performs a request
    *
    * @param {object} opts
-   * @param {string} opts.endpoint - endpoint where to make the call to, e.g. '/v3/accounts'
    * @param {string} opts.method - the http method of request
+   * @param {string} [opts.endpoint] - endpoint where to make the call to, e.g. '/v3/accounts'
    * @param {string} [opts.baseURL] - overwrite the default base url, e.g. 'https://api.tokend.io/'
    * @param {object} [opts.data] - request data (for POST/PUT requests)
    * @param {object} [opts.query] - request query params. See {@link parseQuery} for details
@@ -593,7 +593,7 @@ export class ApiCaller {
   }
 
   _ensureEndpoint (endpoint = '') {
-    if (!endpoint || !endpoint.startsWith('/')) {
+    if (endpoint && !endpoint.startsWith('/')) {
       throw new TypeError(`ApiCaller: endpoint should start with "/", got ${endpoint}`)
     }
     return endpoint

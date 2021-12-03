@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.14.0-rc.24] - 2021-12-03
+### Changed
+- The `endpoint` field is now optional for `.call()` to make it possible accept
+  a ready-to-use endpoint with `baseUrl` only.
+
 ## [1.14.0-rc.23] - 2021-10-21
 ### Fixed
 - Add custom poll type and vote type
@@ -423,7 +428,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.23...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.24...HEAD
+[1.14.0-rc.24]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.23...1.14.0-rc.24
 [1.14.0-rc.23]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.22...1.14.0-rc.23
 [1.14.0-rc.22]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.21...1.14.0-rc.22
 [1.14.0-rc.21]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.20...1.14.0-rc.21
