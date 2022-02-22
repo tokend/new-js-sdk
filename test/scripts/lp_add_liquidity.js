@@ -49,4 +49,10 @@ export async function lpAddLiquidity () {
 
   const pool = await liquidityPoolHelper.mustLoadByID(liquidityPoolId)
   log.info(`Got liquidity pool:`, pool)
+
+  return {
+    liquidityPool: pool,
+    firstBalance: firstBalance.balanceId,
+    secondBalance: secondBalance.balanceId
+  }
 }

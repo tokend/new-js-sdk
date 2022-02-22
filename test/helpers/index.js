@@ -29,7 +29,7 @@ import { Redemption } from './redemption'
 import { Data } from './data'
 import { CsvParser } from './csv_parser'
 import { DeferredPayment } from './deferred_payment'
-import { LiquidityPoolHelper } from './lp_add_liquidity'
+import { LiquidityPoolHelper } from './liquidity_pool_helper'
 
 export const masterKP = base.Keypair.fromSecret(config.master_seed)
 const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')

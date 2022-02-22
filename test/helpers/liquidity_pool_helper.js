@@ -21,6 +21,29 @@ export class LiquidityPoolHelper extends Helper {
     return getSuccessResultFromXDR(response.resultXdr, 'lpAddLiquidityResult').liquidityPoolId().toString()
   }
 
+  /**
+   * @param {object} opts
+   * @param {number} opts.swapType - Type of the swap
+   * @param {string} opts.amountIn - Amount of the assets to be provided
+   * @param {string} opts.amountOut - Amount of the assets to be received
+   * @param {string} opts.fromBalance - ID of the balance for providing assets
+   * @param {string} opts.toBalance - ID of the balance for receiving assets
+   * @returns {string} - ID of the liquidity pool
+   */
+  async lpSwap (opts, signerKp = this.masterKp) {
+    const op = base.LiquidityPoolBuilder.lpSwap(opts)
+    const response = await this.submit(op, signerKp)
+
+    return getSuccessResultFromXDR(response.resultXdr, 'lpSwapResult').liquidityPoolId().toString()
+  }
+
+  async lpRemoveLiquidity (opts, signerKp = this.masterKp) {
+    const op = base.LiquidityPoolBuilder.lpRemoveLiquidity(opts)
+    const response = await this.submit(op, signerKp)
+
+    return getSuccessResultFromXDR(response.resultXdr, 'lpRemoveLiquidityResult').liquidityPoolId().toString()
+  }
+
   async mustLoadByID (id) {
     return Running.untilFound(async () => {
       const { data } = await this.sdk.horizon.liquidityPools.get(id)

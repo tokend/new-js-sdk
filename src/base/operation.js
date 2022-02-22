@@ -547,6 +547,12 @@ export class Operation extends BaseOperation {
       case xdr.OperationType.lpAddLiquidity():
         LiquidityPoolBuilder.lpAddLiquidityToObject(result, attrs)
         break
+      case xdr.OperationType.lpSwap():
+        LiquidityPoolBuilder.lpSwapToObject(result, attrs)
+        break
+      case xdr.OperationType.lpRemoveLiquidity():
+        LiquidityPoolBuilder.lpRemoveLiquidityToObject(result, attrs)
+        break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)
     }
