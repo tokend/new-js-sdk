@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.14.0-rc.25] - 2022-02-21
+### Removed
+- ed25519 lib
+
 ## [1.14.0-rc.24] - 2021-12-03
 ### Changed
 - The `endpoint` field is now optional for `.call()` to make it possible accept
@@ -428,7 +432,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.24...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.25...HEAD
+[1.14.0-rc.25]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.24...1.14.0-rc.25
 [1.14.0-rc.24]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.23...1.14.0-rc.24
 [1.14.0-rc.23]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.22...1.14.0-rc.23
 [1.14.0-rc.22]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.21...1.14.0-rc.22
