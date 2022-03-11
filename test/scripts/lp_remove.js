@@ -5,7 +5,7 @@ import { liquidityPoolHelper } from '../helpers'
  * @param {object} opts
  * @param {number} opts.lpTokensBalance - ID of the LP tokens balance
  * @param {number} opts.lpTokensAmount
- * @returns {string} - ID of the liquidity pool
+ * @returns {Promise<string>} - ID of the liquidity pool
  */
 export async function lpRemove (opts) {
   const log = logger.new('lpRemove')

@@ -12,7 +12,7 @@ export class LiquidityPoolHelper extends Helper {
    * @param {string} opts.firstAssetMinAmount - Min amount of the first asset to be provided
    * @param {string} opts.secondAssetMinAmount - Min amount of the second asset to be provided
    * @param {Keypair} signerKp
-   * @returns {string} - ID of the liquidity pool
+   * @returns {Promise<string>} - ID of the liquidity pool
    */
   async lpAddLiquidity (opts, signerKp = this.masterKp) {
     const op = base.LiquidityPoolBuilder.lpAddLiquidity(opts)
@@ -28,7 +28,7 @@ export class LiquidityPoolHelper extends Helper {
    * @param {string} opts.amountOut - Amount of the assets to be received
    * @param {string} opts.fromBalance - ID of the balance for providing assets
    * @param {string} opts.toBalance - ID of the balance for receiving assets
-   * @returns {string} - ID of the liquidity pool
+   * @returns {Promise<string>} - ID of the liquidity pool
    */
   async lpSwap (opts, signerKp = this.masterKp) {
     const op = base.LiquidityPoolBuilder.lpSwap(opts)

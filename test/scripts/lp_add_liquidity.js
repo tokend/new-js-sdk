@@ -5,7 +5,7 @@ import { createAndApproveAsset } from './create_asset'
 import { balanceHelper, issuanceHelper, keyValueHelper, liquidityPoolHelper } from '../helpers'
 import { KEY_VALUE_KEYS } from '../../src'
 
-export async function lpAddLiquidity () {
+export async function lpAddLiquidity (opts) {
   const log = logger.new('lpAddLiquidity')
 
   const pairAssetCodes = _times(2, _ => Asset.randomCode())
@@ -40,10 +40,10 @@ export async function lpAddLiquidity () {
   const liquidityPoolId = await liquidityPoolHelper.lpAddLiquidity({
     firstBalance: firstBalance.balanceId,
     secondBalance: secondBalance.balanceId,
-    firstAssetDesiredAmount: '1',
-    secondAssetDesiredAmount: '2',
-    firstAssetMinAmount: '0.1',
-    secondAssetMinAmount: '0.1'
+    firstAssetDesiredAmount: opts.firstAssetDesiredAmount,
+    secondAssetDesiredAmount: opts.secondAssetDesiredAmount,
+    firstAssetMinAmount: opts.firstAssetMinAmount,
+    secondAssetMinAmount: opts.secondAssetMinAmount
   })
   log.info(`Created liquidity pool with ID: ${liquidityPoolId}`)
 
