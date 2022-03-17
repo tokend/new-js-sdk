@@ -18,4 +18,21 @@ export class ManageAccountRole extends Helper {
     return getSuccessResultFromXDR(response.resultXdr, 'manageAccountRoleResult')
       .roleId().toString()
   }
+
+  async update (opts = {}, ownerKp = this.masterKp) {
+    const DEFAULTS = {
+      details: {},
+      ruleIDs: []
+    }
+
+    const operation = ManageAccountRoleBuilder.update({
+      ...DEFAULTS,
+      ...opts
+    })
+
+    const response = await this.submit(operation, ownerKp)
+
+    return getSuccessResultFromXDR(response.resultXdr, 'manageAccountRoleResult')
+      .roleId().toString()
+  }
 }
