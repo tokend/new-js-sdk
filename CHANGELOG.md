@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 ## [Unreleased]
-### Added 
+
+## [1.14.0-rc.3.1] - 2022-04-07
+### Added
 - To WalletsManager:
   - `role` param to create a wallet
 
 ## [1.14.0-rc.3] - 2020-09-03
-## Added
+### Added
 - Create, update, remove data reviewable requests
 
 ## [1.14.0-rc.2] - 2020-08-07
@@ -34,7 +36,7 @@ for further information about branching and tagging conventions.
 
 ## [1.13.1-rc.0] - 2020-06-02
 ### Changed
-- Subject size from 256 to 1000 
+- Subject size from 256 to 1000
 
 ## [1.13.0] - 2020-04-13
 
@@ -110,7 +112,7 @@ for further information about branching and tagging conventions.
 - Integration tests
 
 ## [1.10.2-rc.0] - 2019-09-16
-### Added 
+### Added
 - Builder for `RemoveAssetOp`
 - Unit tests for `RemoveAssetOp`
 - Integration tests for `RemoveAssetOp`
@@ -317,7 +319,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3.1...HEAD
+[1.14.0-rc.3.1]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3...1.14.0-rc.3.1
 [1.14.0-rc.3]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.2...1.14.0-rc.3
 [1.14.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.1...1.14.0-rc.2
 [1.14.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.0...1.14.0-rc.1

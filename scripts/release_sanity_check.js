@@ -24,7 +24,7 @@ function runAllValidations () {
 }
 
 function validateSemverCompatibility () {
-  const semverRe = /^\d+\.\d+\.\d+((-rc|-x)\.\d+)?$/i
+  const semverRe = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/i
 
   if (!semverRe.test(VERSION)) {
     issuesFound.push(`Version ${VERSION} is not semver compatible`)
