@@ -103,10 +103,11 @@ export class WalletsManager {
    * @param {string} password User's password.
    * @param {Array} [signers] array of {@link Signer}
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
+   * @param {number} [role] User's role.
    *
    * @return {Promise.<object>} User's wallet.
    */
-  async createWithSigners (email, password, signers = [], additionalKeypairs = []) {
+  async createWithSigners (email, password, signers = [], additionalKeypairs = [], role) {
     signers.forEach(item => {
       if (!(item instanceof Signer)) {
         throw new TypeError('A signer instance expected.')
@@ -146,7 +147,8 @@ export class WalletsManager {
           email,
           salt: encryptedMainWallet.salt,
           account_id: encryptedMainWallet.accountId,
-          keychain_data: encryptedMainWallet.keychainData
+          keychain_data: encryptedMainWallet.keychainData,
+          ...(role ? { role } : {})
         },
         relationships: {
           kdf: {
@@ -204,10 +206,11 @@ export class WalletsManager {
    * @param {Keypair} recoveryKeypair the keypair to later recover the account
    * @param {string} [referrerId] public key of the referrer
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
-   *
+   * @param {number} [role] User's role.
+
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
-  async create (email, password, recoveryKeypair, referrerId = '', additionalKeypairs = []) {
+  async create (email, password, recoveryKeypair, referrerId = '', additionalKeypairs = [], role) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
     const recoverySigner = new Signer({
       id: walletRecoveryKeypair.accountId(),
@@ -219,7 +222,8 @@ export class WalletsManager {
       email,
       password,
       [recoverySigner],
-      additionalKeypairs
+      additionalKeypairs,
+      role
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()
     return wallet
