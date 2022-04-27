@@ -49,6 +49,7 @@ import { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_cl
 import { DataRequestBuilder } from './operations/data_request_builder'
 import { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
 import { SaleRequestBuilder } from './operations/sale_request_builder'
+import { ManageAccountRuleBuilder } from './operations/manage_account_rule_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -542,6 +543,9 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.cancelSaleRequest():
         SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.manageAccountRule():
+        ManageAccountRuleBuilder.manageAccountRuleToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)
