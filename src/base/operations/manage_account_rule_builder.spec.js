@@ -5,7 +5,7 @@ import { ManageAccountRuleBuilder } from './manage_account_rule_builder'
 describe('ManageAccountRuleBuilder', () => {
   it('createWithAssetResource', () => {
     let opt = {
-      type: 'ASSET', 
+      type: 'ASSET',
       assetCode: '123',
       assetType: '2',
       action: 2,
@@ -26,7 +26,7 @@ describe('ManageAccountRuleBuilder', () => {
 
   it('createWithOfferEntryResource', () => {
     let opt = {
-      type: 'OFFER_ENTRY', 
+      type: 'OFFER_ENTRY',
       baseAssetCode: '123',
       quoteAssetCode: '123',
       baseAssetType: '2',
@@ -49,7 +49,7 @@ describe('ManageAccountRuleBuilder', () => {
 
   it('createWithSaleResource', () => {
     let opt = {
-      type: 'SALE', 
+      type: 'SALE',
       saleId: '123',
       saleType: '2',
       action: 2,
@@ -66,7 +66,7 @@ describe('ManageAccountRuleBuilder', () => {
 
   it('createWithAtomicSwapAskResource', () => {
     let opt = {
-      type: 'ATOMIC_SWAP_ASK', 
+      type: 'ATOMIC_SWAP_ASK',
       assetCode: '123',
       assetType: '2',
       action: 2,
@@ -83,7 +83,7 @@ describe('ManageAccountRuleBuilder', () => {
 
   it('createWithKeyValueResource', () => {
     let opt = {
-      type: 'KEY_VALUE', 
+      type: 'KEY_VALUE',
       keyPrefix: '123',
       action: 2,
       forbids: true,
@@ -98,7 +98,7 @@ describe('ManageAccountRuleBuilder', () => {
 
   it('createWithPollResource', () => {
     let opt = {
-      type: 'POLL', 
+      type: 'POLL',
       pollId: '4321',
       permissionType: 2,
       action: 2,
@@ -115,7 +115,7 @@ describe('ManageAccountRuleBuilder', () => {
 
   it('createWithVoteResource', () => {
     let opt = {
-      type: 'VOTE', 
+      type: 'VOTE',
       pollId: '4321',
       permissionType: 2,
       action: 2,
@@ -129,10 +129,10 @@ describe('ManageAccountRuleBuilder', () => {
     expect(opt.pollId).to.be.equal(obj.pollId)
     expect(opt.permissionType).to.be.equal(obj.permissionType)
   })
-  
+
   it('createWithInitiateKycRecoveryResource', () => {
     let opt = {
-      type: 'INITIATE_KYC_RECOVERY', 
+      type: 'INITIATE_KYC_RECOVERY',
       roleId: '4123421',
       action: 2,
       forbids: true,
@@ -147,7 +147,7 @@ describe('ManageAccountRuleBuilder', () => {
 
   it('createWithSwapResource', () => {
     let opt = {
-      type: 'SWAP', 
+      type: 'SWAP',
       assetCode: '123',
       assetType: '2',
       action: 2,
@@ -180,7 +180,7 @@ describe('ManageAccountRuleBuilder', () => {
 
   // it('createWithCustomResource', () => {
   //   let opt = {
-  //     type: 'CUSTOM', 
+  //     type: 'CUSTOM',
   //     action: "action",
   //     resource: 'resource',
   //     action: 2,
