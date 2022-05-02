@@ -14,26 +14,27 @@ export class ManageAccountRuleBuilder {
    * @returns {xdr.Operation}
    */
   static createAccountRule (opts) {
-    const resourceTypes = {
-      'ASSET': (opts, attrs) => {
+    let attrs = {}
+    switch (opts.type) {
+      case 'ASSET':
         attrs.resource = new xdr.AccountRuleResource.asset(
           new xdr.AccountRuleResourceAsset({
             assetCode: opts.assetCode,
             assetType: UnsignedHyper.fromString(opts.assetType),
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'REVIEWABLE_REQUEST': (opts, attrs) => {
+        break
+      case 'REVIEWABLE_REQUEST':
         attrs.resource = new xdr.AccountRuleResource.reviewableRequest(
           new xdr.AccountRuleResourceReviewableRequest({
             details: opts.details,
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'ANY': (opts, attrs) => {
+        break
+      case 'ANY':
         attrs = opts
-      },
-      'OFFER_ENTRY': (opts, attrs) => {
+        break
+      case 'OFFER_ENTRY':
         attrs.resource = new xdr.AccountRuleResource.offerEntry(
           new xdr.AccountRuleResourceOffer({
             baseAssetType: UnsignedHyper.fromString(opts.baseAssetType),
@@ -43,91 +44,82 @@ export class ManageAccountRuleBuilder {
             isBuy: opts.isBuy,
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'SALE': (opts, attrs) => {
+        break
+      case 'SALE':
         attrs.resource = new xdr.AccountRuleResource.sale(
           new xdr.AccountRuleResourceSale({
             saleId: UnsignedHyper.fromString(opts.saleId),
             saleType: UnsignedHyper.fromString(opts.saleType),
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'ATOMIC_SWAP_ASK': (opts, attrs) => {
+        break
+      case 'ATOMIC_SWAP_ASK':
         attrs.resource = new xdr.AccountRuleResource.atomicSwapAsk(
           new xdr.AccountRuleResourceAtomicSwapAsk({
             assetType: UnsignedHyper.fromString(opts.assetType),
             assetCode: opts.assetCode,
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'KEY_VALUE': (opts, attrs) => {
+        break
+      case 'KEY_VALUE':
         attrs.resource = new xdr.AccountRuleResource.keyValue(
           new xdr.AccountRuleResourceKeyValue({
             keyPrefix: opts.keyPrefix,
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'POLL': (opts, attrs) => {
+        break
+      case 'POLL':
         attrs.resource = new xdr.AccountRuleResource.poll(
           new xdr.AccountRuleResourcePoll({
             pollId: UnsignedHyper.fromString(opts.pollId),
             permissionType: opts.permissionType,
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'VOTE': (opts, attrs) => {
+        break
+      case 'VOTE':
         attrs.resource = new xdr.AccountRuleResource.vote(
           new xdr.AccountRuleResourceVote({
             pollId: UnsignedHyper.fromString(opts.pollId),
             permissionType: opts.permissionType,
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'INITIATE_KYC_RECOVERY': (opts, attrs) => {
+        break
+      case 'INITIATE_KYC_RECOVERY':
         attrs.resource = new xdr.AccountRuleResource.initiateKycRecovery(
           new xdr.AccountRuleResourceInitiateKycRecovery({
             roleId: UnsignedHyper.fromString(opts.roleId),
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'ACCOUNT_SPECIFIC_RULE': (opts, attrs) => {
+        break
+      case 'ACCOUNT_SPECIFIC_RULE':
         attrs = opts
-      },
-      'SWAP': (opts, attrs) => {
+        break
+      case 'SWAP':
         attrs.resource = new xdr.AccountRuleResource.swap(
           new xdr.AccountRuleResourceSwap({
             assetCode: opts.assetCode,
             assetType: UnsignedHyper.fromString(opts.assetType),
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'DATA': (opts, attrs) => {
+        break
+      case 'DATA':
         attrs.resource = new xdr.AccountRuleResource.data(
           new xdr.AccountRuleResourceData({
             type: UnsignedHyper.fromString(opts.type),
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      },
-      'CUSTOM': (opts, attrs) => {
+        break
+      case 'CUSTOM':
         attrs.resource = new xdr.AccountRuleResource.custom(
           new xdr.CustomRuleResource({
             action: opts.action,
             resource: opts.resource,
             ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
           }))
-      }
+        break
+      default:
+        throw new Error('Unexpected manage account rule type')
     }
-    let attrs = {}
-    try {
-      resourceTypes[opts.type](opts, attrs)
-    } catch (e) {
-      if (e instanceof TypeError) {
-        attrs.ext = new xdr.CreateAccountRuleDataExt(xdr.LedgerVersion.emptyVersion())
-      } else {
-        throw e
-      }
-    }
-
     return this._createRule(opts, attrs)
   }
 
@@ -149,7 +141,6 @@ export class ManageAccountRuleBuilder {
       attrs.details = {}
     }
     attrs.details = JSON.stringify(opts.details)
-
     attrs.ext = new xdr.CreateAccountRuleDataExt(xdr.LedgerVersion.emptyVersion())
 
     return this._manageRule(opts, new xdr.ManageAccountRuleOpData.create(
