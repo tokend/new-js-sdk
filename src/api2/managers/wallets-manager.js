@@ -113,8 +113,7 @@ export class WalletsManager {
    * @param {Array} [signers] array of {@link Signer}
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    * @param {object} geocode User's current location data
-   *
-   * @param inviteCode
+   * @param {string} inviteCode Invite code using the user who registered
    * @return {Promise.<object>} User's wallet.
    */
   async createWithSigners (
