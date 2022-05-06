@@ -121,7 +121,8 @@ export class WalletsManager {
     password,
     signers = [],
     additionalKeypairs = [],
-    geocode = {}
+    geocode = {},
+    inviteCode = '',
   ) {
     signers.forEach(item => {
       if (!(item instanceof Signer)) {
@@ -173,7 +174,8 @@ export class WalletsManager {
           email,
           salt: encryptedMainWallet.salt,
           account_id: encryptedMainWallet.accountId,
-          keychain_data: encryptedMainWallet.keychainData
+          keychain_data: encryptedMainWallet.keychainData,
+          inviteCode,
         },
         relationships: {
           kdf: {
@@ -254,6 +256,7 @@ export class WalletsManager {
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    * @param {object} geocode object with user's current location data
    *
+   * @param inviteCode
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
   async create (
@@ -262,7 +265,8 @@ export class WalletsManager {
     recoveryKeypair,
     referrerId = '',
     additionalKeypairs = [],
-    geocode = {}
+    geocode = {},
+    inviteCode = '',
   ) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
     const recoverySigner = new Signer({
@@ -276,7 +280,8 @@ export class WalletsManager {
       password,
       [recoverySigner],
       additionalKeypairs,
-      geocode
+      geocode,
+        inviteCode,
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()
     return wallet
