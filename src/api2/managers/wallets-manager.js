@@ -72,18 +72,18 @@ export class WalletsManager {
   async get (email, password, geocode) {
     const { data: kdfParams } = await this.getKdfParams(email)
     const walletId = Wallet.deriveId(
-      email, password, kdfParams, kdfParams.salt
+        email, password, kdfParams, kdfParams.salt
     )
 
     let walletResponse
     try {
       walletResponse = await this._apiCaller.get(`/wallets/${walletId}`,
-        geocode
-          ? {
-            location_lat: geocode.latitude,
-            location_long: geocode.longitude
-          }
-          : {}
+          geocode
+              ? {
+                location_lat: geocode.latitude,
+                location_long: geocode.longitude
+              }
+              : {}
       )
     } catch (err) {
       // HACK: expose wallet Id to allow resend email
@@ -114,15 +114,16 @@ export class WalletsManager {
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    * @param {object} geocode User's current location data
    *
+   * @param inviteCode
    * @return {Promise.<object>} User's wallet.
    */
   async createWithSigners (
-    email,
-    password,
-    signers = [],
-    additionalKeypairs = [],
-    geocode = {},
-    inviteCode = '',
+      email,
+      password,
+      signers = [],
+      additionalKeypairs = [],
+      geocode = {},
+      inviteCode = '',
   ) {
     signers.forEach(item => {
       if (!(item instanceof Signer)) {
@@ -137,12 +138,12 @@ export class WalletsManager {
 
     const secondFactorWallet = Wallet.generate(email, null, additionalKeypairs)
     const encryptedSecondFactorWallet = secondFactorWallet.encrypt(
-      kdfParams, password
+        kdfParams, password
     )
 
     const defaultSignerRoleId = roleId.value.u32 || roleId.value.u64
     const defaultSigner = signers
-      .find(el => el.attributes.role_id === defaultSignerRoleId)
+        .find(el => el.attributes.role_id === defaultSignerRoleId)
     if (defaultSigner) {
       if (!defaultSigner.id) {
         defaultSigner.id = mainWallet.accountId
@@ -194,15 +195,15 @@ export class WalletsManager {
             data: relationshipsSigners
           },
           ...(isGeocodePresent
-            ? {
-              location: {
-                data: {
-                  type: 'location',
-                  id: `${geocode.latitude}:${geocode.longitude}`
-                }
-              }
-            }
-            : {}
+                  ? {
+                    location: {
+                      data: {
+                        type: 'location',
+                        id: `${geocode.latitude}:${geocode.longitude}`
+                      }
+                    }
+                  }
+                  : {}
           )
         }
       },
@@ -218,26 +219,26 @@ export class WalletsManager {
         },
         ...signers,
         isGeocodePresent
-          ? {
-            type: 'location',
-            id: `${geocode.latitude}:${geocode.longitude}`,
-            attributes: {
-              location_lat: geocode.latitude,
-              location_long: geocode.longitude
+            ? {
+              type: 'location',
+              id: `${geocode.latitude}:${geocode.longitude}`,
+              attributes: {
+                location_lat: geocode.latitude,
+                location_long: geocode.longitude
+              }
             }
-          }
-          : undefined
+            : undefined
       ]
     })
 
     const walletWithSession = new Wallet(
-      mainWallet.email,
-      mainWallet.keypair,
-      _get(response, 'data.accountId'),
-      mainWallet.id,
-      _get(response, 'data.session.id'),
-      _get(response, 'data.session.encryptionKey'),
-      mainWallet.secretSeeds
+        mainWallet.email,
+        mainWallet.keypair,
+        _get(response, 'data.accountId'),
+        mainWallet.id,
+        _get(response, 'data.session.id'),
+        _get(response, 'data.session.encryptionKey'),
+        mainWallet.secretSeeds
     )
 
     return {
@@ -260,13 +261,13 @@ export class WalletsManager {
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
   async create (
-    email,
-    password,
-    recoveryKeypair,
-    referrerId = '',
-    additionalKeypairs = [],
-    geocode = {},
-    inviteCode = '',
+      email,
+      password,
+      recoveryKeypair,
+      referrerId = '',
+      additionalKeypairs = [],
+      geocode = {},
+      inviteCode = '',
   ) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
     const recoverySigner = new Signer({
@@ -276,11 +277,11 @@ export class WalletsManager {
       identity: 1
     })
     const wallet = await this.createWithSigners(
-      email,
-      password,
-      [recoverySigner],
-      additionalKeypairs,
-      geocode,
+        email,
+        password,
+        [recoverySigner],
+        additionalKeypairs,
+        geocode,
         inviteCode,
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()
@@ -337,10 +338,10 @@ export class WalletsManager {
     const accountId = await this._getAccountIdByEmail(email)
 
     const recoveryWallet = Wallet.fromRecoverySeed(
-      kdfParams,
-      kdfParams.salt,
-      email,
-      recoverySeed
+        kdfParams,
+        kdfParams.salt,
+        email,
+        recoverySeed
     )
 
     const newMainWallet = Wallet.generate(email, accountId, newAdditionalKeypairs)
@@ -348,7 +349,7 @@ export class WalletsManager {
 
     const newSecondFactorWallet = Wallet.generate(email, accountId, newAdditionalKeypairs)
     const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
-      kdfParams, newPassword
+        kdfParams, newPassword
     )
 
     const tx = await this._signersManager.createChangeSignerTransaction({
@@ -429,7 +430,7 @@ export class WalletsManager {
 
     const newSecondFactorWallet = Wallet.generate(email, null, additionalKeypairs)
     const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
-      kdfParams, newPassword
+        kdfParams, newPassword
     )
 
     this._apiCaller.useWallet(newMainWallet)
@@ -495,19 +496,19 @@ export class WalletsManager {
     const { data: kdfParams } = await this.getKdfParams(oldWallet.email, true)
 
     const newMainWallet = Wallet.generate(
-      oldWallet.email,
-      oldWallet.accountId,
-      [...oldWallet.secretSeeds, ...additionalKeypairs]
+        oldWallet.email,
+        oldWallet.accountId,
+        [...oldWallet.secretSeeds, ...additionalKeypairs]
     )
     const encryptedNewMainWallet = newMainWallet.encrypt(kdfParams, newPassword)
 
     const newSecondFactorWallet = Wallet.generate(
-      oldWallet.email,
-      null,
-      [...oldWallet.secretSeeds, ...additionalKeypairs]
+        oldWallet.email,
+        null,
+        [...oldWallet.secretSeeds, ...additionalKeypairs]
     )
     const encryptedSecondFactorWallet = newSecondFactorWallet.encrypt(
-      kdfParams, newPassword
+        kdfParams, newPassword
     )
 
     const tx = await this._signersManager.createChangeSignerTransaction({
@@ -580,10 +581,10 @@ export class WalletsManager {
    * @return {Promise.<Wallet>} Updated wallet.
    */
   async changeEmail ({
-    newEmail,
-    password,
-    wallet
-  }) {
+                       newEmail,
+                       password,
+                       wallet
+                     }) {
     const { data: kdfParams } = await this.getKdfParams('')
     wallet = Wallet.clone(wallet || this._apiCaller.wallet)
 
