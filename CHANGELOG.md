@@ -436,7 +436,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.25...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.26...HEAD
+[1.14.0-rc.26]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.25...1.14.0-rc.26
 [1.14.0-rc.25]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.24...1.14.0-rc.25
 [1.14.0-rc.24]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.23...1.14.0-rc.24
 [1.14.0-rc.23]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.22...1.14.0-rc.23
