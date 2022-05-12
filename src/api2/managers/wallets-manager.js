@@ -65,7 +65,7 @@ export class WalletsManager {
    *
    * @param {string} email User's email.
    * @param {string} password User's password.
-   * @param {object} geocode User's current location data
+   * @param {object} [geocode] User's current location data
    *
    * @return {Promise.<Wallet>} User's wallet.
    */
@@ -112,7 +112,8 @@ export class WalletsManager {
    * @param {string} password User's password.
    * @param {Array} [signers] array of {@link Signer}
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
-   * @param {object} geocode User's current location data
+   * @param {object} [geocode] User's current location data
+   * @param {string} [inviteCode] Invite code using the user who registered
    *
    * @return {Promise.<object>} User's wallet.
    */
@@ -121,7 +122,8 @@ export class WalletsManager {
     password,
     signers = [],
     additionalKeypairs = [],
-    geocode = {}
+    geocode = {},
+    inviteCode = ''
   ) {
     signers.forEach(item => {
       if (!(item instanceof Signer)) {
@@ -173,7 +175,8 @@ export class WalletsManager {
           email,
           salt: encryptedMainWallet.salt,
           account_id: encryptedMainWallet.accountId,
-          keychain_data: encryptedMainWallet.keychainData
+          keychain_data: encryptedMainWallet.keychainData,
+          ...(inviteCode ? { invite_code: inviteCode } : {})
         },
         relationships: {
           kdf: {
@@ -252,7 +255,8 @@ export class WalletsManager {
    * @param {Keypair} recoveryKeypair the keypair to later recover the account
    * @param {string} [referrerId] public key of the referrer
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
-   * @param {object} geocode object with user's current location data
+   * @param {object} [geocode] object with user's current location data
+   * @param {string} [inviteCode] Invite code using the user who registered
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
@@ -262,7 +266,8 @@ export class WalletsManager {
     recoveryKeypair,
     referrerId = '',
     additionalKeypairs = [],
-    geocode = {}
+    geocode = {},
+    inviteCode = ''
   ) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
     const recoverySigner = new Signer({
@@ -276,7 +281,8 @@ export class WalletsManager {
       password,
       [recoverySigner],
       additionalKeypairs,
-      geocode
+      geocode,
+      inviteCode
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()
     return wallet
