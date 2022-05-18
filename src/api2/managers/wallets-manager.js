@@ -166,7 +166,7 @@ export class WalletsManager {
           account_id: encryptedMainWallet.accountId,
           keychain_data: encryptedMainWallet.keychainData,
           ...(inviteCode ? { invite_code: inviteCode } : {}),
-          ...(role ? { role } : {})
+          ...(role ? { role: role } : {})
         },
         relationships: {
           kdf: {
