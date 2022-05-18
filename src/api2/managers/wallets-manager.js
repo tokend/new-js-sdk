@@ -1,6 +1,5 @@
 import _set from 'lodash/set'
 import _get from 'lodash/get'
-import _isEmpty from 'lodash/isEmpty'
 
 import { Wallet } from '../../wallet'
 import { Keypair } from '../../base/keypair'
@@ -65,11 +64,10 @@ export class WalletsManager {
    *
    * @param {string} email User's email.
    * @param {string} password User's password.
-   * @param {object} [geocode] User's current location data
    *
    * @return {Promise.<Wallet>} User's wallet.
    */
-  async get (email, password, geocode) {
+  async get (email, password) {
     const { data: kdfParams } = await this.getKdfParams(email)
     const walletId = Wallet.deriveId(
       email, password, kdfParams, kdfParams.salt
@@ -77,14 +75,7 @@ export class WalletsManager {
 
     let walletResponse
     try {
-      walletResponse = await this._apiCaller.get(`/wallets/${walletId}`,
-        geocode
-          ? {
-            location_lat: geocode.latitude,
-            location_long: geocode.longitude
-          }
-          : {}
-      )
+      walletResponse = await this._apiCaller.get(`/wallets/${walletId}`)
     } catch (err) {
       // HACK: expose wallet Id to allow resend email
       if (err instanceof VerificationRequiredError) {
@@ -112,7 +103,7 @@ export class WalletsManager {
    * @param {string} password User's password.
    * @param {Array} [signers] array of {@link Signer}
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
-   * @param {object} [geocode] User's current location data
+   * @param {number} [role] User's role.
    * @param {string} [inviteCode] Invite code using the user who registered
    *
    * @return {Promise.<object>} User's wallet.
@@ -122,7 +113,7 @@ export class WalletsManager {
     password,
     signers = [],
     additionalKeypairs = [],
-    geocode = {},
+    role,
     inviteCode = ''
   ) {
     signers.forEach(item => {
@@ -165,8 +156,6 @@ export class WalletsManager {
       }
     })
 
-    const isGeocodePresent = !_isEmpty(geocode)
-
     const response = await this._apiCaller.post('/wallets', {
       data: {
         type: 'wallet',
@@ -176,7 +165,8 @@ export class WalletsManager {
           salt: encryptedMainWallet.salt,
           account_id: encryptedMainWallet.accountId,
           keychain_data: encryptedMainWallet.keychainData,
-          ...(inviteCode ? { invite_code: inviteCode } : {})
+          ...(inviteCode ? { invite_code: inviteCode } : {}),
+          ...(role ? { role } : {})
         },
         relationships: {
           kdf: {
@@ -193,18 +183,7 @@ export class WalletsManager {
           },
           signers: {
             data: relationshipsSigners
-          },
-          ...(isGeocodePresent
-            ? {
-              location: {
-                data: {
-                  type: 'location',
-                  id: `${geocode.latitude}:${geocode.longitude}`
-                }
-              }
-            }
-            : {}
-          )
+          }
         }
       },
       included: [
@@ -217,17 +196,7 @@ export class WalletsManager {
             salt: encryptedSecondFactorWallet.salt
           }
         },
-        ...signers,
-        isGeocodePresent
-          ? {
-            type: 'location',
-            id: `${geocode.latitude}:${geocode.longitude}`,
-            attributes: {
-              location_lat: geocode.latitude,
-              location_long: geocode.longitude
-            }
-          }
-          : undefined
+        ...signers
       ]
     })
 
@@ -255,7 +224,7 @@ export class WalletsManager {
    * @param {Keypair} recoveryKeypair the keypair to later recover the account
    * @param {string} [referrerId] public key of the referrer
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
-   * @param {object} [geocode] object with user's current location data
+   * @param {number} [role] User's role.
    * @param {string} [inviteCode] Invite code using the user who registered
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
@@ -266,7 +235,7 @@ export class WalletsManager {
     recoveryKeypair,
     referrerId = '',
     additionalKeypairs = [],
-    geocode = {},
+    role,
     inviteCode = ''
   ) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
@@ -281,7 +250,7 @@ export class WalletsManager {
       password,
       [recoverySigner],
       additionalKeypairs,
-      geocode,
+      role,
       inviteCode
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()

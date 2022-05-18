@@ -130,8 +130,14 @@ for further information about branching and tagging conventions.
 ### Changed
 - Now default signer can be provided on the wallet creation
 
-## [1.14.0-rc.3] - 2020-09-04
-## Added
+## [Unreleased]
+
+## [1.14.0-rc.3.1] - 2022-04-07
+### Added
+- To WalletsManager:
+  - `role` param to create a wallet
+
+## [1.14.0-rc.3] - 2020-09-03
 - Create, update, remove data reviewable requests
 
 ## [1.14.0-rc.2] - 2020-08-07
@@ -460,6 +466,8 @@ for further information about branching and tagging conventions.
 [1.14.0-rc.6]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.5...1.14.0-rc.6
 [1.14.0-rc.5]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.4...1.14.0-rc.5
 [1.14.0-rc.4]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3...1.14.0-rc.4
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3.1...HEAD
+[1.14.0-rc.3.1]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.3...1.14.0-rc.3.1
 [1.14.0-rc.3]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.2...1.14.0-rc.3
 [1.14.0-rc.2]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.1...1.14.0-rc.2
 [1.14.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.0...1.14.0-rc.1
