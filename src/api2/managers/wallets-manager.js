@@ -113,6 +113,7 @@ export class WalletsManager {
    * @param {Array} [signers] array of {@link Signer}
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    * @param {object} [geocode] User's current location data
+   * @param {number} [role] User's role.
    * @param {string} [inviteCode] Invite code using the user who registered
    *
    * @return {Promise.<object>} User's wallet.
@@ -122,7 +123,8 @@ export class WalletsManager {
     password,
     signers = [],
     additionalKeypairs = [],
-    geocode = {},
+    geocode,
+    role,
     inviteCode = ''
   ) {
     signers.forEach(item => {
@@ -176,7 +178,8 @@ export class WalletsManager {
           salt: encryptedMainWallet.salt,
           account_id: encryptedMainWallet.accountId,
           keychain_data: encryptedMainWallet.keychainData,
-          ...(inviteCode ? { invite_code: inviteCode } : {})
+          ...(inviteCode ? { invite_code: inviteCode } : {}),
+          ...(role ? { role } : {})
         },
         relationships: {
           kdf: {
@@ -255,7 +258,8 @@ export class WalletsManager {
    * @param {Keypair} recoveryKeypair the keypair to later recover the account
    * @param {string} [referrerId] public key of the referrer
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
-   * @param {object} [geocode] object with user's current location data
+   * @param {object} [geocode] User's current location data
+   * @param {number} [role] User's role.
    * @param {string} [inviteCode] Invite code using the user who registered
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
@@ -266,7 +270,8 @@ export class WalletsManager {
     recoveryKeypair,
     referrerId = '',
     additionalKeypairs = [],
-    geocode = {},
+    geocode,
+    role,
     inviteCode = ''
   ) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
@@ -282,6 +287,7 @@ export class WalletsManager {
       [recoverySigner],
       additionalKeypairs,
       geocode,
+      role,
       inviteCode
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()
