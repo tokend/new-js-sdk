@@ -100,7 +100,7 @@
     "lodash": "4.17.19",
     "loglevel": "1.6.2",
     "loglevel-plugin-prefix": "0.8.4",
-    "moment": "2.24.0",
+    "moment": "2.29.4",
     "sjcl-tokend": "1.0.6",
     "tweetnacl": "1.0.1",
     "urijs": "1.19.1",
