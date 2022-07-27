@@ -1,0 +1,47 @@
+name: publish-tag
+
+on:
+#  push:
+#    branches:
+#      - main
+#      - 'mona/octocat'
+#      - 'releases/**'
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - '[\d]+.[\d]+.[\d]+(-rc\.[\d]+)?'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build on Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - run: yarn prepare
+        name: Build
+      - run: yarn lint
+      - run: yarn test
+        env:
+          CI: true
+
+  publish:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Publish
+        run: |
+          npm config set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
+          npm publish --ignore-scripts
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
