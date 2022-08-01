@@ -114,7 +114,7 @@ export class WalletsManager {
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    * @param {object} [geocode] User's current location data
    * @param {number} [role] User's role.
-   * @param {string} [inviteCode] Invite code using the user who registered
+   * @param {string} [inviteCode] Invite code using the user who registered **DEPRECATED**
    * @param {string} [verificationCode] // optional verification code that may have been sent in user invitation
    *
    * @return {Promise.<object>} User's wallet.
