@@ -9,3 +9,10 @@ mocha.opts
 docs
 docs_old
 examples_old
+.babelrc
+generateXDR.sh
+webpack.config.js
+.jsdoc.json
+.gitlab.ci.yml
+.eslintrc.js
+.eslintignore
