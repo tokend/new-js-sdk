@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.14.1] - 2022-08-01
+### Added
+- Added `verification_code` param to create a wallet to WalletsManager
+
 ## [1.14.0] - 2022-05-24
 ### Added
 - Added `role` param to create a wallet to WalletsManager
@@ -446,7 +450,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.0...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.1...HEAD
+[1.14.1]: https://github.com/tokend/new-js-sdk/compare/1.14.0...1.14.1
 [1.14.0]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.26...1.14.0
 [1.14.0-rc.26]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.25...1.14.0-rc.26
 [1.14.0-rc.25]: https://github.com/tokend/new-js-sdk/compare/1.14.0-rc.24...1.14.0-rc.25

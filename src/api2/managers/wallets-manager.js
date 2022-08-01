@@ -114,7 +114,8 @@ export class WalletsManager {
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    * @param {object} [geocode] User's current location data
    * @param {number} [role] User's role.
-   * @param {string} [inviteCode] Invite code using the user who registered
+   * @param {string} [inviteCode] Invite code using the user who registered **DEPRECATED**
+   * @param {string} [verificationCode] verification code that may have been sent in user invitation
    *
    * @return {Promise.<object>} User's wallet.
    */
@@ -125,7 +126,8 @@ export class WalletsManager {
     additionalKeypairs = [],
     geocode,
     role,
-    inviteCode = ''
+    inviteCode = '',
+    verificationCode = ''
   ) {
     signers.forEach(item => {
       if (!(item instanceof Signer)) {
@@ -179,6 +181,7 @@ export class WalletsManager {
           account_id: encryptedMainWallet.accountId,
           keychain_data: encryptedMainWallet.keychainData,
           ...(inviteCode ? { invite_code: inviteCode } : {}),
+          ...(verificationCode ? { verification_code: verificationCode } : {}),
           ...(role ? { role } : {})
         },
         relationships: {
@@ -260,7 +263,9 @@ export class WalletsManager {
    * @param {Array} [additionalKeypairs] array of {@link Keypair} or strings(secret seed) which will be saved to key storage
    * @param {object} [geocode] User's current location data
    * @param {number} [role] User's role.
-   * @param {string} [inviteCode] Invite code using the user who registered
+   * @param {string} [inviteCode] Invite code using the user who registered **DEPRECATED**
+   * @param {string} [verificationCode] verification code that may have been sent in user invitation
+
    *
    * @return {Promise.<object>} User's wallet and a recovery seed.
    */
@@ -272,7 +277,8 @@ export class WalletsManager {
     additionalKeypairs = [],
     geocode,
     role,
-    inviteCode = ''
+    inviteCode = '',
+    verificationCode = ''
   ) {
     const walletRecoveryKeypair = recoveryKeypair || Keypair.random()
     const recoverySigner = new Signer({
@@ -288,7 +294,8 @@ export class WalletsManager {
       additionalKeypairs,
       geocode,
       role,
-      inviteCode
+      inviteCode,
+      verificationCode
     )
     wallet.recoverySeed = walletRecoveryKeypair.secret()
     return wallet
