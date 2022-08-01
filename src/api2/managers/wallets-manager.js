@@ -115,6 +115,7 @@ export class WalletsManager {
    * @param {object} [geocode] User's current location data
    * @param {number} [role] User's role.
    * @param {string} [inviteCode] Invite code using the user who registered
+   * @param {string} [verificationCode] // optional verification code that may have been sent in user invitation
    *
    * @return {Promise.<object>} User's wallet.
    */
@@ -125,7 +126,8 @@ export class WalletsManager {
     additionalKeypairs = [],
     geocode,
     role,
-    inviteCode = ''
+    inviteCode = '',
+    verificationCode = ''
   ) {
     signers.forEach(item => {
       if (!(item instanceof Signer)) {
@@ -179,6 +181,7 @@ export class WalletsManager {
           account_id: encryptedMainWallet.accountId,
           keychain_data: encryptedMainWallet.keychainData,
           ...(inviteCode ? { invite_code: inviteCode } : {}),
+          ...(verificationCode ? { verification_code: verificationCode } : {}),
           ...(role ? { role } : {})
         },
         relationships: {
