@@ -137,6 +137,18 @@ export class Data extends Helper {
     return this.submit(operation, ownerKp)
   }
 
+  /**
+     *
+     * @param opts
+     * @param {string} opts.dataId
+     * @param {string} opts.newOwner
+     * @param ownerKp
+     */
+   async updateOwner (opts, ownerKp = this.masterKp) {
+    const operation = base.UpdateDataOwnerBuilder.updateDataOwner(opts)
+    return this.submit(operation, ownerKp)
+  }
+
   remove (dataId, ownerKp = this.masterKp) {
     const operation = base.RemoveDataBuilder.removeData({ dataId })
     return this.submit(operation, ownerKp)

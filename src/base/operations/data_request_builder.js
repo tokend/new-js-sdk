@@ -314,4 +314,97 @@ export class DataRequestBuilder {
   static cancelDataRemoveRequestToObject (result, attributes) {
     result.requestID = attributes.requestId().toString()
   }
+
+  /**
+     * Create data owner update operation
+     * @param {object} opts
+     * @param {string|number} opts.requestID - set to zero to create new request
+     * @param {object} opts.updateDataOwnerOp
+     * @param {object} opts.creatorDetails
+     * @param {number|string} opts.allTasks
+     * @param {string} [opts.source] - The source account for the operation.
+     * @returns {xdr.CreateDataOwnerUpdateRequestOp}
+     */
+   static createDataOwnerUpdateRequest (opts) {
+    validators.validateUint64({ value: opts.requestID, fieldName: 'opts.requestID' })
+
+    let request = this.validateDataOwnerUpdateRequest(opts)
+    let attributes = {
+      requestId: UnsignedHyper.fromString(opts.requestID),
+      allTasks: opts.allTasks,
+      dataOwnerUpdateRequest: request,
+      ext: new xdr.EmptyExt(xdr.LedgerVersion.emptyVersion())
+    }
+
+    let op = new xdr.CreateDataOwnerUpdateRequestOp(attributes)
+    let opAttributes = {}
+    opAttributes.body = xdr.OperationBody.createDataOwnerUpdateRequest(op)
+    BaseOperation.setSourceAccount(opAttributes, opts)
+    return new xdr.Operation(opAttributes)
+  }
+
+  /**
+     * @param {string} opts.requestID
+     * **/
+  static cancelDataOwnerUpdateRequest (opts) {
+    validators.validateUint64({ value: opts.requestID, fieldName: 'opts.requestID' })
+
+    let attributes = {
+      requestId: UnsignedHyper.fromString(opts.requestID),
+      ext: new xdr.CancelDataOwnerUpdateRequestOpExt(xdr.LedgerVersion.emptyVersion())
+    }
+
+    let op = new xdr.CancelDataOwnerUpdateRequestOp(attributes)
+    let opAttributes = {}
+    opAttributes.body = xdr.OperationBody.cancelDataOwnerUpdateRequest(op)
+    BaseOperation.setSourceAccount(opAttributes, opts)
+    return new xdr.Operation(opAttributes)
+  }
+
+  /**
+     * @param {object} opts.updateDataOwnerOp
+     * @param {string | number } opts.id - id of the data to update owner
+     * @param {object} opts.creatorDetails
+     * @param {number} opts.sequenceNumber
+     **/
+  static validateDataOwnerUpdateRequest (opts) {
+    let attrs = {}
+
+    validators.validateUint64({ value: opts.id, fieldName: 'opts.id' })
+    validators.validateCreatorDetails({ value: opts.creatorDetails, fieldName: 'opts.creatorDetails' })
+
+    if (isUndefined(opts.sequenceNumber) || opts.sequenceNumber < 0) {
+      opts.sequenceNumber = 0
+    }
+    attrs.sequenceNumber = opts.sequenceNumber
+
+    attrs.updateDataOwnerOp = opts.updateDataOwnerOp
+    attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
+    attrs.id = UnsignedHyper.fromString(opts.id)
+    attrs.ext = new xdr.DataOwnerUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
+
+    return new xdr.DataOwnerUpdateRequest(attrs)
+  }
+
+  static dataOwnerUpdateRequestToObject (result, attributes) {
+    let request = attributes.dataOwnerUpdateRequest()
+
+    result.id = request.id().toString()
+    result.updateDataOwnerOp = request.updateDataOwnerOp().toString()
+    result.sequenceNumber = request.sequenceNumber().toString()
+  }
+
+  static createDataOwnerUpdateRequestToObject (result, attributes) {
+    let dataOwnerUpdateRequest = {}
+    this.dataOwnerUpdateRequestToObject(dataOwnerUpdateRequest, attributes)
+
+    result.dataOwnerUpdateRequest = dataOwnerUpdateRequest()
+    result.requestID = attributes.requestId().toString()
+    result.allTasks = attributes.allTasks()
+  }
+
+  static cancelDataOwnerUpdateRequestToObject (result, attributes) {
+    result.requestID = attributes.requestId().toString()
+  }
+
 }

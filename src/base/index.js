@@ -54,6 +54,7 @@ export { ManageSignerRoleBuilder } from './operations/manage_signer_role_builder
 export { CreateDeferredPaymentCreationRequestBuilder } from './operations/create_deferred_payment_creation_request'
 export { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_close_deferred_payment_request'
 export { DataRequestBuilder } from './operations/data_request_builder'
+export { UpdateDataOwnerBuilder } from './operations/update_data_owner_builder'
 
 export * from './strkey'
 

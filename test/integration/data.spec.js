@@ -16,7 +16,10 @@ describe('Data', () => {
 
         const actor = Keypair.random()
         await accountHelper.createSyndicate(actor.accountId())
+        const actor2 = Keypair.random()
+        await accountHelper.createSyndicate(actor2.accountId())
         log.info(`created actor with id: ${actor.accountId()}`)
+        log.info(`created actor2 with id: ${actor2.accountId()}`)
 
         const value = {name: 'some-name', state: 'some-state'}
         const dataId = await dataHelper.create({value}, actor)
@@ -36,6 +39,15 @@ describe('Data', () => {
         data = await dataHelper.mustLoad(dataId)
         log.info(`fetched updated data entry with ID #${dataId}: ${JSON.stringify(data)}`)
         expect(data.value).to.eql(updatedValue)
+
+        await dataHelper.updateOwner({dataId: dataId, newOwner: actor2.accountId()}, actor)
+        log.info(`updated data owner entry with ID #${dataId}`)
+
+        await dataHelper.delay(3000)
+
+        data = await dataHelper.mustLoad(dataId)
+        log.info(`fetched updated data owner entry with ID #${dataId}: ${JSON.stringify(data)}`)
+        expect(data.owner.id).to.eql(actor2.accountId())
 
         await dataHelper.remove(dataId, actor)
         log.info(`removed data entry with ID #${dataId}`)
