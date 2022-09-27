@@ -325,9 +325,8 @@ export class DataRequestBuilder {
      * @param {string} [opts.source] - The source account for the operation.
      * @returns {xdr.CreateDataOwnerUpdateRequestOp}
      */
-   static createDataOwnerUpdateRequest (opts) {
+  static createDataOwnerUpdateRequest (opts) {
     validators.validateUint64({ value: opts.requestID, fieldName: 'opts.requestID' })
-
     let request = this.validateDataOwnerUpdateRequest(opts)
     let attributes = {
       requestId: UnsignedHyper.fromString(opts.requestID),
@@ -370,7 +369,6 @@ export class DataRequestBuilder {
   static validateDataOwnerUpdateRequest (opts) {
     let attrs = {}
 
-    validators.validateUint64({ value: opts.id, fieldName: 'opts.id' })
     validators.validateCreatorDetails({ value: opts.creatorDetails, fieldName: 'opts.creatorDetails' })
 
     if (isUndefined(opts.sequenceNumber) || opts.sequenceNumber < 0) {
@@ -380,7 +378,6 @@ export class DataRequestBuilder {
 
     attrs.updateDataOwnerOp = opts.updateDataOwnerOp
     attrs.creatorDetails = JSON.stringify(opts.creatorDetails)
-    attrs.id = UnsignedHyper.fromString(opts.id)
     attrs.ext = new xdr.DataOwnerUpdateRequestExt(xdr.LedgerVersion.emptyVersion())
 
     return new xdr.DataOwnerUpdateRequest(attrs)
@@ -406,5 +403,4 @@ export class DataRequestBuilder {
   static cancelDataOwnerUpdateRequestToObject (result, attributes) {
     result.requestID = attributes.requestId().toString()
   }
-
 }

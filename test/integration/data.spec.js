@@ -7,11 +7,13 @@ import {
   api,
   masterKP
 } from '../helpers'
-import { Keypair, CreateDataBuilder, TransactionBuilder } from '../../src/base'
+import { Keypair, CreateDataBuilder, TransactionBuilder, xdr } from '../../src/base'
+// import {xdr} from "../../src/base/generated/xdr_generated"
+import {UnsignedHyper} from 'js-xdr'
 import {KEY_VALUE_KEYS} from "../../src/const";
 
 describe('Data', () => {
-    it('should create, update and remove', async () => {
+    it('should create, update, update owner, and remove', async () => {
         const log = logger.new('data-1')
 
         const actor = Keypair.random()
@@ -55,7 +57,6 @@ describe('Data', () => {
         await dataHelper.mustNotFound(dataId)
         log.info(`data entry with ID #${dataId} doesn't exist anymore`)
     })
-
 
     it('should create data creation request & cancel', async () => {
         const log = logger.new('data-2')
@@ -184,7 +185,6 @@ describe('Data', () => {
             requestID: requestId,
         }, actor)
     })
-
 
     it('should create data update & approve', async () => {
         const log = logger.new('data-2')

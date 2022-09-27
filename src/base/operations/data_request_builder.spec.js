@@ -109,54 +109,6 @@ describe('Data reviewable requests', () => {
     expect(requestID).to.be.equal(obj.requestID)
   })
 
-  it('update owner valid', () => {
-    let newOwner = "GCEZWKCA5VLDNRLN3RPRJMRZOX3Z6G5CHCGSNFHEYVXM3XOJMDS674JZ"
-    let updateDataOwnerOp = xdr.updateDataOwnerOp({
-      dataId: '1',
-      newOwner: newOwner
-    })
-    let op = DataRequestBuilder.createDataOwnerUpdateRequest({
-      requestID: '0',
-      updateDataOwnerOp : updateDataOwnerOp ,
-      creatorDetails: {
-        a: 'b'
-      }
-    })
-    let opXdr = op.toXDR('hex')
-    let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-    let obj = Operation.operationToObject(operation)
-    expect(obj.type).to.be.equal('createDataOwnerUpdateRequest')
-    expect(id).to.be.equal(obj.dataOwnerUpdateRequest.id)
-    expect(newOwner).to.be.equal(obj.dataOwnerUpdateRequest.newOwner)
-  })
-
-  it('Update invalid owner', () => {
-    let value = {
-      name: 'test'
-    }
-    expectThrow(() =>
-      DataRequestBuilder.createDataOwnerUpdateRequest({
-        requestID: '0',
-        value: value,
-        creatorDetails: {
-          a: 'b'
-        }
-      }))
-  })
-
-  it('cancel update owner', () => {
-    let requestID = '20'
-
-    let op = DataOwnerRequestBuilder.cancelDataOwnerUpdateRequest({
-      requestID: requestID
-    })
-    let opXdr = op.toXDR('hex')
-    let operation = xdr.Operation.fromXDR(Buffer.from(opXdr, 'hex'))
-    let obj = Operation.operationToObject(operation)
-    expect(obj.type).to.be.equal('cancelDataOwnerUpdateRequest')
-    expect(requestID).to.be.equal(obj.requestID)
-  })
-
   it('remove', () => {
     let id = '1'
     let op = DataRequestBuilder.createDataRemoveRequest({

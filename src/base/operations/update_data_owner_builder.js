@@ -15,7 +15,7 @@ export class UpdateDataOwnerBuilder {
    */
   static updateDataOwner (opts) {
     validators.validateUint64({ value: opts.dataId, fieldName: 'opts.dataId' })
-    validators.validatePublicKey({ value: opts.newOwner, fieldName: 'opts.newOwner'})
+    validators.validatePublicKey({ value: opts.newOwner, fieldName: 'opts.newOwner' })
 
     let attributes = {
       dataId: UnsignedHyper.fromString(opts.dataId),
