@@ -57,3 +57,7 @@ export const CHECK_SALE_STATE_EFFECTS = Object.freeze(
 export const REVIEW_REQUEST_OP_ACTION = Object.freeze(
   xdrEnumToConstant('ReviewRequestOpAction')
 )
+
+export const LP_SWAP_TYPES = Object.freeze(
+  xdrEnumToConstant('LpSwapType')
+)

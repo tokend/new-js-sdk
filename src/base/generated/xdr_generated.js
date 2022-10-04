@@ -1,6 +1,6 @@
-// revision: 286e242be84a34b7c846f76c4d070a91e94331c0
-// branch:   (HEAD
-// Automatically generated on 2021-10-07T12:37:10+00:00
+// revision: 60b9137b0314ab92bd02419c3751c578e6e005e8
+// branch:   master
+// Automatically generated on 2022-10-04T11:45:32+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -1518,6 +1518,49 @@ xdr.struct("LimitsV2Entry", [
 
 // === xdr source ============================================================
 //
+//   struct LiquidityPoolEntry
+//       {
+//           //: Unique sequential identifier of the liquidity pool
+//           uint64 id;
+//   
+//           //: Account that holds balances of the liquidity pool
+//           AccountID liquidityPoolAccount;
+//   
+//           //: Asset code of the LP token
+//           AssetCode lpTokenAssetCode;
+//   
+//           //: Balance of first asset
+//           BalanceID firstAssetBalance;
+//           //: Balance of second asset
+//           BalanceID secondAssetBalance;
+//   
+//           //: Total amount of all LP tokens
+//           uint64 lpTokensTotalCap;
+//   
+//           //: Amount of first asset stored in liquidity pool
+//           uint64 firstReserve;
+//           //: Amount of second asset stored in liquidity pool
+//           uint64 secondReserve;
+//   
+//           //: Reserved for future usage
+//           EmptyExt ext;
+//       };
+//
+// ===========================================================================
+xdr.struct("LiquidityPoolEntry", [
+  ["id", xdr.lookup("Uint64")],
+  ["liquidityPoolAccount", xdr.lookup("AccountId")],
+  ["lpTokenAssetCode", xdr.lookup("AssetCode")],
+  ["firstAssetBalance", xdr.lookup("BalanceId")],
+  ["secondAssetBalance", xdr.lookup("BalanceId")],
+  ["lpTokensTotalCap", xdr.lookup("Uint64")],
+  ["firstReserve", xdr.lookup("Uint64")],
+  ["secondReserve", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union switch (LedgerVersion v)
 //       {
 //       case EMPTY_VERSION:
@@ -1778,7 +1821,8 @@ xdr.struct("ReferenceEntry", [
 //   	DATA_UPDATE = 23,
 //   	DATA_REMOVE = 24,
 //   	CREATE_DEFERRED_PAYMENT = 25,
-//       CLOSE_DEFERRED_PAYMENT = 26
+//       CLOSE_DEFERRED_PAYMENT = 26,
+//       DATA_OWNER_UPDATE = 27
 //   };
 //
 // ===========================================================================
@@ -1809,6 +1853,7 @@ xdr.enum("ReviewableRequestType", {
   dataRemove: 24,
   createDeferredPayment: 25,
   closeDeferredPayment: 26,
+  dataOwnerUpdate: 27,
 });
 
 // === xdr source ============================================================
@@ -1908,6 +1953,8 @@ xdr.struct("TasksExt", [
 //               CreateDeferredPaymentRequest createDeferredPaymentRequest;
 //           case CLOSE_DEFERRED_PAYMENT:
 //               CloseDeferredPaymentRequest closeDeferredPaymentRequest;
+//           case DATA_OWNER_UPDATE:
+//               DataOwnerUpdateRequest dataOwnerUpdateRequest;
 //   
 //   	}
 //
@@ -1940,6 +1987,7 @@ xdr.union("ReviewableRequestEntryBody", {
     ["dataRemove", "dataRemoveRequest"],
     ["createDeferredPayment", "createDeferredPaymentRequest"],
     ["closeDeferredPayment", "closeDeferredPaymentRequest"],
+    ["dataOwnerUpdate", "dataOwnerUpdateRequest"],
   ],
   arms: {
     assetCreationRequest: xdr.lookup("AssetCreationRequest"),
@@ -1966,6 +2014,7 @@ xdr.union("ReviewableRequestEntryBody", {
     dataRemoveRequest: xdr.lookup("DataRemoveRequest"),
     createDeferredPaymentRequest: xdr.lookup("CreateDeferredPaymentRequest"),
     closeDeferredPaymentRequest: xdr.lookup("CloseDeferredPaymentRequest"),
+    dataOwnerUpdateRequest: xdr.lookup("DataOwnerUpdateRequest"),
   },
 });
 
@@ -2048,6 +2097,8 @@ xdr.union("ReviewableRequestEntryExt", {
 //               CreateDeferredPaymentRequest createDeferredPaymentRequest;
 //           case CLOSE_DEFERRED_PAYMENT:
 //               CloseDeferredPaymentRequest closeDeferredPaymentRequest;
+//           case DATA_OWNER_UPDATE:
+//               DataOwnerUpdateRequest dataOwnerUpdateRequest;
 //   
 //   	} body;
 //   
@@ -2859,6 +2910,8 @@ xdr.enum("ThresholdIndices", {
 //           DataEntry data;
 //       case DEFERRED_PAYMENT:
 //           DeferredPaymentEntry deferredPayment;
+//       case LIQUIDITY_POOL:
+//           LiquidityPoolEntry liquidityPool;
 //       }
 //
 // ===========================================================================
@@ -2899,6 +2952,7 @@ xdr.union("LedgerEntryData", {
     ["swap", "swap"],
     ["datum", "data"],
     ["deferredPayment", "deferredPayment"],
+    ["liquidityPool", "liquidityPool"],
   ],
   arms: {
     account: xdr.lookup("AccountEntry"),
@@ -2934,6 +2988,7 @@ xdr.union("LedgerEntryData", {
     swap: xdr.lookup("SwapEntry"),
     data: xdr.lookup("DataEntry"),
     deferredPayment: xdr.lookup("DeferredPaymentEntry"),
+    liquidityPool: xdr.lookup("LiquidityPoolEntry"),
   },
 });
 
@@ -3030,6 +3085,8 @@ xdr.union("LedgerEntryExt", {
 //           DataEntry data;
 //       case DEFERRED_PAYMENT:
 //           DeferredPaymentEntry deferredPayment;
+//       case LIQUIDITY_POOL:
+//           LiquidityPoolEntry liquidityPool;
 //       }
 //       data;
 //   
@@ -4149,6 +4206,20 @@ xdr.struct("LedgerKeyDeferredPayment", [
 
 // === xdr source ============================================================
 //
+//   struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("LedgerKeyLiquidityPool", [
+  ["id", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   union LedgerKey switch (LedgerEntryType type)
 //   {
 //   case ACCOUNT:
@@ -4466,6 +4537,12 @@ xdr.struct("LedgerKeyDeferredPayment", [
 //   
 //           EmptyExt ext;
 //       } deferredPayment;
+//   case LIQUIDITY_POOL:
+//       struct {
+//           uint64 id;
+//   
+//           EmptyExt ext;
+//       } liquidityPool;
 //   };
 //
 // ===========================================================================
@@ -4506,6 +4583,7 @@ xdr.union("LedgerKey", {
     ["swap", "swap"],
     ["datum", "data"],
     ["deferredPayment", "deferredPayment"],
+    ["liquidityPool", "liquidityPool"],
   ],
   arms: {
     account: xdr.lookup("LedgerKeyAccount"),
@@ -4541,6 +4619,7 @@ xdr.union("LedgerKey", {
     swap: xdr.lookup("LedgerKeySwap"),
     data: xdr.lookup("LedgerKeyData"),
     deferredPayment: xdr.lookup("LedgerKeyDeferredPayment"),
+    liquidityPool: xdr.lookup("LedgerKeyLiquidityPool"),
   },
 });
 
@@ -5709,6 +5788,135 @@ xdr.union("CancelDataCreationRequestResult", {
   ],
   arms: {
     success: xdr.lookup("CancelDataCreationSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataOwnerUpdateRequestOpExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: CancelDataOwnerUpdateRequestOp is used to cancel reviwable request for an owner of data Update.
+//   //: If successful, request with the corresponding ID will be deleted
+//   struct CancelDataOwnerUpdateRequestOp
+//   {
+//       //: ID of the DataUpdateRequest request to be canceled
+//       uint64 requestID;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataOwnerUpdateRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("CancelDataOwnerUpdateRequestOpExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result codes for CancelDataOwnerUpdateRequest operation
+//   enum CancelDataOwnerUpdateRequestResultCode
+//   {
+//       // codes considered as "success" for the operation
+//       //: Operation is successfully applied
+//       SUCCESS = 0,
+//   
+//       // codes considered as "failure" for the operation
+//       //: ID of a request cannot be 0
+//       REQUEST_ID_INVALID = -1, // request id can not be equal zero
+//       //: request with provided ID is not found
+//       REQUEST_NOT_FOUND = -2 // trying to cancel not existing reviewable request
+//   };
+//
+// ===========================================================================
+xdr.enum("CancelDataOwnerUpdateRequestResultCode", {
+  success: 0,
+  requestIdInvalid: -1,
+  requestNotFound: -2,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CancelDataOwnerUpdateSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful `CancelDataUpdateRequestOp` application
+//   struct CancelDataOwnerUpdateSuccess {
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CancelDataOwnerUpdateSuccess", [
+  ["ext", xdr.lookup("CancelDataOwnerUpdateSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of CancelDataOwnerUpdateRequest operation application along with the result code
+//   union CancelDataOwnerUpdateRequestResult switch (CancelDataOwnerUpdateRequestResultCode code)
+//   {
+//       case SUCCESS:
+//           CancelDataOwnerUpdateSuccess success;
+//       default:
+//           void;
+//   };
+//
+// ===========================================================================
+xdr.union("CancelDataOwnerUpdateRequestResult", {
+  switchOn: xdr.lookup("CancelDataOwnerUpdateRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CancelDataOwnerUpdateSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -7839,6 +8047,113 @@ xdr.union("CreateDataCreationRequestResult", {
   ],
   arms: {
     success: xdr.lookup("CreateDataCreationRequestSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataOwnerUpdateRequestOp
+//   {
+//       //: ID of the DataOwnerUpdateRequest. If set to 0, a new request is created
+//       uint64 requestID;
+//   
+//       DataOwnerUpdateRequest dataOwnerUpdateRequest;
+//   
+//       uint32* allTasks;
+//   
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataOwnerUpdateRequestOp", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["dataOwnerUpdateRequest", xdr.lookup("DataOwnerUpdateRequest")],
+  ["allTasks", xdr.option(xdr.lookup("Uint32"))],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum CreateDataOwnerUpdateRequestResultCode
+//   {
+//       SUCCESS = 0,
+//       UPDATE_DATA_OWNER_TASKS_NOT_FOUND = -1,
+//       DATA_NOT_FOUND = -2,
+//       INVALID_CREATOR_DETAILS = -3,
+//       REQUEST_NOT_FOUND = -4
+//   };
+//
+// ===========================================================================
+xdr.enum("CreateDataOwnerUpdateRequestResultCode", {
+  success: 0,
+  updateDataOwnerTasksNotFound: -1,
+  dataNotFound: -2,
+  invalidCreatorDetail: -3,
+  requestNotFound: -4,
+});
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
+xdr.union("CreateDataOwnerUpdateRequestSuccessExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct CreateDataOwnerUpdateRequestSuccess {
+//       uint64 requestID;
+//       bool fulfilled;
+//   
+//       //: Reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("CreateDataOwnerUpdateRequestSuccess", [
+  ["requestId", xdr.lookup("Uint64")],
+  ["fulfilled", xdr.bool()],
+  ["ext", xdr.lookup("CreateDataOwnerUpdateRequestSuccessExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union CreateDataOwnerUpdateRequestResult switch (CreateDataOwnerUpdateRequestResultCode code)
+//   {
+//   case SUCCESS:
+//       CreateDataOwnerUpdateRequestSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("CreateDataOwnerUpdateRequestResult", {
+  switchOn: xdr.lookup("CreateDataOwnerUpdateRequestResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("CreateDataOwnerUpdateRequestSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -10075,6 +10390,559 @@ xdr.union("LicenseResult", {
   ],
   arms: {
     success: xdr.lookup("LicenseSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct LPAddLiquidityOp
+//       {
+//           //: Balance for first asset of the pair
+//           BalanceID firstAssetBalanceID;
+//           //: Balance for second asset of the pair
+//           BalanceID secondAssetBalanceID;
+//   
+//           //: Desired amount of first asset to be provided
+//           uint64 firstAssetDesiredAmount;
+//           //: Desired amount of second asset to be provided
+//           uint64 secondAssetDesiredAmount;
+//   
+//           //: Minimal amount of first asset to be provided
+//           uint64 firstAssetMinAmount;
+//           //: Minimal amount of second asset to be provided
+//           uint64 secondAssetMinAmount;
+//   
+//           //: Reserved for future use
+//           EmptyExt ext;
+//       };
+//
+// ===========================================================================
+xdr.struct("LpAddLiquidityOp", [
+  ["firstAssetBalanceId", xdr.lookup("BalanceId")],
+  ["secondAssetBalanceId", xdr.lookup("BalanceId")],
+  ["firstAssetDesiredAmount", xdr.lookup("Uint64")],
+  ["secondAssetDesiredAmount", xdr.lookup("Uint64")],
+  ["firstAssetMinAmount", xdr.lookup("Uint64")],
+  ["secondAssetMinAmount", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum LPAddLiquidityResultCode
+//       {
+//           //: LP add liquidity was successful
+//           SUCCESS = 0,
+//   
+//           //: Assets in the pair are equal
+//           SAME_ASSETS = -1,
+//           //: Not enough funds in the source account
+//           UNDERFUNDED = -2,
+//           //: After adding liquidity, the destination balance will exceed the limit (total amount on the balance will be greater than UINT64_MAX)
+//           BALANCE_OVERFLOW = -3,
+//           //: Provided asset does not have a `SWAPPABLE` policy set
+//           NOT_ALLOWED_BY_ASSET_POLICY = -4,
+//           //: Source balance not found
+//           SRC_BALANCE_NOT_FOUND = -5,
+//           //: Zero desired amount not allowed
+//           INVALID_DESIRED_AMOUNT = -6,
+//           //: Zero min amount not allowed
+//           INVALID_MIN_AMOUNT = -7,
+//           //: Amount precision and asset precision are mismatched
+//           INCORRECT_AMOUNT_PRECISION = -8,
+//           //: Amount of first asset is insufficient to provide liquidity
+//           INSUFFICIENT_FIRST_ASSET_AMOUNT = -9,
+//           //: Amount of second asset is insufficient to provide liquidity
+//           INSUFFICIENT_SECOND_ASSET_AMOUNT = -10,
+//           //: Min amount cannot be bigger than desired amount
+//           MIN_AMOUNT_BIGGER_THAN_DESIRED = -11,
+//           //: Amount of the LP tokens to issue equals to zero
+//           INSUFFICIENT_LIQUIDITY_PROVIDED = -12,
+//           //: Source balances are equal
+//           SAME_BALANCES = -13
+//       };
+//
+// ===========================================================================
+xdr.enum("LpAddLiquidityResultCode", {
+  success: 0,
+  sameAsset: -1,
+  underfunded: -2,
+  balanceOverflow: -3,
+  notAllowedByAssetPolicy: -4,
+  srcBalanceNotFound: -5,
+  invalidDesiredAmount: -6,
+  invalidMinAmount: -7,
+  incorrectAmountPrecision: -8,
+  insufficientFirstAssetAmount: -9,
+  insufficientSecondAssetAmount: -10,
+  minAmountBiggerThanDesired: -11,
+  insufficientLiquidityProvided: -12,
+  sameBalance: -13,
+});
+
+// === xdr source ============================================================
+//
+//   struct LPAddLiquiditySuccess
+//       {
+//           //: Unique identifier of the liquidity pool
+//           uint64 liquidityPoolID;
+//   
+//           //: ID of the pool account
+//           AccountID poolAccount;
+//   
+//           //: ID of the first asset balance in LP
+//           BalanceID lpFirstAssetBalanceID;
+//           //: ID of the second asset balance in LP
+//           BalanceID lpSecondAssetBalanceID;
+//   
+//           //: ID of the source first asset balance
+//           BalanceID sourceFirstAssetBalanceID;
+//           //: ID of the source second asset balance
+//           BalanceID sourceSecondAssetBalanceID;
+//   
+//           //: Amount of tokens charged from source first balance
+//           uint64 firstAssetAmount;
+//           //: Amount of tokens charged from source second balance
+//           uint64 secondAssetAmount;
+//           
+//           //: ID of the LP tokens asset balance 
+//           BalanceID lpTokensBalanceID;
+//           //: Amount of LP tokens issued for provided liquidity
+//           uint64 lpTokensAmount;
+//           
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       };
+//
+// ===========================================================================
+xdr.struct("LpAddLiquiditySuccess", [
+  ["liquidityPoolId", xdr.lookup("Uint64")],
+  ["poolAccount", xdr.lookup("AccountId")],
+  ["lpFirstAssetBalanceId", xdr.lookup("BalanceId")],
+  ["lpSecondAssetBalanceId", xdr.lookup("BalanceId")],
+  ["sourceFirstAssetBalanceId", xdr.lookup("BalanceId")],
+  ["sourceSecondAssetBalanceId", xdr.lookup("BalanceId")],
+  ["firstAssetAmount", xdr.lookup("Uint64")],
+  ["secondAssetAmount", xdr.lookup("Uint64")],
+  ["lpTokensBalanceId", xdr.lookup("BalanceId")],
+  ["lpTokensAmount", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union LPAddLiquidityResult switch (LPAddLiquidityResultCode code)
+//       {
+//           case SUCCESS:
+//               LPAddLiquiditySuccess success;
+//           default:
+//               void;
+//       };
+//
+// ===========================================================================
+xdr.union("LpAddLiquidityResult", {
+  switchOn: xdr.lookup("LpAddLiquidityResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("LpAddLiquiditySuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   struct LPRemoveLiquidityOp
+//       {
+//           //: Balance of an LP token
+//           BalanceID lpTokenBalance;
+//           //: Amount of the LP tokens to be exchanged for assets pair
+//           uint64 lpTokensAmount;
+//   
+//           //: Minimal amount of first asset to be received
+//           uint64 firstAssetMinAmount;
+//           //: Minimal amount of second asset to be received
+//           uint64 secondAssetMinAmount;
+//   
+//           //: Reserved for future use
+//           EmptyExt ext;
+//       };
+//
+// ===========================================================================
+xdr.struct("LpRemoveLiquidityOp", [
+  ["lpTokenBalance", xdr.lookup("BalanceId")],
+  ["lpTokensAmount", xdr.lookup("Uint64")],
+  ["firstAssetMinAmount", xdr.lookup("Uint64")],
+  ["secondAssetMinAmount", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum LPRemoveLiquidityResultCode
+//       {
+//           //: LP remove liquidity was successful
+//           SUCCESS = 0,
+//   
+//           //: LP token balance doesn't exists
+//           LP_TOKEN_BALANCE_NOT_FOUND = -1,
+//           //: Not enough LP tokens in the source account
+//           UNDERFUNDED = -2,
+//           //: After the removing liquidity fulfillment, the destination balance will exceed the limit (total amount on the balance will be greater than UINT64_MAX)
+//           BALANCE_OVERFLOW = -3,
+//           //: Liquidity pool not found
+//           LP_NOT_FOUND = -4,
+//           //: Zero LP tokens amount not allowed
+//           INVALID_LP_TOKENS_AMOUNT = -5,
+//           //: Calculated first asset amount is less than min amount
+//           INSUFFICIENT_FIRST_AMOUNT = -6,
+//           //: Calculated second asset amount is less than min amount
+//           INSUFFICIENT_SECOND_AMOUNT = -7,
+//           //: Amount precision and asset precision are mismatched
+//           INCORRECT_AMOUNT_PRECISION = -8
+//       };
+//
+// ===========================================================================
+xdr.enum("LpRemoveLiquidityResultCode", {
+  success: 0,
+  lpTokenBalanceNotFound: -1,
+  underfunded: -2,
+  balanceOverflow: -3,
+  lpNotFound: -4,
+  invalidLpTokensAmount: -5,
+  insufficientFirstAmount: -6,
+  insufficientSecondAmount: -7,
+  incorrectAmountPrecision: -8,
+});
+
+// === xdr source ============================================================
+//
+//   struct LPRemoveLiquiditySuccess
+//       {
+//           //: Unique identifier of the liquidity pool
+//           uint64 liquidityPoolID;
+//   
+//           //: ID of the first asset balance in LP
+//           BalanceID lpFirstAssetBalanceID;
+//           //: ID of the second asset balance in LP
+//           BalanceID lpSecondAssetBalanceID;
+//   
+//           //: ID of the first asset balance
+//           BalanceID sourceFirstAssetBalanceID;
+//           //: ID of the second asset balance
+//           BalanceID sourceSecondAssetBalanceID;
+//   
+//           //: Amount of the first asset
+//           uint64 firstAssetAmount;
+//           //: Amount of the second asset
+//           uint64 secondAssetAmount;
+//   
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       };
+//
+// ===========================================================================
+xdr.struct("LpRemoveLiquiditySuccess", [
+  ["liquidityPoolId", xdr.lookup("Uint64")],
+  ["lpFirstAssetBalanceId", xdr.lookup("BalanceId")],
+  ["lpSecondAssetBalanceId", xdr.lookup("BalanceId")],
+  ["sourceFirstAssetBalanceId", xdr.lookup("BalanceId")],
+  ["sourceSecondAssetBalanceId", xdr.lookup("BalanceId")],
+  ["firstAssetAmount", xdr.lookup("Uint64")],
+  ["secondAssetAmount", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union LPRemoveLiquidityResult switch (LPRemoveLiquidityResultCode code)
+//       {
+//           case SUCCESS:
+//               LPRemoveLiquiditySuccess success;
+//           default:
+//               void;
+//       };
+//
+// ===========================================================================
+xdr.union("LpRemoveLiquidityResult", {
+  switchOn: xdr.lookup("LpRemoveLiquidityResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("LpRemoveLiquiditySuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
+//   enum LPSwapType
+//       {
+//           EXACT_IN_TOKENS_FOR_OUT_TOKENS = 0,
+//           EXACT_OUT_TOKENS_FOR_IN_TOKENS = 1
+//       };
+//
+// ===========================================================================
+xdr.enum("LpSwapType", {
+  exactInTokensForOutToken: 0,
+  exactOutTokensForInToken: 1,
+});
+
+// === xdr source ============================================================
+//
+//   struct
+//                   {
+//                       //: Maximum amount to send in the swap
+//                       uint64 amountInMax;
+//                       //: Desired amount to be received
+//                       uint64 amountOut;
+//                   }
+//
+// ===========================================================================
+xdr.struct("LpSwapOpSwapExactOutTokensForInTokens", [
+  ["amountInMax", xdr.lookup("Uint64")],
+  ["amountOut", xdr.lookup("Uint64")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//                   {
+//                       //: Amount to send in the swap
+//                       uint64 amountIn;
+//                       //: Minimum amount to be received
+//                       uint64 amountOutMin;
+//                   }
+//
+// ===========================================================================
+xdr.struct("LpSwapOpSwapExactInTokensForOutTokens", [
+  ["amountIn", xdr.lookup("Uint64")],
+  ["amountOutMin", xdr.lookup("Uint64")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch(LPSwapType type)
+//           {
+//               //: Execute swap for exact output amount
+//               case EXACT_OUT_TOKENS_FOR_IN_TOKENS:
+//                   struct
+//                   {
+//                       //: Maximum amount to send in the swap
+//                       uint64 amountInMax;
+//                       //: Desired amount to be received
+//                       uint64 amountOut;
+//                   } swapExactOutTokensForInTokens;
+//               //: Execute swap for exact input amount 
+//               case EXACT_IN_TOKENS_FOR_OUT_TOKENS:
+//                   struct
+//                   {
+//                       //: Amount to send in the swap
+//                       uint64 amountIn;
+//                       //: Minimum amount to be received
+//                       uint64 amountOutMin;
+//                   } swapExactInTokensForOutTokens;
+//           }
+//
+// ===========================================================================
+xdr.union("LpSwapOpLpSwapRequest", {
+  switchOn: xdr.lookup("LpSwapType"),
+  switchName: "type",
+  switches: [
+    ["exactOutTokensForInToken", "swapExactOutTokensForInTokens"],
+    ["exactInTokensForOutToken", "swapExactInTokensForOutTokens"],
+  ],
+  arms: {
+    swapExactOutTokensForInTokens: xdr.lookup("LpSwapOpSwapExactOutTokensForInTokens"),
+    swapExactInTokensForOutTokens: xdr.lookup("LpSwapOpSwapExactInTokensForOutTokens"),
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct LPSwapOp
+//       {
+//           //: Balance of the provided asset
+//           BalanceID fromBalance;
+//           //: Balance of the desired asset
+//           BalanceID toBalance;
+//   
+//           union switch(LPSwapType type)
+//           {
+//               //: Execute swap for exact output amount
+//               case EXACT_OUT_TOKENS_FOR_IN_TOKENS:
+//                   struct
+//                   {
+//                       //: Maximum amount to send in the swap
+//                       uint64 amountInMax;
+//                       //: Desired amount to be received
+//                       uint64 amountOut;
+//                   } swapExactOutTokensForInTokens;
+//               //: Execute swap for exact input amount 
+//               case EXACT_IN_TOKENS_FOR_OUT_TOKENS:
+//                   struct
+//                   {
+//                       //: Amount to send in the swap
+//                       uint64 amountIn;
+//                       //: Minimum amount to be received
+//                       uint64 amountOutMin;
+//                   } swapExactInTokensForOutTokens;
+//           } lpSwapRequest;
+//   
+//           //: Fee data for the swap
+//           PaymentFeeData feeData;
+//   
+//           //: Reserved for future use
+//           EmptyExt ext;
+//       };
+//
+// ===========================================================================
+xdr.struct("LpSwapOp", [
+  ["fromBalance", xdr.lookup("BalanceId")],
+  ["toBalance", xdr.lookup("BalanceId")],
+  ["lpSwapRequest", xdr.lookup("LpSwapOpLpSwapRequest")],
+  ["feeData", xdr.lookup("PaymentFeeData")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum LPSwapResultCode
+//       {
+//           //: LP swap was successful
+//           SUCCESS = 0,
+//   
+//           //: Source and target balances are the same
+//           SAME_BALANCES = -1,
+//           //: Not enough funds in the source account
+//           UNDERFUNDED = -2,
+//           //: Sender balance asset and receiver balance asset are not equal
+//           BALANCE_ASSETS_MATCHED = -3,
+//           //: There is no balance found with ID provided in `fromBalance`
+//           FROM_BALANCE_NOT_FOUND = -4,
+//           //: There is no balance found with ID provided in `toBalance`
+//           TO_BALANCE_NOT_FOUND = -5,
+//           //: Payment asset does not have a `SWAPPABLE` policy set
+//           NOT_ALLOWED_BY_ASSET_POLICY = -6,
+//           //: Overflow during total fee calculation
+//           INVALID_DESTINATION_FEE = -7,
+//           //: Payment fee amount is insufficient
+//           INSUFFICIENT_FEE_AMOUNT = -8,
+//           //: Fee charged from destination balance is greater than the amount
+//           AMOUNT_IS_LESS_THAN_DEST_FEE = -9,
+//           //: Amount precision and asset precision are mismatched
+//           INCORRECT_AMOUNT_PRECISION = -10,
+//           //: Zero input amount not allowed
+//           INSUFFICIENT_INPUT_AMOUNT = -11,
+//           //: Output amount is less than allowed 
+//           INSUFFICIENT_OUTPUT_AMOUNT = -12,
+//           //: From and to assets are the same
+//           SAME_ASSETS = -13,
+//           //: Liquidity pool for assets from balances not found
+//           LIQUIDITY_POOL_NOT_FOUND = -14,
+//           //: Reserves of the liquidity pool are insufficient for swap
+//           INSUFFICIENT_LIQUIDITY = -15,
+//           //: Calculated input amount is greater than provided amountInMax
+//           EXCESSIVE_INPUT_AMOUNT = -16,
+//           //: The destination balance will exceed the limit (total amount on the balance will be greater than UINT64_MAX) 
+//           BALANCE_OVERFLOW = -17
+//       };
+//
+// ===========================================================================
+xdr.enum("LpSwapResultCode", {
+  success: 0,
+  sameBalance: -1,
+  underfunded: -2,
+  balanceAssetsMatched: -3,
+  fromBalanceNotFound: -4,
+  toBalanceNotFound: -5,
+  notAllowedByAssetPolicy: -6,
+  invalidDestinationFee: -7,
+  insufficientFeeAmount: -8,
+  amountIsLessThanDestFee: -9,
+  incorrectAmountPrecision: -10,
+  insufficientInputAmount: -11,
+  insufficientOutputAmount: -12,
+  sameAsset: -13,
+  liquidityPoolNotFound: -14,
+  insufficientLiquidity: -15,
+  excessiveInputAmount: -16,
+  balanceOverflow: -17,
+});
+
+// === xdr source ============================================================
+//
+//   struct LPSwapSuccess
+//       {
+//           //: Unique identifier of the liquidity pool
+//           uint64 liquidityPoolID;
+//   
+//           //: ID of the pool account
+//           AccountID poolAccount;
+//   
+//           //: ID of the in balance for LP
+//           BalanceID lpInBalanceID;
+//           //: ID of the out balance for LP
+//           BalanceID lpOutBalanceID;
+//   
+//           //: ID of the in balance for source
+//           BalanceID sourceInBalanceID;
+//           //: ID of the out balance for source
+//           BalanceID sourceOutBalanceID;
+//   
+//           //: Amount of the in asset used for swap
+//           uint64 swapInAmount;
+//           //: Amount of the out asset received from swap
+//           uint64 swapOutAmount;
+//   
+//           //: Fee charged from the source balance
+//           Fee actualSourcePaymentFee;
+//           //: Fee charged from the destination balance
+//           Fee actualDestinationPaymentFee;
+//   
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       };
+//
+// ===========================================================================
+xdr.struct("LpSwapSuccess", [
+  ["liquidityPoolId", xdr.lookup("Uint64")],
+  ["poolAccount", xdr.lookup("AccountId")],
+  ["lpInBalanceId", xdr.lookup("BalanceId")],
+  ["lpOutBalanceId", xdr.lookup("BalanceId")],
+  ["sourceInBalanceId", xdr.lookup("BalanceId")],
+  ["sourceOutBalanceId", xdr.lookup("BalanceId")],
+  ["swapInAmount", xdr.lookup("Uint64")],
+  ["swapOutAmount", xdr.lookup("Uint64")],
+  ["actualSourcePaymentFee", xdr.lookup("Fee")],
+  ["actualDestinationPaymentFee", xdr.lookup("Fee")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union LPSwapResult switch (LPSwapResultCode code)
+//       {
+//           case SUCCESS:
+//               LPSwapSuccess success;
+//           default:
+//               void;
+//       };
+//
+// ===========================================================================
+xdr.union("LpSwapResult", {
+  switchOn: xdr.lookup("LpSwapResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("LpSwapSuccess"),
   },
   defaultArm: xdr.void(),
 });
@@ -14865,6 +15733,7 @@ xdr.enum("ManageSaleResultCode", {
 //       case CREATE_UPDATE_DETAILS_REQUEST:
 //           uint64 requestID;
 //       case CANCEL:
+//           void;
 //       case UPDATE_TIME:
 //           void;
 //       }
@@ -14915,6 +15784,7 @@ xdr.union("ManageSaleResultSuccessExt", {
 //       case CREATE_UPDATE_DETAILS_REQUEST:
 //           uint64 requestID;
 //       case CANCEL:
+//           void;
 //       case UPDATE_TIME:
 //           void;
 //       } response;
@@ -18385,6 +19255,91 @@ xdr.union("StampResult", {
 
 // === xdr source ============================================================
 //
+//   struct UpdateDataOwnerOp
+//   {
+//       //: ID of the data entry to update an owner
+//       uint64 dataID;
+//       //: A new owner of the entry
+//       AccountID newOwner;
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateDataOwnerOp", [
+  ["dataId", xdr.lookup("Uint64")],
+  ["newOwner", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   enum UpdateDataOwnerResultCode
+//   {
+//       //: An owner of the data was successfully updated
+//       SUCCESS = 0,
+//       //: Entry with provided ID does not exist
+//       NOT_FOUND = -1,
+//       //: Only owner can update data entry
+//       NOT_AUTHORIZED = -2,
+//       //: A user does not exist
+//       USER_NOT_FOUND = -3,
+//       //: A user who changes a owner of data cannot changes it to himself
+//       OLD_AND_NEW_USERS_ARE_SAME = -4
+//   };
+//
+// ===========================================================================
+xdr.enum("UpdateDataOwnerResultCode", {
+  success: 0,
+  notFound: -1,
+  notAuthorized: -2,
+  userNotFound: -3,
+  oldAndNewUsersAreSame: -4,
+});
+
+// === xdr source ============================================================
+//
+//   //: Result of successful application of `UpdateDataOwner` operation
+//   struct UpdateDataOwnerSuccess
+//   {
+//       //: A new owner of the entry
+//       AccountID owner;
+//       //: Reserved for future extension
+//       EmptyExt ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("UpdateDataOwnerSuccess", [
+  ["owner", xdr.lookup("AccountId")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   //: Result of operation application
+//   union UpdateDataOwnerResult switch (UpdateDataOwnerResultCode code)
+//   {
+//   case SUCCESS:
+//       UpdateDataOwnerSuccess success;
+//   default:
+//       void;
+//   };
+//
+// ===========================================================================
+xdr.union("UpdateDataOwnerResult", {
+  switchOn: xdr.lookup("UpdateDataOwnerResultCode"),
+  switchName: "code",
+  switches: [
+    ["success", "success"],
+  ],
+  arms: {
+    success: xdr.lookup("UpdateDataOwnerSuccess"),
+  },
+  defaultArm: xdr.void(),
+});
+
+// === xdr source ============================================================
+//
 //   struct UpdateDataOp
 //   {
 //       //: ID of the data entry to update
@@ -19075,6 +20030,22 @@ xdr.struct("ReviewableRequestResourceDataUpdate", [
 //       }
 //
 // ===========================================================================
+xdr.struct("ReviewableRequestResourceDataOwnerUpdate", [
+  ["type", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
 xdr.struct("ReviewableRequestResourceDataRemove", [
   ["type", xdr.lookup("Uint64")],
   ["ext", xdr.lookup("EmptyExt")],
@@ -19265,6 +20236,14 @@ xdr.struct("ReviewableRequestResourceCloseDeferredPayment", [
 //           //: Reserved for future extension
 //           EmptyExt ext;
 //       } dataUpdate;
+//   case DATA_OWNER_UPDATE:
+//       struct
+//       {
+//           //: Numeric type of the data
+//           uint64 type;
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } dataOwnerUpdate;
 //   case DATA_REMOVE:
 //       struct
 //       {
@@ -19310,6 +20289,7 @@ xdr.union("ReviewableRequestResource", {
     ["performRedemption", "performRedemption"],
     ["dataCreation", "dataCreation"],
     ["dataUpdate", "dataUpdate"],
+    ["dataOwnerUpdate", "dataOwnerUpdate"],
     ["dataRemove", "dataRemove"],
     ["createDeferredPayment", "createDeferredPayment"],
     ["closeDeferredPayment", "closeDeferredPayment"],
@@ -19326,6 +20306,7 @@ xdr.union("ReviewableRequestResource", {
     performRedemption: xdr.lookup("ReviewableRequestResourcePerformRedemption"),
     dataCreation: xdr.lookup("ReviewableRequestResourceDataCreation"),
     dataUpdate: xdr.lookup("ReviewableRequestResourceDataUpdate"),
+    dataOwnerUpdate: xdr.lookup("ReviewableRequestResourceDataOwnerUpdate"),
     dataRemove: xdr.lookup("ReviewableRequestResourceDataRemove"),
     createDeferredPayment: xdr.lookup("ReviewableRequestResourceCreateDeferredPayment"),
     closeDeferredPayment: xdr.lookup("ReviewableRequestResourceCloseDeferredPayment"),
@@ -19616,6 +20597,33 @@ xdr.struct("AccountRuleResourceData", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Code of the first asset in LP pair
+//           AssetCode firstAsset;
+//           //: Type of the first asset in LP pair
+//           uint64 firstAssetType;
+//   
+//           //: Code of the second asset in LP pair
+//           AssetCode secondAsset;
+//           //: Type of the seconds asset in LP pair
+//           uint64 secondAssetType;
+//   
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("AccountRuleResourceLiquidityPool", [
+  ["firstAsset", xdr.lookup("AssetCode")],
+  ["firstAssetType", xdr.lookup("Uint64")],
+  ["secondAsset", xdr.lookup("AssetCode")],
+  ["secondAssetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union AccountRuleResource switch (LedgerEntryType type)
 //   {
@@ -19757,6 +20765,22 @@ xdr.struct("AccountRuleResourceData", [
 //       } data;
 //   case CUSTOM:
 //       CustomRuleResource custom;
+//   case LIQUIDITY_POOL:
+//       struct
+//       {
+//           //: Code of the first asset in LP pair
+//           AssetCode firstAsset;
+//           //: Type of the first asset in LP pair
+//           uint64 firstAssetType;
+//   
+//           //: Code of the second asset in LP pair
+//           AssetCode secondAsset;
+//           //: Type of the seconds asset in LP pair
+//           uint64 secondAssetType;
+//   
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } liquidityPool;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -19781,6 +20805,7 @@ xdr.union("AccountRuleResource", {
     ["swap", "swap"],
     ["datum", "data"],
     ["custom", "custom"],
+    ["liquidityPool", "liquidityPool"],
   ],
   arms: {
     asset: xdr.lookup("AccountRuleResourceAsset"),
@@ -19796,6 +20821,7 @@ xdr.union("AccountRuleResource", {
     swap: xdr.lookup("AccountRuleResourceSwap"),
     data: xdr.lookup("AccountRuleResourceData"),
     custom: xdr.lookup("CustomRuleResource"),
+    liquidityPool: xdr.lookup("AccountRuleResourceLiquidityPool"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -19830,7 +20856,11 @@ xdr.union("AccountRuleResource", {
 //       RECEIVE_REDEMPTION = 22,
 //       UPDATE = 23,
 //       UPDATE_FOR_OTHER = 24,
-//       CUSTOM = 25
+//       CUSTOM = 25,
+//       TRANSFER_OWNERSHIP = 26,
+//       LP_ADD_LIQUIDITY = 27,
+//       LP_REMOVE_LIQUIDITY = 28,
+//       LP_SWAP = 29
 //   };
 //
 // ===========================================================================
@@ -19860,6 +20890,10 @@ xdr.enum("AccountRuleAction", {
   update: 23,
   updateForOther: 24,
   custom: 25,
+  transferOwnership: 26,
+  lpAddLiquidity: 27,
+  lpRemoveLiquidity: 28,
+  lpSwap: 29,
 });
 
 // === xdr source ============================================================
@@ -20178,6 +21212,33 @@ xdr.struct("SignerRuleResourceData", [
 
 // === xdr source ============================================================
 //
+//   struct
+//       {
+//           //: Code of the first asset in LP pair
+//           AssetCode firstAsset;
+//           //: Type of the first asset in LP pair
+//           uint64 firstAssetType;
+//   
+//           //: Code of the second asset in LP pair
+//           AssetCode secondAsset;
+//           //: Type of the seconds asset in LP pair
+//           uint64 secondAssetType;
+//   
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       }
+//
+// ===========================================================================
+xdr.struct("SignerRuleResourceLiquidityPool", [
+  ["firstAsset", xdr.lookup("AssetCode")],
+  ["firstAssetType", xdr.lookup("Uint64")],
+  ["secondAsset", xdr.lookup("AssetCode")],
+  ["secondAssetType", xdr.lookup("Uint64")],
+  ["ext", xdr.lookup("EmptyExt")],
+]);
+
+// === xdr source ============================================================
+//
 //   //: Describes properties of some entries that can be used to restrict the usage of entries
 //   union SignerRuleResource switch (LedgerEntryType type)
 //   {
@@ -20350,6 +21411,22 @@ xdr.struct("SignerRuleResourceData", [
 //       } data;
 //   case CUSTOM:
 //       CustomRuleResource custom;
+//   case LIQUIDITY_POOL:
+//       struct
+//       {
+//           //: Code of the first asset in LP pair
+//           AssetCode firstAsset;
+//           //: Type of the first asset in LP pair
+//           uint64 firstAssetType;
+//   
+//           //: Code of the second asset in LP pair
+//           AssetCode secondAsset;
+//           //: Type of the seconds asset in LP pair
+//           uint64 secondAssetType;
+//   
+//           //: Reserved for future extension
+//           EmptyExt ext;
+//       } liquidityPool;
 //   default:
 //       //: reserved for future extension
 //       EmptyExt ext;
@@ -20377,6 +21454,7 @@ xdr.union("SignerRuleResource", {
     ["swap", "swap"],
     ["datum", "data"],
     ["custom", "custom"],
+    ["liquidityPool", "liquidityPool"],
   ],
   arms: {
     reviewableRequest: xdr.lookup("SignerRuleResourceReviewableRequest"),
@@ -20395,6 +21473,7 @@ xdr.union("SignerRuleResource", {
     swap: xdr.lookup("SignerRuleResourceSwap"),
     data: xdr.lookup("SignerRuleResourceData"),
     custom: xdr.lookup("CustomRuleResource"),
+    liquidityPool: xdr.lookup("SignerRuleResourceLiquidityPool"),
     ext: xdr.lookup("EmptyExt"),
   },
   defaultArm: xdr.lookup("EmptyExt"),
@@ -20426,7 +21505,11 @@ xdr.union("SignerRuleResource", {
 //       REMOVE_FOR_OTHER = 19,
 //       EXCHANGE = 20,
 //       UPDATE_FOR_OTHER = 21,
-//       CUSTOM = 22
+//       CUSTOM = 22,
+//       TRANSFER_OWNERSHIP = 23,
+//       LP_ADD_LIQUIDITY = 24,
+//       LP_REMOVE_LIQUIDITY = 25,
+//       LP_SWAP = 26
 //   };
 //
 // ===========================================================================
@@ -20453,6 +21536,10 @@ xdr.enum("SignerRuleAction", {
   exchange: 20,
   updateForOther: 21,
   custom: 22,
+  transferOwnership: 23,
+  lpAddLiquidity: 24,
+  lpRemoveLiquidity: 25,
+  lpSwap: 26,
 });
 
 // === xdr source ============================================================
@@ -21705,6 +22792,53 @@ xdr.struct("SaleCreationRequest", [
 //       }
 //
 // ===========================================================================
+xdr.union("DataOwnerUpdateRequestExt", {
+  switchOn: xdr.lookup("LedgerVersion"),
+  switchName: "v",
+  switches: [
+    ["emptyVersion", xdr.void()],
+  ],
+  arms: {
+  },
+});
+
+// === xdr source ============================================================
+//
+//   struct DataOwnerUpdateRequest {
+//       UpdateDataOwnerOp updateDataOwnerOp;
+//   
+//       //: Sequence number increases when request is rejected
+//       uint32 sequenceNumber;
+//   
+//       //: Arbitrary stringified json object that can be used to attach data to be reviewed by an admin
+//       longstring creatorDetails; // details set by requester
+//   
+//       //: reserved for future use
+//       union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//       ext;
+//   };
+//
+// ===========================================================================
+xdr.struct("DataOwnerUpdateRequest", [
+  ["updateDataOwnerOp", xdr.lookup("UpdateDataOwnerOp")],
+  ["sequenceNumber", xdr.lookup("Uint32")],
+  ["creatorDetails", xdr.lookup("Longstring")],
+  ["ext", xdr.lookup("DataOwnerUpdateRequestExt")],
+]);
+
+// === xdr source ============================================================
+//
+//   union switch (LedgerVersion v)
+//       {
+//       case EMPTY_VERSION:
+//           void;
+//       }
+//
+// ===========================================================================
 xdr.union("DataUpdateRequestExt", {
   switchOn: xdr.lookup("LedgerVersion"),
   switchName: "v",
@@ -21977,7 +23111,18 @@ xdr.struct("WithdrawalRequest", [
 //           CreateCloseDeferredPaymentRequestOp createCloseDeferredPaymentRequestOp;
 //       case CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST:
 //           CancelCloseDeferredPaymentRequestOp cancelCloseDeferredPaymentRequestOp;
-//   
+//       case LP_SWAP:
+//           LPSwapOp lpSwapOp;
+//       case LP_ADD_LIQUIDITY:
+//           LPAddLiquidityOp lpAddLiquidityOp;
+//       case LP_REMOVE_LIQUIDITY:
+//           LPRemoveLiquidityOp lpRemoveLiquidityOp;
+//       case UPDATE_DATA_OWNER:
+//           UpdateDataOwnerOp updateDataOwnerOp;
+//       case CREATE_DATA_OWNER_UPDATE_REQUEST:
+//           CreateDataOwnerUpdateRequestOp createDataOwnerUpdateRequestOp;
+//       case CANCEL_DATA_OWNER_UPDATE_REQUEST:
+//           CancelDataOwnerUpdateRequestOp cancelDataOwnerUpdateRequestOp;
 //       }
 //
 // ===========================================================================
@@ -22048,6 +23193,12 @@ xdr.union("OperationBody", {
     ["cancelDeferredPaymentCreationRequest", "cancelDeferredPaymentCreationRequestOp"],
     ["createCloseDeferredPaymentRequest", "createCloseDeferredPaymentRequestOp"],
     ["cancelCloseDeferredPaymentRequest", "cancelCloseDeferredPaymentRequestOp"],
+    ["lpSwap", "lpSwapOp"],
+    ["lpAddLiquidity", "lpAddLiquidityOp"],
+    ["lpRemoveLiquidity", "lpRemoveLiquidityOp"],
+    ["updateDataOwner", "updateDataOwnerOp"],
+    ["createDataOwnerUpdateRequest", "createDataOwnerUpdateRequestOp"],
+    ["cancelDataOwnerUpdateRequest", "cancelDataOwnerUpdateRequestOp"],
   ],
   arms: {
     createAccountOp: xdr.lookup("CreateAccountOp"),
@@ -22113,6 +23264,12 @@ xdr.union("OperationBody", {
     cancelDeferredPaymentCreationRequestOp: xdr.lookup("CancelDeferredPaymentCreationRequestOp"),
     createCloseDeferredPaymentRequestOp: xdr.lookup("CreateCloseDeferredPaymentRequestOp"),
     cancelCloseDeferredPaymentRequestOp: xdr.lookup("CancelCloseDeferredPaymentRequestOp"),
+    lpSwapOp: xdr.lookup("LpSwapOp"),
+    lpAddLiquidityOp: xdr.lookup("LpAddLiquidityOp"),
+    lpRemoveLiquidityOp: xdr.lookup("LpRemoveLiquidityOp"),
+    updateDataOwnerOp: xdr.lookup("UpdateDataOwnerOp"),
+    createDataOwnerUpdateRequestOp: xdr.lookup("CreateDataOwnerUpdateRequestOp"),
+    cancelDataOwnerUpdateRequestOp: xdr.lookup("CancelDataOwnerUpdateRequestOp"),
   },
 });
 
@@ -22254,7 +23411,18 @@ xdr.union("OperationBody", {
 //           CreateCloseDeferredPaymentRequestOp createCloseDeferredPaymentRequestOp;
 //       case CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST:
 //           CancelCloseDeferredPaymentRequestOp cancelCloseDeferredPaymentRequestOp;
-//   
+//       case LP_SWAP:
+//           LPSwapOp lpSwapOp;
+//       case LP_ADD_LIQUIDITY:
+//           LPAddLiquidityOp lpAddLiquidityOp;
+//       case LP_REMOVE_LIQUIDITY:
+//           LPRemoveLiquidityOp lpRemoveLiquidityOp;
+//       case UPDATE_DATA_OWNER:
+//           UpdateDataOwnerOp updateDataOwnerOp;
+//       case CREATE_DATA_OWNER_UPDATE_REQUEST:
+//           CreateDataOwnerUpdateRequestOp createDataOwnerUpdateRequestOp;
+//       case CANCEL_DATA_OWNER_UPDATE_REQUEST:
+//           CancelDataOwnerUpdateRequestOp cancelDataOwnerUpdateRequestOp;
 //       }
 //   
 //       body;
@@ -22601,14 +23769,25 @@ xdr.struct("AccountRuleRequirement", [
 //       case CANCEL_DATA_REMOVE_REQUEST:
 //           CancelDataRemoveRequestResult cancelDataRemoveRequestResult;
 //       case CREATE_DEFERRED_PAYMENT_CREATION_REQUEST:
-//               CreateDeferredPaymentCreationRequestResult createDeferredPaymentCreationRequestResult;
+//           CreateDeferredPaymentCreationRequestResult createDeferredPaymentCreationRequestResult;
 //       case CANCEL_DEFERRED_PAYMENT_CREATION_REQUEST:
 //           CancelDeferredPaymentCreationRequestResult cancelDeferredPaymentCreationRequestResult;
 //       case CREATE_CLOSE_DEFERRED_PAYMENT_REQUEST:
 //           CreateCloseDeferredPaymentRequestResult createCloseDeferredPaymentRequestResult;
 //       case CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST:
 //           CancelCloseDeferredPaymentRequestResult cancelCloseDeferredPaymentRequestResult;
-//   
+//       case LP_SWAP:
+//           LPSwapResult lpSwapResult;
+//       case LP_ADD_LIQUIDITY:
+//           LPAddLiquidityResult lpAddLiquidityResult;
+//       case LP_REMOVE_LIQUIDITY:
+//           LPRemoveLiquidityResult lpRemoveLiquidityResult;
+//       case UPDATE_DATA_OWNER:
+//           UpdateDataOwnerResult updateDataOwnerResult;
+//       case CREATE_DATA_OWNER_UPDATE_REQUEST:
+//           CreateDataOwnerUpdateRequestResult createDataOwnerUpdateRequestResult;
+//       case CANCEL_DATA_OWNER_UPDATE_REQUEST:
+//           CancelDataOwnerUpdateRequestResult cancelDataOwnerUpdateRequestResult;
 //       }
 //
 // ===========================================================================
@@ -22679,6 +23858,12 @@ xdr.union("OperationResultTr", {
     ["cancelDeferredPaymentCreationRequest", "cancelDeferredPaymentCreationRequestResult"],
     ["createCloseDeferredPaymentRequest", "createCloseDeferredPaymentRequestResult"],
     ["cancelCloseDeferredPaymentRequest", "cancelCloseDeferredPaymentRequestResult"],
+    ["lpSwap", "lpSwapResult"],
+    ["lpAddLiquidity", "lpAddLiquidityResult"],
+    ["lpRemoveLiquidity", "lpRemoveLiquidityResult"],
+    ["updateDataOwner", "updateDataOwnerResult"],
+    ["createDataOwnerUpdateRequest", "createDataOwnerUpdateRequestResult"],
+    ["cancelDataOwnerUpdateRequest", "cancelDataOwnerUpdateRequestResult"],
   ],
   arms: {
     createAccountResult: xdr.lookup("CreateAccountResult"),
@@ -22744,6 +23929,12 @@ xdr.union("OperationResultTr", {
     cancelDeferredPaymentCreationRequestResult: xdr.lookup("CancelDeferredPaymentCreationRequestResult"),
     createCloseDeferredPaymentRequestResult: xdr.lookup("CreateCloseDeferredPaymentRequestResult"),
     cancelCloseDeferredPaymentRequestResult: xdr.lookup("CancelCloseDeferredPaymentRequestResult"),
+    lpSwapResult: xdr.lookup("LpSwapResult"),
+    lpAddLiquidityResult: xdr.lookup("LpAddLiquidityResult"),
+    lpRemoveLiquidityResult: xdr.lookup("LpRemoveLiquidityResult"),
+    updateDataOwnerResult: xdr.lookup("UpdateDataOwnerResult"),
+    createDataOwnerUpdateRequestResult: xdr.lookup("CreateDataOwnerUpdateRequestResult"),
+    cancelDataOwnerUpdateRequestResult: xdr.lookup("CancelDataOwnerUpdateRequestResult"),
   },
 });
 
@@ -22873,14 +24064,25 @@ xdr.union("OperationResultTr", {
 //       case CANCEL_DATA_REMOVE_REQUEST:
 //           CancelDataRemoveRequestResult cancelDataRemoveRequestResult;
 //       case CREATE_DEFERRED_PAYMENT_CREATION_REQUEST:
-//               CreateDeferredPaymentCreationRequestResult createDeferredPaymentCreationRequestResult;
+//           CreateDeferredPaymentCreationRequestResult createDeferredPaymentCreationRequestResult;
 //       case CANCEL_DEFERRED_PAYMENT_CREATION_REQUEST:
 //           CancelDeferredPaymentCreationRequestResult cancelDeferredPaymentCreationRequestResult;
 //       case CREATE_CLOSE_DEFERRED_PAYMENT_REQUEST:
 //           CreateCloseDeferredPaymentRequestResult createCloseDeferredPaymentRequestResult;
 //       case CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST:
 //           CancelCloseDeferredPaymentRequestResult cancelCloseDeferredPaymentRequestResult;
-//   
+//       case LP_SWAP:
+//           LPSwapResult lpSwapResult;
+//       case LP_ADD_LIQUIDITY:
+//           LPAddLiquidityResult lpAddLiquidityResult;
+//       case LP_REMOVE_LIQUIDITY:
+//           LPRemoveLiquidityResult lpRemoveLiquidityResult;
+//       case UPDATE_DATA_OWNER:
+//           UpdateDataOwnerResult updateDataOwnerResult;
+//       case CREATE_DATA_OWNER_UPDATE_REQUEST:
+//           CreateDataOwnerUpdateRequestResult createDataOwnerUpdateRequestResult;
+//       case CANCEL_DATA_OWNER_UPDATE_REQUEST:
+//           CancelDataOwnerUpdateRequestResult cancelDataOwnerUpdateRequestResult;
 //       }
 //       tr;
 //   case opNO_ENTRY:
@@ -23304,7 +24506,8 @@ xdr.union("PublicKey", {
 //       SWAP = 38,
 //       DATA = 39,
 //       CUSTOM = 40,
-//       DEFERRED_PAYMENT = 41
+//       DEFERRED_PAYMENT = 41,
+//       LIQUIDITY_POOL = 42
 //   };
 //
 // ===========================================================================
@@ -23348,6 +24551,7 @@ xdr.enum("LedgerEntryType", {
   datum: 39,
   custom: 40,
   deferredPayment: 41,
+  liquidityPool: 42,
 });
 
 // === xdr source ============================================================
@@ -23599,7 +24803,13 @@ xdr.struct("Fee", [
 //       CREATE_DEFERRED_PAYMENT_CREATION_REQUEST = 66,
 //       CANCEL_DEFERRED_PAYMENT_CREATION_REQUEST = 67,
 //       CREATE_CLOSE_DEFERRED_PAYMENT_REQUEST = 68,
-//       CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST = 69
+//       CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST = 69,
+//       UPDATE_DATA_OWNER = 70,
+//       CREATE_DATA_OWNER_UPDATE_REQUEST = 71,
+//       CANCEL_DATA_OWNER_UPDATE_REQUEST = 72,
+//       LP_SWAP = 73,
+//       LP_ADD_LIQUIDITY = 74,
+//       LP_REMOVE_LIQUIDITY = 75
 //   };
 //
 // ===========================================================================
@@ -23667,6 +24877,12 @@ xdr.enum("OperationType", {
   cancelDeferredPaymentCreationRequest: 67,
   createCloseDeferredPaymentRequest: 68,
   cancelCloseDeferredPaymentRequest: 69,
+  updateDataOwner: 70,
+  createDataOwnerUpdateRequest: 71,
+  cancelDataOwnerUpdateRequest: 72,
+  lpSwap: 73,
+  lpAddLiquidity: 74,
+  lpRemoveLiquidity: 75,
 });
 
 // === xdr source ============================================================
