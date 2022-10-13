@@ -8,7 +8,6 @@ import {
   masterKP
 } from '../helpers'
 import { Keypair, CreateDataBuilder, TransactionBuilder, xdr } from '../../src/base'
-// import {xdr} from "../../src/base/generated/xdr_generated"
 import {UnsignedHyper} from 'js-xdr'
 import {KEY_VALUE_KEYS} from "../../src/const";
 
