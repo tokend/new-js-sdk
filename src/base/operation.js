@@ -553,6 +553,7 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.cancelDataOwnerUpdateRequest():
         DataRequestBuilder.cancelDataOwnerUpdateRequestToObject(result, attrs)
+        break
       case xdr.OperationType.lpAddLiquidity():
         LiquidityPoolBuilder.lpAddLiquidityToObject(result, attrs)
         break
