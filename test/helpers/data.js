@@ -74,6 +74,35 @@ export class Data extends Helper {
   /**
    *  @param {object} opts
    * @param {string|number} opts.requestID - set to zero to create new request
+   * @param {object} opts.updateDataOwnerOp
+   * @param {object} opts.creatorDetails
+   * @param {number|string} opts.allTasks
+   * @param {string} ownerKp
+   * **/
+ async createUpdateOwnerRequest (opts, ownerKp = this.masterKp) {
+  const DEFAULTS = {
+    owner: ownerKp.accountId()
+  }
+  const operation = base.DataRequestBuilder.createDataOwnerUpdateRequest({
+    ...DEFAULTS,
+    ...opts
+  })
+  const response = await this.submit(operation, ownerKp)
+  return getRequestIdFromResultXdr(response.resultXdr, 'createDataOwnerUpdateRequestResult')
+}
+/**
+ * @param opts
+ * @param {string} opts.requestID
+ *@param ownerKp
+ * **/
+async cancelUpdateOwnerRequest (opts, ownerKp = this.masterKp) {
+  const operation = base.DataRequestBuilder.cancelDataOwnerUpdateRequest(opts)
+  return this.submit(operation, ownerKp)
+}
+
+  /**
+   *  @param {object} opts
+   * @param {string|number} opts.requestID - set to zero to create new request
    * @param {string | number } opts.id - data id
    * @param {object} opts.creatorDetails
    * @param {number|string} opts.allTasks
@@ -134,6 +163,18 @@ export class Data extends Helper {
      */
   async update (opts, ownerKp = this.masterKp) {
     const operation = base.UpdateDataBuilder.updateData(opts)
+    return this.submit(operation, ownerKp)
+  }
+
+  /**
+     *
+     * @param opts
+     * @param {string} opts.dataId
+     * @param {string} opts.newOwner
+     * @param ownerKp
+     */
+   async updateOwner (opts, ownerKp = this.masterKp) {
+    const operation = base.UpdateDataOwnerBuilder.updateDataOwner(opts)
     return this.submit(operation, ownerKp)
   }
 

@@ -49,6 +49,7 @@ import { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_cl
 import { DataRequestBuilder } from './operations/data_request_builder'
 import { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
 import { SaleRequestBuilder } from './operations/sale_request_builder'
+import { UpdateDataOwnerBuilder } from './operations/update_data_owner_builder'
 import { LiquidityPoolBuilder } from './operations/liquidity_pool_builder'
 
 export class Operation extends BaseOperation {
@@ -543,6 +544,15 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.cancelSaleRequest():
         SaleRequestBuilder.cancelSaleCreationRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.updateDataOwner():
+        UpdateDataOwnerBuilder.updateDataOwnerToObject(result, attrs)
+        break
+      case xdr.OperationType.createDataOwnerUpdateRequest():
+        DataRequestBuilder.createDataOwnerUpdateRequestToObject(result, attrs)
+        break
+      case xdr.OperationType.cancelDataOwnerUpdateRequest():
+        DataRequestBuilder.cancelDataOwnerUpdateRequestToObject(result, attrs)
         break
       case xdr.OperationType.lpAddLiquidity():
         LiquidityPoolBuilder.lpAddLiquidityToObject(result, attrs)
