@@ -258,6 +258,15 @@ export class HorizonServer extends ServerBase {
     return new resources.HistoryOffers(this, this._sdk)
   }
 
+  /**
+   * LiquidityPools
+   *
+   * @return {LiquidityPools}
+   */
+  get liquidityPools () {
+    return new resources.LiquidityPool(this, this._sdk)
+  }
+
   _parseResponseError (error) {
     if (error.response && error.response.status) {
       const errCode = get(error, 'response.data.errors[0].code')

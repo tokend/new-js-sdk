@@ -29,6 +29,7 @@ import { Redemption } from './redemption'
 import { Data } from './data'
 import { CsvParser } from './csv_parser'
 import { DeferredPayment } from './deferred_payment'
+import { LiquidityPoolHelper } from './liquidity_pool_helper'
 
 export const masterKP = base.Keypair.fromSecret(config.master_seed)
 const masterWallet = new Wallet('foo@bar.baz', masterKP, masterKP.accountId(), 'fooWalletID', 'fooSessID', 'fooSessKey')
@@ -75,3 +76,4 @@ export const redemptionHelper = new Redemption(DEFAULTS)
 export const dataHelper = new Data(DEFAULTS)
 export const csvParserHelper = new CsvParser(DEFAULTS)
 export const deferredPaymentHelper = new DeferredPayment(DEFAULTS)
+export const liquidityPoolHelper = new LiquidityPoolHelper(DEFAULTS)

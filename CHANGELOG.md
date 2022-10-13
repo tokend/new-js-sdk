@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.15.0-rc.0] - 2022-10-04
+#### Added
+- Liquidity pool operations
+
 ## [1.14.4] - 2022-08-01
 ### Fixed
 - npm ignore
@@ -463,7 +467,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
-[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.14.4...HEAD
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.15.0-rc.0...HEAD
+[1.15.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.14.4...1.15.0-rc.0
 [1.14.4]: https://github.com/tokend/new-js-sdk/compare/1.14.3...1.14.4
 [1.14.3]: https://github.com/tokend/new-js-sdk/compare/1.14.2...1.14.3
 [1.14.2]: https://github.com/tokend/new-js-sdk/compare/1.14.1...1.14.2

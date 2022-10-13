@@ -55,6 +55,7 @@ export { CreateDeferredPaymentCreationRequestBuilder } from './operations/create
 export { CreateCloseDeferredPaymentRequestBuilder } from './operations/create_close_deferred_payment_request'
 export { DataRequestBuilder } from './operations/data_request_builder'
 export { UpdateDataOwnerBuilder } from './operations/update_data_owner_builder'
+export { LiquidityPoolBuilder } from './operations/liquidity_pool_builder'
 
 export * from './strkey'
 

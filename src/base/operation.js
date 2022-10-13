@@ -50,6 +50,7 @@ import { DataRequestBuilder } from './operations/data_request_builder'
 import { ManageAccountSpecificRuleBuilder } from './operations/manage_account_specific_rule_builder'
 import { SaleRequestBuilder } from './operations/sale_request_builder'
 import { UpdateDataOwnerBuilder } from './operations/update_data_owner_builder'
+import { LiquidityPoolBuilder } from './operations/liquidity_pool_builder'
 
 export class Operation extends BaseOperation {
   /**
@@ -552,6 +553,14 @@ export class Operation extends BaseOperation {
         break
       case xdr.OperationType.cancelDataOwnerUpdateRequest():
         DataRequestBuilder.cancelDataOwnerUpdateRequestToObject(result, attrs)
+      case xdr.OperationType.lpAddLiquidity():
+        LiquidityPoolBuilder.lpAddLiquidityToObject(result, attrs)
+        break
+      case xdr.OperationType.lpSwap():
+        LiquidityPoolBuilder.lpSwapToObject(result, attrs)
+        break
+      case xdr.OperationType.lpRemoveLiquidity():
+        LiquidityPoolBuilder.lpRemoveLiquidityToObject(result, attrs)
         break
       default:
         throw new Error('Unknown operation ' + operation.body().switch().name)
