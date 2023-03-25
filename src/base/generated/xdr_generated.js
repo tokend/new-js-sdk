@@ -1,7 +1,6 @@
-// revision: 60b9137b0314ab92bd02419c3751c578e6e005e8
+// revision: 3.8.0
 // branch:   master
-// Automatically generated on 2022-10-04T11:45:32+00:00
-
+// Automatically generated on 2023-03-25T13:11:01+00:00
 // DO NOT EDIT or your changes may be overwritten
 
 /* jshint maxstatements:2147483647  */
@@ -20858,7 +20857,6 @@ xdr.union("AccountRuleResource", {
 //       UPDATE = 23,
 //       UPDATE_FOR_OTHER = 24,
 //       CUSTOM = 25,
-//       TRANSFER_OWNERSHIP = 26
 //       TRANSFER_OWNERSHIP = 26,
 //       LP_ADD_LIQUIDITY = 27,
 //       LP_REMOVE_LIQUIDITY = 28,
@@ -21508,7 +21506,6 @@ xdr.union("SignerRuleResource", {
 //       EXCHANGE = 20,
 //       UPDATE_FOR_OTHER = 21,
 //       CUSTOM = 22,
-//       TRANSFER_OWNERSHIP = 23
 //       TRANSFER_OWNERSHIP = 23,
 //       LP_ADD_LIQUIDITY = 24,
 //       LP_REMOVE_LIQUIDITY = 25,
@@ -24320,7 +24317,8 @@ xdr.struct("TransactionResult", [
 //       FIX_CHANGE_ROLE_REQUEST_REQUESTOR = 31,
 //       FIX_UNORDERED_FEE_DESTINATION = 32,
 //       ADD_DEFAULT_FEE_RECEIVER_BALANCE_KV = 33,
-//       DELETE_REDEMPTION_ZERO_TASKS_CHECKING = 34
+//       DELETE_REDEMPTION_ZERO_TASKS_CHECKING = 34,
+//       FIX_DATA_OWNERSHIP_TRANSFER_OWNER_CHECK = 35
 //   };
 //
 // ===========================================================================
@@ -24360,6 +24358,7 @@ xdr.enum("LedgerVersion", {
   fixUnorderedFeeDestination: 32,
   addDefaultFeeReceiverBalanceKv: 33,
   deleteRedemptionZeroTasksChecking: 34,
+  fixDataOwnershipTransferOwnerCheck: 35,
 });
 
 // === xdr source ============================================================
@@ -24809,7 +24808,6 @@ xdr.struct("Fee", [
 //       CANCEL_CLOSE_DEFERRED_PAYMENT_REQUEST = 69,
 //       UPDATE_DATA_OWNER = 70,
 //       CREATE_DATA_OWNER_UPDATE_REQUEST = 71,
-//       CANCEL_DATA_OWNER_UPDATE_REQUEST = 72
 //       CANCEL_DATA_OWNER_UPDATE_REQUEST = 72,
 //       LP_SWAP = 73,
 //       LP_ADD_LIQUIDITY = 74,
