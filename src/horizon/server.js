@@ -264,7 +264,7 @@ export class HorizonServer extends ServerBase {
    * @return {LiquidityPools}
    */
   get liquidityPools () {
-    return new resources.LiquidityPool(this, this._sdk)
+    return new resources.LiquidityPool(new resources.V3(this, this._sdk))
   }
 
   _parseResponseError (error) {

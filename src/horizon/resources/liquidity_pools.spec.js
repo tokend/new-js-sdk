@@ -21,7 +21,7 @@ describe('liquidity-pools', () => {
       resourceGroup,
       args: [id],
       method: method,
-      path: `/liquidity-pools/${id}`
+      path: `/v3/liquidity-pools/${id}`
     })
   })
 })
