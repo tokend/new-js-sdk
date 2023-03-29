@@ -3,7 +3,6 @@ import { lpSwap } from '../scripts/lp_swap'
 import { lpRemove } from '../scripts/lp_remove'
 import { balanceHelper } from '../helpers'
 import xdr from '../../src/base/generated/xdr_generated'
-import { BaseOperation } from '../../src/base/operations/base_operation'
 
 describe('Liquidity pool', () => {
   it('Should create liquidity pool and provide liquidity', async () => {
@@ -35,8 +34,8 @@ describe('Liquidity pool', () => {
 
     const accountId = 'GBA4EX43M25UPV4WIE6RRMQOFTWXZZRIPFAI5VPY6Z2ZVVXVWZ6NEOOB'
 
-    let firstAsset = poolInfo.liquidityPool.data.attributes.firstAssetCode
-    let secondAsset = poolInfo.liquidityPool.data.attributes.secondAssetCode
+    let firstAsset = poolInfo.liquidityPool.data.relationships.firstAsset.data.id
+    let secondAsset = poolInfo.liquidityPool.data.relationships.secondAsset.data.id
     let lpAccountId = poolInfo.liquidityPool.data.attributes.accountId
 
     let sourceFirstBalanceBefore = await balanceHelper.mustLoad(accountId, firstAsset)
@@ -74,7 +73,7 @@ describe('Liquidity pool', () => {
     expect(Number(lpSecondBalanceAfter.balance)).to.be.equal(+lpSecondBalanceBefore.balance - +amountOut)
   })
 
-  it ('Should remove liquidity', async () => {
+  it('Should remove liquidity', async () => {
     const firstAssetDesiredAmount = '1'
     const secondAssetDesiredAmount = '2'
     const firstAssetMinAmount = '0.1'
@@ -88,10 +87,10 @@ describe('Liquidity pool', () => {
     })
 
     const accountId = 'GBA4EX43M25UPV4WIE6RRMQOFTWXZZRIPFAI5VPY6Z2ZVVXVWZ6NEOOB'
-    const lpBalance = await balanceHelper.mustLoad(accountId, poolInfo.liquidityPool.data.attributes.lpTokensAsset)
+    const lpBalance = await balanceHelper.mustLoad(accountId, poolInfo.liquidityPool.data.relationships.lpTokensAsset.data.id)
 
-    let firstAsset = poolInfo.liquidityPool.data.attributes.firstAssetCode
-    let secondAsset = poolInfo.liquidityPool.data.attributes.secondAssetCode
+    let firstAsset = poolInfo.liquidityPool.data.relationships.firstAsset.data.id
+    let secondAsset = poolInfo.liquidityPool.data.relationships.secondAsset.data.id
     let lpAccountId = poolInfo.liquidityPool.data.attributes.accountId
 
     let sourceFirstBalanceBefore = await balanceHelper.mustLoad(accountId, firstAsset)
