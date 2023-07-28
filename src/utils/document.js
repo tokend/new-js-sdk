@@ -13,6 +13,7 @@ export class Document {
    * @param {string} [opts.mimeType] - file MIME type
    * @param {string} [opts.key] - storage service file key
    * @param {string} [type] - storage service document type
+   * @param {string|number} [opts.size] - file size
    */
   constructor (opts = {}, type = '') {
     this._file = opts.file || null
@@ -20,6 +21,7 @@ export class Document {
     this._mimeType = opts.mimeType || opts.mime_type || ''
     this._key = opts.key || ''
     this._type = type || ''
+    this._size = opts.size || ''
   }
 
   get file () {
@@ -40,6 +42,10 @@ export class Document {
 
   get type () {
     return this._type
+  }
+
+  get size () {
+    return this._size
   }
 
   get publicUrl () {
@@ -79,6 +85,11 @@ export class Document {
     return this
   }
 
+  setSize (val) {
+    this._size = val
+    return this
+  }
+
   toJSON () {
     if (!this.isUploaded) {
       return
@@ -87,7 +98,8 @@ export class Document {
     return {
       mime_type: this._mimeType || '',
       name: this._name || '',
-      key: this._key || ''
+      key: this._key || '',
+      size: this._size || ''
     }
   }
 
