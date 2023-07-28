@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [1.16.0-rc.0] - 2023-07-28
+#### Added
+- File size in `Document`
+
 ## [1.15.0] - 2023-03-25
 #### Notes
 - Stable release of version 1.15.0 with no additional changes since 1.15.0-rc.1
@@ -162,8 +166,6 @@ for further information about branching and tagging conventions.
 
 ### Changed
 - Now default signer can be provided on the wallet creation
-
-## [Unreleased]
 
 ## [1.14.0-rc.3.1] - 2022-04-07
 ### Added
@@ -475,6 +477,8 @@ for further information about branching and tagging conventions.
 
 ## [1.3.0] - 2019-03-01
 
+[Unreleased]: https://github.com/tokend/new-js-sdk/compare/1.16.0-rc.0...HEAD
+[1.16.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.15.0...1.16.0-rc.0
 [1.15.0]: https://github.com/tokend/new-js-sdk/compare/1.15.0-rc.1...1.15.0
 [1.15.0-rc.1]: https://github.com/tokend/new-js-sdk/compare/1.15.0-rc.0...1.15.0-rc.1
 [1.15.0-rc.0]: https://github.com/tokend/new-js-sdk/compare/1.14.4...1.15.0-rc.0
