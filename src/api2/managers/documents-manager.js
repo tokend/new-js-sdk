@@ -151,10 +151,11 @@ export class DocumentsManager {
     }
   }
 
-  async getPrivateUrl (key) {
+  async getPrivateUrl (key, mimeType = '') {
     try {
-      const { data } =
-        await this._apiCaller.getWithSignature(`/documents/${key}`)
+      const { data } = await this._apiCaller.getWithSignature(`/documents/${key}`, {
+        accept: mimeType
+      })
       return data.url
     } catch (e) {
       throw new Error(e)

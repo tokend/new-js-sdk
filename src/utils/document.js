@@ -117,7 +117,7 @@ export class Document {
 
   async getPrivateUrl () {
     if (!this.isUploaded) return ''
-    return this.documentsManager.getPrivateUrl(this._key)
+    return this.documentsManager.getPrivateUrl(this._key, this._mimeType)
   }
 
   static useDocumentsManager (instance) {
