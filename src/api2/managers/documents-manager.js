@@ -154,7 +154,7 @@ export class DocumentsManager {
   async getPrivateUrl (key, mimeType = '') {
     try {
       /**
-       * Added because of the difference in parsing of different file storages
+       * Added 'mimeType' because of the difference in parsing of different file storages
        * and if you don't specify the file type explicitly,
        * there may be a result when it doesn't parse it correctly
        */
