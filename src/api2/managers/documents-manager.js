@@ -151,10 +151,16 @@ export class DocumentsManager {
     }
   }
 
-  async getPrivateUrl (key) {
+  async getPrivateUrl (key, mimeType = '') {
     try {
-      const { data } =
-        await this._apiCaller.getWithSignature(`/documents/${key}`)
+      /**
+       * Added 'mimeType' because of the difference in parsing of different file storages
+       * and if you don't specify the file type explicitly,
+       * there may be a result when it doesn't parse it correctly
+       */
+      const { data } = await this._apiCaller.getWithSignature(`/documents/${key}`, {
+        ...(mimeType ? { accept: mimeType } : {})
+      })
       return data.url
     } catch (e) {
       throw new Error(e)
